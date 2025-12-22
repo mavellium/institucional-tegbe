@@ -3,6 +3,7 @@ import { Dna } from "@/components/Dna";
 import Ecommerce from "@/components/Ecommerce";
 import { Header } from "@/components/Header";
 import { Headline } from "@/components/Headline";
+import Logos from "@/components/Logos";
 import { News } from "@/components/News";
 import { Roi } from "@/components/Roi";
 import { SectionImage } from "@/components/SectionImage";
@@ -16,6 +17,7 @@ export default function Home() {
     <>
     <Header></Header>
     <Headline></Headline>
+    <Logos></Logos>
     <Ecommerce></Ecommerce>
     <Ads></Ads>
     <Setors></Setors>
@@ -23,7 +25,7 @@ export default function Home() {
     <Roi></Roi>
     <SectionImage></SectionImage>
     <Dna></Dna>
-    <News></News>
+    {/* <News></News> */}
     </>
   );
 }

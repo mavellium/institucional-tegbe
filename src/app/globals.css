@@ -60,6 +60,8 @@ body {
     font-family: var(--font-semibold);
 }
 
+
+
 @utility flex-center {
     @apply flex items-center justify-center;
 }
