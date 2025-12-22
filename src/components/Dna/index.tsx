@@ -53,6 +53,25 @@ export function Dna() {
         }
     }, []);
 
+    // Dimensões dos dots baseadas no tamanho da tela
+    const getDotDimensions = () => {
+        if (windowWidth < 1024) {
+            // Mobile - dots horizontais
+            return {
+                width: (index: number) => activeIndex === index ? '32px' : '8px',
+                height: () => '8px',
+            };
+        } else {
+            // Desktop - dots verticais
+            return {
+                width: () => '8px',
+                height: (index: number) => activeIndex === index ? '32px' : '8px',
+            };
+        }
+    };
+
+    const dotDimensions = getDotDimensions();
+
     function renderBoldText(text: string) {
         return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
             if (part.startsWith("**") && part.endsWith("**")) {
@@ -149,9 +168,9 @@ export function Dna() {
                 {/* Container principal com Swiper vertical e controles */}
                 <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 lg:gap-8">
                     {/* Controles - Dots + Play/Pause (agora à esquerda) */}
-                    <div className="w-full lg:w-auto flex lg:flex-col items-center justify-center gap-4 order-2 lg:order-1">
-                        {/* Dots no estilo Nubank - em coluna vertical mesmo em mobile */}
-                        <div className="flex lg:flex-col gap-3 bg-[#262629] px-4 py-4 lg:px-3 lg:py-5 rounded-full justify-center items-center">
+                    <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-4 order-2 lg:order-1">
+                        {/* Dots - Horizontal no mobile, Vertical no desktop */}
+                        <div className={`flex ${windowWidth < 1024 ? 'flex-row' : 'flex-col'} gap-3 bg-[#262629] px-4 py-4 rounded-full justify-center items-center`}>
                             {cards.map((_, index) => (
                                 <button
                                     key={index}
@@ -162,8 +181,8 @@ export function Dna() {
                                             : "bg-[#CCCCCE] hover:bg-white"  // Inativos
                                     }`}
                                     style={{
-                                        width: index === activeIndex ? '8px' : '8px',
-                                        height: index === activeIndex ? '32px' : '8px',
+                                        width: dotDimensions.width(index),
+                                        height: dotDimensions.height(index),
                                         borderRadius: '100px'
                                     }}
                                 ></button>
@@ -171,7 +190,7 @@ export function Dna() {
                         </div>
 
                         {/* Botão Play/Pause padronizado */}
-                        <div className="lg:mt-4">
+                        <div className="lg:mt-2">
                             <Button
                                 onClick={handlePlayPause}
                                 className="flex items-center justify-center bg-[#262629] backdrop-blur-md text-white hover:bg-[#151516]/30 
