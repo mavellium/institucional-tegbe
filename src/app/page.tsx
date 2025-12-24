@@ -6,7 +6,7 @@ import { Header } from "@/components/Header";
 import { Headline } from "@/components/Headline";
 import Logos from "@/components/Logos";
 import  News  from "@/components/News";
-import { Roi } from "@/components/Roi";
+import { Roi, defaultRoiData } from '@/components/Roi';
 import { SectionImage } from "@/components/SectionImage";
 import SectionVideo from "@/components/SectionVideo";
 import { Setors } from "@/components/Setors";
@@ -24,7 +24,7 @@ export default function Home() {
     <Ecommerce></Ecommerce>
     <Ads></Ads>
     <Setors></Setors>
-    <Roi></Roi>
+    <Roi data={defaultRoiData} />
     <SectionImage></SectionImage>
     <Dna></Dna>
     <News></News>

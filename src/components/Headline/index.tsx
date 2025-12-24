@@ -24,7 +24,7 @@ export function Headline() {
   }, [words.length]);
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-yellow-500/30">
+    <section className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-yellow-500/30 py-25">
       
       {/* --- CAMADA 1: Atmosfera & Profundidade --- */}
       
@@ -55,10 +55,10 @@ export function Headline() {
 
         {/* Headline Principal */}
         <div className="max-w-5xl mx-auto mb-8">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-medium text-gray-400 mb-2 sm:mb-4 tracking-tight">
+          <h2 className="flex text-xl sm:text-2xl md:text-3xl lg:text-4xl flex-col sm:flex-row font-medium text-gray-400 mb-2 sm:mb-4 tracking-tight">
             O seu negócio não precisa de mais{" "}
             {/* Container da Animação */}
-            <span className="inline-grid grid-cols-1 grid-rows-1 h-[1.2em] w-auto min-w-[140px] sm:min-w-[240px] align-bottom overflow-hidden justify-items-center sm:justify-items-start text-left ml-2">
+            <span className="flex justify-center items-center h-auto w-auto overflow-hidden ml-2">
               <AnimatePresence mode="popLayout">
                 <motion.span
                   key={index}

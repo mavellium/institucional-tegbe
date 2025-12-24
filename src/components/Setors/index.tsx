@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { Icon } from '@iconify/react';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import Image from "next/image"; // Importação vital para performance
+import Image from "next/image";
 import "swiper/css";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -16,8 +16,35 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export function Setors() {
-  const cards = [
+// Interface para tipagem
+interface CardData {
+  id: number;
+  image: string;
+  title: string;
+}
+
+interface SetorsProps {
+  data?: {
+    title?: string;
+    highlightedText?: string;
+    cards?: CardData[];
+    controls?: {
+      showDots?: boolean;
+      showPlayPause?: boolean;
+      autoplay?: boolean;
+      autoplaySpeed?: number;
+    };
+    colors?: {
+      primary?: string;
+      background?: string;
+      text?: string;
+    };
+  };
+}
+
+export function Setors({ data }: SetorsProps = {}) {
+  // Dados padrão ou personalizados
+  const defaultCards: CardData[] = [
     {
       id: 1,
       image: "/growth-1.png",
@@ -40,20 +67,37 @@ export function Setors() {
     },
   ];
 
+  const cards = data?.cards || defaultCards;
+  const title = data?.title || "Por que centralizar a operação está";
+  const highlightedText = data?.highlightedText || "travando";
+  const afterText = data?.title ? "" : " o seu crescimento?";
+  const primaryColor = data?.colors?.primary || "#FFCC00";
+  const backgroundColor = data?.colors?.background || "#F4F4F4";
+  const textColor = data?.colors?.text || "#000000";
+  
+  const controlsConfig = {
+    showDots: data?.controls?.showDots ?? true,
+    showPlayPause: data?.controls?.showPlayPause ?? true,
+    autoplay: data?.controls?.autoplay ?? true,
+    autoplaySpeed: data?.controls?.autoplaySpeed ?? 5000,
+  };
+
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isHovering, setIsHovering] = useState(false); // Novo estado para UX
+  const [isPlaying, setIsPlaying] = useState(controlsConfig.autoplay);
+  const [isHovering, setIsHovering] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(0);
+  const [descriptionHeight, setDescriptionHeight] = useState<number>(0);
   const swiperRef = useRef<any>(null);
   const [isClient, setIsClient] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const desktopCardsRef = useRef<HTMLDivElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
 
   function renderBoldText(text: string) {
     return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**")) {
         return (
-          <strong key={index} className="font-bold text-black">
+          <strong key={index} className="font-bold" style={{ color: textColor }}>
             {part.replace(/\*\*/g, "")}
           </strong>
         );
@@ -70,30 +114,36 @@ export function Setors() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Atualizar altura da descrição quando o texto muda
+  useEffect(() => {
+    if (descriptionRef.current) {
+      setDescriptionHeight(descriptionRef.current.offsetHeight);
+    }
+  }, [activeIndex, windowWidth]);
+
   const isMobile = windowWidth !== null && windowWidth < 768;
 
   // Autoplay Inteligente (Desktop)
   useEffect(() => {
-    if (isMobile || !isPlaying || isHovering) return; // Pausa se estiver com mouse em cima
+    if (isMobile || !isPlaying || isHovering || !controlsConfig.autoplay) return;
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % cards.length);
-    }, 5000);
+    }, controlsConfig.autoplaySpeed);
 
     return () => clearInterval(interval);
-  }, [isMobile, isPlaying, isHovering, cards.length]);
+  }, [isMobile, isPlaying, isHovering, cards.length, controlsConfig.autoplay, controlsConfig.autoplaySpeed]);
 
   // Controle Swiper (Mobile)
   useEffect(() => {
-    if (!swiperRef.current) return;
-    if (isMobile) {
-      if (isPlaying) {
-        swiperRef.current.autoplay?.start();
-      } else {
-        swiperRef.current.autoplay?.stop();
-      }
+    if (!swiperRef.current || !isMobile) return;
+    
+    if (isPlaying && controlsConfig.autoplay) {
+      swiperRef.current.autoplay?.start();
+    } else {
+      swiperRef.current.autoplay?.stop();
     }
-  }, [isMobile, isPlaying]);
+  }, [isMobile, isPlaying, controlsConfig.autoplay]);
 
   const goToSlide = (index: number) => {
     setActiveIndex(index);
@@ -158,25 +208,34 @@ export function Setors() {
   return (
     <section
       ref={sectionRef}
-      className="py-20 w-full flex flex-col justify-center items-center bg-[#F4F4F4] px-4"
+      className="py-20 w-full flex flex-col justify-center items-center px-4"
+      style={{ backgroundColor }}
       id="setors"
     >
-      <div className="container flex flex-col justify-center items-center">
+      <div className="container flex flex-col justify-center items-center relative">
         
         {/* Título Centralizado */}
         <div className="text-center max-w-4xl mb-12">
-          <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-black leading-tight">
-            Por que centralizar a operação está <span className="text-[#FFCC00]">travando</span> o seu crescimento?
+          <h2 
+            className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold leading-tight"
+            style={{ color: textColor }}
+          >
+            {title}{' '}
+            <span style={{ color: primaryColor }}>{highlightedText}</span>
+            {afterText}
           </h2>
         </div>
 
         {/* 🟢 MOBILE - Swiper */}
         {isMobile && (
-          <div className="w-full overflow-visible">
+          <div className="w-full overflow-visible mb-8">
             <Swiper
               modules={[Autoplay]}
               onSwiper={(swiper) => (swiperRef.current = swiper)}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              autoplay={controlsConfig.autoplay ? { 
+                delay: controlsConfig.autoplaySpeed, 
+                disableOnInteraction: false 
+              } : false}
               centeredSlides={true}
               slidesPerView={0.9}
               spaceBetween={16}
@@ -202,7 +261,7 @@ export function Setors() {
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-4 rounded-2xl flex flex-col items-start p-4 w-[95%]"
                     >
-                      <h2 className="text-lg font-medium mb-3 leading-relaxed">
+                      <h2 className="text-lg font-medium mb-3 p-5 leading-relaxed">
                         {renderBoldText(card.title)}
                       </h2>
                     </motion.div>
@@ -218,8 +277,8 @@ export function Setors() {
           <div 
             ref={desktopCardsRef} 
             className="flex justify-center flex-wrap gap-4 relative"
-            onMouseEnter={() => setIsHovering(true)} // Pausa ao passar o mouse
-            onMouseLeave={() => setIsHovering(false)} // Retoma ao sair
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
           >
             {cards.map((card, index) => {
               const isActive = index === activeIndex;
@@ -238,79 +297,107 @@ export function Setors() {
                     layout
                     onClick={() => setActiveIndex(index)}
                     animate={{
-                      opacity: isActive ? 1 : 0.5, // Mais contraste nos inativos
+                      opacity: isActive ? 1 : 0.5,
                       width: isActive ? activeWidth : inactiveWidth,
                       scale: isActive ? 1 : 0.98,
-                      filter: isActive ? "grayscale(0%)" : "grayscale(100%)", // Efeito elegante nos inativos
+                      filter: isActive ? "grayscale(0%)" : "grayscale(100%)",
                     }}
                     transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                    className={`relative cursor-pointer overflow-hidden rounded-2xl shadow-lg border-2 ${isActive ? "border-[#FFCC00]" : "border-transparent"}`}
+                    className={`relative cursor-pointer overflow-hidden rounded-4xl shadow-lg border-2 ${isActive ? "" : "border-transparent"}`}
+                    style={isActive ? { borderColor: primaryColor } : {}}
                   >
                     <div className="relative w-full h-[600px]">
-                        <Image
-                            src={card.image}
-                            alt={card.title}
-                            fill
-                            className="object-cover object-top"
-                        />
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        className="object-cover object-top"
+                      />
                     </div>
-                    {/* Overlay escuro nos inativos */}
                     {!isActive && <div className="absolute inset-0 bg-black/40 transition-colors duration-300" />}
                   </motion.div>
-
-                  <AnimatePresence mode="sync">
-                    {isActive && (
-                      <motion.div
-                        key={`desc-${card.id}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.4 }}
-                        className="absolute top-full mt-6 rounded-2xl p-2 z-10 flex flex-col items-start text-left"
-                        style={{ width: activeWidth, maxWidth: 360 }}
-                      >
-                        <h2 className="text-lg md:text-xl font-medium leading-relaxed">
-                          {renderBoldText(card.title)}
-                        </h2>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </motion.div>
               );
             })}
           </div>
         )}
 
-        {/* 🔘 CONTROLES - Estilo Mavellium */}
-        <div className="flex items-center justify-center mt-20 md:mt-64 gap-6">
-          
-          {/* Dots */}
-          <div className="flex gap-3 bg-white border border-gray-200 h-14 px-6 rounded-full justify-center items-center shadow-lg">
-            {cards.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  index === activeIndex
-                    ? "bg-[#FFCC00] w-8 h-2.5 shadow-[0_0_10px_#FFCC00]" // Ativo Ouro
-                    : "bg-gray-300 w-2.5 h-2.5 hover:bg-gray-400"
-                }`}
-              />
-            ))}
+        {/* Container da Descrição (Apenas Desktop) */}
+        {!isMobile && (
+          <div 
+            ref={descriptionRef}
+            className="w-full max-w-4xl mt-8 transition-all duration-300"
+            style={{ minHeight: '80px' }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-2xl p-6 bg-white shadow-lg"
+                style={{ borderLeft: `4px solid ${primaryColor}` }}
+              >
+                <h2 className="text-lg md:text-xl font-medium leading-relaxed">
+                  {renderBoldText(cards[activeIndex].title)}
+                </h2>
+              </motion.div>
+            </AnimatePresence>
           </div>
+        )}
+
+        {/* 🔘 CONTROLES - Posicionamento Relativo */}
+        <div 
+          className="flex items-center justify-center gap-6 relative"
+          style={{
+            marginTop: isMobile ? '2rem' : '3rem',
+            top: isMobile ? '0' : `${descriptionHeight > 100 ? '2rem' : '3rem'}`,
+          }}
+        >
+          {/* Dots */}
+          {controlsConfig.showDots && (
+            <div 
+              className="flex gap-3 bg-white border border-gray-200 h-14 px-6 rounded-full justify-center items-center shadow-lg"
+              style={{ borderColor: `${primaryColor}30` }}
+            >
+              {cards.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`transition-all duration-300 rounded-full ${
+                    index === activeIndex
+                      ? "shadow-[0_0_10px_rgba(0,0,0,0.2)]"
+                      : "hover:bg-gray-100"
+                  }`}
+                  style={{
+                    width: index === activeIndex ? '32px' : '10px',
+                    height: '10px',
+                    backgroundColor: index === activeIndex ? primaryColor : '#D1D5DB',
+                  }}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Play/Pause */}
-          <Button
-            onClick={() => setIsPlaying((prev) => !prev)}
-            className="flex items-center justify-center bg-white border border-gray-200 text-gray-800 hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00] rounded-full h-14 w-14 shadow-lg transition-all duration-300"
-          >
-            {isPlaying ? (
-              <Icon icon="solar:pause-bold" className="w-6 h-6" />
-            ) : (
-              <Icon icon="solar:play-bold" className="w-6 h-6 ml-1" />
-            )}
-          </Button>
-
+          {controlsConfig.showPlayPause && (
+            <Button
+              onClick={() => setIsPlaying((prev) => !prev)}
+              className="flex items-center justify-center bg-white border text-gray-800 hover:text-black rounded-full h-14 w-14 shadow-lg transition-all duration-300"
+              style={{
+                borderColor: `${primaryColor}30`,
+                backgroundColor: isPlaying ? `${primaryColor}20` : 'white',
+                color: textColor,
+              }}
+            >
+              {isPlaying ? (
+                <Icon icon="solar:pause-bold" className="w-6 h-6" />
+              ) : (
+                <Icon icon="solar:play-bold" className="w-6 h-6" />
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </section>
