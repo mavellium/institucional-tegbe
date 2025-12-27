@@ -24,7 +24,7 @@ export function Headline() {
   }, [words.length]);
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-yellow-500/30 py-25">
+    <section className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-yellow-500/30 pt-[80px] pb-[20px]">
       
       {/* --- CAMADA 1: Atmosfera & Profundidade --- */}
       

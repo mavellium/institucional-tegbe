@@ -34,6 +34,7 @@ export function Footer() {
       <div className="w-full max-w-7xl relative z-10">
         
         {/* --- NOVO LOCAL: BARRA DE CREDIBILIDADE (Topo do Footer) --- */}
+        <a href="consultor-certificado">
         <div className="flex flex-col md:flex-row justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-6 mb-16 gap-6 relative overflow-hidden group">
             {/* Efeito Glow no Hover da Barra */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#FFCC00]/0 via-[#FFCC00]/5 to-[#FFCC00]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
@@ -67,6 +68,7 @@ export function Footer() {
                  </div>
             </div>
         </div>
+        </a>
 
 
         <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-center sm:text-start">
@@ -94,10 +96,10 @@ export function Footer() {
           <div className="flex flex-col items-center sm:items-start space-y-5">
             <h3 className="font-bold text-base text-white">Navegação</h3>
             <nav className="flex flex-col space-y-3">
-              {['Home', 'Sobre', 'Soluções', 'Cases'].map((item) => (
+              {['Home', 'E-commerce', 'Marketing', 'Sobre'].map((item) => (
                 <a 
                   key={item} 
-                  href={item === 'Home' ? '/' : `#${item.toLowerCase()}`} 
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`} 
                   className="text-sm text-gray-500 hover:text-[#FFCC00] hover:translate-x-1 transition-all duration-200"
                 >
                   {item}
@@ -118,30 +120,52 @@ export function Footer() {
           </div>
 
           {/* --- COLUNA 4: Contato --- */}
-          <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h3 className="font-bold text-base text-white">Fale Conosco</h3>
-            <div className="flex flex-col items-center sm:items-start space-y-4">
-              <a href="mailto:contato@tegbe.com.br" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
-                <div className="p-2 rounded-full bg-white/5 text-[#FFCC00]">
-                    <Icon icon="solar:letter-linear" />
-                </div>
-                <span className="group-hover:underline decoration-[#FFCC00] underline-offset-4">contato@tegbe.com.br</span>
-              </a>
-              <a 
-                href="https://api.whatsapp.com/send?phone=5514991779502" 
-                target="_blank" 
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group"
-              >
-                <div className="p-2 rounded-full bg-white/5 text-[#FFCC00]">
-                    <Icon icon="solar:phone-calling-linear" />
-                </div>
-                <span className="group-hover:underline decoration-[#FFCC00] underline-offset-4">(14) 99177-9502</span>
-              </a>
-              <div className="flex items-start gap-3 text-sm text-gray-500 text-center sm:text-left mt-2">
-                 <Icon icon="solar:map-point-linear" className="text-[#FFCC00] mt-1 flex-shrink-0" />
-                 <span>São Paulo, SP - Brasil<br/>Atendimento Nacional</span>
-              </div>
-            </div>
+<div className="flex flex-col items-center sm:items-start space-y-5">
+  <h3 className="font-bold text-base text-white">Fale Conosco</h3>
+  <div className="flex flex-col items-center sm:items-start space-y-4">
+    
+    {/* E-mail */}
+    <a href="mailto:contato@tegbe.com.br" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
+      <div className="p-2 rounded-full bg-white/5 text-[#FFCC00] flex-shrink-0">
+        <Icon icon="solar:letter-linear" />
+      </div>
+      <span className="group-hover:underline decoration-[#FFCC00] underline-offset-4">contato@tegbe.com.br</span>
+    </a>
+
+    {/* WhatsApp */}
+    <a 
+      href="https://api.whatsapp.com/send?phone=5514988281001" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group"
+    >
+      <div className="p-2 rounded-full bg-white/5 text-[#FFCC00] flex-shrink-0">
+        <Icon icon="solar:phone-calling-linear" />
+      </div>
+      <span className="group-hover:underline decoration-[#FFCC00] underline-offset-4">(14) 98828-1001</span>
+    </a>
+
+    {/* Endereço / Google Maps */}
+    <a 
+      href="https://maps.app.goo.gl/kSVQ6X936GNNu8WZ8" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group text-center sm:text-left"
+    >
+      <div className="p-2 rounded-full bg-white/5 text-[#FFCC00] flex-shrink-0 mt-0.5">
+        <Icon icon="solar:map-point-linear" />
+      </div>
+      <span className="group-hover:underline decoration-[#FFCC00] underline-offset-4">
+        R. Santos Dumont, 133 - Ferraropolis<br/>
+        Garça - SP, 17400-074<br/>
+        <span className="text-xs opacity-70">Atendimento Nacional</span>
+      </span>
+    </a>
+
+  </div>
+</div>
+
+          
           </div>
         </div>
 
@@ -149,12 +173,12 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-600">
           <div className="text-center md:text-left order-2 md:order-1 flex flex-col gap-1">
-            <p>© {new Date().getFullYear()} Tegbe Consultoria. Todos os direitos reservados.</p>
-            <p>CNPJ: 00.000.000/0001-00</p>
+            <p>© {new Date().getFullYear()} Tegbe. Todos os direitos reservados.</p>
+            <p>CNPJ: 48.802.866/0001-42</p>
           </div>
 
           <div className="flex items-center gap-3 order-1 md:order-2 bg-[#0A0A0A] px-5 py-2.5 rounded-full border border-white/5 hover:border-[#FFCC00]/30 transition-all cursor-pointer group shadow-lg">
-            <span className="text-gray-500 font-medium group-hover:text-gray-300 transition-colors text-[10px] uppercase tracking-wider">Strategic Design by</span>
+            <span className="text-gray-500 font-medium group-hover:text-gray-300 transition-colors text-[10px] uppercase tracking-wider">Desenvolvido por</span>
             <Image
               src="/mavellium-logo-footer.svg" 
               alt="Mavellium"
@@ -163,7 +187,6 @@ export function Footer() {
               className="opacity-60 group-hover:opacity-100 transition-opacity brightness-0 invert" 
             />
           </div>
-        </div>
       </div>
     </footer>
   );
