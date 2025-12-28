@@ -1,312 +1,145 @@
 "use client";
 
+import { useRef } from "react";
+import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import { useRef } from "react";
-import { Icon } from "@iconify/react";
 
-// Registrar apenas se estiver no cliente
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interfaces para tipagem
-export interface RoiCardData {
-  id: number;
-  title: string;
-  highlightedText: string;
-  description: string;
-  icon: string;
-  iconBgColor: string;
-  backgroundColor: string;
-  primaryColor: string;
-  backgroundImage: string;
-  hasPhoneImage?: boolean;
-  phoneImage?: string;
-  phoneImageSize?: {
-    width: number;
-    height: number;
-  };
-  gradient?: {
-    from: string;
-    via?: string;
-    to: string;
-    opacity?: number;
-  };
-}
+// DADOS ALINHADOS COM O LAYOUT "CARDS(4).PNG"
+const services = [
+  {
+    step: "01",
+    id: "seo",
+    title: "SEO de Conversão",
+    description: "Não criamos apenas anúncios, criamos máquinas de vendas. Títulos e descrições otimizados para que o cliente te encontre e compre sem hesitar.",
+    icon: "lucide:search-code", // Ou um ícone mais 'clean'
+    color: "#0071E3",
+    wide: false // Card Vertical
+  },
+  {
+    step: "02",
+    id: "ads",
+    title: "Tráfego que Dá Lucro",
+    description: "Gestão de Ads focada em ROI. Colocamos seu investimento onde o retorno é certo, acelerando o giro de estoque e multiplicando suas vendas.",
+    icon: "lucide:trending-up",
+    color: "#0071E3",
+    wide: false // Card Vertical
+  },
+  {
+    step: "03",
+    id: "blindagem",
+    title: "Operação Blindada",
+    description: "Cuidamos da sua reputação para que nada pare o seu crescimento. No Mercado Livre e na Shopee, medalha no peito é sinônimo de mais dinheiro no bolso.",
+    icon: "lucide:shield-check",
+    color: "#FFD700", // Dourado para representar a Medalha
+    wide: true // Card Horizontal (Base)
+  }
+];
 
-export interface RoiSectionData {
-  id?: string;
-  title?: string;
-  subtitle?: string;
-  backgroundColor?: string;
-  padding?: {
-    vertical: string;
-    horizontal: string;
-  };
-  animation?: {
-    delay?: number;
-    stagger?: number;
-    duration?: number;
-  };
-  cards: RoiCardData[];
-}
-
-interface RoiProps {
-  data: RoiSectionData;
-  className?: string;
-}
-
-// Componente Card Individual
-function RoiCard({ card }: { card: RoiCardData }) {
-  return (
-    <div
-      className="roi-card relative overflow-hidden w-full lg:w-1/2 min-h-[500px] lg:h-[700px] rounded-[2rem] p-8 sm:p-10 group shadow-2xl"
-      style={{ backgroundColor: card.backgroundColor }}
-    >
-      {/* Fundo com Zoom suave no Hover */}
-      <div className="absolute inset-0">
-        <Image
-          src={card.backgroundImage}
-          fill
-          className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-50 transition-all duration-700 ease-out"
-          alt={card.title}
-          quality={90}
-        />
-        {/* Gradiente personalizável */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to top, 
-              ${card.gradient?.from || 'rgba(0,0,0,0.9)'} 0%, 
-              ${card.gradient?.via || 'rgba(0,0,0,0.4)'} 50%, 
-              ${card.gradient?.to || 'transparent'} 100%)`,
-            opacity: card.gradient?.opacity || 1
-          }}
-        />
-      </div>
-
-      {/* Conteúdo */}
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Ícone ou Badge */}
-        <div
-          className="w-12 h-12 rounded-xl p-3 flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(0,0,0,0.3)]"
-          style={{ backgroundColor: card.iconBgColor }}
-        >
-          <Icon icon={card.icon} width="28" height="28" className="text-white" />
-        </div>
-
-        <div className="flex-1">
-          <h2 className="text-white font-bold text-2xl sm:text-3xl md:text-4xl mb-4 leading-tight">
-            {card.title} <br/>
-            <span style={{ color: card.primaryColor }}>{card.highlightedText}</span>
-          </h2>
-          
-          <div
-            className="w-20 h-1 mb-6 rounded-full"
-            style={{ backgroundColor: card.primaryColor }}
-          />
-
-          <p className="text-gray-300 text-base sm:text-lg font-light leading-relaxed max-w-md mb-6">
-            {card.description}
-          </p>
-        </div>
-
-        {/* Imagem do Celular se configurada */}
-        {card.hasPhoneImage && card.phoneImage && (
-          <div className="relative w-full flex justify-center mt-auto">
-            <div 
-              className="absolute bottom-0 w-3/4 h-32 blur-3xl rounded-full pointer-events-none"
-            //   style={{ backgroundColor: `${card.primaryColor}0` }}
-            />
-            
-            <div className="relative w-58 sm:w-64 md:w-72 h-60 sm:h-70 transform group-hover:-translate-y-2 transition-transform duration-500">
-              <Image
-                src={card.phoneImage}
-                width={card.phoneImageSize?.width || 400}
-                height={card.phoneImageSize?.height || 600}
-                alt={card.title}
-                className="drop-shadow-2xl"
-                style={{ width: '100%', height: 'auto' }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Componente Principal
-export function Cards({ data, className = "" }: RoiProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Destructuring com valores padrão
-  const {
-    id = "roi",
-    title,
-    subtitle,
-    backgroundColor = "#F4F4F4",
-    padding = { vertical: "py-16 md:py-24", horizontal: "px-4 sm:px-6 lg:px-8" },
-    animation = { delay: 0, stagger: 0.2, duration: 1 },
-    cards = []
-  } = data;
+export default function ServiceFlow() {
+  const containerRef = useRef(null);
 
   useGSAP(() => {
-    if (!containerRef.current) return;
-    
-    const cardElements = containerRef.current.querySelectorAll(".roi-card");
-    
-    gsap.set(cardElements, { opacity: 0, y: 50 });
-
-    gsap.to(cardElements, {
-      opacity: 1,
-      y: 0,
-      duration: animation.duration,
-      stagger: animation.stagger,
+    // Animação dos Cards
+    gsap.from(".service-card", {
+      opacity: 0,
+      y: 40,
+      stagger: 0.2, // Um pouco mais lento para dar peso
+      duration: 1,
       ease: "power3.out",
       scrollTrigger: {
         trigger: containerRef.current,
         start: "top 75%",
-        toggleActions: "play none none reverse",
       },
     });
+
+    // Animação do Título
+    gsap.from(".section-title", {
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 85%",
+      },
+    });
+
   }, { scope: containerRef });
 
   return (
-    <section
-      id={id}
-      ref={containerRef}
-      className={`w-full ${padding.vertical} ${padding.horizontal} ${className}`}
-      style={{ backgroundColor }}
-    >
-      <div className="mx-auto max-w-7xl">
-        {/* Cabeçalho opcional */}
-        {(title || subtitle) && (
-          <div className="text-center mb-12">
-            {title && (
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {title}
-              </h2>
-            )}
-            {subtitle && (
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {subtitle}
-              </p>
-            )}
-          </div>
-        )}
+    <section ref={containerRef} className="py-24 bg-white px-6">
+      <div className="max-w-6xl mx-auto">
+        
+        {/* CABEÇALHO */}
+        <div className="mb-16 text-center section-title">
+          <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight mb-4">
+            Como fazemos você vender
+          </h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            Metodologia validada em mais de R$ 40 milhões faturados.
+          </p>
+        </div>
 
-        {/* Grid de Cards */}
-        <div className="flex flex-col lg:flex-row-reverse gap-6 md:gap-8">
-          {cards.map((card) => (
-            <RoiCard key={card.id} card={card} />
+        {/* GRID "2 COLUNAS + BASE" */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {services.map((service, index) => (
+            <div 
+              key={index}
+              className={`
+                service-card group relative overflow-hidden rounded-[2rem] p-8 border border-gray-100
+                transition-all duration-500 hover:shadow-2xl hover:-translate-y-1
+                ${service.wide ? 'md:col-span-2 bg-gradient-to-br from-gray-50 to-gray-100' : 'bg-gray-50'}
+              `}
+            >
+              {/* Número de Fundo (Estilo Editorial) */}
+              <span className="absolute right-6 top-6 text-6xl font-black text-gray-200 opacity-50 group-hover:opacity-20 transition-opacity">
+                {service.step}
+              </span>
+
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                  {/* Ícone com Glow sutil */}
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 shadow-sm"
+                    style={{ backgroundColor: 'white', color: service.color }}
+                  >
+                    <Icon icon={service.icon} width="28" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-black mb-3 w-3/4">
+                    {service.title}
+                  </h3>
+
+                  <p className="text-gray-600 leading-relaxed text-base">
+                    {service.description}
+                  </p>
+                </div>
+
+                {/* Área para Inserção das Imagens/Mockups Futuros */}
+                {/* Aqui entrarão os gráficos e medalhas que discutimos */}
+                <div className="mt-8 h-32 w-full rounded-xl bg-white/50 border border-gray-200/50 flex items-center justify-center text-gray-300 text-xs uppercase tracking-widest">
+                   {service.wide ? '[Área da Medalha 3D]' : '[Área do Mockup UI]'}
+                </div>
+              </div>
+
+              {/* Borda Inferior Colorida ao Hover */}
+              <div 
+                className="absolute bottom-0 left-0 h-1.5 w-0 group-hover:w-full transition-all duration-700 ease-out"
+                style={{ backgroundColor: service.color }} 
+              />
+            </div>
           ))}
         </div>
+
+        {/* CTA FINAL (Integrado ou separado, mantive separado para flexibilidade) */}
+        {/* Nota: O CTA preto que você tinha pode ser um componente separado abaixo deste */}
+        
       </div>
     </section>
   );
 }
-
-// Dados de exemplo em JSON
-export const defaultRoiData: RoiSectionData = {
-  id: "roi",
-  backgroundColor: "#F4F4F4",
-  padding: {
-    vertical: "py-16 md:py-24",
-    horizontal: "px-4 sm:px-6 lg:px-8"
-  },
-  animation: {
-    delay: 0,
-    stagger: 0.2,
-    duration: 1
-  },
-  cards: [
-    {
-      id: 1,
-      title: "Tráfego que Dá ",
-      highlightedText: "Lucro.",
-      description: "Gestão de Ads focada em ROI. Colocamos seu investimento onde o retorno é certo, acelerando o giro de estoque e multiplicando suas vendas.",
-      icon: "mdi:shopping-outline",
-      iconBgColor: "#FF5722",
-      backgroundColor: "#b3b3b3ff",
-      primaryColor: "#FF5722",
-      backgroundImage: "/",
-      gradient: {
-        from: "rgba(174, 174, 174, 1)",
-        via: "rgba(144, 144, 144, 0.5)",
-        to: "transparent",
-        opacity: 1
-      },
-      hasPhoneImage: true,
-      phoneImage: "/ROAS.png",
-      phoneImageSize: {
-        width: 400,
-        height: 600
-      },
-    },
-    {
-      id: 2,
-      title: "SEO de ",
-      highlightedText: "Conversão",
-      description: "Não criamos apenas anúncios, criamos máquinas de vendas. Títulos e descrições otimizados para que o cliente te encontre e compre sem hesitar.",
-      icon: "mdi:shopping-outline",
-      iconBgColor: "#FF5722",
-      backgroundColor: "#0A0A0A",
-      primaryColor: "#FF5722",
-      backgroundImage: "/card2.png",
-      gradient: {
-        from: "rgba(0,0,0,1)",
-        via: "rgba(0,0,0,0.5)",
-        to: "transparent",
-        opacity: 1
-      },
-      hasPhoneImage: true,
-      phoneImage: "/celular-roi.png",
-      phoneImageSize: {
-        width: 400,
-        height: 600
-      },
-    }
-  ]
-};
-
-// Exemplo de JSON para usar em CMS
-export const roiDataJSON = {
-  "id": "roi-section",
-  "title": "Nossas Soluções",
-  "subtitle": "Estratégias personalizadas para cada marketplace",
-  "backgroundColor": "#F4F4F4",
-  "cards": [
-    {
-      "id": 1,
-      "title": "Consultoria Oficial",
-      "highlightedText": "Mercado Livre",
-      "description": "Descrição personalizada do serviço...",
-      "icon": "mdi:handshake",
-      "iconBgColor": "#FFCC00",
-      "backgroundColor": "#0A0A0A",
-      "primaryColor": "#FFCC00",
-      "backgroundImage": "/images/card1.jpg",
-    },
-    {
-      "id": 2,
-      "title": "Performance em",
-      "highlightedText": "Amazon",
-      "description": "Outra descrição de serviço...",
-      "icon": "mdi:amazon",
-      "iconBgColor": "#FF9900",
-      "backgroundColor": "#0A0A0A",
-      "primaryColor": "#FF9900",
-      "backgroundImage": "/images/card2.jpg",
-      "hasPhoneImage": true,
-      "phoneImage": "/images/phone-dashboard.png",
-      "phoneImageSize": {
-        "width": 400,
-        "height": 600
-      },
-    }
-  ]
-};

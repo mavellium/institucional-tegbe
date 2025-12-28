@@ -7,13 +7,16 @@ import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import Video from "@/components/Video";
 import SellMore from "@/components/SellMore";
-import { Cards, defaultRoiData } from "@/components/Cards";
 import Plataforms from "@/components/Steps/Plataforms";
 import Logos from "@/components/Logos";
 import Cards2 from "@/components/Cards/Cards2";
 import Companys from "@/components/News/Companys";
 import { Footer } from "@/components/Footer";
 import Schema from "@/components/Schema";
+import Equipe from "@/components/Equipe";
+import ChamadaAcao from "@/components/ChamadaAcao";
+import Cards from "@/components/Cards";
+import Animacao from "@/components/Animacao";
 
 export default function EcommercePage() {
     <Schema
@@ -116,56 +119,8 @@ export default function EcommercePage() {
             </section>
             <Video />
             <SellMore />
-            <Cards data={defaultRoiData} />
-            <section className="py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-7xl">
-                    <div className="flex flex-col lg:flex-row bg-[#111111] rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden">
-
-                        {/* Coluna de Texto */}
-                        <div className="lg:w-2/5 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                                Operação Blindada.
-                            </h1>
-                            <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                                Cuidamos da sua reputação para que nada pare o seu crescimento.
-                                No Mercado Livre e na Shopee, medalha no peito é sinônimo
-                                de mais dinheiro no bolso.
-                            </p>
-
-                            {/* Botão CTA opcional */}
-                            <button className="mt-6 w-full sm:w-auto bg-yellow-500 text-black font-bold hover:bg-yellow-600 py-3 px-6 rounded-lg transition-colors duration-300">
-                                Proteger Minha Loja
-                            </button>
-                        </div>
-
-                        {/* Coluna de Imagens */}
-                        <div className="lg:w-3/5 p-4 sm:p-6 lg:p-8 flex flex-col sm:flex-row gap-4 items-center justify-center">
-
-                            {/* Container responsivo para imagens */}
-                            <div className="relative w-full sm:w-1/2 h-50 sm:h-80 md:h-80 lg:h-55 flex justify-center items-center aspect-video rounded-xl overflow-hidden">
-                                <Image
-                                    src="/platinum.png"
-                                    alt="Operação Blindada - Mercado Livre"
-                                    width={300}
-                                    height={300}
-                                    className="object-cover"
-                                />
-                            </div>
-
-                            <div className="relative w-full sm:w-1/2 h-50 sm:h-80 md:h-80 lg:h-58 flex justify-center items-center aspect-video rounded-xl overflow-hidden">
-                                <Image
-                                    src="/shopee.png"
-                                    alt="Operação Blindada - Shopee"
-                                    width={300}
-                                    height={300}
-                                    className="object-cover"
-                                />
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <Cards />
+            <Animacao/>
             <Plataforms />
             <Logos />
             <Cards2 />
@@ -186,57 +141,9 @@ export default function EcommercePage() {
         md:from-black/60 md:via-black/20 md:to-transparent
         lg:from-black/60 lg:via-transparent lg:to-transparent" />
             </section>
-            <section
-                className="py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden"
-            >
-                {/* Background Glow Sutil (Opcional - Estilo Mavellium) */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none" />
-
-                <div className="container flex flex-col justify-center relative z-10">
-
-                    {/* Texto Intro */}
-                    <div className="flex flex-col items-center text-center w-full mb-12 text-white">
-                        <h1 className="font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl text-white">
-                            Por que vender com a <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFCC00] to-yellow-600"> Tegbe </span>
-                            e não sozinho?
-                        </h1>
-
-                        <h2 className="text-base sm:text-lg text-gray-400 font-light leading-relaxed max-w-3xl">
-                            Vender online sozinho é tentar a sorte. <strong className="text-white font-medium">Vender com a Tegbe é aplicar um método validado. </strong> O Mercado Livre não perdoa amadores.
-                            Nós conhecemos as regras ocultas do algoritmo e jogamos para dominar, não apenas para participar.
-                        </h2>
-                        <a href="#" className="flex justify-center pt-10">
-                            <span className="font-medium px-6 py-4 bg-[#0071E3] text-white rounded-full">
-                                Falar com um Especialista
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </section>
+            <Equipe/>
             <Companys />
-            <section
-                className="py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden"
-            >
-
-                <div className="container flex flex-col justify-center relative z-10">
-
-                    {/* Texto Intro */}
-                    <div className="flex flex-col items-center text-center w-full mb-12 text-white">
-                        <h1 className="font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl text-white">
-                            O próximo case de sucesso <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFCC00] to-yellow-600">será o seu.</span>
-                        </h1>
-
-                        <h2 className="text-base sm:text-lg text-gray-400 font-light leading-relaxed max-w-3xl">
-                            Vamos analisar sua operação atual e traçar o plano de guerra para sua marca dominar o mercado.
-                        </h2>
-                        <a href="#" className="flex justify-center pt-10">
-                            <span className="font-medium px-6 py-4 bg-[#0071E3] text-white rounded-full">
-                                SOLICITAR MEU DIAGNÓSTICO DE VENDAS
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </section>
+            <ChamadaAcao/>
             <Footer />
         </>
     );
