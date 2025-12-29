@@ -260,7 +260,7 @@ export default function SalesEngineVisual() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-b-xl z-50" />
                 <div className="pt-10 px-6 pb-4 bg-[#111] z-40 border-b border-gray-800">
                     <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Faturamento Hoje</span>
-                    <h3 ref={counterRef} className="text-3xl font-black text-[#00E676] tracking-tighter mt-1">R$ 0,00</h3>
+                    <h1 ref={counterRef} className="text-3xl font-black text-[#00E676] tracking-tighter mt-1">R$ 0,00</h1>
                 </div>
                 <div className="flex-1 relative w-full h-full px-4 perspective-[600px] flex items-end pb-8 justify-center">
                     {[...Array(5)].map((_, i) => (
@@ -287,9 +287,9 @@ export default function SalesEngineVisual() {
           <div className="absolute top-[19px] left-0 h-[2px] bg-black rounded-full transition-all duration-500" style={{ width: `${(activeStep / 4) * 100}%` }} />
           <div className="grid grid-cols-5 relative z-10">
             {steps.map((step, i) => (
-              <div key={i} className={`flex flex-col items-center transition-all duration-300 ${activeStep === i ? "opacity-100 scale-105" : "opacity-40"}`}>
-                <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
-                  {activeStep > i ? <Icon icon="lucide:check" width="16" /> : <span className="text-xs font-bold">{i + 1}</span>}
+              <div key={i} className={`flex flex-col items-center transition-all z-10 duration-300 ${activeStep === i ? "opacity-100 scale-105" : "opacity-190"}`}>
+                <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
+                  {activeStep > i ? <Icon icon="lucide:check" className="text-black" width="16" /> : <span className="text-xs font-bold">{i + 1}</span>}
                 </div>
                 <span className="mt-3 text-xs font-black uppercase tracking-widest text-black">{step.title}</span>
                 <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>

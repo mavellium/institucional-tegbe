@@ -117,9 +117,9 @@ export default function ServiceFlow() {
                     {service.icon && <Icon icon={service.icon} width="28" height="28" />}
                   </div>
 
-                  <h3 className="text-2xl font-bold text-black mb-3 w-11/12 md:w-3/4">
+                  <h1 className="text-2xl font-bold text-black mb-3 w-11/12 md:w-3/4">
                     {service.title}
-                  </h3>
+                  </h1>
 
                   <p className="text-gray-600 leading-relaxed text-base font-medium">
                     {service.description}

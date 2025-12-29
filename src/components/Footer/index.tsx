@@ -94,7 +94,7 @@ export function Footer() {
 
           {/* --- COLUNA 2: Navegação --- */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h3 className="font-bold text-base text-white">Navegação</h3>
+            <h1 className="font-bold text-base text-white">Navegação</h1>
             <nav className="flex flex-col space-y-3">
               {['Home', 'E-commerce', 'Marketing', 'Sobre'].map((item) => (
                 <a 
@@ -110,7 +110,7 @@ export function Footer() {
 
           {/* --- COLUNA 3: Expertise --- */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h3 className="font-bold text-base text-white">Expertise</h3>
+            <h1 className="font-bold text-base text-white">Expertise</h1>
             <nav className="flex flex-col space-y-3">
               <FooterLink text="Gestão Full Commerce" />
               <FooterLink text="Consultoria Oficial" />
@@ -121,7 +121,7 @@ export function Footer() {
 
           {/* --- COLUNA 4: Contato --- */}
 <div className="flex flex-col items-center sm:items-start space-y-5">
-  <h3 className="font-bold text-base text-white">Fale Conosco</h3>
+  <h1 className="font-bold text-base text-white">Fale Conosco</h1>
   <div className="flex flex-col items-center sm:items-start space-y-4">
     
     {/* E-mail */}

@@ -43,8 +43,8 @@ export function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${scrolled
-            ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-2"
-            : "bg-transparent border-b border-transparent py-4"
+          ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-2"
+          : "bg-transparent border-b border-transparent py-4"
           }`}
       >
         <div className="w-full px-6">
@@ -63,7 +63,9 @@ export function Header() {
               </a>
 
               {/* --- NAVEGAÇÃO DESKTOP --- */}
-              <nav className="hidden md:flex items-center gap-8 ml-8">
+              <nav
+                aria-label="Menu de navegação desktop"
+                className="hidden md:flex items-center gap-8 ml-8">
                 <a
                   href="/"
                   className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
@@ -135,6 +137,9 @@ export function Header() {
             <Button
               size="icon"
               variant="ghost"
+              aria-controls="mobileMenu"
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
               className="md:hidden text-white hover:bg-white/10"
               onClick={(e) => {
                 e.stopPropagation()
@@ -155,35 +160,37 @@ export function Header() {
           className={`absolute top-full left-0 w-full bg-[#050505] border-b border-white/10 shadow-2xl overflow-hidden transition-all duration-500 ease-in-out md:hidden
         ${menuOpen ? "max-h-[400px] opacity-100 visible" : "max-h-0 opacity-0 invisible"}`}
         >
-          <nav className="flex flex-col items-center py-8 space-y-6">
-              <a
-                href="/"
-                className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Home
-              </a>
-              <a
-                href="/ecommerce"
-                className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                E-commerce
-              </a>
-              <a
-                href="/marketing"
-                className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Marketing
-              </a>
-              <a
-                href="/sobre"
-                className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Sobre
-              </a>
+          <nav
+            aria-label="Menu de navegação móvel"
+            className="flex flex-col items-center py-8 space-y-6">
+            <a
+              href="/"
+              className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              Home
+            </a>
+            <a
+              href="/ecommerce"
+              className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              E-commerce
+            </a>
+            <a
+              href="/marketing"
+              className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              Marketing
+            </a>
+            <a
+              href="/sobre"
+              className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              Sobre
+            </a>
 
             <div className="pt-4 w-full px-8">
               <a

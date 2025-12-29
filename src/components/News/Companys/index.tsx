@@ -238,9 +238,9 @@ export default function Companys() {
                                 />
                             </div>
                             <div>
-                                <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#FFCC00] transition-colors">
+                                <h1 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#FFCC00] transition-colors">
                                     {item.name}
-                                </h3>
+                                </h1>
                                 <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">
                                     {item.description}
                                 </p>

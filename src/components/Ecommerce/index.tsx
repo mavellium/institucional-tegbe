@@ -128,9 +128,9 @@ export default function Ecommerce() {
           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#FFCC00]/20 transition-colors">
              <span className="font-bold text-gray-400 group-hover:text-[#FFCC00]">1</span>
           </div>
-          <h3 className="font-bold text-lg mb-3 leading-tight">
+          <h1 className="font-bold text-lg mb-3 leading-tight">
             Deseja começar do zero?
-          </h3>
+          </h1>
           <p className="font-medium text-gray-600 text-sm sm:text-base leading-relaxed">
             Você tem o produto, nós temos o mapa. Criamos sua presença digital do absoluto zero, com a estratégia de quem sabe onde o lucro está.
           </p>
@@ -144,9 +144,9 @@ export default function Ecommerce() {
           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#FFCC00]/20 transition-colors">
              <span className="font-bold text-gray-400 group-hover:text-[#FFCC00]">2</span>
           </div>
-          <h3 className="font-bold text-lg mb-3 leading-tight">
+          <h1 className="font-bold text-lg mb-3 leading-tight">
             Já vende no ML ou Shopee?
-          </h3>
+          </h1>
           <p className="font-medium text-gray-600 text-sm sm:text-base leading-relaxed">
             Se as vendas estagnaram ou a operação virou um caos, entramos com inteligência e braço operacional para destravar o próximo nível.
           </p>
@@ -160,9 +160,9 @@ export default function Ecommerce() {
           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#FFCC00]/20 transition-colors">
              <span className="font-bold text-gray-400 group-hover:text-[#FFCC00]">3</span>
           </div>
-          <h3 className="font-bold text-lg mb-3 leading-tight">
+          <h1 className="font-bold text-lg mb-3 leading-tight">
             Precisa de alta performance?
-          </h3>
+          </h1>
           <p className="font-medium text-gray-600 text-sm sm:text-base leading-relaxed">
             Sua estrutura existe, mas falta eficiência. Otimizamos anúncios, logística e margem para que cada centavo investido retorne com escala.
           </p>

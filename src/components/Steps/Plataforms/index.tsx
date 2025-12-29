@@ -224,9 +224,9 @@ export default function Plataforms() {
                   }
                 `}
               >
-                <h3 className="font-bold text-base text-black">
+                <h1 className="font-bold text-base text-black">
                   {step.title}
-                </h3>
+                </h1>
                 <p className="text-sm text-gray-600">
                   {step.subtitle}
                 </p>
