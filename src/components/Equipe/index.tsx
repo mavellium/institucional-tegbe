@@ -32,7 +32,7 @@ export default function WhyTegbeRefined() {
       ref={sectionRef}
       className="py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-6 relative"
     >
-      {/* Luzes de Fundo - Reduzidas para não pesar visualmente */}
+      {/* Luzes de Fundo - Mantidas sutis */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0071E3]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="container max-w-5xl relative z-10">
@@ -40,14 +40,14 @@ export default function WhyTegbeRefined() {
           
           {/* Badge Minimalista */}
           <div className="reveal-text mb-6 flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/5">
-            <span className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#FFD700] animate-pulse"></span>
             <span className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
               Método Validado Tegbe
             </span>
           </div>
 
           <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
-            Por que vender com a <span className="text-yellow-500">Tegbe</span> e não sozinho?
+            Por que vender com a <span className="text-[#FFD700]">Tegbe</span> e não sozinho?
           </h1>
 
           <div className="reveal-text max-w-2xl space-y-5 mb-10">
@@ -56,14 +56,21 @@ export default function WhyTegbeRefined() {
             </p>
           </div>
 
-          {/* CTA mais sóbrio e eficiente */}
+          {/* CTA ATUALIZADO: Branco -> Hover Amarelo */}
           <div className="reveal-text">
             <a 
               href="#" 
-              className="group inline-flex items-center gap-3 px-8 py-4 bg-[#0071E3] text-white font-bold rounded-full transition-all hover:bg-[#005bb5] shadow-lg shadow-blue-900/20"
+              className="
+                group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                bg-white text-black
+                hover:bg-[#FFD700] hover:scale-105 hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]
+              "
             >
               <span>FALAR COM UM ESPECIALISTA</span>
-              <Icon icon="ph:chart-line-up-bold" className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <Icon 
+                icon="ph:chart-line-up-bold" 
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" 
+              />
             </a>
             <p className="mt-4 text-[11px] text-gray-600 font-medium tracking-widest uppercase">
               Plano de guerra para vender mais

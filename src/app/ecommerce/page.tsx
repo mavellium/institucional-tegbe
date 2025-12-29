@@ -117,7 +117,7 @@ export default function EcommercePage() {
 
                 </div>
             </section>
-            <Video />
+            {/* <Video /> */}
             <SellMore />
             <Cards />
             <Animacao/>
