@@ -165,6 +165,7 @@ export default function News() {
           <div className="hidden sm:flex gap-3">
             <motion.button
               onClick={handlePrev}
+              aria-label='Botão para voltar o carrossel'
               disabled={currentIndex === 0}
               className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#FFCC00] hover:border-[#FFCC00] hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300"
               whileTap={{ scale: 0.95 }}
@@ -173,6 +174,7 @@ export default function News() {
             </motion.button>
             <motion.button
               onClick={handleNext}
+              aria-label='Botão para avançar o carrossel'
               disabled={currentIndex >= maxIndex}
               className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#FFCC00] hover:border-[#FFCC00] hover:text-black disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300"
               whileTap={{ scale: 0.95 }}
@@ -281,6 +283,7 @@ export default function News() {
             {Array.from({ length: maxIndex + 1 }).map((_, index) => (
               <motion.button
                 key={index}
+                aria-label='Botão de navegação do carrossel'
                 onClick={() => {
                   setCurrentIndex(index);
                   animate(x, -index * (cardWidth + cardGap), {
@@ -301,10 +304,10 @@ export default function News() {
 
            {/* Botões Mobile (Opcional - se quiser setas no mobile abaixo dos cards) */}
            <div className="flex sm:hidden justify-center gap-4 mt-6">
-                <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                <button aria-label='Botão para voltar o carrossel' onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                <button aria-label='Botão para avançar o carrossel' onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronRight className="w-5 h-5" />
                 </button>
            </div>

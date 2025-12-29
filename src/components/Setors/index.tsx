@@ -364,6 +364,7 @@ export function Setors({ data }: SetorsProps = {}) {
               {cards.map((_, index) => (
                 <button
                   key={index}
+                  aria-label="Botão de navegação do carrossel"
                   onClick={() => goToSlide(index)}
                   className={`transition-all duration-300 rounded-full ${
                     index === activeIndex

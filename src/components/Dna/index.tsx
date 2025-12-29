@@ -185,6 +185,7 @@ export function Dna() {
                             {cards.map((_, index) => (
                                 <button
                                     key={index}
+                                    aria-label="Botão de navegação do carrossel"
                                     onClick={() => goToSlide(index)}
                                     className={`transition-all duration-500 focus:outline-none rounded-full ${
                                         index === activeIndex

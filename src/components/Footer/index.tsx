@@ -50,7 +50,7 @@ export function Footer() {
                     />
                 </div>
                 <div>
-                    <h4 className="text-white font-bold text-lg leading-none">Consultoria Certificada</h4>
+                    <h1 className="text-white font-bold text-lg leading-none">Consultoria Certificada</h1>
                     <p className="text-gray-400 text-sm mt-1">Selo oficial de qualidade e segurança Mercado Livre.</p>
                 </div>
             </div>
