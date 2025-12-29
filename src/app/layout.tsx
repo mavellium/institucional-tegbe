@@ -1,19 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { satoshi } from "./fonts";
 import Script from "next/script";
 import "./globals.css";
 
 const GTM_ID = "GTM-5W7HPPVZ";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const viewport: Viewport = {
   themeColor: "#FFCC00",
@@ -139,7 +129,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
+        className={`${satoshi.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
       >
         {/* Injeção do Schema Markup */}
         <Script

@@ -57,7 +57,7 @@ body {
     overflow-x: hidden;
     background-color: #F4F4F4;
     color: var(--color-dark-100);
-    font-family: var(--font-semibold);
+    font-family: var(--font-satoshi), sans-serif;
 }
 
 
