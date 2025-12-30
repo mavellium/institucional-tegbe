@@ -10,7 +10,7 @@
 
 @font-face {
     font-family: "Medium";
-    src: url("/fonts/Satoshi-Medium.woff2");
+    src: url("/fonts/Satoshi-Medium.woff2") format('woff2');
     font-weight: 500;
     preload: true;
     font-display: swap;
@@ -19,7 +19,7 @@
 
 @font-face {
     font-family: "SemiBold";
-    src: url("/fonts/Satoshi-Bold.woff2");
+    src: url("/fonts/Satoshi-Bold.woff2") format('woff2');
     font-weight: 700;
     preload: true;
     font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
     font-family: "Bold";
-    src: url("/fonts/Satoshi-Bold.woff2");
+    src: url("/fonts/Satoshi-Bold.woff2") format('woff2');
     font-weight: 800;
     preload: true;
     font-display: swap;
