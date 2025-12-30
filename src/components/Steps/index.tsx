@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Image from 'next/image'
 
 // Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
@@ -258,8 +259,9 @@ export default function Steps() {
         <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center opacity-0">
           <div className="relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] 
             h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
-            <img
+            <Image
               ref={imageRef}
+              fill
               src={activeStep.image}
               className="absolute inset-0 w-full h-full object-contain"
               alt={activeStep.title}

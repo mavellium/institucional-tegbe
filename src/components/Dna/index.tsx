@@ -10,6 +10,7 @@ import "swiper/css";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 
 // Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
@@ -165,8 +166,9 @@ export function Dna() {
                                     >
                                         <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl border border-white/5">
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-                                            <img
+                                            <Image
                                                 src={card.image}
+                                                fill
                                                 className="object-cover object-center w-full h-full rounded-2xl transition-transform duration-700 group-hover:scale-105"
                                                 alt={`Equipe Tegbe ${index + 1}`}
                                             />

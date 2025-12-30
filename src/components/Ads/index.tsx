@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { Icon } from "@iconify/react";
 
 export function Ads() {
@@ -9,9 +10,10 @@ export function Ads() {
       
       {/* --- BACKGROUND --- */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src="/ads-bg.png"
           alt="Background Ads"
+          fill
           className="w-full h-full object-cover object-top"
         />
       </div>

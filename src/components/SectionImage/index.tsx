@@ -1,14 +1,15 @@
-import { Icon } from "@iconify/react";
-import { Button } from "../ui/button";
+"use client";
+import Image from "next/image";
 
 export function SectionImage() {
   return (
     <section className="relative w-full flex flex-col overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] 2xl:min-h-[900px]">
       {/* Imagem de fundo */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src="/Imagem.png"
           alt="Background"
+          fill
           className="w-full h-full object-cover object-right sm:object-top md:object-center lg:object-center"
           loading="lazy"
         />
