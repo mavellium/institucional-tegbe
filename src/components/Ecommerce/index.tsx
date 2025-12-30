@@ -114,6 +114,7 @@ export default function Ecommerce() {
           fill
           className="object-contain pointer-events-none drop-shadow-2xl"
           alt="Dashboard Tegbe no iPad"
+          sizes="(max-width: 768px) 90vw, 470px"
         />
       </div>
 

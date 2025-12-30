@@ -4,10 +4,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const logos = [
-  { src: "/logo1.png", alt: "Logo 1", width: 100, height: 100 },
-  { src: "/logo2.png", alt: "Logo 2", width: 75, height: 100 },
-  { src: "/logo3.png", alt: "Logo 3", width: 75, height: 100 },
-  { src: "/logo4.png", alt: "Logo 4", width: 75, height: 100 },
+  { src: "/logo1.svg", alt: "Logo 1", width: 100, height: 100 },
+  { src: "/logo2.svg", alt: "Logo 2", width: 75, height: 100 },
+  { src: "/logo3.svg", alt: "Logo 3", width: 75, height: 100 },
+  { src: "/logo4.svg", alt: "Logo 4", width: 75, height: 100 },
 ];
 
 // Triplicamos a lista para garantir o loop infinito perfeito em telas ultra-wide
