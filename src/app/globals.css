@@ -3,21 +3,25 @@
 @font-face {
     font-family: "Regular";
     src: url("/fonts/Satoshi-Regular.otf");
+    font-display: auto;
 }
 
 @font-face {
     font-family: "Medium";
     src: url("/fonts/Satoshi-Medium.otf");
+    font-display: auto;
 }
 
 @font-face {
     font-family: "SemiBold";
     src: url("/fonts/Satoshi-Bold.otf");
+    font-display: auto;
 }
 
 @font-face {
     font-family: "Bold";
     src: url("/fonts/Satoshi-Bold.otf");
+    font-display: auto;
 }
 
 * {

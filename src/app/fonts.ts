@@ -18,7 +18,7 @@ export const satoshi = localFont({
       style: "normal",
     },
   ],
-  display: "swap", // 👈 ESSENCIAL
+  display: "auto", // 👈 ESSENCIAL
   fallback: ["system-ui", "Arial", "sans-serif"],
   variable: "--font-satoshi",
 });
