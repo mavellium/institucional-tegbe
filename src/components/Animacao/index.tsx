@@ -281,20 +281,59 @@ export default function SalesEngineVisual() {
 
         </div>
 
-        {/* CONTROLES VISUAIS */}
-        <div className="w-full max-w-4xl mt-32 relative">
-          <div className="absolute top-[19px] left-0 w-full h-[2px] bg-gray-200 rounded-full" />
-          <div className="absolute top-[19px] left-0 h-[2px] bg-black rounded-full transition-all duration-500" style={{ width: `${(activeStep / 4) * 100}%` }} />
-          <div className="grid grid-cols-5 relative z-10">
-            {steps.map((step, i) => (
-              <div key={i} className={`flex flex-col items-center transition-all z-10 duration-300 ${activeStep === i ? "opacity-100 scale-105" : "opacity-190"}`}>
-                <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
-                  {activeStep > i ? <Icon icon="lucide:check" className="text-black" width="16" /> : <span className="text-xs font-bold">{i + 1}</span>}
+        {/* CONTROLES VISUAIS - VERTICAL NO MOBILE, HORIZONTAL NO DESKTOP */}
+        <div className="w-full max-w-4xl mt-16 md:mt-32 px-4 md:px-0">
+          {/* VERSÃO DESKTOP (HORIZONTAL) */}
+          <div className="hidden md:block relative">
+            <div className="absolute top-[19px] left-0 w-full h-[2px] bg-gray-200 rounded-full" />
+            <div className="absolute top-[19px] left-0 h-[2px] bg-black rounded-full transition-all duration-500" style={{ width: `${(activeStep / 4) * 100}%` }} />
+            <div className="grid grid-cols-5 relative z-10">
+              {steps.map((step, i) => (
+                <div key={i} className={`flex flex-col items-center transition-all z-10 duration-300 ${activeStep === i ? "opacity-100 scale-105" : "opacity-100"}`}>
+                  <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
+                    {activeStep > i ? <Icon icon="lucide:check" className="text-black" width="16" /> : <span className="text-xs font-bold">{i + 1}</span>}
+                  </div>
+                  <span className="mt-3 text-xs font-black uppercase tracking-widest text-black">{step.title}</span>
+                  <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>
                 </div>
-                <span className="mt-3 text-xs font-black uppercase tracking-widest text-black">{step.title}</span>
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* VERSÃO MOBILE (VERTICAL) */}
+          <div className="md:hidden relative pl-12">
+            {/* Linha vertical de fundo */}
+            <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-gray-200 rounded-full" />
+            
+            {/* Linha de progresso vertical */}
+            <div 
+              className="absolute left-6 top-0 w-[2px] bg-black rounded-full transition-all duration-500" 
+              style={{ height: `${(activeStep / 4) * 100}%` }} 
+            />
+            
+            <div className="flex flex-col space-y-8 relative z-10">
+              {steps.map((step, i) => (
+                <div 
+                  key={i} 
+                  className={`flex items-start transition-all duration-300 ${activeStep === i ? "opacity-100" : "opacity-90"}`}
+                >
+                  {/* Círculo com número */}
+                  <div className={`relative w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
+                    {activeStep > i ? (
+                      <Icon icon="lucide:check" className={`${activeStep === i ? "text-white" : "text-black"}`} width="16" />
+                    ) : (
+                      <span className={`text-xs font-bold ${activeStep === i ? "text-white" : "text-black"}`}>{i + 1}</span>
+                    )}
+                  </div>
+                  
+                  {/* Textos à direita */}
+                  <div className="ml-4 flex-1 pt-1">
+                    <span className="text-sm font-black uppercase tracking-wider text-black">{step.title}</span>
+                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
