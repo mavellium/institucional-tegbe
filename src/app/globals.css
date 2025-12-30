@@ -10,18 +10,27 @@
     font-family: "Medium";
     src: url("/fonts/Satoshi-Medium.otf");
     font-display: auto;
+    ascent-override: 105%;
+    descent-override: 35%;
+    line-gap-override: 10%;
 }
 
 @font-face {
     font-family: "SemiBold";
     src: url("/fonts/Satoshi-Bold.otf");
     font-display: auto;
+    ascent-override: 105%;
+    descent-override: 35%;
+    line-gap-override: 10%;
 }
 
 @font-face {
     font-family: "Bold";
     src: url("/fonts/Satoshi-Bold.otf");
     font-display: auto;
+    ascent-override: 105%;
+    descent-override: 35%;
+    line-gap-override: 10%;
 }
 
 * {
