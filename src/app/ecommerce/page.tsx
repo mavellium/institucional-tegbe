@@ -69,13 +69,13 @@ export default function EcommercePage() {
                         </h2>
 
                         <motion.h1
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
+                            // initial={{ opacity: 0, scale: 0.95 }}
+                            // animate={{ opacity: 1, scale: 1 }}
+                            // transition={{ duration: 0.8, delay: 0.3 }}
                             className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white leading-[0.9] mt-2"
                         >
                             ELA FOI FEITA <br className="hidden sm:block" />
-                            <span className="text-white drop-shadow-[0_0_35px_rgba(255,255,255,0.15)]">
+                            <span className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]">
                                 PARA VENDER.
                             </span>
                         </motion.h1>
@@ -83,9 +83,9 @@ export default function EcommercePage() {
 
                     {/* Subtítulo Otimizado */}
                     <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.5 }}
+                        // initial={{ opacity: 0 }}
+                        // animate={{ opacity: 1 }}
+                        // transition={{ duration: 0.8, delay: 0.5 }}
                         className="max-w-2xl mx-auto text-base sm:text-xl text-gray-400 leading-relaxed mb-12 font-light tracking-wide"
                     >
                         Unimos tecnologia, gestão de elite e as <strong className="text-gray-100 font-medium border-b border-yellow-500/50 pb-0.5">estratégias de quem domina os algoritmos</strong>.
