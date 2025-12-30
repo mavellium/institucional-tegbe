@@ -3,34 +3,29 @@
 @font-face {
     font-family: "Regular";
     src: url("/fonts/Satoshi-Regular.otf");
-    font-display: auto;
+    font-weight: 400;
+    font-display: swap; /* ESSENCIAL */
 }
 
 @font-face {
     font-family: "Medium";
     src: url("/fonts/Satoshi-Medium.otf");
-    font-display: auto;
-    ascent-override: 105%;
-    descent-override: 35%;
-    line-gap-override: 10%;
+    font-weight: 500;
+    font-display: swap; /* ESSENCIAL */
 }
 
 @font-face {
     font-family: "SemiBold";
     src: url("/fonts/Satoshi-Bold.otf");
-    font-display: auto;
-    ascent-override: 105%;
-    descent-override: 35%;
-    line-gap-override: 10%;
+    font-weight: 700;
+    font-display: swap; /* ESSENCIAL */
 }
 
 @font-face {
     font-family: "Bold";
     src: url("/fonts/Satoshi-Bold.otf");
-    font-display: auto;
-    ascent-override: 105%;
-    descent-override: 35%;
-    line-gap-override: 10%;
+    font-weight: 800;
+    font-display: swap; /* ESSENCIAL */
 }
 
 * {
@@ -70,7 +65,7 @@ body {
     overflow-x: hidden;
     background-color: #F4F4F4;
     color: var(--color-dark-100);
-    font-family: var(--font-satoshi), sans-serif;
+    font-family: var(--font-bold);
 }
 
 
