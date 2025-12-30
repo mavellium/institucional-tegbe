@@ -138,36 +138,6 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" className="scroll-smooth">
-      <head>
-        {/* Preconnect para recursos críticos */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        
-        {/* Preload das fontes locais Satoshi */}
-        <link
-          rel="preload"
-          href="/fonts/Satoshi-Medium.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/Satoshi-Bold.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        
-        {/* Preload da imagem OG para redes sociais */}
-        <link
-          rel="preload"
-          href="/og-image.jpg"
-          as="image"
-          type="image/jpeg"
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
       >
