@@ -52,7 +52,7 @@ export function Header() {
 
             {/* --- LOGO --- */}
             <div className="flex items-center gap-6">
-              <a href="/" className="flex items-center group">
+              <a aria-label="logo" href="/" className="flex items-center group">
                 <Image
                   src="/logo-tegbe-header.svg"
                   alt="Tegbe Logo"
@@ -67,6 +67,7 @@ export function Header() {
                 aria-label="Menu de navegação desktop"
                 className="hidden md:flex items-center gap-8 ml-8">
                 <a
+                  aria-label="Home"
                   href="/"
                   className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
                 >
@@ -74,6 +75,7 @@ export function Header() {
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#FFCC00] transition-all group-hover:w-full"></span>
                 </a>
                 <a
+                  aria-label="E-commerce"
                   href="/ecommerce"
                   className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
                 >
@@ -81,6 +83,7 @@ export function Header() {
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#FFCC00] transition-all group-hover:w-full"></span>
                 </a>
                 <a
+                  aria-label="Marketing"
                   href="/marketing"
                   className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
                 >
@@ -88,6 +91,7 @@ export function Header() {
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#FFCC00] transition-all group-hover:w-full"></span>
                 </a>
                 <a
+                  aria-label="Sobre"
                   href="/sobre"
                   className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
                 >
@@ -111,6 +115,7 @@ export function Header() {
               </a>
 
               <a
+                aria-label="Agendar Diagnóstico"
                 href="https://api.whatsapp.com/send?phone=5514991779502"
                 target="_blank"
                 className="group relative overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-50"
@@ -164,6 +169,7 @@ export function Header() {
             aria-label="Menu de navegação móvel"
             className="flex flex-col items-center py-8 space-y-6">
             <a
+              aria-label="Home"
               href="/"
               className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
               onClick={() => setMenuOpen(false)}
@@ -171,6 +177,7 @@ export function Header() {
               Home
             </a>
             <a
+              aria-label="E-commerce"
               href="/ecommerce"
               className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
               onClick={() => setMenuOpen(false)}
@@ -178,6 +185,7 @@ export function Header() {
               E-commerce
             </a>
             <a
+              aria-label="Marketing"
               href="/marketing"
               className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
               onClick={() => setMenuOpen(false)}
@@ -185,6 +193,7 @@ export function Header() {
               Marketing
             </a>
             <a
+              aria-label="Sobre"
               href="/sobre"
               className="text-lg font-medium text-gray-300 hover:text-[#FFCC00] hover:tracking-wider transition-all duration-300"
               onClick={() => setMenuOpen(false)}
@@ -194,6 +203,7 @@ export function Header() {
 
             <div className="pt-4 w-full px-8">
               <a
+                aria-label="Agendar Diagnóstico"
                 href="https://api.whatsapp.com/send?phone=5514991779502"
                 target="_blank"
                 className="w-full flex justify-center"

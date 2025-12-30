@@ -114,7 +114,8 @@ export default function CertifiedSection() {
           </div>
 
           <div className="pt-4">
-            <a 
+            <a
+              aria-label="Descubra o poder do selo"
               href="/consultoria" 
               className="group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all hover:pr-14"
             >

@@ -59,6 +59,7 @@ export default function WhyTegbeRefined() {
           {/* CTA ATUALIZADO: Branco -> Hover Amarelo */}
           <div className="reveal-text">
             <a 
+              aria-label="Falar com um especialista Tegbe"
               href="#" 
               className="
                 group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300

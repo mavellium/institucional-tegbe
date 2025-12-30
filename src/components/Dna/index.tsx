@@ -229,6 +229,7 @@ export function Dna() {
                         
                         <div className="flex justify-center pt-2">
                              <a
+                                aria-label="Contratar meu time"
                                 href="https://api.whatsapp.com/send?phone=5514991779502"
                                 target="_blank"
                                 className="group relative"

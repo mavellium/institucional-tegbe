@@ -105,7 +105,7 @@ export function Headline() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="flex flex-col items-center gap-6"
         >
-          <a href="#planos" className="group relative">
+          <a aria-label="quero vender agora" href="#planos" className="group relative">
             {/* Glow effect atrás do botão */}
             <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full opacity-30 blur-lg group-hover:opacity-60 transition duration-500"></div>
             

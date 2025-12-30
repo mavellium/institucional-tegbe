@@ -34,7 +34,7 @@ export function Footer() {
       <div className="w-full max-w-7xl relative z-10">
         
         {/* --- NOVO LOCAL: BARRA DE CREDIBILIDADE (Topo do Footer) --- */}
-        <a href="consultor-certificado">
+        <a aria-label="consultor certificado" href="consultor-certificado">
         <div className="flex flex-col md:flex-row justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-6 mb-16 gap-6 relative overflow-hidden group">
             {/* Efeito Glow no Hover da Barra */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#FFCC00]/0 via-[#FFCC00]/5 to-[#FFCC00]/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
@@ -86,9 +86,9 @@ export function Footer() {
               Aceleradora de E-commerce. Transformamos operação técnica em lucro real através de dados e estratégia.
             </p>
             <div className="flex gap-3 pt-2">
-              <SocialLink icon="mdi:instagram" href="https://www.instagram.com/tegbecoomerce" />
-              <SocialLink icon="ic:baseline-facebook" href="#" />
-              <SocialLink icon="mdi:linkedin" href="#" />
+              <SocialLink icon="mdi:instagram" arial-label="Instagram" href="https://www.instagram.com/tegbecoomerce" />
+              <SocialLink icon="ic:baseline-facebook" arial-label="Facebook" href="#" />
+              <SocialLink icon="mdi:linkedin" arial-label="LinkedIn" href="#" />
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export function Footer() {
   <div className="flex flex-col items-center sm:items-start space-y-4">
     
     {/* E-mail */}
-    <a href="mailto:contato@tegbe.com.br" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
+    <a aria-label="E-mail" href="mailto:contato@tegbe.com.br" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
       <div className="p-2 rounded-full bg-white/5 text-[#FFCC00] flex-shrink-0">
         <Icon icon="solar:letter-linear" />
       </div>
@@ -133,7 +133,8 @@ export function Footer() {
     </a>
 
     {/* WhatsApp */}
-    <a 
+    <a
+      aria-label="Telefone WhatsApp"
       href="https://api.whatsapp.com/send?phone=5514988281001" 
       target="_blank" 
       rel="noopener noreferrer"
@@ -146,7 +147,8 @@ export function Footer() {
     </a>
 
     {/* Endereço / Google Maps */}
-    <a 
+    <a
+      aria-label="Endereço Tegbe no Google Maps"
       href="https://maps.app.goo.gl/kSVQ6X936GNNu8WZ8" 
       target="_blank" 
       rel="noopener noreferrer"
@@ -195,6 +197,7 @@ export function Footer() {
 function SocialLink({ icon, href }: { icon: string, href: string }) {
     return (
         <a
+            aria-label={icon}
             href={href}
             target="_blank"
             rel="noopener noreferrer"
@@ -207,7 +210,7 @@ function SocialLink({ icon, href }: { icon: string, href: string }) {
 
 function FooterLink({ text }: { text: string }) {
     return (
-        <a href="#" className="text-sm text-gray-500 hover:text-[#FFCC00] transition-colors flex items-center gap-2 group">
+        <a aria-label={text} href="#" className="text-sm text-gray-500 hover:text-[#FFCC00] transition-colors flex items-center gap-2 group">
             <span className="w-1 h-1 rounded-full bg-gray-700 group-hover:bg-[#FFCC00] transition-colors"></span>
             {text}
         </a>

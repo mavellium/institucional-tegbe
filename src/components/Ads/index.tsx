@@ -44,6 +44,7 @@ export function Ads() {
       {/* O botão ficará lá no final dos 350vh */}
       <div className="relative z-20">
         <a
+          aria-label="Falar com um Especialista"
           href="https://api.whatsapp.com/send?phone=5514991779502"
           target="_blank"
           className="group relative inline-block"
