@@ -262,7 +262,8 @@ export default function Steps() {
             <Image
               ref={imageRef}
               fill
-              sizes="(max-width: 768px) 100vw, 520px"
+              sizes="(max-width: 768px) 351px, 520px"
+              quality={75}
               src={activeStep.image}
               className="absolute inset-0 w-full h-full object-contain"
               alt={activeStep.title}
