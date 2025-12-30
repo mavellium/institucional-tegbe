@@ -18,7 +18,7 @@ const steps = [
         subtitle: 'R$40.000,00 de faturamento em 90 dias',
         description:
             'Em apenas 90 dias, estruturamos uma operação que saltou para R$ 40.000,00 de faturamento e mais de 650 vendas. Escala real para quem busca resultados sólidos.',
-        image: 'https://placehold.co/600x500',
+        image: '/steps1.png',
     },
     {
         id: 2,
@@ -26,7 +26,7 @@ const steps = [
         subtitle: 'Sua operação pronta para o jogo.',
         description:
             'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-        image: 'https://placehold.co/600x500',
+        image: '/steps1.png',
     },
 ]
 
