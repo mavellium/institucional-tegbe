@@ -47,14 +47,14 @@ export function Dna() {
         if (windowWidth < 1024) {
             // Mobile - dots horizontais
             return {
-                width: (index: number) => activeIndex === index ? '32px' : '8px',
-                height: () => '8px',
+                width: (index: number) => activeIndex === index ? '32px' : '10px',
+                height: () => '10px',
             };
         } else {
             // Desktop - dots verticais
             return {
-                width: () => '8px',
-                height: (index: number) => activeIndex === index ? '32px' : '8px',
+                width: () => '10px',
+                height: (index: number) => activeIndex === index ? '32px' : '10px',
             };
         }
     };
@@ -183,7 +183,7 @@ export function Dna() {
                     <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-6">
                         
                         {/* Dots de Navegação */}
-                        <div className={`flex ${windowWidth < 1024 ? 'flex-row' : 'flex-col'} gap-3 bg-[#1A1A1A] border border-white/5 px-3 py-3 lg:px-2 lg:py-4 rounded-full justify-center items-center shadow-lg`}>
+                        <div className={`flex ${windowWidth < 1024 ? 'flex-row' : 'flex-col'} gap-3 bg-[#1A1A1A] border border-white/5 px-4 py-4 lg:px-4 lg:py-4 rounded-full justify-center items-center shadow-lg`}>
                             {cards.map((_, index) => (
                                 <button
                                     key={index}
@@ -213,7 +213,7 @@ export function Dna() {
                                 {isPlaying ? (
                                     <Icon icon="solar:pause-bold" className="w-5 h-5" />
                                 ) : (
-                                    <Icon icon="solar:play-bold" className="w-5 h-5 ml-0.5" />
+                                    <Icon icon="solar:play-bold" className="w-5 h-5" />
                                 )}
                             </Button>
                         </div>

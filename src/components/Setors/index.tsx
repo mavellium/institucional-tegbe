@@ -366,7 +366,7 @@ export function Setors({ data }: SetorsProps = {}) {
                   key={index}
                   aria-label="Botão de navegação do carrossel"
                   onClick={() => goToSlide(index)}
-                  className={`transition-all duration-300 rounded-full ${
+                  className={`transition-all w-11 h-11 duration-300 rounded-full ${
                     index === activeIndex
                       ? "shadow-[0_0_10px_rgba(0,0,0,0.2)]"
                       : "hover:bg-gray-100"
