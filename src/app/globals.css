@@ -2,21 +2,21 @@
 
 @font-face {
     font-family: "Regular";
-    src: url("/fonts/Satoshi-Regular.otf");
+    src: url("/fonts/Satoshi-Regular.woff2");
     font-weight: 400;
     font-display: swap; /* ESSENCIAL */
 }
 
 @font-face {
     font-family: "Medium";
-    src: url("/fonts/Satoshi-Medium.otf");
+    src: url("/fonts/Satoshi-Medium.woff2");
     font-weight: 500;
     font-display: swap; /* ESSENCIAL */
 }
 
 @font-face {
     font-family: "SemiBold";
-    src: url("/fonts/Satoshi-Bold.otf");
+    src: url("/fonts/Satoshi-Bold.woff2");
     font-weight: 700;
     font-display: swap; /* ESSENCIAL */
 }
