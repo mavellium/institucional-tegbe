@@ -53,6 +53,7 @@ export default function FinalCTARefined() {
 
           <div className="reveal-final flex flex-col items-center gap-5">
             <a 
+              aria-label="Solicitar meu diagnóstico"
               href="#" 
               className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-bold text-sm sm:text-base rounded-full transition-all duration-300 hover:bg-yellow-500"
             >

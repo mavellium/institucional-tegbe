@@ -124,7 +124,7 @@ export function Header() {
                 <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
 
                 {/* O Botão em si - Responsivo */}
-                <button className="relative inline-flex h-9 md:h-10 items-center justify-center overflow-hidden rounded-full bg-[#FFCC00] px-4 md:px-6 lg:px-8 py-2 font-bold text-black transition-all duration-300 hover:bg-[#ffdb4d] hover:scale-105 group-hover:shadow-[0_0_20px_rgba(255,204,0,0.4)] text-xs md:text-sm lg:text-base">
+                <button aria-label="Agendar Diagnóstico" className="relative inline-flex h-9 md:h-10 items-center justify-center overflow-hidden rounded-full bg-[#FFCC00] px-4 md:px-6 lg:px-8 py-2 font-bold text-black transition-all duration-300 hover:bg-[#ffdb4d] hover:scale-105 group-hover:shadow-[0_0_20px_rgba(255,204,0,0.4)] text-xs md:text-sm lg:text-base">
 
                   {/* Efeito de Luz Passante (Shimmer) */}
                   <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent z-10" />
@@ -209,7 +209,7 @@ export function Header() {
                 className="w-full flex justify-center"
                 onClick={() => setMenuOpen(false)}
               >
-                <Button className="w-full shadow-lg bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] h-12 rounded-full text-base">
+                <Button aria-label="Agendar Diagnóstico" className="w-full shadow-lg bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] h-12 rounded-full text-base">
                   AGENDAR DIAGNÓSTICO
                 </Button>
               </a>

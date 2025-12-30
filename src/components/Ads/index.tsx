@@ -52,7 +52,7 @@ export function Ads() {
           {/* Glow Effect */}
           <div className="absolute -inset-1 bg-yellow-400 rounded-full opacity-30 blur group-hover:opacity-60 transition duration-200" />
           
-          <Button className="relative shadow-2xl bg-[#FFCC00] text-black font-bold hover:bg-[#ffdb4d] hover:scale-105 transition-all duration-300 h-14 px-10 rounded-full text-lg flex items-center gap-3">
+          <Button aria-label="Falar com um Especialista" className="relative shadow-2xl bg-[#FFCC00] text-black font-bold hover:bg-[#ffdb4d] hover:scale-105 transition-all duration-300 h-14 px-10 rounded-full text-lg flex items-center gap-3">
             <Icon icon="ic:baseline-whatsapp" className="size-6" />
             Falar com um Especialista
           </Button>

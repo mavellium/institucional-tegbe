@@ -299,10 +299,12 @@ export default function SalesEngineVisual() {
         </div>
 
         <div className="mt-24">
-           <button className="bg-black hover:bg-[#0071E3] text-white px-12 py-5 rounded-full font-black text-lg uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3">
+          <a aria-label="quero vender assim" href="#">
+           <button aria-label="Quero vender assim" className="bg-black hover:bg-[#0071E3] text-white px-12 py-5 rounded-full font-black text-lg uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3">
               Quero Vender Assim
               <Icon icon="lucide:arrow-right" />
            </button>
+           </a>
         </div>
 
       </div>

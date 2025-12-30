@@ -205,6 +205,7 @@ export function Dna() {
                         {/* Botão Play/Pause */}
                         <div className="lg:mt-0">
                             <Button
+                                aria-label={isPlaying ? "Pausar carrossel" : "Tocar carrossel"}
                                 onClick={handlePlayPause}
                                 className="flex items-center justify-center bg-[#1A1A1A] border border-white/10 text-white hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00]
                                     rounded-full p-0 h-12 w-12 shadow-lg transition-all duration-300 group"
@@ -237,7 +238,7 @@ export function Dna() {
                                 {/* Glow Effect */}
                                 <div className="absolute -inset-1 bg-yellow-500 rounded-full opacity-20 blur group-hover:opacity-40 transition duration-200"></div>
                                 
-                                <Button className="relative shadow-xl bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] text-base sm:text-lg transition-all duration-300 h-14 px-8 rounded-full flex items-center gap-2">
+                                <Button aria-label="Contratar meu time" className="relative shadow-xl bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] text-base sm:text-lg transition-all duration-300 h-14 px-8 rounded-full flex items-center gap-2">
                                     CONTRATAR MEU TIME
                                     <Icon icon="lucide:arrow-right" className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </Button>

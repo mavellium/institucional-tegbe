@@ -301,10 +301,10 @@ export default function Companys() {
 
            {/* Botões Mobile (Opcional - se quiser setas no mobile abaixo dos cards) */}
            <div className="flex sm:hidden justify-center gap-4 mt-6">
-                <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                <button aria-label="Anterior" onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                <button aria-label="Próximo" onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronRight className="w-5 h-5" />
                 </button>
            </div>

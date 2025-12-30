@@ -384,6 +384,7 @@ export function Setors({ data }: SetorsProps = {}) {
           {/* Play/Pause */}
           {controlsConfig.showPlayPause && (
             <Button
+              aria-label={isPlaying ? "Pausar carrossel" : "Tocar carrossel"}
               onClick={() => setIsPlaying((prev) => !prev)}
               className="flex items-center justify-center bg-white border text-gray-800 hover:text-black rounded-full h-14 w-14 shadow-lg transition-all duration-300"
               style={{

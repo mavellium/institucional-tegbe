@@ -214,6 +214,7 @@ export default function Plataforms() {
           <div className="flex flex-col gap-4">
             {steps.map(step => (
               <button
+                aria-label={step.title}
                 key={step.id}
                 ref={(el) => setStepButtonRef(el, step.id - 1)}
                 onClick={() => handleStepChange(step)}

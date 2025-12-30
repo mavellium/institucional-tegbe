@@ -23,7 +23,7 @@
 
 @font-face {
     font-family: "Bold";
-    src: url("/fonts/Satoshi-Bold.otf");
+    src: url("/fonts/Satoshi-Bold.woff2");
     font-weight: 800;
     font-display: swap; /* ESSENCIAL */
 }
