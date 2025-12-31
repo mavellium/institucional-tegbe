@@ -15,7 +15,7 @@ const marqueeLogos = [...logos, ...logos, ...logos];
 
 export default function Logos() {
   return (
-    <section className="py-24 bg-gray-100 overflow-hidden relative">
+    <section className="py-24 overflow-hidden relative">
       
       {/* --- MÁSCARA DE FADE --- */}
       <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-gray-100 to-transparent z-10 pointer-events-none" />

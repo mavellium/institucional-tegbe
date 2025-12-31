@@ -4,13 +4,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
 import { useRef, useEffect, useState } from "react";
+import { Icon } from "@iconify/react"; // Adicionei para usar ícones mais limpos se precisar
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const Showcase = () => {
+    const sectionRef = useRef(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(true);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
@@ -18,172 +19,91 @@ const Showcase = () => {
     const [showLoading, setShowLoading] = useState(true);
     const [videoError, setVideoError] = useState(false);
 
-    // Detectar se é mobile
+    // Detectar Mobile
     useEffect(() => {
-        const checkIfMobile = () => {
-            setIsMobile(window.innerWidth < 1024); // lg breakpoint
-        };
-
-        // Verificar inicialmente
+        const checkIfMobile = () => setIsMobile(window.innerWidth < 1024);
         checkIfMobile();
-
-        // Adicionar listener para redimensionamento
         window.addEventListener('resize', checkIfMobile);
-
-        return () => {
-            window.removeEventListener('resize', checkIfMobile);
-        };
+        return () => window.removeEventListener('resize', checkIfMobile);
     }, []);
 
-    // Timer para esconder loading após timeout (fallback)
+    // Fallback do Loading
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowLoading(false);
-        }, 5000); // 5 segundos max
-
+        const timer = setTimeout(() => setShowLoading(false), 5000);
         return () => clearTimeout(timer);
     }, []);
 
-    // Pré-carregar o vídeo
-    useEffect(() => {
-        // Criar link de pré-carregamento para o vídeo
-        const preloadLink = document.createElement('link');
-        preloadLink.rel = 'preload';
-        preloadLink.as = 'video';
-        preloadLink.href = '/videos/feature-3.mp4';
-        document.head.appendChild(preloadLink);
-
-        return () => {
-            if (preloadLink.parentNode) {
-                preloadLink.parentNode.removeChild(preloadLink);
-            }
-        };
-    }, []);
-
-    // Inicializar estado de reprodução quando o vídeo carregar
+    // Lógica de Vídeo Robusta (Mantida e Otimizada)
     useEffect(() => {
         if (videoRef.current) {
             const video = videoRef.current;
-            
-            // Configurar vídeo para otimização
             video.preload = 'auto';
             
             const handleCanPlay = () => {
                 setIsVideoLoaded(true);
                 setShowLoading(false);
-                
-                // Se for mobile, inicia pausado
                 if (isMobile) {
                     video.pause();
                     setIsPlaying(false);
                 } else {
-                    // Se for desktop, tenta iniciar a reprodução automaticamente
-                    video.play().then(() => {
-                        setIsPlaying(true);
-                    }).catch((error) => {
-                        console.log("Autoplay falhou:", error);
-                        setIsPlaying(false);
-                    });
-                }
-            };
-
-            const handleLoadedData = () => {
-                // Já temos dados suficientes para começar
-                if (!isVideoLoaded) {
-                    setIsVideoLoaded(true);
-                    setShowLoading(false);
+                    video.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
                 }
             };
 
             const handleStalled = () => {
-                console.log("Vídeo parado de carregar, tentando recuperar...");
-                // Tentar recarregar o vídeo
-                if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
-                    video.load();
-                }
-            };
-
-            const handlePlay = () => setIsPlaying(true);
-            const handlePause = () => setIsPlaying(false);
-            const handleEnded = () => {
-                // Reinicia o vídeo quando termina
-                video.currentTime = 0;
-                if (!isMobile) { // Só reproduz automaticamente se não for mobile
-                    video.play().then(() => setIsPlaying(true));
-                }
+                if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) video.load();
             };
 
             const handleError = () => {
-                console.error("Erro ao carregar o vídeo");
                 setVideoError(true);
                 setIsPlaying(false);
                 setShowLoading(false);
             };
 
-            // Adicionar todos os event listeners
             video.addEventListener('canplay', handleCanPlay);
-            video.addEventListener('loadeddata', handleLoadedData);
+            video.addEventListener('loadeddata', handleCanPlay); // Reforço
             video.addEventListener('stalled', handleStalled);
-            video.addEventListener('play', handlePlay);
-            video.addEventListener('pause', handlePause);
-            video.addEventListener('ended', handleEnded);
             video.addEventListener('error', handleError);
-
-            // Forçar carregamento do vídeo
+            
+            // Tenta carregar
+            if (video.readyState >= 3) handleCanPlay();
             video.load();
 
             return () => {
                 video.removeEventListener('canplay', handleCanPlay);
-                video.removeEventListener('loadeddata', handleLoadedData);
+                video.removeEventListener('loadeddata', handleCanPlay);
                 video.removeEventListener('stalled', handleStalled);
-                video.removeEventListener('play', handlePlay);
-                video.removeEventListener('pause', handlePause);
-                video.removeEventListener('ended', handleEnded);
                 video.removeEventListener('error', handleError);
             };
         }
     }, [isMobile]);
 
-    // Controlar animações GSAP
+    // Animações GSAP (Tegbe Style)
     useGSAP(() => {
-        if (typeof window === "undefined") return;
+        if (!sectionRef.current) return;
 
-        // Animação de entrada do título
-        gsap.fromTo(".showcase-title",
-            {
-                opacity: 0,
-                y: 50,
-                scale: 0.9
-            },
-            {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1.2,
-                ease: "power3.out",
-                delay: 0.5
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 60%",
             }
+        });
+
+        // Título entrando com impacto
+        tl.fromTo(".showcase-title .line",
+            { y: 100, opacity: 0, rotateX: -20 },
+            { y: 0, opacity: 1, rotateX: 0, duration: 1, stagger: 0.1, ease: "power4.out" }
         );
 
-        // Animação de entrada do botão de play/pause (apenas desktop)
+        // Botão Play (apenas desktop)
         if (!isMobile) {
             gsap.fromTo(".play-pause-btn",
-                {
-                    opacity: 0,
-                    x: 20,
-                    scale: 0.8
-                },
-                {
-                    opacity: 1,
-                    x: 0,
-                    scale: 1,
-                    duration: 0.8,
-                    ease: "back.out(1.7)",
-                    delay: 1
-                }
+                { scale: 0, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.7)", delay: 0.2 }
             );
         }
-    }, [isMobile]);
+
+    }, { scope: sectionRef, dependencies: [isMobile] });
 
     const togglePlayPause = () => {
         if (videoRef.current) {
@@ -191,91 +111,94 @@ const Showcase = () => {
                 videoRef.current.pause();
                 setIsPlaying(false);
             } else {
-                videoRef.current.play()
-                    .then(() => setIsPlaying(true))
-                    .catch(error => {
-                        console.error("Erro ao reproduzir vídeo:", error);
-                        setIsPlaying(false);
-                    });
+                videoRef.current.play();
+                setIsPlaying(true);
             }
         }
     };
 
     return (
-        <section className="relative">
-            <div className='relative lg:overflow-hidden'>
-                {/* Contêiner do vídeo com loading */}
-                <div className="relative">
-                    {/* Tela de loading enquanto o vídeo carrega */}
+        <section ref={sectionRef} className="relative w-full bg-[#020202] overflow-hidden">
+            
+            <div className='relative w-full h-[60vh] md:h-[80vh] lg:h-screen max-h-[1080px]'>
+                
+                {/* --- LAYER 1: VÍDEO & LOADING --- */}
+                <div className="absolute inset-0 w-full h-full">
+                    
+                    {/* Tela de Loading (Estilo Tegbe) */}
                     {showLoading && !videoError && (
-                        <div className="absolute inset-0 bg-black z-10 flex items-center justify-center">
-                            <div className="flex flex-col items-center">
-                                <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mb-4" />
-                                <p className="text-white text-sm">Carregando vídeo...</p>
+                        <div className="absolute inset-0 bg-[#020202] z-20 flex items-center justify-center">
+                            <div className="flex flex-col items-center gap-4">
+                                {/* Spinner Vermelho */}
+                                <div className="w-12 h-12 border-2 border-[#E31B63]/20 border-t-[#E31B63] rounded-full animate-spin" />
+                                <p className="text-gray-500 text-xs uppercase tracking-widest animate-pulse">Carregando Experiência...</p>
                             </div>
                         </div>
                     )}
                     
-                    {/* Mensagem de erro se o vídeo falhar */}
+                    {/* Tratamento de Erro */}
                     {videoError && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black z-10 flex items-center justify-center">
-                            <div className="text-center p-6">
-                                <p className="text-white text-lg mb-2">Erro ao carregar o vídeo</p>
-                                <p className="text-gray-400 text-sm">Por favor, recarregue a página</p>
-                            </div>
+                        <div className="absolute inset-0 bg-[#111] z-20 flex items-center justify-center">
+                            <p className="text-gray-500 text-sm">Vídeo indisponível no momento.</p>
                         </div>
                     )}
                     
                     <video 
                         ref={videoRef}
                         src='/videos/showcase.webm' 
-                        className="w-full max-h-[700px] object-cover object-center" 
+                        className="w-full h-full object-cover opacity-80" // Opacidade para fundir com o preto
                         loop 
                         muted 
                         playsInline
-                        preload="auto"
                     />
+
+                    {/* Overlay de Textura (Noise) - Assinatura Visual */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-10"></div>
                     
-                    {/* Overlay escuro para melhor contraste com o texto */}
-                    {/* <div className="absolute inset-0 bg-black/45" /> */}
+                    {/* Gradiente para garantir leitura do texto */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-black/40 z-10" />
                 </div>
 
-                {/* Título centralizado */}
-                {/* <div className="absolute inset-0 flex items-center justify-center rounded-b-2xl z-10 pointer-events-none">
-                    <h1 className="showcase-title text-white text-center text-shadow-lg font-bold text-[38px] sm:text-[55px] md:text-[80px] lg:text-[100px]">
-                        Se não for 
-                        <span className="block font-bold text-[38px] leading-14 sm:text-[55px] md:text-[80px] lg:text-[100px]">
-                            para <span className="text-[#0C7BB9]">ganhar</span>,
+                {/* --- LAYER 2: CONTEÚDO (Texto) --- */}
+                <div className="absolute inset-0 flex items-center justify-center z-20 px-4 pointer-events-none">
+                    <h1 className="showcase-title flex flex-col items-center text-center">
+                        <span className="overflow-hidden block">
+                            <span className="line block text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter leading-[1.1] drop-shadow-2xl">
+                                SE NÃO FOR
+                            </span>
                         </span>
-                        nem começa
-                    </h1>
-                </div> */}
+                        
+                        <span className="overflow-hidden block">
+                            <span className="line block text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tighter leading-[1.1] drop-shadow-2xl">
+                                PARA <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#FF0F43] to-[#B3002D] drop-shadow-[0_0_25px_rgba(227,27,99,0.5)]">GANHAR</span>,
+                            </span>
+                        </span>
 
-                {/* Botão de Play/Pause no canto superior direito - APENAS DESKTOP */}
+                        <span className="overflow-hidden block mt-2">
+                            <span className="line block text-lg sm:text-2xl md:text-3xl font-light text-gray-300 tracking-wide">
+                                NEM COMEÇA.
+                            </span>
+                        </span>
+                    </h1>
+                </div>
+
+                {/* --- LAYER 3: CONTROLES --- */}
                 {isVideoLoaded && !isMobile && !videoError && (
-                    <div className="absolute top-6 right-10 z-20 hidden lg:block">
+                    <div className="absolute bottom-10 right-10 z-30 hidden lg:block pointer-events-auto">
                         <button
-                            className="play-pause-btn group flex items-center justify-center w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 hover:border-white/40 transition-all duration-300 shadow-lg"
+                            className="play-pause-btn group flex items-center justify-center w-16 h-16 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:border-[#E31B63]/50 hover:bg-[#E31B63]/10 transition-all duration-300"
                             onClick={togglePlayPause}
-                            aria-label={isPlaying ? "Pausar vídeo" : "Reproduzir vídeo"}
                         >
-                            {/* Ícone de play ou pause */}
-                            <div className="relative w-7 h-7">
+                            <div className="text-white group-hover:text-[#E31B63] transition-colors duration-300">
                                 {isPlaying ? (
-                                    <svg className="w-full h-full" viewBox="0 0 24 24" fill="white">
-                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                                    </svg>
+                                    <Icon icon="mdi:pause" className="w-8 h-8" />
                                 ) : (
-                                    <svg className="w-full h-full" viewBox="0 0 24 24" fill="white">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
+                                    <Icon icon="mdi:play" className="w-8 h-8 ml-1" />
                                 )}
                             </div>
                             
-                            {/* Efeito de hover */}
-                            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-white/10 to-white/5" />
-                            </div>
+                            {/* Glow Effect no Hover */}
+                            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_30px_rgba(227,27,99,0.4)]" />
                         </button>
                     </div>
                 )}
