@@ -1,19 +1,19 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
 import Image from "next/image";
-import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Button } from "@/components/ui/button";
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 interface Feature {
   id: string;
+  step: string;
   title: string;
   description: string;
   image: string;
@@ -22,608 +22,377 @@ interface Feature {
 const Historia = () => {
   const [activeFeature, setActiveFeature] = useState(-1);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [currentDesktopImage, setCurrentDesktopImage] = useState("/screen.png");
-  const [currentMobileImage, setCurrentMobileImage] = useState("/screen.png");
-  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const titlesRef = useRef<(HTMLHeadingElement | null)[]>([]);
-  const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [currentDesktopImage, setCurrentDesktopImage] = useState("/images/tegbe-origin.jpg");
+  const [currentMobileImage, setCurrentMobileImage] = useState("/images/tegbe-origin.jpg");
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const buttonsContainerRef = useRef<HTMLDivElement>(null);
-  const navigationButtonsRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const mobileTextContainerRef = useRef<HTMLDivElement>(null);
+  const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const desktopImageContainerRef = useRef<HTMLDivElement>(null);
   const mobileImageContainerRef = useRef<HTMLDivElement>(null);
+  const mobileTextContainerRef = useRef<HTMLDivElement>(null);
   const previousActiveFeatureRef = useRef<number>(-1);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Dados estáticos
   const features: Feature[] = [
     {
       id: "1",
-      title: "Chip M3",
-      description: "O mais avançado chip para um computador pessoal, com CPU de até 16 núcleos e GPU de até 40 núcleos.",
-      image: "/performance1.png"
+      step: "2022",
+      title: "O Inconformismo",
+      description: "Nascemos da frustração. Vimos o mercado queimando verba em 'hacks' que não funcionavam. Decidimos que a Tegbe seria guiada por uma única bússola: o ROI do cliente.",
+      image: "/images/tegbe-origin.jpg"
     },
     {
       id: "2",
-      title: "Tela Liquid Retina XDR",
-      description: "A melhor tela ever em um notebook. Com Extreme Dynamic Range e brilho máximo de 1.600 nits.",
-      image: "/performance2.png"
+      step: "2023",
+      title: "A Virada de Chave",
+      description: "Abandonamos o feeling. Implementamos nossa stack proprietária de GA4 + Server Side Tracking. Paramos de adivinhar e começamos a prever resultados com precisão cirúrgica.",
+      image: "/images/tegbe-data.jpg"
     },
     {
       id: "3",
-      title: "Bateria para o dia todo",
-      description: "Até 22 horas de reprodução de vídeo. Energia suficiente para suas tarefas mais importantes.",
-      image: "/performance3.png"
+      step: "2024",
+      title: "Ecossistema Completo",
+      description: "Não bastava apenas tráfego. Integramos Design de Conversão e CRM. A Tegbe deixou de ser uma agência de ads para se tornar um braço de Growth completo.",
+      image: "/images/tegbe-team.jpg"
     },
     {
       id: "4",
-      title: "Conectividade avançada",
-      description: "Wi-Fi 6E, Thunderbolt 4, HDMI e MagSafe 3. Tudo que você precisa para conectar seus dispositivos.",
-      image: "/performance4.png"
+      step: "2025",
+      title: "A Era da IA",
+      description: "Implementamos agentes autônomos para análise de dados e otimização de campanhas em tempo real. O que levava dias, agora fazemos em minutos.",
+      image: "/images/tegbe-ai.jpg"
     },
     {
       id: "5",
-      title: "Sistema de áudio",
-      description: "Alto-falantes de alta fidelidade com suporte para áudio espacial. O som mais imersivo em um notebook.",
-      image: "/performance6.png"
+      step: "Futuro",
+      title: "Escala Infinita",
+      description: "Nosso objetivo agora é verticalizar. Criar soluções específicas para nichos de alta performance, mantendo a boutique na estratégia e a máquina na execução.",
+      image: "/images/tegbe-future.jpg"
     }
   ];
 
-  // Função para animar a transição de imagem
   const animateImageTransition = (
-    containerRef: React.RefObject<HTMLDivElement | null>, 
+    containerRef: React.RefObject<HTMLDivElement | null>,
     newImage: string,
-    setImage: (img: string) => void,
-    callback?: () => void
+    setImage: (img: string) => void
   ) => {
     const container = containerRef.current;
     if (!container) {
       setImage(newImage);
-      callback?.();
       return;
     }
 
-    // Fade out da imagem atual
-    gsap.to(container, {
-      opacity: 0,
-      duration: 0.3,
-      ease: "power2.in",
+    gsap.killTweensOf(container);
+
+    const tl = gsap.timeline({
       onComplete: () => {
-        // Troca a imagem após o fade out
-        setImage(newImage);
-        
-        // Pequeno delay para garantir que a imagem foi trocada
-        setTimeout(() => {
-          // Fade in da nova imagem
-          gsap.to(container, {
-            opacity: 1,
-            duration: 0.4,
-            ease: "power2.out",
-            onComplete: callback
-          });
-        }, 50);
+        gsap.set(container, { clearProps: "all" });
       }
     });
+
+    tl.to(container, {
+      opacity: 0,
+      scale: 1.02,
+      duration: 0.25,
+      ease: "power2.in",
+      onComplete: () => setImage(newImage)
+    })
+    .to(container, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.4,
+      ease: "power2.out"
+    }, "+=0.05");
   };
 
-  // Atualizar animação quando activeFeature mudar
   useEffect(() => {
-    if (previousActiveFeatureRef.current !== activeFeature) {
-      const newImage = activeFeature >= 0 ? features[activeFeature].image : "/screen.png";
-      
-      // Anima transição para desktop
-      animateImageTransition(
-        desktopImageContainerRef, 
-        newImage,
-        setCurrentDesktopImage
-      );
-      
-      // Anima transição para mobile
-      animateImageTransition(
-        mobileImageContainerRef, 
-        newImage,
-        setCurrentMobileImage
-      );
-      
+    if (activeFeature !== previousActiveFeatureRef.current) {
+      const newImage = activeFeature >= 0 ? features[activeFeature].image : features[0].image;
+      animateImageTransition(desktopImageContainerRef, newImage, setCurrentDesktopImage);
+      animateImageTransition(mobileImageContainerRef, newImage, setCurrentMobileImage);
       previousActiveFeatureRef.current = activeFeature;
     }
   }, [activeFeature, features]);
 
-  // Funções para mostrar e esconder botões de navegação
-  const showNavigationButtons = () => {
-    if (navigationButtonsRef.current) {
-      gsap.to(navigationButtonsRef.current, {
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-  };
-
-  const hideNavigationButtons = () => {
-    if (navigationButtonsRef.current) {
-      gsap.to(navigationButtonsRef.current, {
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-  };
-
-  // Funções para mostrar e esconder botão de fechar
-  const showCloseButton = () => {
-    if (closeButtonRef.current) {
-      gsap.to(closeButtonRef.current, {
-        opacity: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-  };
-
-  const hideCloseButton = () => {
-    if (closeButtonRef.current) {
-      gsap.to(closeButtonRef.current, {
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-  };
-
-  // Animação de entrada sequencial partindo do meio
-  useEffect(() => {
-    if (!buttonsContainerRef.current || features.length === 0) return;
+  useLayoutEffect(() => {
+    if (!buttonsContainerRef.current || !sectionRef.current) return;
 
     const buttons = buttonsContainerRef.current.querySelectorAll('.feature-button');
-    const middleIndex = Math.floor(buttons.length / 2);
+    const imagePanel = sectionRef.current.querySelector('.image-panel');
     
-    // Configurar estado inicial de todos os botões
-    gsap.set(buttons, {
-      opacity: 0,
-      scale: 0.8
-    });
+    gsap.set(buttons, { opacity: 0, x: -40 });
+    gsap.set(imagePanel, { opacity: 0, x: 40, scale: 0.95 });
 
-    // Configurar estado inicial dos botões de navegação e fechar
-    if (navigationButtonsRef.current) {
-      gsap.set(navigationButtonsRef.current, {
-        opacity: 0
-      });
-    }
-    if (closeButtonRef.current) {
-      gsap.set(closeButtonRef.current, {
-        opacity: 0
-      });
-    }
-
-    // Criar animação sequencial com ScrollTrigger
-    const animation = gsap.timeline({
+    timelineRef.current = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top 70%",
-        end: "bottom 20%",
         toggleActions: "play none none reverse",
-        markers: false,
       }
     });
 
-    // 1. Primeiro: animar o botão do meio vindo da esquerda
-    animation.fromTo(buttons[middleIndex], 
-      {
-        x: -50,
-        opacity: 0,
-        scale: 0.8
-      },
-      {
+    timelineRef.current
+      .to(buttons, {
+        opacity: 1,
         x: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: "power3.out"
+      })
+      .to(imagePanel, {
         opacity: 1,
+        x: 0,
         scale: 1,
-        duration: 0.8,
-        ease: "power2.out"
-      }
-    );
+        duration: 0.9,
+        ease: "power3.out"
+      }, "-=0.5");
 
-    // 2. Segundo: animar simultaneamente TODOS os botões acima e abaixo do meio
-    const otherButtons = [];
-    
-    for (let i = 0; i < buttons.length; i++) {
-      if (i !== middleIndex) {
-        otherButtons.push(buttons[i]);
-      }
-    }
+      timelineRef.current.add(() => {
+          if (activeFeature === -1) handleFeatureChange(0);
+      }, "-=0.2");
 
-    // Animar todos os outros botões simultaneamente
-    animation.fromTo(otherButtons,
-      {
-        opacity: 0,
-        scale: 0.5
-      },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.05,
-        ease: "back.out(1.5)"
-      },
-      "-=0.3"
-    );
-
-    // Cleanup
     return () => {
-      animation.kill();
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      if (timelineRef.current) timelineRef.current.kill();
     };
-  }, [features.length]);
+  }, []);
 
-  // Função para animação do texto no mobile
-  const animateMobileTextTransition = (newIndex: number) => {
-    if (!mobileTextContainerRef.current) return;
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActiveFeature(newIndex);
-        // Animação de entrada
-        gsap.fromTo(mobileTextContainerRef.current, 
-          {
-            opacity: 0,
-            y: 20
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: "power2.out",
-            onComplete: () => {
-              setIsTransitioning(false);
-            }
-          }
-        );
-      }
-    });
-
-    // Animação de saída
-    tl.to(mobileTextContainerRef.current, {
-      opacity: 0,
-      y: -20,
-      duration: 0.3,
-      ease: "power2.in"
-    });
-  };
-
-  // Função específica para mobile
-  const handleMobileNavigation = (direction: 'previous' | 'next') => {
-    if (isTransitioning || features.length === 0) return;
-
+  const handleFeatureChange = (index: number) => {
+    if (isTransitioning || index === activeFeature) return;
     setIsTransitioning(true);
-
-    let newIndex;
-    if (direction === 'next') {
-      newIndex = activeFeature === -1 ? 0 : (activeFeature + 1) % features.length;
-    } else {
-      newIndex = activeFeature === -1 ? features.length - 1 : (activeFeature - 1 + features.length) % features.length;
-    }
-
-    animateMobileTextTransition(newIndex);
-  };
-
-  const resetButtonToInactive = (index: number) => {
-    if (buttonsRef.current[index]) {
-      gsap.to(buttonsRef.current[index], {
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-
-    if (titlesRef.current[index]) {
-      gsap.to(titlesRef.current[index], {
-        opacity: 1,
-        scale: 1,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    }
-
-    if (descriptionsRef.current[index]) {
-      gsap.to(descriptionsRef.current[index], {
+    
+    if (activeFeature !== -1 && descriptionsRef.current[activeFeature]) {
+      gsap.to(descriptionsRef.current[activeFeature], {
+        height: 0,
         opacity: 0,
-        y: -10,
-        duration: 0.2,
+        duration: 0.3,
         ease: "power2.in"
       });
     }
-  };
 
-  const handleFeatureChange = (index: number) => {
-    if (isTransitioning || features.length === 0) return;
+    setActiveFeature(index);
 
-    // Se já está ativo, não faz nada
-    if (index === activeFeature) {
-      return;
-    }
-
-    // Se clicou em um botão diferente
-    setIsTransitioning(true);
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActiveFeature(index);
-        setIsTransitioning(false);
-        // Mostrar botões de navegação e fechar quando um botão estiver ativo
-        showNavigationButtons();
-        showCloseButton();
-      }
-    });
-
-    // Fechar botão ativo atual se houver
-    if (activeFeature !== -1) {
-      resetButtonToInactive(activeFeature);
-    }
-
-    // Abrir novo botão
-    if (buttonsRef.current[index]) {
-      tl.to(buttonsRef.current[index], {
-        scale: 1.05,
-        duration: 0.3,
-        ease: "back.out(1.7)"
-      }, 0.2);
-
+    setTimeout(() => {
       if (descriptionsRef.current[index]) {
-        tl.to(descriptionsRef.current[index], {
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          ease: "power2.out"
-        }, 0.3);
+        gsap.fromTo(descriptionsRef.current[index],
+          { height: 0, opacity: 0 },
+          {
+            height: "auto",
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out",
+            onComplete: () => setIsTransitioning(false)
+          }
+        );
+      } else {
+          setIsTransitioning(false);
       }
+    }, 250);
+  };
+
+  const handleNavigation = (direction: 'prev' | 'next') => {
+    if (isTransitioning) return;
+    const current = activeFeature === -1 ? 0 : activeFeature;
+    let newIndex;
+    if (direction === 'next') {
+      newIndex = (current + 1) % features.length;
+    } else {
+      newIndex = (current - 1 + features.length) % features.length;
     }
-  };
-
-  const handleCloseFeature = () => {
-    if (activeFeature === -1 || isTransitioning || features.length === 0) return;
-
-    setIsTransitioning(true);
-    resetButtonToInactive(activeFeature);
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActiveFeature(-1);
-        setIsTransitioning(false);
-        // Esconder botões de navegação e fechar quando fechar o botão ativo
-        hideNavigationButtons();
-        hideCloseButton();
-      }
-    });
-  };
-
-  const handlePrevious = () => {
-    if (features.length === 0) return;
-
-    const newIndex =
-      activeFeature === -1
-        ? features.length - 1
-        : activeFeature > 0
-          ? activeFeature - 1
-          : features.length - 1;
-
     handleFeatureChange(newIndex);
   };
 
-  const handleNext = () => {
-    if (features.length === 0) return;
+  const handleMobileNav = (direction: 'prev' | 'next') => {
+      if (isTransitioning) return;
+      setIsTransitioning(true);
+      const current = activeFeature === -1 ? 0 : activeFeature;
+      const newIndex = direction === 'next' 
+        ? (current + 1) % features.length 
+        : (current - 1 + features.length) % features.length;
 
-    const newIndex =
-      activeFeature === -1
-        ? 0
-        : activeFeature < features.length - 1
-          ? activeFeature + 1
-          : 0;
-
-    handleFeatureChange(newIndex);
+      gsap.to(mobileTextContainerRef.current, {
+          y: -15, opacity: 0, duration: 0.25, ease: "power2.in",
+          onComplete: () => {
+              setActiveFeature(newIndex);
+              gsap.fromTo(mobileTextContainerRef.current,
+                  { y: 15, opacity: 0 },
+                  { y: 0, opacity: 1, duration: 0.4, ease: "power2.out", onComplete: () => setIsTransitioning(false) }
+              );
+          }
+      });
   };
-
-  // Inicialização
-  useEffect(() => {
-    buttonsRef.current.forEach((button, index) => {
-      if (button) {
-        gsap.set(button, { scale: 1 });
-      }
-      if (descriptionsRef.current[index]) {
-        gsap.set(descriptionsRef.current[index], {
-          opacity: activeFeature === index ? 1 : 0,
-          y: activeFeature === index ? 0 : 10
-        });
-      }
-    });
-  }, [features.length]);
 
   return (
-    <section ref={sectionRef} className="common-padding bg-[#F4F4F4] py-20 px-6 md:px-12 lg:px-10">
-      <div className="mx-auto relative max-w-[1520px]">
-        <h1 className="text-4xl lg:text-5xl font-bold text-black mb-10">
-          Nossa História no detalhe
-        </h1>
+    <section ref={sectionRef} className="bg-[#F5F5F7] py-24 px-6 relative overflow-hidden">
+      
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-b from-gray-200/80 to-transparent rounded-full blur-[120px] pointer-events-none opacity-60" />
 
-        {/* DESKTOP VERSION */}
-        <div className="hidden lg:flex flex-row gap-8 items-center bg-black rounded-4xl p-10">
-          <div className="flex items-center gap-4 w-1/4">
-            <div ref={navigationButtonsRef} className="flex flex-col gap-4 mt-2 opacity-0">
-              <Button
-                onClick={handlePrevious}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1E1E20] hover:bg-[#1E1E20]/80 transition-colors"
-              >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              </Button>
+      <div className="mx-auto relative max-w-[1400px]">
+        
+        <div className="mb-12 md:mb-16 section-header">
+            <h4 className="text-[#0071E3] font-bold tracking-widest uppercase text-xs mb-3 flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-[#0071E3]"></span>
+                Linha do Tempo
+            </h4>
+            <h1 className="text-4xl lg:text-5xl font-bold text-[#1d1d1f] tracking-tight">
+            A Evolução da Eficiência
+            </h1>
+        </div>
 
-              <Button
-                onClick={handleNext}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1E1E20] hover:bg-[#1E1E20]/80 transition-colors"
-              >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </Button>
-            </div>
+        {/* DESKTOP LAYOUT */}
+        <div className="hidden lg:flex flex-row overflow-hidden rounded-[40px] shadow-2xl shadow-black/20 bg-[#111111] border border-white/10 h-[650px] relative z-10">
+          
+          {/* Lado Esquerdo: Navegação */}
+          <div className="w-[40%] p-10 flex flex-col relative bg-[#111111]">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#0071E3] via-[#0071E3]/50 to-transparent"></div>
 
-            <div className="flex-1">
-              <div className="sticky top-24">
-                <div ref={buttonsContainerRef} className="flex-col space-y-4">
-                  {features.map((feature, index) => (
+            {/* AQUI ESTÁ A CORREÇÃO: Classes utilitárias do Tailwind para esconder o scrollbar em todos os navegadores */}
+            <div className="flex-1 overflow-y-auto pr-4 py-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div ref={buttonsContainerRef} className="flex flex-col space-y-2">
+                {features.map((feature, index) => {
+                  const isActive = activeFeature === index;
+                  return (
                     <button
                       key={feature.id}
-                      ref={(el) => { (buttonsRef.current[index] = el) }}
                       onClick={() => handleFeatureChange(index)}
-                      className={`feature-button text-left flex flex-col transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] ${activeFeature === index
-                          ? "bg-[#1E1E20] rounded-4xl p-6"
-                          : "bg-[#1E1E20] hover:bg-[#1E1E20]/70 rounded-4xl px-5 py-4"
+                      disabled={isTransitioning}
+                      className={`feature-button group w-full text-left transition-all duration-500 ease-out border-l-[3px] pl-6 py-5 relative rounded-r-2xl outline-none
+                        ${isActive 
+                          ? "border-[#0071E3] bg-gradient-to-r from-[#0071E3]/10 to-transparent" 
+                          : "border-white/10 hover:border-white/30 hover:bg-white/[0.02]"
                         }`}
-                      style={{
-                        cursor: isTransitioning ? "not-allowed" : "pointer"
-                      }}
                     >
-                      <h3
-                        ref={(el) => { (titlesRef.current[index] = el) }}
-                        className="font-semibold lg:text-md md:text-sm text-white flex items-center justify-start text-start"
-                      >
-                        {/* Ícone apenas para botões inativos */}
-                        {activeFeature !== index && (
-                          <Icon icon="solar:add-circle-linear" className="w-5 h-5 mr-2 flex-shrink-0" />
-                        )}
-                        {feature.title}
-                      </h3>
+                      <div className="flex items-center gap-4">
+                        <span className={`text-sm font-mono font-bold tracking-wider transition-colors duration-300 ${isActive ? "text-[#0071E3]" : "text-gray-500 group-hover:text-gray-400"}`}>
+                            {feature.step}
+                        </span>
+                        <h3 className={`font-semibold text-xl transition-colors duration-300 ${isActive ? "text-white" : "text-gray-400 group-hover:text-white"}`}>
+                            {feature.title}
+                        </h3>
+                      </div>
 
                       <div
-                        ref={(el) => { (descriptionsRef.current[index] = el) }}
-                        className={`transition-all duration-400 overflow-hidden ${activeFeature === index
-                            ? "opacity-100 max-h-[200px] max-w-[300px] mt-4"
-                            : "opacity-0 max-h-0 max-w-0"
-                          }`}
+                        ref={(el) => { descriptionsRef.current[index] = el }}
+                        className="overflow-hidden"
+                        style={{ height: 0, opacity: 0 }}
                       >
-                        <p className="text-sm text-white mb-3 whitespace-pre-line">{feature.description}</p>
+                        <p className="text-gray-400 mt-4 text-sm leading-relaxed font-light pr-6 pl-12 border-l border-white/10">
+                            {feature.description}
+                        </p>
                       </div>
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
+            </div>
+            
+            <div className="pt-6 mt-4 border-t border-white/10 flex justify-between items-center">
+                <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Navegue pela história</span>
+                <div className="flex gap-3">
+                    <Button variant="ghost" onClick={() => handleNavigation('prev')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#0071E3] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                        <Icon icon="ph:arrow-left-bold" width="18" />
+                    </Button>
+                    <Button variant="ghost" onClick={() => handleNavigation('next')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#0071E3] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                        <Icon icon="ph:arrow-right-bold" width="18" />
+                    </Button>
+                </div>
             </div>
           </div>
 
-          <div className="w-3/4 relative">
-            <Button
-              ref={closeButtonRef}
-              onClick={handleCloseFeature}
-              className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-[#1E1E20] hover:bg-[#1E1E20]/70 transition-colors opacity-0"
+          {/* Lado Direito: Visual */}
+          <div className="w-[60%] relative bg-[#1a1a1a] image-panel overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-transparent to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/80 via-transparent to-transparent z-10 pointer-events-none" />
+            
+            <div 
+              ref={desktopImageContainerRef}
+              className="w-full h-full relative transform-gpu"
             >
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </Button>
-
-            <div className="rounded-3xl overflow-hidden">
-              <div 
-                ref={desktopImageContainerRef}
-                className="aspect-video relative bg-black"
-                style={{ opacity: 1 }}
-              >
                 <Image
                   src={currentDesktopImage}
+                  alt={activeFeature >= 0 ? features[activeFeature].title : "Tegbe História"}
+                  fill
+                  className="object-cover opacity-90" 
+                  priority
+                />
+            </div>
+
+            <div className="absolute bottom-8 right-8 z-20 flex flex-col items-end gap-2">
+                <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-lg shadow-lg flex items-center gap-3">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider leading-none mb-1">Marco Atual</span>
+                        <span className="text-sm text-white font-bold leading-none">
+                            {activeFeature >= 0 ? features[activeFeature].step : features[0].step}
+                        </span>
+                    </div>
+                    <div className="h-8 w-[1px] bg-white/20"></div>
+                    <span className="text-xs text-[#0071E3] font-bold flex items-center gap-1.5">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0071E3] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0071E3]"></span>
+                        </span>
+                        Validado
+                    </span>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE LAYOUT */}
+        <div className="lg:hidden bg-[#111111] rounded-[32px] overflow-hidden shadow-xl border border-white/10 relative z-10">
+          <div className="relative aspect-[4/3] w-full bg-[#1a1a1a]">
+            <div ref={mobileImageContainerRef} className="w-full h-full relative transform-gpu">
+                <Image
+                  src={currentMobileImage}
                   alt={activeFeature >= 0 ? features[activeFeature].title : "Feature"}
                   fill
-                  className="object-cover"
-                  onError={(e) => {
-                    // Fallback para imagem quebrada
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/screen.png";
-                  }}
+                  className="object-cover opacity-90"
                 />
-              </div>
             </div>
-          </div>
-        </div>
-
-        {/* MOBILE/TABLET VERSION - COM ANIMAÇÃO DE TEXTO */}
-        <div className="lg:hidden bg-black rounded-4xl p-6">
-          <div className="rounded-3xl overflow-hidden mb-6">
-            <div 
-              ref={mobileImageContainerRef}
-              className="aspect-video relative bg-black"
-              style={{ opacity: 1 }}
-            >
-              <Image
-                src={currentMobileImage}
-                alt={activeFeature >= 0 ? features[activeFeature].title : "Feature"}
-                fill
-                className="object-cover"
-                unoptimized
-                onError={(e) => {
-                  // Fallback para imagem quebrada
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/screen.png";
-                }}
-              />
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent" />
           </div>
 
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <Button
-              onClick={() => handleMobileNavigation('previous')}
-              disabled={isTransitioning}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-[#1E1E20] hover:bg-[#1E1E20]/80 transition-colors flex-shrink-0 disabled:opacity-50"
-            >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Button>
-
-            <div 
-              ref={mobileTextContainerRef}
-              className="flex-1 text-center min-h-[80px] flex items-center justify-center px-2"
-            >
-              {activeFeature >= 0 ? (
-                <div className="w-full">
-                  <h3 className="font-semibold text-lg text-white mb-2">
-                    {features[activeFeature].title}
-                  </h3>
-                  <p className="text-sm text-gray-300 mb-2">
-                    {features[activeFeature].description}
-                  </p>
+          <div className="p-6 relative -mt-16 z-10">
+             <div className="flex justify-between items-start mb-6">
+                <span className="px-3 py-1.5 bg-[#0071E3]/10 border border-[#0071E3]/30 text-[#0071E3] rounded-full text-xs font-mono font-bold tracking-wider backdrop-blur-sm shadow-sm">
+                    {activeFeature >= 0 ? features[activeFeature].step : features[0].step}
+                </span>
+                <div className="flex gap-2 mt-1">
+                    <button onClick={() => handleMobileNav('prev')} disabled={isTransitioning} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/5 flex items-center justify-center text-white active:scale-95 transition-all disabled:opacity-50">
+                        <Icon icon="ph:caret-left-bold" width="20" />
+                    </button>
+                    <button onClick={() => handleMobileNav('next')} disabled={isTransitioning} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/5 flex items-center justify-center text-white active:scale-95 transition-all disabled:opacity-50">
+                        <Icon icon="ph:caret-right-bold" width="20" />
+                    </button>
                 </div>
-              ) : (
-                <p className="text-gray-400">Toque nas setas para explorar</p>
-              )}
-            </div>
+             </div>
 
-            <Button
-              onClick={() => handleMobileNavigation('next')}
-              disabled={isTransitioning}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-[#1E1E20] hover:bg-[#1E1E20]/80 transition-colors flex-shrink-0 disabled:opacity-50"
-            >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Button>
-          </div>
+             <div ref={mobileTextContainerRef} className="min-h-[160px]">
+                <h3 className="text-2xl font-bold text-white mb-3">
+                    {activeFeature >= 0 ? features[activeFeature].title : features[0].title}
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed font-light">
+                    {activeFeature >= 0 ? features[activeFeature].description : features[0].description}
+                </p>
+             </div>
 
-          <div className="flex justify-center mt-4 gap-2">
-            {features.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  if (!isTransitioning) {
-                    setIsTransitioning(true);
-                    animateMobileTextTransition(index);
-                  }
-                }}
-                disabled={isTransitioning}
-                className={`w-3 h-3 rounded-full transition-colors ${index === activeFeature ? "bg-white" : "bg-gray-600"
-                  } ${isTransitioning ? "opacity-50" : "opacity-100"}`}
-              />
-            ))}
+             <div className="flex justify-center items-center gap-3 mt-6 pt-6 border-t border-white/10">
+                {features.map((_, i) => (
+                    <button 
+                        key={i}
+                        onClick={() => !isTransitioning && handleFeatureChange(i)}
+                        className={`rounded-full transition-all duration-500 ease-out ${
+                            i === activeFeature 
+                                ? "w-8 h-1.5 bg-[#0071E3]" 
+                                : "w-1.5 h-1.5 bg-gray-700 hover:bg-gray-500"
+                        }`}
+                        aria-label={`Ir para o passo ${i + 1}`}
+                    />
+                ))}
+             </div>
           </div>
         </div>
+
       </div>
     </section>
   );

@@ -4,14 +4,15 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 
-// --- TIPAGEM & CONFIGURAÇÃO ---
-type FooterVariant = 'ecommerce' | 'marketing';
+// --- TIPAGEM ---
+// 1. Adicionado 'sobre' à tipagem
+type FooterVariant = 'ecommerce' | 'marketing' | 'sobre';
 
 interface FooterProps {
   variant?: FooterVariant; // Default: 'ecommerce'
 }
 
-// Configuração de Estilos e Cores
+// --- CONFIGURAÇÃO DE ESTILOS (THEME) ---
 const themeConfig = {
   ecommerce: {
     primary: "text-[#FFCC00]",
@@ -22,7 +23,7 @@ const themeConfig = {
     glowGradient: "from-[#FFCC00]/0 via-[#FFCC00]/5 to-[#FFCC00]/0",
     glowAmbient: "bg-[#FFCC00]/5",
     iconBg: "text-[#FFCC00]",
-    iconHoverText: "group-hover:text-black", // Texto preto no hover amarelo
+    iconHoverText: "group-hover:text-black", 
     iconHoverBg: "group-hover:bg-[#FFCC00]",
     topBorder: "border-white/10"
   },
@@ -35,13 +36,27 @@ const themeConfig = {
     glowGradient: "from-[#E31B63]/0 via-[#E31B63]/10 to-[#E31B63]/0",
     glowAmbient: "bg-[#E31B63]/10",
     iconBg: "text-[#E31B63]",
-    iconHoverText: "group-hover:text-white", // Texto branco no hover vermelho
+    iconHoverText: "group-hover:text-white", 
     iconHoverBg: "group-hover:bg-[#E31B63]",
     topBorder: "border-rose-900/20"
+  },
+  // 2. Configuração do tema 'sobre' (Azul)
+  sobre: {
+    primary: "text-[#0071E3]",
+    hoverText: "hover:text-[#0071E3]",
+    decoration: "decoration-[#0071E3]",
+    bgHover: "hover:bg-[#0071E3]",
+    borderHover: "hover:border-[#0071E3]/30",
+    glowGradient: "from-[#0071E3]/0 via-[#0071E3]/10 to-[#0071E3]/0",
+    glowAmbient: "bg-[#0071E3]/10",
+    iconBg: "text-[#0071E3]",
+    iconHoverText: "group-hover:text-white",
+    iconHoverBg: "group-hover:bg-[#0071E3]",
+    topBorder: "border-blue-900/20"
   }
 };
 
-// Configuração de Conteúdo (Textos e Imagens)
+// --- CONFIGURAÇÃO DE CONTEÚDO ---
 const contentConfig = {
   ecommerce: {
     badgeImage: "/logo-consultoria.svg",
@@ -51,17 +66,31 @@ const contentConfig = {
     stats2: { val: "Top 1%", label: "Performance" },
     columnTitle: "Expertise",
     links: ["Gestão Full Commerce", "Consultoria Oficial", "Ads & Performance", "Design & Branding"],
-    email: "contato@tegbe.com.br"
+    email: "contato@tegbe.com.br",
+    desc: "Aceleradora de E-commerce. Transformamos operação técnica em lucro real através de dados e estratégia."
   },
   marketing: {
-    badgeImage: "/logo-kommo.svg", // Certifique-se de ter este arquivo ou use um placeholder
+    badgeImage: "/logo-kommo.svg", 
     badgeTitle: "Kommo Gold Partner",
     badgeDesc: "Especialistas certificados em CRM e Automação.",
     stats1: { val: "+40", label: "Implantações" },
     stats2: { val: "24/7", label: "Suporte IA" },
     columnTitle: "Soluções",
     links: ["Implementação CRM", "Tráfego de Elite", "Automação com IA", "Business Intelligence"],
-    email: "comercial@tegbe.com.br"
+    email: "comercial@tegbe.com.br",
+    desc: "Engenharia de Vendas. Transformamos tráfego em receita previsível através de CRM, Dados e IA."
+  },
+  // 3. Conteúdo para 'sobre' (Institucional)
+  sobre: {
+    badgeImage: "/logo-tegbe-simbolo.svg", // Use o símbolo da Tegbe aqui
+    badgeTitle: "Cultura de Excelência",
+    badgeDesc: "Growth Partners focados em Equity e Governança.",
+    stats1: { val: "2020", label: "Fundação" },
+    stats2: { val: "Senior", label: "Equipe" },
+    columnTitle: "Institucional",
+    links: ["Nossa História", "Manifesto", "Carreiras", "Imprensa"],
+    email: "institucional@tegbe.com.br",
+    desc: "Não somos uma agência. Somos o braço direito estratégico que constrói o futuro da sua operação."
   }
 };
 
@@ -148,13 +177,10 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
               className="w-32 sm:w-40 brightness-0 invert" 
             />
             <p className="text-sm text-gray-400 leading-relaxed max-w-[260px]">
-              {variant === 'ecommerce' 
-                ? "Aceleradora de E-commerce. Transformamos operação técnica em lucro real através de dados e estratégia."
-                : "Engenharia de Vendas. Transformamos tráfego em receita previsível através de CRM, Dados e IA."
-              }
+              {content.desc}
             </p>
             <div className="flex gap-3 pt-2">
-              <SocialLink variant={variant} icon="mdi:instagram" href={`https://instagram.com/${variant === 'ecommerce' ? 'tegbecoomerce' : 'tegbemarketing'}`} />
+              <SocialLink variant={variant} icon="mdi:instagram" href={`https://instagram.com/tegbecoomerce`} />
               <SocialLink variant={variant} icon="mdi:linkedin" href="#" />
               <SocialLink variant={variant} icon="mdi:youtube" href="#" />
             </div>
@@ -203,8 +229,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
               <a
                 href="https://api.whatsapp.com/send?phone=5514991779502" 
                 target="_blank" 
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group"
-              >
+                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
                 <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
                   <Icon icon="solar:phone-calling-linear" />
                 </div>

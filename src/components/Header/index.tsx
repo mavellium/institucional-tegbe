@@ -6,19 +6,19 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 
-// Definição dos Tipos
-type HeaderVariant = 'ecommerce' | 'marketing';
+// 1. Adicionei 'sobre' aqui
+type HeaderVariant = 'ecommerce' | 'marketing' | 'sobre';
 
 interface HeaderProps {
-  variant?: HeaderVariant; // Opcional, default é ecommerce
+  variant?: HeaderVariant; 
 }
 
-// Configuração do Design System para cada variante
+// 2. Adicionei a configuração 'sobre' com o Azul Tegbe (#0071E3)
 const variantConfig = {
   ecommerce: {
     primary: "bg-[#FFCC00]",
     hoverBg: "hover:bg-[#FFDB15]",
-    textOnPrimary: "text-black", // Contraste no botão amarelo
+    textOnPrimary: "text-black", 
     accentText: "text-[#FFCC00]",
     hoverText: "group-hover:text-[#FFCC00]",
     border: "border-yellow-500/30",
@@ -28,19 +28,29 @@ const variantConfig = {
   marketing: {
     primary: "bg-[#E31B63]",
     hoverBg: "hover:bg-[#FF1758]",
-    textOnPrimary: "text-white", // Contraste no botão vermelho
+    textOnPrimary: "text-white", 
     accentText: "text-[#E31B63]",
     hoverText: "group-hover:text-[#E31B63]",
     border: "border-rose-500/30",
     glow: "shadow-[0_0_20px_rgba(227,27,99,0.4)]",
     underline: "bg-[#E31B63]"
+  },
+  sobre: {
+    primary: "bg-[#0071E3]", // Azul Institucional
+    hoverBg: "hover:bg-[#2B8CFF]", // Azul mais claro no hover
+    textOnPrimary: "text-white",
+    accentText: "text-[#0071E3]",
+    hoverText: "group-hover:text-[#0071E3]",
+    border: "border-blue-500/30",
+    glow: "shadow-[0_0_20px_rgba(0,113,227,0.4)]",
+    underline: "bg-[#0071E3]"
   }
 };
 
 export function Header({ variant = 'ecommerce' }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname() // Para marcar link ativo (opcional)
+  const pathname = usePathname() 
 
   const theme = variantConfig[variant];
 
