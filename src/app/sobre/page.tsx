@@ -34,6 +34,7 @@ import Metricas from "@/components/News/Metricas";
 import ChamadaAcao2 from "@/components/ChamadaAcao2";
 import SociosCrescimento from "@/components/Equipe/SociosCrescimento";
 import Video2 from "@/components/Video2";
+import Localizacao from "@/components/Localizacao";
 
 export default function EcommercePage() {
     <Schema
@@ -86,6 +87,7 @@ export default function EcommercePage() {
             <Empresas2 />
             <AnosMercado />
             <Metricas />
+            <Localizacao/>
             <ChamadaAcao2 />
             <Footer variant="sobre" />
         </>

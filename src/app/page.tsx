@@ -82,7 +82,6 @@ export default function Home() {
         <Logos></Logos>
         <Steps></Steps>
         <Ecommerce></Ecommerce>
-        <Ads></Ads>
         <Setors></Setors>
         <Roi data={defaultRoiData} />
         <SectionImage></SectionImage>
