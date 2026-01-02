@@ -27,7 +27,7 @@ const ShowcaseClean = () => {
     useGSAP(() => {
         if (!containerRef.current || !videoWrapperRef.current) return;
 
-        // Centraliza horizontalmente via GSAP logo de cara para evitar conflito com CSS
+        // SET Inicial: Garante que o GSAP saiba que estamos no centro
         gsap.set(videoWrapperRef.current, { xPercent: -50, left: "50%" });
 
         const tl = gsap.timeline({
@@ -48,21 +48,23 @@ const ShowcaseClean = () => {
             ease: "power2.in"
         }, 0);
 
-        // 2. O Vídeo expande (Controle total de Height/Top)
+        // 2. O Vídeo expande (Blindado para Produção)
         tl.fromTo(videoWrapperRef.current, 
             {
-                // ESTADO INICIAL (CSS Match)
+                // ESTADO INICIAL 
                 width: isMobile ? "90%" : "60%", 
-                height: "55vh", // Altura fixa inicial (resolve o bug da linha fina)
-                top: "35%", // Posição inicial (abaixo do header)
+                height: "55vh", 
+                top: "35%", 
                 borderRadius: "32px",
+                xPercent: -50, // <--- TRAVA DE SEGURANÇA 1 (Mantém centralizado no inicio)
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
             },
             {
-                // ESTADO FINAL (Full Screen)
-                width: "100vw", // Largura total da viewport
-                height: "100vh", // Altura total da viewport
-                top: "0%", // Cola no topo
+                // ESTADO FINAL
+                width: "100vw", 
+                height: "100vh", 
+                top: "0%", 
+                xPercent: -50, // <--- TRAVA DE SEGURANÇA 2 (Mantém centralizado no fim)
                 borderRadius: "0px",
                 boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
                 duration: 1,
@@ -88,7 +90,7 @@ const ShowcaseClean = () => {
     return (
         <section ref={containerRef} className="relative w-full h-screen bg-[#F5F5F7] overflow-hidden">
             
-            {/* --- HEADER (FIXO NO TOPO) --- */}
+            {/* --- HEADER --- */}
             <div className="section-header absolute top-[10%] left-0 w-full z-10 flex flex-col items-center text-center px-6 pointer-events-none">
                 <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#0071E3] animate-pulse"></span>
@@ -102,16 +104,14 @@ const ShowcaseClean = () => {
             {/* --- CONTAINER DO VÍDEO --- */}
             <div 
                 ref={videoWrapperRef}
-                // REMOVIDO: aspect-video, translate-x/y do CSS
-                // ADICIONADO: invisible no inicio para o GSAP assumir o controle sem flash
                 className="absolute overflow-hidden bg-black z-20 will-change-transform shadow-2xl origin-center"
                 style={{
-                    // CSS de fallback idêntico ao estado inicial do GSAP
+                    // CSS PURO: Segura a posição antes do JS carregar
                     left: '50%',
-                    transform: 'translateX(-50%)', // Centralização simples CSS
+                    transform: 'translateX(-50%)', 
                     top: '35%',
                     width: '60%',
-                    height: '55vh', // Altura explícita
+                    height: '55vh', 
                     borderRadius: '32px'
                 }}
             >
