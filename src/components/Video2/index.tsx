@@ -17,7 +17,6 @@ const ShowcaseClean = () => {
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
-    // --- DETECÇÃO MOBILE ---
     useEffect(() => {
         const checkIfMobile = () => setIsMobile(window.innerWidth < 1024);
         checkIfMobile();
@@ -25,45 +24,53 @@ const ShowcaseClean = () => {
         return () => window.removeEventListener('resize', checkIfMobile);
     }, []);
 
-    // --- ANIMAÇÃO GSAP ---
     useGSAP(() => {
         if (!containerRef.current || !videoWrapperRef.current) return;
+
+        // SET Inicial: Garante que o GSAP saiba que estamos no centro
+        gsap.set(videoWrapperRef.current, { xPercent: -50, left: "50%" });
 
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top top", 
-                end: "+=150%", 
+                end: "+=200%", 
                 pin: true, 
                 scrub: 1, 
             }
         });
 
-        // 1. O Header some (sobe e apaga)
+        // 1. O Header Sobe
         tl.to(".section-header", {
-            y: -100,
-            opacity: 0,
-            duration: 0.5,
+            y: -150,
+            autoAlpha: 0,
+            duration: 0.4,
             ease: "power2.in"
         }, 0);
 
-        // 2. O vídeo cresce para ocupar o espaço deixado pelo header
+        // 2. O Vídeo expande (Blindado para Produção)
         tl.fromTo(videoWrapperRef.current, 
             {
-                width: isMobile ? "90%" : "50%", // Começa menor para dar respiro
-                height: isMobile ? "40vh" : "60vh",
+                // ESTADO INICIAL 
+                width: isMobile ? "90%" : "60%", 
+                height: "55vh", 
+                top: "35%", 
                 borderRadius: "32px",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)"
+                xPercent: -50, // <--- TRAVA DE SEGURANÇA 1 (Mantém centralizado no inicio)
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
             },
             {
-                width: "98%", // Cresce para quase tela cheia
-                height: "95vh",
-                borderRadius: "24px",
+                // ESTADO FINAL
+                width: "100vw", 
+                height: "100vh", 
+                top: "0%", 
+                xPercent: -50, // <--- TRAVA DE SEGURANÇA 2 (Mantém centralizado no fim)
+                borderRadius: "0px",
                 boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
                 duration: 1,
                 ease: "power2.inOut"
             }, 
-            0 // Começa junto com o header sumindo
+            0 
         );
 
     }, { scope: containerRef, dependencies: [isMobile] });
@@ -81,11 +88,10 @@ const ShowcaseClean = () => {
     };
 
     return (
-        // Mudei para justify-start e adicionei padding-top (pt-24) para organizar verticalmente
-        <section ref={containerRef} className="relative w-full h-screen bg-[#F5F5F7] overflow-hidden flex flex-col items-center justify-start pt-32 gap-10">
+        <section ref={containerRef} className="relative w-full h-screen bg-[#F5F5F7] overflow-hidden">
             
-            {/* --- HEADER (Agora faz parte do fluxo, não é absolute) --- */}
-            <div className="section-header relative z-10 flex flex-col items-center text-center px-6">
+            {/* --- HEADER --- */}
+            <div className="section-header absolute top-[10%] left-0 w-full z-10 flex flex-col items-center text-center px-6 pointer-events-none">
                 <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#0071E3] animate-pulse"></span>
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Showcase 2026</span>
@@ -95,14 +101,17 @@ const ShowcaseClean = () => {
                 </h2>
             </div>
 
-            {/* --- O CONTAINER DO VÍDEO --- */}
+            {/* --- CONTAINER DO VÍDEO --- */}
             <div 
                 ref={videoWrapperRef}
-                className="relative overflow-hidden bg-black z-20 will-change-transform shadow-2xl"
+                className="absolute overflow-hidden bg-black z-20 will-change-transform shadow-2xl origin-center"
                 style={{
-                    // Define o tamanho inicial aqui para evitar layout shift
-                    width: '50%',
-                    height: '60vh',
+                    // CSS PURO: Segura a posição antes do JS carregar
+                    left: '50%',
+                    transform: 'translateX(-50%)', 
+                    top: '35%',
+                    width: '60%',
+                    height: '55vh', 
                     borderRadius: '32px'
                 }}
             >
@@ -117,19 +126,19 @@ const ShowcaseClean = () => {
                     playsInline
                 />
 
-                {/* Overlay sutil (Noise) */}
+                {/* Overlay Noise */}
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
-                {/* BOTÃO PLAY/PAUSE */}
-                <div className="absolute bottom-8 right-8 z-30">
+                {/* Botão Play */}
+                <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-30">
                     <button
                         onClick={togglePlayPause}
-                        className="group flex items-center justify-center w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white hover:text-black transition-all duration-300 text-white"
+                        className="group flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white hover:text-black transition-all duration-300 text-white shadow-lg"
                     >
                         {isPlaying ? (
-                            <Icon icon="ph:pause-fill" width="24" />
+                            <Icon icon="ph:pause-fill" className="w-5 h-5 md:w-6 md:h-6" />
                         ) : (
-                            <Icon icon="ph:play-fill" width="24" className="ml-1" />
+                            <Icon icon="ph:play-fill" className="w-5 h-5 md:w-6 md:h-6 ml-1" />
                         )}
                     </button>
                 </div>

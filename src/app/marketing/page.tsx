@@ -1,25 +1,20 @@
 'use client';
 
 import { Header } from "@/components/Header";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 import Video from "@/components/Video";
 import Schema from "@/components/Schema";
-import ChamadaAcao from "@/components/MKT/ChamadaAcao";
+import { ChamadaAcao } from "@/components/ChamadaAcao";
 import Cards from "@/components/Cards";
-import Animacao from "@/components/Animacao";
-import AgenciasFalham from "@/components/Equipe/AgenciasFalham";
+import AgenciasFalham from "@/components/AgenciasFalham";
 import ExploreDetails from "@/components/ExploreDetails";
 import Expertise from "@/components/Expertise";
-import Equipe from "@/components/MKT/Equipe";
-import Companys from "@/components/MKT/Companys";
+import { Companys } from "@/components/Companys";
 import { Empresas } from "@/components/Empresas";
 import { Footer } from "@/components/Footer";
 import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
-import { SociosCrescimento } from "@/components/SociosCrescimento";
+import NaoEParaVoce from "@/components/NaoEParaVoce";
+import { Equipe } from "@/components/Equipe";
 
 export default function marketing() {
     <Schema
@@ -42,12 +37,12 @@ export default function marketing() {
             <Cards variant="marketing" />
             <ExploreDetails />
             <Empresas variant="marketing" />
-            <SociosCrescimento variant="marketing" />
+            <NaoEParaVoce />
             <Expertise />
-            <SectionImage variant="marketing"/>
-            <Equipe />
-            <Companys />
-            <ChamadaAcao />
+            <SectionImage variant="marketing" />
+            <Equipe variant="marketing" />
+            <Companys variant="marketing" />
+            <ChamadaAcao variant="marketing" />
             <Footer variant="marketing" />
         </>
     );
