@@ -78,7 +78,7 @@ export default function TrustAndFilter() {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF0F43] to-[#E31B63]">escalaram suas operações.</span>
                     </h1>
 
-                    <Logos />
+                    <LogosMKT />
                     <LogosMKTInvert />
                 </div>
             </div>
