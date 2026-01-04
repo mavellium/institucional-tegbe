@@ -1,7 +1,8 @@
 'use client';
 
+import videoConfig from "@/json/Video2/cursoConfig.json";
+import expertiseConfig from "@/json/Expertise/cursosConfig.json"
 import { Header } from "@/components/Header";
-import expertiseConfig from "@/json/Expertise/marketingConfig.json"
 import Video from "@/components/Video";
 import Schema from "@/components/Schema";
 import { ChamadaAcao } from "@/components/ChamadaAcao";
@@ -12,10 +13,18 @@ import Expertise from "@/components/Expertise";
 import { Companys } from "@/components/Companys";
 import { Empresas } from "@/components/Empresas";
 import { Footer } from "@/components/Footer";
-import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
 import NaoEParaVoce from "@/components/NaoEParaVoce";
 import { Equipe } from "@/components/Equipe";
+import HeadlineCurso from "@/components/HeadlineCurso";
+import PorqueAprender from "@/components/PorqueAprender";
+import Video2 from "@/components/Video2";
+import Cursos from "@/components/Cursos";
+import Carrossel from "@/components/Carrossel";
+import GaleriaFotos from "@/components/GaleriaFotos";
+import ComparacaoConcorrentes from "@/components/ComparacaoConcorrentes";
+import Preco from "@/components/Preco";
+import Faq from "@/components/Faq";
 
 export default function marketing() {
     <Schema
@@ -31,20 +40,18 @@ export default function marketing() {
     />
     return (
         <>
-            <Header variant="marketing" />
-            <Headline variant="marketing" />
-            <AgenciasFalham />
-            <Video />
-            <Cards variant="marketing" />
-            <ExploreDetails />
-            <Empresas variant="marketing" />
-            <NaoEParaVoce />
+            <Header variant="cursos" />
+            <HeadlineCurso/>
+            <PorqueAprender />
+            <Video2 config={videoConfig}/>
+            <Cursos/>
+            <Carrossel/>
+            <GaleriaFotos/>
             <Expertise config={expertiseConfig}/>
-            <SectionImage variant="marketing" />
-            <Equipe variant="marketing" />
-            <Companys variant="marketing" />
-            <ChamadaAcao variant="marketing" />
-            <Footer variant="marketing" />
+            <ComparacaoConcorrentes/>
+            <Preco/>
+            <Faq/>
+            <Footer variant="cursos" />
         </>
     );
 }

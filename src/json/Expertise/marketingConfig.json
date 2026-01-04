@@ -1,0 +1,29 @@
+{
+  "theme": {
+    "accentColor": "#E31B63",
+    "secondaryColor": "#FF0F43"
+  },
+  "header": {
+    "badgeIcon": "mdi:code-json",
+    "badgeText": "DNA Tegbe",
+    "titleLine1": "Não somos uma agência criativa.",
+    "titleHighlight": "Somos Engenheiros de Receita."
+  },
+  "visual": {
+    "imageSrc": "/15anos-image.png",
+    "imageAlt": "Engenharia de Vendas Tegbe",
+    "floatingCard": {
+      "icon": "mdi:chart-box",
+      "title": "Foco em Lucro Líquido",
+      "subtitle": "Métricas de vaidade ignoradas"
+    }
+  },
+  "content": {
+    "paragraph1": "Enquanto o mercado brinca de fazer posts bonitos, nós construímos <strong>ecossistemas de vendas</strong>.",
+    "paragraph2": "Como parceiros <strong>Kommo Gold</strong> e especialistas em tráfego de alta intenção, unimos a precisão dos dados com a tecnologia de CRM. O resultado? Sua empresa para de depender da sorte e começa a ter <strong style='border-bottom: 1px solid #E31B63'>previsibilidade de caixa.</strong>"
+  },
+  "cta": {
+    "text": "Conhecer a Metodologia",
+    "link": "#contato"
+  }
+}

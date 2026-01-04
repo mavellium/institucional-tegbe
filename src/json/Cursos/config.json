@@ -1,0 +1,45 @@
+{
+  "header": {
+    "badge": "O Protocolo TegPro",
+    "title": "Engenharia Reversa da Venda",
+    "subtitle": "Não é um curso. É a instalação do nosso sistema operacional dentro da sua empresa, dividido em 4 fases de execução."
+  },
+  "modules": [
+    {
+      "id": "01",
+      "phase": "FASE DE FUNDAÇÃO",
+      "title": "Setup da Máquina",
+      "description": "Antes de acelerar, blindamos o chassi. Configuramos seu Business Manager, estruturamos o CRM (Kommo/Bitrix) e definimos os KPIs que realmente importam. Sem isso, o tráfego é desperdício.",
+      "tags": ["Setup Técnico", "Governança", "KPIs"],
+      "icon": "ph:wrench-bold"
+    },
+    {
+      "id": "02",
+      "phase": "FASE DE TRAÇÃO",
+      "title": "Tráfego de Alta Intenção",
+      "description": "Esqueça métricas de vaidade. Ensinamos a criar campanhas que buscam o 'lead comprador'. Estratégias de Google Ads (Fundo de Funil) e Meta Ads (Criação de Demanda) validadas com milhões em verba.",
+      "tags": ["Google Ads", "Meta Ads", "Tracking"],
+      "icon": "ph:target-bold"
+    },
+    {
+      "id": "03",
+      "phase": "FASE DE CONVERSÃO",
+      "title": "Comercial & Scripts",
+      "description": "O tráfego traz o lead, o processo traz o dinheiro. Entregamos nossos scripts de vendas, playbooks de contorno de objeções e rituais de gestão para seu time fechar mais contratos.",
+      "tags": ["Playbook de Vendas", "Spin Selling", "Gestão"],
+      "icon": "ph:users-three-bold"
+    },
+    {
+      "id": "04",
+      "phase": "FASE DE ESCALA",
+      "title": "Automação & LTV",
+      "description": "Hora de tirar o humano do processo repetitivo. Implementação de automações de follow-up, recuperação de vendas e estratégias de upsell para aumentar o valor vitalício do cliente.",
+      "tags": ["Automação", "Z-API", "Recompra"],
+      "icon": "ph:robot-bold"
+    }
+  ],
+  "cta": {
+    "text": "Ver Grade Detalhada",
+    "link": "#grade"
+  }
+}

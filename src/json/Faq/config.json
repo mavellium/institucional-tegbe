@@ -1,0 +1,24 @@
+{
+  "header": {
+    "title": "Perguntas Frequentes",
+    "subtitle": "Tudo o que você precisa saber antes de entrar."
+  },
+  "questions": [
+    {
+      "question": "O curso serve para quem está começando do zero?",
+      "answer": "Sim. O Módulo 01 (Fundação) foi desenhado especificamente para quem nunca vendeu online. Ensinamos desde a criação do CNPJ até a configuração das ferramentas."
+    },
+    {
+      "question": "Preciso ter muito dinheiro para investir em tráfego?",
+      "answer": "Não. Ensinamos a estratégia de 'Validação Barata'. Você começa com orçamentos mínimos (R$ 20-30/dia) para validar a oferta antes de escalar."
+    },
+    {
+      "question": "Tenho acesso ao suporte para tirar dúvidas?",
+      "answer": "Com certeza. Alunos do plano Black têm acesso à nossa comunidade exclusiva e encontros mensais ao vivo para análise de campanhas."
+    },
+    {
+      "question": "Por quanto tempo tenho acesso ao conteúdo?",
+      "answer": "O plano Start garante 1 ano de acesso. O plano TegPro Black garante acesso vitalício a todas as atualizações futuras."
+    }
+  ]
+}

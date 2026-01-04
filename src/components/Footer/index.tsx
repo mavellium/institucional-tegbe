@@ -5,8 +5,8 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 
 // --- TIPAGEM ---
-// 1. Adicionado 'sobre' à tipagem
-type FooterVariant = 'ecommerce' | 'marketing' | 'sobre';
+// 1. Adicionado 'cursos' à tipagem
+type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
 
 interface FooterProps {
   variant?: FooterVariant; // Default: 'ecommerce'
@@ -40,7 +40,6 @@ const themeConfig = {
     iconHoverBg: "group-hover:bg-[#E31B63]",
     topBorder: "border-rose-900/20"
   },
-  // 2. Configuração do tema 'sobre' (Azul)
   sobre: {
     primary: "text-[#0071E3]",
     hoverText: "hover:text-[#0071E3]",
@@ -53,6 +52,20 @@ const themeConfig = {
     iconHoverText: "group-hover:text-white",
     iconHoverBg: "group-hover:bg-[#0071E3]",
     topBorder: "border-blue-900/20"
+  },
+  // 2. Configuração do tema 'cursos' (Gold/Dark)
+  cursos: {
+    primary: "text-[#FFD700]", // Dourado Ouro
+    hoverText: "hover:text-[#FFD700]",
+    decoration: "decoration-[#FFD700]",
+    bgHover: "hover:bg-[#FFD700]",
+    borderHover: "hover:border-[#FFD700]/30",
+    glowGradient: "from-[#FFD700]/0 via-[#FFD700]/10 to-[#FFD700]/0",
+    glowAmbient: "bg-[#FFD700]/5",
+    iconBg: "text-[#FFD700]",
+    iconHoverText: "group-hover:text-black", // Texto preto no hover dourado para contraste
+    iconHoverBg: "group-hover:bg-[#FFD700]",
+    topBorder: "border-[#FFD700]/20"
   }
 };
 
@@ -80,9 +93,8 @@ const contentConfig = {
     email: "comercial@tegbe.com.br",
     desc: "Engenharia de Vendas. Transformamos tráfego em receita previsível através de CRM, Dados e IA."
   },
-  // 3. Conteúdo para 'sobre' (Institucional)
   sobre: {
-    badgeImage: "/logo-tegbe-simbolo.svg", // Use o símbolo da Tegbe aqui
+    badgeImage: "/logo-tegbe-simbolo.svg", 
     badgeTitle: "Cultura de Excelência",
     badgeDesc: "Growth Partners focados em Equity e Governança.",
     stats1: { val: "2020", label: "Fundação" },
@@ -91,6 +103,18 @@ const contentConfig = {
     links: ["Nossa História", "Manifesto", "Carreiras", "Imprensa"],
     email: "institucional@tegbe.com.br",
     desc: "Não somos uma agência. Somos o braço direito estratégico que constrói o futuro da sua operação."
+  },
+  // 3. Conteúdo para 'cursos' (TegPro)
+  cursos: {
+    badgeImage: "/logo-tegbe-simbolo.svg", // Reutilizando símbolo ou icone de 'academy' se tiver
+    badgeTitle: "TegPro Academy",
+    badgeDesc: "Onde a teoria morre e a prática escala.",
+    stats1: { val: "+1.2k", label: "Alunos" },
+    stats2: { val: "4.9", label: "Avaliação" },
+    columnTitle: "Ensino",
+    links: ["Todos os Cursos", "Mentoria Black", "Comunidade", "Login Aluno"],
+    email: "suporte@tegbe.com.br",
+    desc: "Não ensinamos o que lemos. Ensinamos o que vivemos. O campo de batalha transformado em método."
   }
 };
 
@@ -190,10 +214,10 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
           <div className="flex flex-col items-center sm:items-start space-y-5">
             <h1 className="font-bold text-base text-white">Navegação</h1>
             <nav className="flex flex-col space-y-3">
-              {['Home', 'E-commerce', 'Marketing', 'Sobre'].map((item) => (
-                <a
-                  key={item}
-                  href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`}
+              {['Home', 'E-commerce', 'Marketing', 'Cursos', 'Sobre'].map((item) => (
+                <a 
+                  key={item} 
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase().replace(/[^a-z0-9]/g, '')}`} 
                   className={`text-sm text-gray-500 hover:translate-x-1 transition-all duration-200 ${theme.hoverText}`}
                 >
                   {item}

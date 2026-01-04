@@ -6,14 +6,14 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 
-// 1. Adicionei 'sobre' aqui
-type HeaderVariant = 'ecommerce' | 'marketing' | 'sobre';
+// 1. Adicionado 'cursos' na tipagem
+type HeaderVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
 
 interface HeaderProps {
   variant?: HeaderVariant;
 }
 
-// 2. Adicionei a configuração 'sobre' com o Azul Tegbe (#0071E3)
+// 2. Configuração de Temas
 const variantConfig = {
   ecommerce: {
     primary: "bg-[#FFCC00]",
@@ -36,14 +36,25 @@ const variantConfig = {
     underline: "bg-[#E31B63]"
   },
   sobre: {
-    primary: "bg-[#0071E3]", // Azul Institucional
-    hoverBg: "hover:bg-[#2B8CFF]", // Azul mais claro no hover
+    primary: "bg-[#0071E3]",
+    hoverBg: "hover:bg-[#2B8CFF]",
     textOnPrimary: "text-white",
     accentText: "text-[#0071E3]",
     hoverText: "group-hover:text-[#0071E3]",
     border: "border-blue-500/30",
     glow: "shadow-[0_0_20px_rgba(0,113,227,0.4)]",
     underline: "bg-[#0071E3]"
+  },
+  // 3. Variante CURSOS (Gold/Black Premium)
+  cursos: {
+    primary: "bg-[#FFD700]", // Dourado Ouro
+    hoverBg: "hover:bg-[#E5C100]", // Dourado um pouco mais escuro no hover
+    textOnPrimary: "text-black", // Contraste Preto no Dourado é elite
+    accentText: "text-[#FFD700]",
+    hoverText: "group-hover:text-[#FFD700]",
+    border: "border-[#FFD700]/30",
+    glow: "shadow-[0_0_25px_rgba(255,215,0,0.3)]",
+    underline: "bg-[#FFD700]"
   }
 };
 
@@ -111,6 +122,7 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
                   { name: "Home", href: "/" },
                   { name: "E-commerce", href: "/ecommerce" },
                   { name: "Marketing", href: "/marketing" },
+                  { name: "Cursos", href: "/cursos" },
                   { name: "Sobre", href: "/sobre" },
                 ].map((link) => (
                   <a
@@ -198,21 +210,22 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
           ${menuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"}`}
         >
           <nav className="flex flex-col items-center py-10 space-y-6">
-            {[
-              { name: "Home", href: "/" },
-              { name: "E-commerce", href: "/ecommerce" },
-              { name: "Marketing", href: "/marketing" },
-              { name: "Sobre", href: "/sobre" },
-            ].map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className={`text-xl font-medium text-gray-300 transition-all duration-300 hover:tracking-wider ${theme.hoverText}`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.name}
-              </a>
-            ))}
+             {[
+                  { name: "Home", href: "/" },
+                  { name: "E-commerce", href: "/ecommerce" },
+                  { name: "Marketing", href: "/marketing" },
+                  { name: "Cursos", href: "/cursos" },
+                  { name: "Sobre", href: "/sobre" },
+             ].map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className={`text-xl font-medium text-gray-300 transition-all duration-300 hover:tracking-wider ${theme.hoverText}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+             ))}
 
             <div className="pt-6 w-full px-8 flex flex-col items-center gap-4">
               {/* Logo Consultoria Mobile */}

@@ -1,0 +1,15 @@
+{
+  "content": {
+    "badge": "Bastidores da Operação",
+    "title": "A Rotina de Quem Escala",
+    "videoSrc": "https://www.youtube.com/watch?v=hfJMWlZ0GhY&t=3s"
+  },
+  "style": {
+    "backgroundColor": "#020202",
+    "textColor": "#FFFFFF",
+    "badgeBg": "rgba(255, 215, 0, 0.05)",
+    "badgeBorder": "rgba(255, 215, 0, 0.2)",
+    "badgeText": "#FFD700",
+    "accentColor": "#FFD700"
+  }
+}

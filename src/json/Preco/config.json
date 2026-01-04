@@ -1,0 +1,60 @@
+{
+  "header": {
+    "badge": "Investimento Estratégico",
+    "title": "Escolha seu Nível de Acesso",
+    "subtitle": "O valor de uma única venda feita com nosso método já paga o seu acesso anual."
+  },
+  "plans": [
+    {
+      "id": "starter",
+      "name": "Start",
+      "description": "Para quem quer dar o primeiro passo com segurança.",
+      "price": "997",
+      "installments": "12x de R$ 99,70",
+      "features": [
+        "Acesso ao Curso Completo",
+        "Suporte por E-mail",
+        "Acesso por 1 Ano",
+        "Sem acesso à Comunidade"
+      ],
+      "cta": "Começar Agora",
+      "highlight": false
+    },
+    {
+      "id": "pro",
+      "name": "TegPro Black",
+      "description": "O ecossistema completo para quem não aceita jogar pequeno.",
+      "price": "1.997",
+      "installments": "12x de R$ 199,70",
+      "features": [
+        "Tudo do plano Start",
+        "Acesso Vitalício",
+        "Comunidade Elite (Networking)",
+        "Calls Mensais de Tira-Dúvidas",
+        "Pack de Templates (Ads + Copy)"
+      ],
+      "cta": "Garantir Acesso Black",
+      "highlight": true,
+      "tag": "MAIS ESCOLHIDO"
+    },
+    {
+      "id": "mentoria",
+      "name": "Mentoria Individual",
+      "description": "Acompanhamento direto com o time sênior da Tegbe.",
+      "price": "5.000",
+      "installments": "Aplicação Necessária",
+      "features": [
+        "Acesso TegPro Black",
+        "4 Encontros de Diagnóstico",
+        "Análise de Campanhas ao Vivo",
+        "Acesso direto ao WhatsApp"
+      ],
+      "cta": "Aplicar para Mentoria",
+      "highlight": false
+    }
+  ],
+  "guarantee": {
+    "title": "Garantia Blindada de 7 Dias",
+    "text": "Entre, assista, aplique. Se achar que não é para você, devolvemos 100% do valor. O risco é todo nosso."
+  }
+}
