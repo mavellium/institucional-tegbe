@@ -1,5 +1,3 @@
-'use client';
-
 import { Header } from "@/components/Header";
 import SellMore from "@/components/SellMore";
 import Plataforms from "@/components/Steps/Plataforms";
@@ -13,23 +11,43 @@ import Cards from "@/components/Cards";
 import Animacao from "@/components/Animacao";
 import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
+import { fetchComponentData } from "@/lib/api";
 
-export default function EcommercePage() {
-    <Schema
-        data={{
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: "E-commerce",
-            provider: {
-                "@type": "Organization",
-                name: "Tegbe",
-            },
-        }}
-    />
+// Função Wrapper Segura para o Fetch
+async function getSafeData(slug: string) {
+  try {
+    const res = await fetchComponentData(slug);
+    return res;
+  } catch (error) {
+    console.warn(`[EcommercePage] Erro ao carregar dados de ${slug}. Usando fallback.`);
+    return { data: null };
+  }
+}
+
+export default async function EcommercePage() {
+    // 1. Busca os dados do Headline (que contém a variante 'ecommerce' no JSON)
+    const headlineResponse = await getSafeData('headline');
+
     return (
         <>
-            <Header />
-            <Headline variant="ecommerce"/>
+            <Schema
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "Service",
+                    name: "E-commerce",
+                    provider: {
+                        "@type": "Organization",
+                        name: "Tegbe",
+                    },
+                }}
+            />
+            
+            {/* Header com a cor Amarela */}
+            <Header variant="ecommerce" />
+            
+            {/* Headline consumindo API + Variante */}
+            <Headline data={headlineResponse.data} variant="ecommerce" />
+            
             {/* <Video /> */}
             <SellMore />
             <Cards variant="home" />

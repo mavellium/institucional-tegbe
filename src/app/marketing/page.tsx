@@ -1,7 +1,5 @@
-'use client';
-
 import { Header } from "@/components/Header";
-import expertiseConfig from "@/json/Expertise/marketingConfig.json"
+import expertiseConfig from "@/json/Expertise/marketingConfig.json";
 import Video from "@/components/Video";
 import Schema from "@/components/Schema";
 import { ChamadaAcao } from "@/components/ChamadaAcao";
@@ -16,23 +14,43 @@ import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
 import NaoEParaVoce from "@/components/NaoEParaVoce";
 import { Equipe } from "@/components/Equipe";
+import { fetchComponentData } from "@/lib/api";
 
-export default function marketing() {
-    <Schema
-        data={{
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: "Marketing",
-            provider: {
-                "@type": "Organization",
-                name: "Tegbe",
-            },
-        }}
-    />
+// Função Wrapper Segura para o Fetch
+async function getSafeData(slug: string) {
+  try {
+    const res = await fetchComponentData(slug);
+    return res;
+  } catch (error) {
+    console.warn(`[MarketingPage] Erro ao carregar dados de ${slug}. Usando fallback.`);
+    return { data: null };
+  }
+}
+
+export default async function MarketingPage() {
+    // 1. Busca os dados do Headline (Variante Marketing será aplicada via prop)
+    const headlineResponse = await getSafeData('headline');
+
     return (
         <>
+            <Schema
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "Service",
+                    name: "Marketing Digital e Performance",
+                    provider: {
+                        "@type": "Organization",
+                        name: "Tegbe",
+                    },
+                }}
+            />
+            
+            {/* Header com a cor Rosa (Marketing) */}
             <Header variant="marketing" />
-            <Headline variant="marketing" />
+            
+            {/* Headline consumindo API + Variante Marketing */}
+            <Headline data={headlineResponse.data} variant="marketing" />
+            
             <AgenciasFalham />
             <Video />
             <Cards variant="marketing" />
