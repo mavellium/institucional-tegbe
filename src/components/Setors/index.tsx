@@ -16,13 +16,13 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface para os dados da API
+// --- 1. AJUSTE NA INTERFACE: id agora aceita string | number ---
 export interface SetorsApiData {
   title?: string;
   highlightedText?: string;
   afterText?: string;
   cards?: Array<{
-    id?: number;
+    id?: number | string; // <--- MODIFICADO AQUI
     image?: string;
     title?: string;
   }>;
@@ -145,6 +145,8 @@ export function Setors({ data }: SetorsProps) {
   const descriptionRef = useRef<HTMLDivElement>(null);
 
   function renderBoldText(text: string) {
+    // Verificação de segurança caso o título venha vazio
+    if (!text) return null;
     return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**")) {
         return (
@@ -165,7 +167,6 @@ export function Setors({ data }: SetorsProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Atualizar altura da descrição quando o texto muda
   useEffect(() => {
     if (descriptionRef.current) {
       setDescriptionHeight(descriptionRef.current.offsetHeight);
@@ -174,7 +175,6 @@ export function Setors({ data }: SetorsProps) {
 
   const isMobile = windowWidth !== null && windowWidth < 768;
 
-  // Autoplay Inteligente (Desktop)
   useEffect(() => {
     if (isMobile || !isPlaying || isHovering || !controls.autoplay) return;
 
@@ -185,7 +185,6 @@ export function Setors({ data }: SetorsProps) {
     return () => clearInterval(interval);
   }, [isMobile, isPlaying, isHovering, cards.length, controls.autoplay, controls.autoplaySpeed]);
 
-  // Controle Swiper (Mobile)
   useEffect(() => {
     if (!swiperRef.current || !isMobile) return;
     
@@ -203,7 +202,6 @@ export function Setors({ data }: SetorsProps) {
     }
   };
 
-  // Animação GSAP Desktop
   useGSAP(() => {
     if (!desktopCardsRef.current || isMobile) return;
     const cardsEl = desktopCardsRef.current.querySelectorAll('.desktop-card');
@@ -230,7 +228,6 @@ export function Setors({ data }: SetorsProps) {
     };
   }, { dependencies: [isMobile], scope: sectionRef });
 
-  // Animação GSAP Mobile
   useGSAP(() => {
     if (!isMobile) return;
     const cardsEl = document.querySelectorAll('.mobile-card');
@@ -265,7 +262,6 @@ export function Setors({ data }: SetorsProps) {
     >
       <div className="container flex flex-col justify-center items-center relative">
         
-        {/* Título Centralizado */}
         <div className="text-center max-w-4xl mb-12">
           <h2 
             className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold leading-tight"
@@ -277,7 +273,6 @@ export function Setors({ data }: SetorsProps) {
           </h2>
         </div>
 
-        {/* 🟢 MOBILE - Swiper */}
         {isMobile && (
           <div className="w-full overflow-visible mb-8">
             <Swiper
@@ -301,11 +296,11 @@ export function Setors({ data }: SetorsProps) {
                   >
                     <div className="relative overflow-hidden rounded-2xl shadow-md cursor-pointer w-[92vw] max-w-[600px] mx-auto h-[340px] sm:h-[360px]">
                       <Image
-                        src={card.image}
+                        src={card.image || '/placeholder.png'}
                         alt="Growth Tegbe"
                         fill
                         className="object-cover object-center rounded-2xl"
-                        unoptimized={card.image?.includes('vercel-storage.com')}
+                        unoptimized={true}
                       />
                     </div>
                     <motion.div
@@ -314,7 +309,7 @@ export function Setors({ data }: SetorsProps) {
                       className="mt-4 rounded-2xl flex flex-col items-start p-4 w-[95%]"
                     >
                       <h2 className="text-lg font-medium mb-3 p-5 leading-relaxed">
-                        {renderBoldText(card.title)}
+                        {renderBoldText(card.title || "")}
                       </h2>
                     </motion.div>
                   </motion.div>
@@ -324,7 +319,6 @@ export function Setors({ data }: SetorsProps) {
           </div>
         )}
 
-        {/* 🟣 DESKTOP */}
         {isClient && !isMobile && (
           <div 
             ref={desktopCardsRef} 
@@ -360,11 +354,11 @@ export function Setors({ data }: SetorsProps) {
                   >
                     <div className="relative w-full h-[600px]">
                       <Image
-                        src={card.image}
-                        alt={card.title}
+                        src={card.image || '/placeholder.png'}
+                        alt={card.title || 'Imagem'}
                         fill
                         className="object-cover object-top"
-                        unoptimized={card.image?.includes('vercel-storage.com')}
+                        unoptimized={true}
                       />
                     </div>
                     {!isActive && <div className="absolute inset-0 bg-black/40 transition-colors duration-300" />}
@@ -375,7 +369,6 @@ export function Setors({ data }: SetorsProps) {
           </div>
         )}
 
-        {/* Container da Descrição (Apenas Desktop) */}
         {!isMobile && (
           <div 
             ref={descriptionRef}
@@ -393,14 +386,13 @@ export function Setors({ data }: SetorsProps) {
                 style={{ borderLeft: `4px solid ${colors.primary}` }}
               >
                 <h2 className="text-lg md:text-xl font-medium leading-relaxed">
-                  {renderBoldText(cards[activeIndex].title)}
+                  {renderBoldText(cards[activeIndex]?.title || "")}
                 </h2>
               </motion.div>
             </AnimatePresence>
           </div>
         )}
 
-        {/* 🔘 CONTROLES - Posicionamento Relativo */}
         <div 
           className="flex items-center justify-center gap-6 relative"
           style={{
@@ -408,7 +400,6 @@ export function Setors({ data }: SetorsProps) {
             top: isMobile ? '0' : `${descriptionHeight > 100 ? '2rem' : '3rem'}`,
           }}
         >
-          {/* Dots */}
           {controls.showDots && (
             <div 
               className="flex gap-3 bg-white border border-gray-200 h-14 px-6 rounded-full justify-center items-center shadow-lg"
@@ -417,7 +408,7 @@ export function Setors({ data }: SetorsProps) {
               {cards.map((_, index) => (
                 <button
                   key={index}
-                  aria-label="Botão de navegação do carrossel"
+                  aria-label="Botão de navegação"
                   onClick={() => goToSlide(index)}
                   className={`transition-all w-11 h-11 duration-300 rounded-full ${
                     index === activeIndex
@@ -434,10 +425,9 @@ export function Setors({ data }: SetorsProps) {
             </div>
           )}
 
-          {/* Play/Pause */}
           {controls.showPlayPause && (
             <Button
-              aria-label={isPlaying ? "Pausar carrossel" : "Tocar carrossel"}
+              aria-label={isPlaying ? "Pausar" : "Tocar"}
               onClick={() => setIsPlaying((prev) => !prev)}
               className="flex items-center justify-center bg-white border text-gray-800 hover:text-black rounded-full h-14 w-14 shadow-lg transition-all duration-300"
               style={{

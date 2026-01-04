@@ -1,54 +1,53 @@
-import { Dna } from "@/components/Dna";
-import Ecommerce from "@/components/Ecommerce";
+import { Dna, DnaInputData } from "@/components/Dna";
+import Ecommerce, { EcommerceInputData } from "@/components/Ecommerce";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Headline } from "@/components/Headline";
 import Logos from "@/components/Logos";
-import News from "@/components/News";
+import News, { NewsInputData } from "@/components/News";
 import { Roi, defaultRoiData } from '@/components/Roi';
 import Schema from "@/components/Schema";
-import { SectionImage } from "@/components/SectionImage";
-import { Setors } from "@/components/Setors";
+import { Setors, SetorsApiData } from "@/components/Setors";
 import Steps from "@/components/Steps";
 import {
   fetchComponentData,
   StepData,
-  EcommerceData,
-  SetorData,
-  NewsData,
-  // Remova a importação do LogoData antigo
-  DnaData,
-  // SectionImageData
 } from "@/lib/api";
 
-// Esta é uma página Server Component por padrão no Next.js 13+ App Router
+// Função Wrapper Segura para o Fetch
+async function getSafeData(slug: string) {
+  try {
+    const res = await fetchComponentData(slug);
+    return res;
+  } catch (error) {
+    console.warn(`[Page] Erro ao carregar dados de ${slug}. Usando fallback.`);
+    return { data: null };
+  }
+}
+
 export default async function Home() {
-  // Buscar dados para todos os componentes em paralelo
   const [
     stepsResponse,
     ecommerceResponse,
     setorsResponse,
-    // newsResponse,
     logosResponse,
     headlineResponse,
-    // dnaResponse,
-    // sectionImageResponse
+    dnaResponse,
+    newsResponse,
   ] = await Promise.all([
-    fetchComponentData('steps'),
-    fetchComponentData('ecommerce'),
-    fetchComponentData('setors'),
-    // fetchComponentData('news'),
-    fetchComponentData('logos'),
-    fetchComponentData('headline'),
-    // fetchComponentData('dna'),
-    // fetchComponentData('sectionimage')
+    getSafeData('steps'),
+    getSafeData('ecommerce'),
+    getSafeData('setors'),
+    getSafeData('logos'),
+    getSafeData('headline'),
+    getSafeData('dna'),
+    getSafeData('casos-sucesso'),
   ]);
 
-  // Função para transformar dados da API para o formato esperado pelo componente Steps
+  // --- TRANSFORMAÇÃO: STEPS ---
   const transformStepsData = (apiData: any): StepData[] => {
     if (!apiData) return [];
 
-    // Se for array, mapeia diretamente
     if (Array.isArray(apiData)) {
       return apiData.map((item: any, index: number) => ({
         id: item.id || index + 1,
@@ -59,12 +58,10 @@ export default async function Home() {
       }));
     }
 
-    // Se for objeto, procura por arrays dentro
     if (typeof apiData === 'object') {
       const arrayKeys = Object.keys(apiData).filter(key => Array.isArray(apiData[key]));
       if (arrayKeys.length > 0) {
-        const firstArray = apiData[arrayKeys[0]];
-        return firstArray.map((item: any, index: number) => ({
+        return apiData[arrayKeys[0]].map((item: any, index: number) => ({
           id: item.id || index + 1,
           title: item.title || item.nome || `Step ${index + 1}`,
           subtitle: item.subtitle || item.subtitulo || '',
@@ -77,11 +74,10 @@ export default async function Home() {
     return [];
   };
 
-  // Transformar dados para cada componente
   const stepsData = transformStepsData(stepsResponse.data);
 
-  // Transformação dos dados da API
-  const ecommerceData = ecommerceResponse.data ? {
+  // --- TRANSFORMAÇÃO: ECOMMERCE ---
+  const ecommerceData: EcommerceInputData | undefined = ecommerceResponse.data ? {
     titulo: {
       texto: ecommerceResponse.data.titulo?.texto,
       visivel: ecommerceResponse.data.titulo?.visivel,
@@ -100,32 +96,50 @@ export default async function Home() {
       alt: ecommerceResponse.data.imagem?.alt,
       visivel: ecommerceResponse.data.imagem?.visivel,
     },
-    cards: ecommerceResponse.data.cards?.map((card: any, index: number) => ({
-      id: card.id || index + 1,
-      numero: card.numero || String(index + 1),
-      titulo: card.titulo || card.title,
-      descricao: card.descricao || card.description,
-      visivel: card.visivel !== undefined ? card.visivel : true,
-    }))
+    cards: Array.isArray(ecommerceResponse.data.cards) 
+      ? ecommerceResponse.data.cards.map((card: any, index: number) => ({
+          id: card.id || index + 1,
+          numero: card.numero || String(index + 1),
+          titulo: card.titulo || card.title,
+          descricao: card.descricao || card.description,
+          visivel: card.visivel !== undefined ? card.visivel : true,
+        }))
+      : []
   } : undefined;
 
-  const setorsData = setorsResponse.data ? {
-    title: setorsResponse.data.title,
-    highlightedText: setorsResponse.data.highlightedText,
-    afterText: setorsResponse.data.afterText,
-    cards: setorsResponse.data.cards?.map((card: any, index: number) => ({
-      id: card.id || index + 1,
-      image: card.image || card.imagem || `/growth-${(index % 4) + 1}.png`,
-      title: card.title || card.titulo,
-    })),
-    controls: setorsResponse.data.controls,
-    colors: setorsResponse.data.colors,
-  } : undefined;
+  // --- TRANSFORMAÇÃO: SETORS ---
+  let setorsData: SetorsApiData | undefined = undefined;
 
-  // const newsData = newsResponse.data as NewsData[];
+  if (setorsResponse.data) {
+    if (Array.isArray(setorsResponse.data)) {
+      setorsData = {
+        title: "Por que centralizar a operação está",
+        highlightedText: "travando",
+        afterText: " o seu crescimento?",
+        cards: setorsResponse.data.map((card: any) => ({
+          id: card.id,
+          image: card.image,
+          title: card.title
+        }))
+      };
+    } else {
+      setorsData = {
+        title: setorsResponse.data.title,
+        highlightedText: setorsResponse.data.highlightedText,
+        afterText: setorsResponse.data.afterText,
+        cards: setorsResponse.data.cards?.map((card: any, index: number) => ({
+          id: card.id || index + 1,
+          image: card.image || card.imagem || `/growth-${(index % 4) + 1}.png`,
+          title: card.title || card.titulo,
+        })),
+        controls: setorsResponse.data.controls,
+        colors: setorsResponse.data.colors,
+      };
+    }
+  }
 
-  // Para logos, usamos a interface do componente diretamente
-  const logosData = logosResponse.data ?
+  // --- TRANSFORMAÇÃO: LOGOS ---
+  const logosData = Array.isArray(logosResponse.data) ?
     logosResponse.data.map((item: any, index: number) => ({
       id: item.id || index + 1,
       src: item.logo || item.src || item.image || `/logo${(index % 4) + 1}.svg`,
@@ -135,10 +149,37 @@ export default async function Home() {
       url: item.url || item.link,
     })) : [];
 
-  // Para os outros componentes, você pode criar interfaces similares
-  const headlineData = headlineResponse.data as any; // Ou crie uma interface específica
-  // const dnaData = dnaResponse.data as DnaData;
-  // const sectionImageData = sectionImageResponse.data as SectionImageData;
+  // --- TRANSFORMAÇÃO: HEADLINE ---
+  const headlineData = headlineResponse.data || undefined;
+
+  // --- TRANSFORMAÇÃO: DNA ---
+  let dnaData: DnaInputData | undefined = undefined;
+  if (dnaResponse.data) {
+    const rawData = dnaResponse.data;
+    // Tenta pegar de 'values' (padrão) ou usa o objeto direto ou array direto
+    const actualContent = (rawData.values && Array.isArray(rawData.values)) 
+        ? rawData.values[0] 
+        : (Array.isArray(rawData) ? rawData[0] : rawData);
+        
+    if (actualContent) {
+      dnaData = actualContent;
+    }
+  }
+
+  // --- TRANSFORMAÇÃO: NEWS (CASOS DE SUCESSO) ---
+  let newsData: NewsInputData | undefined = undefined;
+  if (newsResponse.data && Array.isArray(newsResponse.data)) {
+    newsData = {
+      items: newsResponse.data.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        logo: item.logo || "",
+        description: item.description,
+        result: item.result,
+        tags: item.tags || []
+      }))
+    };
+  }
 
   return (
     <>
@@ -207,11 +248,12 @@ export default async function Home() {
         <Logos data={logosData} />
         <Steps steps={stepsData} />
         <Ecommerce data={ecommerceData} />
-        <Setors data={setorsData}/>
+        <Setors data={setorsData} />
+        
         <Roi data={defaultRoiData} />
-        {/* <SectionImage data={sectionImageData} /> */}
-        <Dna />
-        <News />
+        <Dna data={dnaData} />
+        
+        <News data={newsData} />
       </main>
       <Footer />
     </>

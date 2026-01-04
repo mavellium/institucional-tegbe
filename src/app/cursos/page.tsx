@@ -25,6 +25,8 @@ import GaleriaFotos from "@/components/GaleriaFotos";
 import ComparacaoConcorrentes from "@/components/ComparacaoConcorrentes";
 import Preco from "@/components/Preco";
 import Faq from "@/components/Faq";
+import Localizacao from "@/components/Localizacao";
+import Localizacao2 from "@/components/Localizacao2";
 
 export default function marketing() {
     <Schema
@@ -47,6 +49,7 @@ export default function marketing() {
             <Cursos/>
             <Carrossel/>
             <GaleriaFotos/>
+            <Localizacao2/>
             <Expertise config={expertiseConfig}/>
             <ComparacaoConcorrentes/>
             <Preco/>

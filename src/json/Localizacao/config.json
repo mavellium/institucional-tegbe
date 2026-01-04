@@ -1,0 +1,31 @@
+{
+  "header": {
+    "badge": "Presencial & Imersivo",
+    "title": "Treine onde o jogo acontece.",
+    "subtitle": "Nossos cursos presenciais ocorrem dentro das nossas bases operacionais. Saia da teoria e entre no ambiente de uma empresa que fatura milhões."
+  },
+  "locations": [
+    {
+      "id": "hq",
+      "city": "Garça, SP",
+      "role": "Headquarters (Matriz)",
+      "description": "O coração da operação técnica. Onde nossos gestores de tráfego, devs e copywriters trabalham diariamente. O ambiente perfeito para imersões técnicas.",
+      "address": "R. Santos Dumont, 133 - Centro",
+      "link": "https://maps.google.com/?q=Rua+Santos+Dumont+133+Garca",
+      "features": ["Estúdio de Gravação", "Sala de Guerra (Ads)", "Auditório para 30 pessoas"]
+    },
+    {
+      "id": "hub",
+      "city": "Marília, SP",
+      "role": "Business Hub",
+      "description": "Nosso braço comercial e de networking. Um espaço desenhado para Masterminds, rodadas de negócios e treinamentos de vendas High-Ticket.",
+      "address": "Av. das Esmeraldas, 850 - Jd. Tangará",
+      "link": "https://maps.google.com/?q=Marilia+SP",
+      "features": ["Lounge de Networking", "Salas de Negociação", "Coffee Bar Premium"]
+    }
+  ],
+  "cta": {
+    "text": "Agendar Visita Técnica",
+    "link": "https://api.whatsapp.com/send?phone=5514991779502"
+  }
+}

@@ -12,152 +12,96 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-// Dados dinâmicos da seção
-const dnaData = {
-    dna: {
-        id: "dna-section",
-        configuracoes: {
-            layout: {
-                classes: "py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden",
-                container: "container flex flex-col justify-center relative z-10"
-            },
-            animacao: {
-                habilitada: true,
-                duracao: 0.8,
-                ease: "power2.out",
-                scrollTrigger: {
-                    start: "top 70%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none reverse"
-                }
-            },
-            swiper: {
-                direcao: "vertical",
-                autoplay: {
-                    delay: 5000,
-                    habilitado: true
-                },
-                dimensoes: {
-                    mobile: "h-[400px]",
-                    sm: "sm:h-[450px]",
-                    md: "md:h-[500px]",
-                    lg: "lg:h-[600px]"
-                }
-            }
+// --- INTERFACES ---
+export interface DnaInputData {
+    id?: string;
+    badge?: { texto: string; classes: string; visivel: boolean; corTexto: string; classesTexto: string };
+    titulo?: { texto: string; destaque: string; visivel: boolean; classes: string; gradiente: string };
+    subtitulo?: { texto: string; classes: string; visivel: boolean };
+    paragrafoFinal?: { texto: string; classes: string; visivel: boolean };
+    botao?: { 
+        link: string; icone: string; texto: string; visivel: boolean; ariaLabel: string;
+        classes: { glow: string; botao: string; container: string } 
+    };
+    cards?: Array<{ id: number | string; alt: string; image: string }>;
+    configuracoes?: {
+        layout?: { classes: string; container: string };
+        animacao?: { habilitada: boolean; duracao: number; ease: string; scrollTrigger: any };
+        swiper?: { direcao: string; autoplay: any; dimensoes: any };
+    };
+    efeitos?: any;
+    controles?: any;
+}
+
+interface DnaProps {
+    data?: DnaInputData;
+}
+
+// --- VISUAL PADRÃO (Para garantir que a seção apareça como na foto) ---
+const VISUAL_DEFAULTS = {
+    layout: {
+        // Fundo preto e padding garantidos
+        classes: "py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden",
+        container: "container flex flex-col justify-center relative z-10"
+    },
+    animacao: {
+        habilitada: true,
+        duracao: 0.8,
+        ease: "power2.out",
+        scrollTrigger: { start: "top 70%", end: "bottom 20%", toggleActions: "play none none reverse" }
+    },
+    swiper: {
+        direcao: "vertical",
+        autoplay: { delay: 5000, habilitado: true },
+        dimensoes: { mobile: "h-[400px]", sm: "sm:h-[450px]", md: "md:h-[500px]", lg: "lg:h-[600px]" }
+    },
+    controles: {
+        dots: {
+            classesContainer: "flex gap-3 bg-[#1A1A1A] border border-white/5 px-4 py-4 lg:px-4 lg:py-4 rounded-full justify-center items-center shadow-lg",
+            cores: { ativo: "bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]", inativo: "bg-gray-600 hover:bg-gray-400" },
+            dimensoes: { mobile: { ativo: "32px", inativo: "10px" }, desktop: { ativo: "32px", inativo: "10px" } }
         },
-        badge: {
-            texto: "DNA DE PERFORMANCE",
-            visivel: true,
-            classes: "mb-4 px-3 py-1 rounded-full border border-gray-800 bg-gray-900/50 backdrop-blur-sm",
-            corTexto: "text-[#FFCC00]",
-            classesTexto: "text-xs font-semibold tracking-wider uppercase"
-        },
-        titulo: {
-            texto: "Sua operação guiada por quem entende o",
-            destaque: "DNA do Mercado Livre.",
-            visivel: true,
-            classes: "font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl text-white",
-            gradiente: "bg-gradient-to-r from-[#FFCC00] to-yellow-600"
-        },
-        subtitulo: {
-            texto: "Esqueça os 'hacks' temporários. Ser liderado por um <strong class='text-white font-medium'>Consultor Oficial Certificado</strong> significa estratégia baseada em dados diretos da fonte. Nós jogamos com o manual de regras debaixo do braço para garantir a segurança e a escala da sua conta.",
-            visivel: true,
-            classes: "text-base sm:text-lg text-gray-400 font-light leading-relaxed max-w-3xl"
-        },
-        paragrafoFinal: {
-            texto: "Mas estratégia sem braço não gera lucro. Por isso, Doni formou uma <strong class='text-white font-medium'>Tropa de Elite Operacional.</strong> Cada membro é especialista em um pilar vital: Tráfego, Design, Copy e Logística. Você não contrata apenas um consultor; você pluga seu negócio a um ecossistema que respira vendas 24h.",
-            visivel: true,
-            classes: "text-base sm:text-lg font-light leading-relaxed"
-        },
-        botao: {
-            texto: "CONTRATAR MEU TIME",
-            link: "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Tenho%20interesse%20em%20contratar%20o%20time%20da%20Tegbe%20para%20me%20ajudar%20a%20crescer.",
-            icone: "lucide:arrow-right",
-            visivel: true,
-            ariaLabel: "Contratar meu time",
-            classes: {
-                container: "group relative",
-                glow: "absolute -inset-1 bg-yellow-500 rounded-full opacity-20 blur group-hover:opacity-40 transition duration-200",
-                botao: "relative shadow-xl bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] text-base sm:text-lg transition-all duration-300 h-14 px-8 rounded-full flex items-center gap-2"
-            }
-        },
-        controles: {
-            playPause: {
-                iconePlay: "solar:play-bold",
-                iconePause: "solar:pause-bold",
-                classesBotao: "flex items-center justify-center bg-[#1A1A1A] border border-white/10 text-white hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00] rounded-full p-0 h-12 w-12 shadow-lg transition-all duration-300 group",
-                classesIcone: "w-5 h-5"
-            },
-            dots: {
-                classesContainer: "flex gap-3 bg-[#1A1A1A] border border-white/5 px-4 py-4 lg:px-4 lg:py-4 rounded-full justify-center items-center shadow-lg",
-                cores: {
-                    ativo: "bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]",
-                    inativo: "bg-gray-600 hover:bg-gray-400"
-                },
-                dimensoes: {
-                    mobile: {
-                        ativo: "32px",
-                        inativo: "10px"
-                    },
-                    desktop: {
-                        ativo: "32px",
-                        inativo: "10px"
-                    }
-                }
-            }
-        },
-        cards: [
-            {
-                id: 1,
-                image: "/equipe.png",
-                alt: "Equipe Tegbe 1"
-            },
-            {
-                id: 2,
-                image: "/equipe.png",
-                alt: "Equipe Tegbe 2"
-            },
-            {
-                id: 3,
-                image: "/equipe.png",
-                alt: "Equipe Tegbe 3"
-            },
-            {
-                id: 4,
-                image: "/equipe.png",
-                alt: "Equipe Tegbe 4"
-            }
-        ],
-        efeitos: {
-            glow: {
-                visivel: true,
-                classes: "absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none"
-            },
-            gradienteImagem: {
-                classes: "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500"
-            }
+        playPause: {
+            classesBotao: "flex items-center justify-center bg-[#1A1A1A] border border-white/10 text-white hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00] rounded-full p-0 h-12 w-12 shadow-lg transition-all duration-300 group",
+            classesIcone: "w-5 h-5",
+            iconePause: "solar:pause-bold",
+            iconePlay: "solar:play-bold"
         }
+    },
+    efeitos: {
+        glow: { visivel: true, classes: "absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none" },
+        gradienteImagem: { classes: "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" }
     }
 };
 
-export function Dna() {
-    const {
-        configuracoes,
-        badge,
-        titulo,
-        subtitulo,
-        paragrafoFinal,
-        botao,
-        controles,
-        cards,
-        efeitos
-    } = dnaData.dna;
+export function Dna({ data }: DnaProps) {
+    // Se data for null, usamos um objeto vazio para permitir o uso dos defaults visuais
+    const safeData = data || {};
 
+    // MERGE SEGURO:
+    // Pega o dado da API. Se não existir, pega o VISUAL_DEFAULTS.
+    // Isso garante que 'config.layout.classes' NUNCA seja undefined.
+    const config = {
+        layout: safeData.configuracoes?.layout || VISUAL_DEFAULTS.layout,
+        animacao: safeData.configuracoes?.animacao || VISUAL_DEFAULTS.animacao,
+        swiper: safeData.configuracoes?.swiper || VISUAL_DEFAULTS.swiper
+    };
+
+    const controles = {
+        dots: safeData.controles?.dots || VISUAL_DEFAULTS.controles.dots,
+        playPause: safeData.controles?.playPause || VISUAL_DEFAULTS.controles.playPause
+    };
+
+    const efeitos = safeData.efeitos || VISUAL_DEFAULTS.efeitos;
+
+    // Conteúdo (Texto/Imagens)
+    const { badge, titulo, subtitulo, paragrafoFinal, botao, cards, id } = safeData;
+
+    // Hooks
     const [isPlaying, setIsPlaying] = useState(true);
     const [swiperInstance, setSwiperInstance] = useState<any>(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -175,19 +119,18 @@ export function Dna() {
         }
     }, []);
 
-    // Dimensões dos dots
+    // Dimensões dos Dots (Seguro)
     const getDotDimensions = () => {
+        const dim = controles.dots.dimensoes || VISUAL_DEFAULTS.controles.dots.dimensoes;
         if (windowWidth < 1024) {
-            // Mobile - dots horizontais
             return {
-                width: (index: number) => activeIndex === index ? controles.dots.dimensoes.mobile.ativo : controles.dots.dimensoes.mobile.inativo,
+                width: (index: number) => activeIndex === index ? dim.mobile.ativo : dim.mobile.inativo,
                 height: () => '10px',
             };
         } else {
-            // Desktop - dots verticais
             return {
                 width: () => '10px',
-                height: (index: number) => activeIndex === index ? controles.dots.dimensoes.desktop.ativo : controles.dots.dimensoes.desktop.inativo,
+                height: (index: number) => activeIndex === index ? dim.desktop.ativo : dim.desktop.inativo,
             };
         }
     };
@@ -205,61 +148,53 @@ export function Dna() {
     };
 
     const goToSlide = (index: number) => {
-        if (swiperInstance) {
-            swiperInstance.slideTo(index);
-        }
+        if (swiperInstance) swiperInstance.slideTo(index);
     };
 
     const handleSlideChange = (swiper: any) => {
         setActiveIndex(swiper.activeIndex);
     };
 
-    // Animação GSAP
     useGSAP(() => {
-        if (!sectionRef.current || !configuracoes.animacao.habilitada) return;
+        if (!sectionRef.current || !config.animacao.habilitada) return;
         const cardsEl = sectionRef.current.querySelectorAll('.swiper-slide');
 
         gsap.set(cardsEl, { opacity: 0, y: 30 });
 
-        const animation = gsap.to(cardsEl, {
+        gsap.to(cardsEl, {
             opacity: 1,
             y: 0,
-            duration: configuracoes.animacao.duracao,
+            duration: config.animacao.duracao,
             stagger: 0.1,
-            ease: configuracoes.animacao.ease,
+            ease: config.animacao.ease,
             scrollTrigger: {
                 trigger: sectionRef.current,
-                start: configuracoes.animacao.scrollTrigger.start,
-                end: configuracoes.animacao.scrollTrigger.end,
-                toggleActions: configuracoes.animacao.scrollTrigger.toggleActions,
+                start: config.animacao.scrollTrigger.start,
+                end: config.animacao.scrollTrigger.end,
+                toggleActions: config.animacao.scrollTrigger.toggleActions,
                 markers: false,
             }
         });
-
-        return () => {
-            animation.kill();
-            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-        };
-    }, { dependencies: [], scope: sectionRef });
+    }, { dependencies: [data], scope: sectionRef });
 
     if (!isClient) return null;
 
     return (
         <section
             ref={sectionRef}
-            className={configuracoes.layout.classes}
-            id={dnaData.dna.id}
+            className={config.layout.classes} // Isso garante o fundo preto
+            id={id || "dna-section"}
         >
-            {/* Background Glow Sutil */}
-            {efeitos.glow.visivel && (
+            {/* Background Glow */}
+            {efeitos.glow?.visivel && (
                 <div className={efeitos.glow.classes} />
             )}
 
-            <div className={configuracoes.layout.container}>
+            <div className={config.layout.container}>
 
-                {/* Texto Intro */}
+                {/* Texto Intro - Só renderiza se tiver dados */}
                 <div className="flex flex-col items-center text-center w-full mb-12 text-white">
-                    {badge.visivel && (
+                    {badge?.visivel && (
                         <div className={badge.classes}>
                             <span className={`${badge.corTexto} ${badge.classesTexto}`}>
                                 {badge.texto}
@@ -267,7 +202,7 @@ export function Dna() {
                         </div>
                     )}
 
-                    {titulo.visivel && (
+                    {titulo?.visivel && (
                         <h1 className={titulo.classes}>
                             {titulo.texto}{" "}
                             <span className={`text-transparent bg-clip-text ${titulo.gradiente}`}>
@@ -276,7 +211,7 @@ export function Dna() {
                         </h1>
                     )}
 
-                    {subtitulo.visivel && (
+                    {subtitulo?.visivel && (
                         <h2
                             className={subtitulo.classes}
                             dangerouslySetInnerHTML={{ __html: subtitulo.texto }}
@@ -284,116 +219,86 @@ export function Dna() {
                     )}
                 </div>
 
-                {/* Container Principal: Swiper (Esq) + Controles (Dir) */}
-                <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 lg:gap-12">
+                {/* Container Principal (Swiper) - Só renderiza se tiver cards */}
+                {cards && cards.length > 0 && (
+                    <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 lg:gap-12">
 
-                    {/* 1. SWIPER */}
-                    <div className="w-full lg:w-4/5 overflow-visible">
-                        <Swiper
-                            modules={[Autoplay]}
-                            onSwiper={setSwiperInstance}
-                            onSlideChange={handleSlideChange}
-                            autoplay={{
-                                delay: configuracoes.swiper.autoplay.delay,
-                                disableOnInteraction: false,
-                            }}
-                            direction={configuracoes.swiper.direcao as "vertical" | "horizontal"}
-                            slidesPerView={1}
-                            spaceBetween={20}
-                            centeredSlides={true}
-                            className={`w-full ${configuracoes.swiper.dimensoes.mobile} ${configuracoes.swiper.dimensoes.sm} ${configuracoes.swiper.dimensoes.md} ${configuracoes.swiper.dimensoes.lg} rounded-2xl`}
-                        >
-                            {cards.map((card, index) => (
-                                <SwiperSlide key={card.id} className="overflow-hidden rounded-2xl group">
-                                    <motion.div
-                                        onClick={() => goToSlide(index)}
-                                        className="w-full h-full relative cursor-pointer"
-                                    >
-                                        <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl border border-white/5">
-                                            <div className={efeitos.gradienteImagem.classes} />
-                                            <Image
-                                                src={card.image}
-                                                fill
-                                                className="object-cover object-center w-full h-full rounded-2xl transition-transform duration-700 group-hover:scale-105"
-                                                alt={card.alt}
-                                            />
-                                        </div>
-                                    </motion.div>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    </div>
-
-                    {/* 2. CONTROLES */}
-                    <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-6">
-
-                        {/* Dots de Navegação */}
-                        <div className={`${windowWidth < 1024 ? 'flex-row' : 'flex-col'} ${controles.dots.classesContainer}`}>
-                            {cards.map((_, index) => (
-                                <button
-                                    key={index}
-                                    aria-label="Botão de navegação do carrossel"
-                                    onClick={() => goToSlide(index)}
-                                    className={`transition-all duration-500 focus:outline-none rounded-full ${index === activeIndex
-                                            ? controles.dots.cores.ativo
-                                            : controles.dots.cores.inativo
-                                        }`}
-                                    style={{
-                                        width: dotDimensions.width(index),
-                                        height: dotDimensions.height(index),
-                                    }}
-                                ></button>
-                            ))}
-                        </div>
-
-                        {/* Botão Play/Pause */}
-                        <div className="lg:mt-0">
-                            <Button
-                                aria-label={isPlaying ? "Pausar carrossel" : "Tocar carrossel"}
-                                onClick={handlePlayPause}
-                                className={controles.playPause.classesBotao}
+                        {/* Swiper */}
+                        <div className="w-full lg:w-4/5 overflow-visible">
+                            <Swiper
+                                modules={[Autoplay]}
+                                onSwiper={setSwiperInstance}
+                                onSlideChange={handleSlideChange}
+                                autoplay={{
+                                    delay: config.swiper.autoplay.delay,
+                                    disableOnInteraction: false,
+                                }}
+                                direction={config.swiper.direcao as "vertical" | "horizontal"}
+                               slidesPerView={1}
+                                spaceBetween={20}
+                                centeredSlides={true}
+                                className={`w-full ${config.swiper.dimensoes.mobile} ${config.swiper.dimensoes.sm} ${config.swiper.dimensoes.md} ${config.swiper.dimensoes.lg} rounded-2xl`}
                             >
-                                {isPlaying ? (
-                                    <Icon icon={controles.playPause.iconePause} className={controles.playPause.classesIcone} />
-                                ) : (
-                                    <Icon icon={controles.playPause.iconePlay} className={controles.playPause.classesIcone} />
-                                )}
-                            </Button>
+                                {cards.map((card, index) => (
+                                    <SwiperSlide key={card.id || index} className="overflow-hidden rounded-2xl group">
+                                        <motion.div onClick={() => goToSlide(index)} className="w-full h-full relative cursor-pointer">
+                                            <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl border border-white/5">
+                                                <div className={efeitos.gradienteImagem?.classes} />
+                                                <Image
+                                                    src={card.image}
+                                                    fill
+                                                    className="object-cover object-center w-full h-full rounded-2xl transition-transform duration-700 group-hover:scale-105"
+                                                    alt={card.alt || `Card ${index}`}
+                                                    unoptimized={true} 
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        </div>
+
+                        {/* Controles */}
+                        <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-6">
+                            <div className={`${windowWidth < 1024 ? 'flex-row' : 'flex-col'} ${controles.dots.classesContainer}`}>
+                                {cards.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => goToSlide(index)}
+                                        className={`transition-all duration-500 focus:outline-none rounded-full ${index === activeIndex ? controles.dots.cores.ativo : controles.dots.cores.inativo}`}
+                                        style={{ width: dotDimensions.width(index), height: dotDimensions.height(index) }}
+                                    ></button>
+                                ))}
+                            </div>
+                            <div className="lg:mt-0">
+                                <Button onClick={handlePlayPause} className={controles.playPause.classesBotao}>
+                                    {isPlaying ? (
+                                        <Icon icon={controles.playPause.iconePause || "solar:pause-bold"} className={controles.playPause.classesIcone} />
+                                    ) : (
+                                        <Icon icon={controles.playPause.iconePlay || "solar:play-bold"} className={controles.playPause.classesIcone} />
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                {/* Conteúdo Final (Texto + CTA) */}
+                {/* Texto Final */}
                 <div className="container relative z-20 px-6 mt-16">
                     <div className="max-w-3xl mx-auto text-gray-400 text-center space-y-8">
-                        {paragrafoFinal.visivel && (
+                        {paragrafoFinal?.visivel && (
                             <p
                                 className={paragrafoFinal.classes}
                                 dangerouslySetInnerHTML={{ __html: paragrafoFinal.texto }}
                             />
                         )}
-
-                        {botao.visivel && (
+                        {botao?.visivel && (
                             <div className="flex justify-center pt-2">
-                                <a
-                                    aria-label={botao.ariaLabel}
-                                    href={botao.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={botao.classes.container}
-                                >
-                                    {/* Glow Effect */}
+                                <a href={botao.link} target="_blank" rel="noopener noreferrer" className={botao.classes.container}>
                                     <div className={botao.classes.glow}></div>
-
-                                    <Button
-                                        aria-label={botao.ariaLabel}
-                                        className={botao.classes.botao}
-                                    >
+                                    <Button className={botao.classes.botao}>
                                         {botao.texto}
-                                        <Icon
-                                            icon={botao.icone}
-                                            className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                                        />
+                                        <Icon icon={botao.icone} className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </a>
                             </div>

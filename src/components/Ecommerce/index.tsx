@@ -1,51 +1,78 @@
 'use client'
 
-import { useRef, useState } from 'react' // Adicionei useState
+import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface para os dados da API
-export interface EcommerceApiData {
-  titulo?: {
-    texto?: string;
-    visivel?: boolean;
-  };
-  heading?: {
-    texto?: string;
-    destaque?: string;
-    visivel?: boolean;
-  };
-  subtitulo?: {
-    texto?: string;
-    visivel?: boolean;
-  };
-  imagem?: {
-    src?: string;
-    alt?: string;
-    visivel?: boolean;
-  };
-  cards?: Array<{
-    id?: number;
-    numero?: string;
-    titulo?: string;
-    descricao?: string;
-    visivel?: boolean;
-  }>;
+// --- 1. INTERFACES (Definições Estritas para uso interno) ---
+interface JsonCard {
+  id: number;
+  numero: string;
+  titulo: string;
+  descricao: string;
+  visivel: boolean;
+  classes: string;
+}
+
+interface JsonImagem {
+  src: string;
+  alt: string;
+  visivel: boolean;
+  classes: string;
+  tamanhos: { mobile: string; desktop: string };
+  dimensoes: { maxLargura: string; mobileAltura: string; tabletAltura: string; desktopAltura: string };
+  qualidade: number;
+}
+
+interface JsonTexto {
+  texto: string;
+  visivel: boolean;
+  classes: string;
+  destaque?: string;
+}
+
+interface JsonConfig {
+  animacao: any;
+  layout: any;
+  espacamento: any;
+  cores: any;
+}
+
+// Interface COMPLETA (Interna)
+export interface EcommerceJsonData {
+  id: string;
+  titulo: JsonTexto;
+  heading: JsonTexto;
+  subtitulo: JsonTexto;
+  imagem: JsonImagem;
+  cards: JsonCard[];
+  configuracoes: JsonConfig;
+}
+
+// --- 2. INTERFACES DE ENTRADA (Permite dados parciais da API/Page) ---
+// Isso resolve o erro de tipagem no page.tsx
+export interface EcommerceInputData {
+  id?: string;
+  titulo?: Partial<JsonTexto>;
+  heading?: Partial<JsonTexto>;
+  subtitulo?: Partial<JsonTexto>;
+  imagem?: Partial<JsonImagem>;
+  cards?: Partial<JsonCard>[];
+  configuracoes?: Partial<JsonConfig>;
 }
 
 interface EcommerceProps {
-  data?: EcommerceApiData;
+  data?: EcommerceInputData; // Aceita dados parciais agora
 }
 
-// Dados padrão (fallback)
-const defaultEcommerceData = {
+// --- 3. DADOS PADRÃO (Fallback) ---
+const defaultEcommerceData: EcommerceJsonData = {
   id: "diagnostico-section",
   titulo: {
     texto: "Diagnóstico",
@@ -64,7 +91,7 @@ const defaultEcommerceData = {
     classes: "text-base sm:text-lg text-gray-600 font-medium leading-relaxed max-w-3xl"
   },
   imagem: {
-    src: "/ipad.png", // IMAGEM LOCAL
+    src: "/ipad.png",
     alt: "Dashboard Tegbe no iPad",
     visivel: true,
     classes: "object-contain pointer-events-none drop-shadow-2xl",
@@ -80,32 +107,7 @@ const defaultEcommerceData = {
       desktopAltura: "650px"
     }
   },
-  cards: [
-    {
-      id: 1,
-      numero: "1",
-      titulo: "Deseja começar do zero?",
-      descricao: "Você tem o produto, nós temos o mapa. Criamos sua presença digital do absoluto zero, com a estratégia de quem sabe onde o lucro está.",
-      visivel: true,
-      classes: "bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-[#FFCC00] transition-colors duration-300 opacity-0 group cursor-default"
-    },
-    {
-      id: 2,
-      numero: "2",
-      titulo: "Já vende no ML ou Shopee?",
-      descricao: "Se as vendas estagnaram ou a operação virou um caos, entramos com inteligência e braço operacional para destravar o próximo nível.",
-      visivel: true,
-      classes: "bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-[#FFCC00] transition-colors duration-300 opacity-0 group cursor-default"
-    },
-    {
-      id: 3,
-      numero: "3",
-      titulo: "Precisa de alta performance?",
-      descricao: "Sua estrutura existe, mas falta eficiência. Otimizamos anúncios, logística e margem para que cada centavo investido retorne com escala.",
-      visivel: true,
-      classes: "bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-[#FFCC00] transition-colors duration-300 opacity-0 group cursor-default"
-    }
-  ],
+  cards: [],
   configuracoes: {
     animacao: {
       habilitada: true,
@@ -162,60 +164,60 @@ const defaultEcommerceData = {
   }
 };
 
-// Função para mesclar dados da API com padrão
-const mergeWithDefault = (apiData?: EcommerceApiData) => {
-  const defaultData = defaultEcommerceData;
-  
-  if (!apiData) return defaultData;
+// --- 4. FUNÇÃO DE MERGE (Robustez) ---
+const mergeWithDefault = (apiData?: EcommerceInputData): EcommerceJsonData => {
+  if (!apiData) return defaultEcommerceData;
 
-  // Mesclar dados
-  const mergedData = {
-    ...defaultData,
+  // Lógica de merge profundo manual para garantir segurança
+  return {
+    id: apiData.id || defaultEcommerceData.id,
+    
     titulo: {
-      ...defaultData.titulo,
-      ...(apiData.titulo?.texto && { texto: apiData.titulo.texto }),
-      ...(apiData.titulo?.visivel !== undefined && { visivel: apiData.titulo.visivel }),
+      ...defaultEcommerceData.titulo,
+      ...apiData.titulo,
     },
+    
     heading: {
-      ...defaultData.heading,
-      ...(apiData.heading?.texto && { texto: apiData.heading.texto }),
-      ...(apiData.heading?.destaque && { destaque: apiData.heading.destaque }),
-      ...(apiData.heading?.visivel !== undefined && { visivel: apiData.heading.visivel }),
+      ...defaultEcommerceData.heading,
+      ...apiData.heading,
     },
+    
     subtitulo: {
-      ...defaultData.subtitulo,
-      ...(apiData.subtitulo?.texto && { texto: apiData.subtitulo.texto }),
-      ...(apiData.subtitulo?.visivel !== undefined && { visivel: apiData.subtitulo.visivel }),
+      ...defaultEcommerceData.subtitulo,
+      ...apiData.subtitulo,
     },
+    
     imagem: {
-      ...defaultData.imagem,
-      // Só usa a imagem da API se for uma URL válida e local
-      src: (apiData.imagem?.src && (apiData.imagem.src.startsWith('/') || apiData.imagem.src.startsWith('http'))) 
-        ? apiData.imagem.src 
-        : defaultData.imagem.src,
-      alt: apiData.imagem?.alt || defaultData.imagem.alt,
-      visivel: apiData.imagem?.visivel !== undefined ? apiData.imagem.visivel : defaultData.imagem.visivel,
+      ...defaultEcommerceData.imagem,
+      ...apiData.imagem,
+      // Garante que sub-objetos não se percam se não vierem na API
+      tamanhos: { ...defaultEcommerceData.imagem.tamanhos, ...(apiData.imagem?.tamanhos || {}) },
+      dimensoes: { ...defaultEcommerceData.imagem.dimensoes, ...(apiData.imagem?.dimensoes || {}) },
     },
-    cards: defaultData.cards.map((defaultCard, index) => {
-      const apiCard = apiData.cards?.[index];
-      if (!apiCard) return defaultCard;
-      
-      return {
-        ...defaultCard,
-        ...(apiCard.numero && { numero: apiCard.numero }),
-        ...(apiCard.titulo && { titulo: apiCard.titulo }),
-        ...(apiCard.descricao && { descricao: apiCard.descricao }),
-        ...(apiCard.visivel !== undefined && { visivel: apiCard.visivel }),
-      };
-    })
+    
+    // Configurações: Mescla profunda
+    configuracoes: {
+        ...defaultEcommerceData.configuracoes,
+        ...apiData.configuracoes,
+        cores: { ...defaultEcommerceData.configuracoes.cores, ...(apiData.configuracoes?.cores || {}) },
+        animacao: { ...defaultEcommerceData.configuracoes.animacao, ...(apiData.configuracoes?.animacao || {}) },
+        layout: { ...defaultEcommerceData.configuracoes.layout, ...(apiData.configuracoes?.layout || {}) },
+        espacamento: { ...defaultEcommerceData.configuracoes.espacamento, ...(apiData.configuracoes?.espacamento || {}) },
+    },
+
+    // Cards: Mapeamento inteligente
+    cards: (apiData.cards && apiData.cards.length > 0)
+      ? apiData.cards.map((card, index) => ({
+          // Valores padrão para um card genérico se faltar dado
+          id: card?.id || index + 1,
+          numero: card?.numero || String(index + 1),
+          titulo: card?.titulo || "",
+          descricao: card?.descricao || "",
+          visivel: card?.visivel !== undefined ? card.visivel : true,
+          classes: card?.classes || "bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-[#FFCC00] transition-colors duration-300 opacity-0 group cursor-default"
+        }))
+      : defaultEcommerceData.cards
   };
-
-  return mergedData;
-};
-
-// Função para verificar se é uma URL externa
-const isExternalUrl = (url: string): boolean => {
-  return url.startsWith('http://') || url.startsWith('https://');
 };
 
 export default function Ecommerce({ data }: EcommerceProps) {
@@ -226,34 +228,20 @@ export default function Ecommerce({ data }: EcommerceProps) {
   const ipadRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement[]>([])
   
-  // Estado para controlar erro de imagem
   const [imageError, setImageError] = useState(false);
 
-  // Usar dados mesclados (API + padrão)
+  // Processar dados (Merge)
   const ecommerceData = mergeWithDefault(data);
-  
-  // Destructuring dos dados
-  const { 
-    titulo, 
-    heading, 
-    subtitulo, 
-    imagem, 
-    cards, 
-    configuracoes 
-  } = ecommerceData;
+  const { titulo, heading, subtitulo, imagem, cards, configuracoes } = ecommerceData;
 
-  // Função para armazenar referências dos cards
   const setCardRef = (el: HTMLDivElement | null, index: number) => {
-    if (el) {
-      cardsRef.current[index] = el
-    }
+    if (el) cardsRef.current[index] = el
   }
 
-  // Animação de entrada da seção em sequência
+  // --- ANIMAÇÕES GSAP ---
   useGSAP(() => {
     if (!sectionRef.current || !configuracoes.animacao.habilitada) return
 
-    // Reset das animações
     gsap.set([titleRef.current, headingRef.current, subtitleRef.current, ipadRef.current, ...cardsRef.current], {
       opacity: 0,
       y: 50
@@ -268,137 +256,103 @@ export default function Ecommerce({ data }: EcommerceProps) {
       }
     })
 
-    // Sequência de animações dinâmicas
     tl.to(titleRef.current, { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
+      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
     })
     .to(headingRef.current, { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
+      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
     }, configuracoes.animacao.sequencia.heading.delay)
     .to(subtitleRef.current, { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
+      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
     }, configuracoes.animacao.sequencia.subtitulo.delay)
     .to(ipadRef.current, { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.sequencia.imagem.duracao, 
-      ease: configuracoes.animacao.sequencia.imagem.ease 
+      opacity: 1, y: 0, duration: configuracoes.animacao.sequencia.imagem.duracao, ease: configuracoes.animacao.sequencia.imagem.ease 
     }, configuracoes.animacao.sequencia.imagem.delay)
-    .to(cardsRef.current[0], { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
-    }, configuracoes.animacao.sequencia.cards.card1.delay)
-    .to(cardsRef.current[1], { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
-    }, configuracoes.animacao.sequencia.cards.card2.delay)
-    .to(cardsRef.current[2], { 
-      opacity: 1, 
-      y: 0, 
-      duration: configuracoes.animacao.duracao, 
-      ease: configuracoes.animacao.ease 
-    }, configuracoes.animacao.sequencia.cards.card3.delay)
+    
+    cards.forEach((_, index) => {
+        const cardKey = `card${index + 1}` as keyof typeof configuracoes.animacao.sequencia.cards;
+        // Check seguro se a config de sequencia existe para esse card
+        const delay = (configuracoes.animacao.sequencia.cards && configuracoes.animacao.sequencia.cards[cardKey])
+             ? configuracoes.animacao.sequencia.cards[cardKey].delay 
+             : -0.2;
+        
+        // Check se o ref existe antes de animar
+        if (cardsRef.current[index]) {
+            tl.to(cardsRef.current[index], { 
+                opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
+            }, delay)
+        }
+    });
 
-    // Hover dinâmico para os cards
     cardsRef.current.forEach(card => {
       if (!card) return
-      
       card.addEventListener('mouseenter', () => {
-        gsap.to(card, { 
-          scale: configuracoes.animacao.hover.escala, 
-          duration: configuracoes.animacao.hover.duracao, 
-          ease: configuracoes.animacao.ease 
-        })
+        gsap.to(card, { scale: configuracoes.animacao.hover.escala, duration: configuracoes.animacao.hover.duracao, ease: configuracoes.animacao.ease })
       })
-      
       card.addEventListener('mouseleave', () => {
-        gsap.to(card, { 
-          scale: 1, 
-          duration: configuracoes.animacao.hover.duracao, 
-          ease: configuracoes.animacao.ease 
-        })
+        gsap.to(card, { scale: 1, duration: configuracoes.animacao.hover.duracao, ease: configuracoes.animacao.ease })
       })
     })
 
-    return () => {
-      tl.kill()
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
   }, { dependencies: [], scope: sectionRef })
 
   return (
     <section 
       ref={sectionRef}
+      id={ecommerceData.id}
       className={`flex flex-col w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto ${configuracoes.espacamento.secao} ${configuracoes.cores.fundo}`}
     >
-      {/* Texto */}
       <div className={`flex flex-col items-center text-center w-full ${configuracoes.espacamento.texto} ${configuracoes.cores.texto}`}>
         {titulo.visivel && (
-          <p 
-            ref={titleRef}
-            className={`${titulo.classes} opacity-0`}
-          >
+          <p ref={titleRef} className={`${titulo.classes} opacity-0`}>
             {titulo.texto}
           </p>
         )}
 
         {heading.visivel && (
-          <h1 
-            ref={headingRef}
-            className={`${heading.classes} opacity-0`}
-          >
+          <h1 ref={headingRef} className={`${heading.classes} opacity-0`}>
             {heading.texto}{" "}
-            <span className="text-[#FFCC00]">{heading.destaque}</span>
+            {heading.destaque && (
+                <span style={{ color: configuracoes.cores.destaque }}>{heading.destaque}</span>
+            )}
           </h1>
         )}
 
         {subtitulo.visivel && (
-          <h2 
-            ref={subtitleRef}
-            className={`${subtitulo.classes} opacity-0`}
-          >
+          <h2 ref={subtitleRef} className={`${subtitulo.classes} opacity-0`}>
             {subtitulo.texto}
           </h2>
         )}
       </div>
 
-      {/* Imagem */}
       {imagem.visivel && (
         <div 
           ref={ipadRef}
-          className={`relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[${imagem.dimensoes.maxLargura}] h-[${imagem.dimensoes.mobileAltura}] sm:h-[${imagem.dimensoes.tabletAltura}] md:h-[${imagem.dimensoes.desktopAltura}] mx-auto ${configuracoes.espacamento.imagem} opacity-0`}
+          className={`relative w-full mx-auto ${configuracoes.espacamento.imagem} opacity-0`}
+          style={{
+             maxWidth: imagem.dimensoes.maxLargura,
+             height: imagem.dimensoes.desktopAltura
+          }}
         >
-          <Image
-            src={imagem.src}
-            fill
-            className={imagem.classes}
-            alt={imagem.alt}
-            sizes={`(max-width: 768px) ${imagem.tamanhos.mobile}, ${imagem.tamanhos.desktop}`}
-            quality={imagem.qualidade}
-            onError={() => setImageError(true)}
-            unoptimized={isExternalUrl(imagem.src) || imageError}
-          />
+          <div className="relative w-full h-[300px] sm:h-[420px] md:h-[520px] lg:h-[650px]">
+            <Image
+                src={imagem.src}
+                fill
+                className={imagem.classes}
+                alt={imagem.alt}
+                sizes={`(max-width: 768px) ${imagem.tamanhos.mobile}, ${imagem.tamanhos.desktop}`}
+                quality={imagem.qualidade}
+                onError={() => setImageError(true)}
+                unoptimized={true}
+            />
+          </div>
         </div>
       )}
 
-      {/* Cards */}
       <div className={`grid ${configuracoes.layout.grid} ${configuracoes.layout.gap} w-full ${configuracoes.layout.container} mx-auto ${configuracoes.cores.texto}`}>
         {cards.filter(card => card.visivel).map((card, index) => (
           <div 
-            key={card.id}
+            key={card.id || index}
             ref={(el) => setCardRef(el, index)}
             className={card.classes}
           >
@@ -411,9 +365,9 @@ export default function Ecommerce({ data }: EcommerceProps) {
                 {card.numero}
               </span>
             </div>
-            <h1 className="font-bold text-lg mb-3 leading-tight">
+            <h3 className="font-bold text-lg mb-3 leading-tight">
               {card.titulo}
-            </h1>
+            </h3>
             <p className="font-medium text-gray-600 text-sm sm:text-base leading-relaxed">
               {card.descricao}
             </p>
