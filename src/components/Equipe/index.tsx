@@ -234,7 +234,7 @@ const contentConfig: Record<WhyTegbeVariant, EcommerceContent | MarketingContent
     cta: {
       text: "AGENDAR DIAGNÓSTICO",
       icon: "lucide:arrow-right",
-      href: "#diagnostico"
+      href: "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio."
     },
     ctaSubtitle: {
       text: "Agenda de Consultoria Liberada"
@@ -280,7 +280,7 @@ const WhyTegbeEcommerce = () => {
 
       <div className="container max-w-5xl relative z-10">
         <div className="flex flex-col items-center text-center w-full">
-          
+
           <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${theme.badge.dot} animate-pulse`}></span>
             <span className={`text-[10px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
@@ -299,9 +299,11 @@ const WhyTegbeEcommerce = () => {
           </div>
 
           <div className="reveal-text">
-            <a 
+            <a
               aria-label={content.cta.text}
-              href="#" 
+              href="https://api.whatsapp.com/send?phone=5514991779502&text=Gostaria%20de%20falar%20com%20um%20especialista%20da%20Tegbe%20para%20tirar%20algumas%20d%C3%BAvidas."
+              target="_blank"
+              rel="noopener noreferrer"
               className={`
                 group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
                 ${theme.cta.background} ${theme.cta.text}
@@ -309,9 +311,9 @@ const WhyTegbeEcommerce = () => {
               `}
             >
               <span>{content.cta.text}</span>
-              <Icon 
-                icon={content.cta.icon} 
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" 
+              <Icon
+                icon={content.cta.icon}
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
               />
             </a>
             <p className={`mt-4 text-[11px] ${theme.ctaSubtitle} font-medium tracking-widest uppercase`}>
@@ -358,7 +360,7 @@ const WhyTegbeMarketing = () => {
 
       <div className="container max-w-5xl relative z-10">
         <div className="flex flex-col items-center text-center w-full">
-          
+
           <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1.5 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.badge.dot.outer} opacity-75`}></span>
@@ -380,9 +382,11 @@ const WhyTegbeMarketing = () => {
           </div>
 
           <div className="reveal-text flex flex-col items-center">
-            <a 
+            <a
               aria-label={content.cta.text}
-              href={content.cta.href} 
+              href={content.cta.href}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`
                 group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
                 ${theme.cta.background} ${theme.cta.text}
@@ -390,9 +394,9 @@ const WhyTegbeMarketing = () => {
               `}
             >
               <span>{content.cta.text}</span>
-              <Icon 
-                icon={content.cta.icon} 
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
+              <Icon
+                icon={content.cta.icon}
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
               />
             </a>
             <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>

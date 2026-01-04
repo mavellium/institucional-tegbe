@@ -1,54 +1,70 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
+
+// Definir os tipos aqui mesmo
+interface Step {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+}
+
+interface StepsProps {
+  steps: Step[];
+}
 
 // Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const steps = [
-  {
-    id: 1,
-    title: 'Aprender',
-    subtitle: 'Do zero ao primeiro faturamento.',
-    description:
-      'Validamos seu nicho e construímos sua base. Ideal para quem busca segurança no primeiro passo.',
-    image: '/steps1.png',
-  },
-  {
-    id: 2,
-    title: 'Começar',
-    subtitle: 'Sua operação pronta para o jogo.',
-    description:
-      'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-    image: '/steps1.png',
-  },
-  {
-    id: 3,
-    title: 'Estruturar',
-    subtitle: 'Organize o caos. Escale com segurança.',
-    description:
-      'Gestão de processos e integração 360º. Para quem já vende, mas precisa de braço operacional para gerenciar estoque, pedidos e atendimento sem perder o fôlego.',
-    image: '/steps1.png',
-  },
-  {
-    id: 4,
-    title: 'Performar',
-    subtitle: 'Máxima eficiência e lucratividade.',
-    description:
-      'O nível de elite do E-commerce. Otimização agressiva de margem, tráfego pago de alta performance e domínio de Share of Shelf em marketplaces.',
-    image: '/steps1.png',
-  },
-]
+export default function Steps({ steps }: StepsProps) {
+  // Usar useMemo para evitar recriações desnecessárias
+  const stepsToUse = useMemo(() => {
+    if (steps && steps.length > 0) {
+      return steps;
+    }
 
-export default function Steps() {
-  const [activeStep, setActiveStep] = useState(steps[0])
-  
+    return [
+      {
+        id: 1,
+        title: 'Aprender',
+        subtitle: 'Do zero ao primeiro faturamento.',
+        description: 'Validamos seu nicho e construímos sua base. Ideal para quem busca segurança no primeiro passo.',
+        image: '/steps1.png',
+      },
+      {
+        id: 2,
+        title: 'Começar',
+        subtitle: 'Sua operação pronta para o jogo.',
+        description: 'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
+        image: '/steps1.png',
+      },
+      {
+        id: 3,
+        title: 'Estruturar',
+        subtitle: 'Organize o caos. Escale com segurança.',
+        description: 'Gestão de processos e integração 360º. Para quem já vende, mas precisa de braço operacional para gerenciar estoque, pedidos e atendimento sem perder o fôlego.',
+        image: '/steps1.png',
+      },
+      {
+        id: 4,
+        title: 'Performar',
+        subtitle: 'Máxima eficiência e lucratividade.',
+        description: 'O nível de elite do E-commerce. Otimização agressiva de margem, tráfego pago de alta performance e domínio de Share of Shelf em marketplaces.',
+        image: '/steps1.png',
+      },
+    ];
+  }, [steps]); // Só recria quando steps mudar
+
+  const [activeStep, setActiveStep] = useState<Step>(() => stepsToUse[0]);
+
   // Referências para animações
   const sectionRef = useRef<HTMLDivElement>(null)
   const leftColumnRef = useRef<HTMLDivElement>(null)
@@ -58,14 +74,27 @@ export default function Steps() {
   const descriptionRef = useRef<HTMLParagraphElement>(null)
   const stepButtonsRef = useRef<HTMLButtonElement[]>([])
 
-  // Inicializar a animação do primeiro step
+  // Resetar activeStep apenas quando stepsToUse mudar significativamente
   useEffect(() => {
-    // Resetar o primeiro botão para estado ativo
-    const firstButton = stepButtonsRef.current[0]
-    if (firstButton) {
-      gsap.set(firstButton, { scale: 1.02 })
+    // Só atualiza se o primeiro step for diferente do atual
+    if (stepsToUse[0]?.id !== activeStep.id) {
+      setActiveStep(stepsToUse[0]);
+
+      // Resetar o primeiro botão para estado ativo
+      const firstButton = stepButtonsRef.current[0];
+      if (firstButton) {
+        gsap.set(firstButton, { scale: 1.02 });
+      }
     }
-  }, [])
+  }, [stepsToUse]); // Removi activeStep.id das dependências para evitar loop
+
+  // Inicializar a animação do primeiro step apenas no mount
+  useEffect(() => {
+    const firstButton = stepButtonsRef.current[0];
+    if (firstButton) {
+      gsap.set(firstButton, { scale: 1.02 });
+    }
+  }, []); // Array vazio = roda apenas no mount
 
   // Animação de entrada da seção
   useGSAP(() => {
@@ -109,12 +138,12 @@ export default function Steps() {
     // Animar cada botão individualmente
     const stepButtons = stepButtonsRef.current.filter(Boolean)
     stepButtons.forEach((button, index) => {
-      gsap.set(button, { 
-        opacity: 0, 
+      gsap.set(button, {
+        opacity: 0,
         x: -30,
-        scale: index === 0 ? 1.02 : 1 // Primeiro botão já começa ativo
+        scale: index === 0 ? 1.02 : 1
       })
-      
+
       gsap.to(button, {
         opacity: 1,
         x: 0,
@@ -138,9 +167,9 @@ export default function Steps() {
   }, { dependencies: [], scope: sectionRef })
 
   // Animação de troca de step
-  const handleStepChange = (step: typeof steps[0]) => {
+  const handleStepChange = (step: Step) => {
     if (step.id === activeStep.id) return
-    
+
     // Animação de saída do conteúdo atual
     gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
       opacity: 0,
@@ -157,10 +186,10 @@ export default function Steps() {
             ease: "power2.out"
           })
         }
-        
+
         // Atualizar o step ativo
         setActiveStep(step)
-        
+
         // Animar o botão ativo com pulso
         const activeButton = stepButtonsRef.current[step.id - 1]
         if (activeButton) {
@@ -170,23 +199,23 @@ export default function Steps() {
             ease: "back.out(1.7)"
           })
         }
-        
+
         // Animação de entrada do novo conteúdo
         setTimeout(() => {
           gsap.set([imageRef.current, titleRef.current, descriptionRef.current], {
             opacity: 0,
             y: -20
           })
-          
+
           const enterAnimation = gsap.timeline()
-          
+
           enterAnimation.to(imageRef.current, {
             opacity: 1,
             y: 0,
             duration: 0.5,
             ease: "power2.out"
           })
-          
+
           enterAnimation.to(titleRef.current, {
             opacity: 1,
             y: 0,
@@ -194,7 +223,7 @@ export default function Steps() {
             delay: 0.1,
             ease: "power2.out"
           }, "-=0.3")
-          
+
           enterAnimation.to(descriptionRef.current, {
             opacity: 1,
             y: 0,
@@ -215,7 +244,7 @@ export default function Steps() {
   }
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]"
     >
@@ -231,17 +260,16 @@ export default function Steps() {
           </h1>
 
           <div className="flex flex-col gap-4">
-            {steps.map(step => (
+            {stepsToUse.map(step => (
               <button
                 aria-label={step.title}
                 key={step.id}
                 ref={(el) => setStepButtonRef(el, step.id - 1)}
                 onClick={() => handleStepChange(step)}
                 className={`text-left p-5 rounded-xl border transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
-                  ${
-                    activeStep.id === step.id
-                      ? 'bg-white border-blue-500 shadow-lg'
-                      : 'bg-transparent border-gray-200 hover:bg-white'
+                  ${activeStep.id === step.id
+                    ? 'bg-white border-blue-500 shadow-lg'
+                    : 'bg-transparent border-gray-200 hover:bg-white'
                   }
                 `}
               >
@@ -259,26 +287,36 @@ export default function Steps() {
         {/* DIREITA – Conteúdo dinâmico */}
         <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center opacity-0">
           <div className="relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] 
-            h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
-            <Image
-              ref={imageRef}
-              fill
-              sizes="(max-width: 768px) 281px, 520px"
-              quality={75}
-              src={activeStep.image}
-              className="absolute inset-0 w-full h-full object-contain"
-              alt={activeStep.title}
-            />
+  h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
+            {activeStep.image.startsWith('/') ? (
+              <Image
+                ref={imageRef}
+                fill
+                sizes="(max-width: 768px) 281px, 520px"
+                quality={75}
+                src={activeStep.image}
+                className="absolute inset-0 w-full h-full object-contain"
+                alt={activeStep.title}
+                priority={activeStep.id === 1}
+              />
+            ) : (
+              <img
+                ref={imageRef as any}
+                src={activeStep.image}
+                className="absolute inset-0 w-full h-full object-contain"
+                alt={activeStep.title}
+              />
+            )}
           </div>
 
-          <h2 
+          <h2
             ref={titleRef}
             className="font-bold text-xl sm:text-2xl mb-3 text-black"
           >
             {activeStep.subtitle}
           </h2>
 
-          <p 
+          <p
             ref={descriptionRef}
             className="text-sm sm:text-base text-gray-700 max-w-md"
           >
@@ -289,3 +327,5 @@ export default function Steps() {
     </section>
   )
 }
+
+export type { Step };

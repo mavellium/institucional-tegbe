@@ -3,17 +3,42 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const logos = [
-  { src: "/logo1.svg", alt: "Logo 1", width: 100, height: 100 },
-  { src: "/logo2.svg", alt: "Logo 2", width: 75, height: 100 },
-  { src: "/logo3.svg", alt: "Logo 3", width: 75, height: 100 },
-  { src: "/logo4.svg", alt: "Logo 4", width: 75, height: 100 },
+// Interface para os dados da API
+export interface LogosApiData {
+  id: number;
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  url?: string;
+}
+
+interface LogosProps {
+  data?: LogosApiData[];
+}
+
+// Logos padrão (fallback)
+const defaultLogos: LogosApiData[] = [
+  { id: 1, src: "/logo1.svg", alt: "Logo 1", width: 100, height: 100 },
+  { id: 2, src: "/logo2.svg", alt: "Logo 2", width: 75, height: 100 },
+  { id: 3, src: "/logo3.svg", alt: "Logo 3", width: 75, height: 100 },
+  { id: 4, src: "/logo4.svg", alt: "Logo 4", width: 75, height: 100 },
 ];
 
-// Triplicamos a lista para garantir o loop infinito perfeito em telas ultra-wide
-const marqueeLogos = [...logos, ...logos, ...logos];
+export default function Logos({ data }: LogosProps) {
+  // Usar dados da API ou fallback
+  const logos = data && data.length > 0 ? data : defaultLogos;
+  
+  // Triplicamos a lista para garantir o loop infinito perfeito em telas ultra-wide
+  const marqueeLogos = [...logos, ...logos, ...logos];
 
-export default function Logos() {
+  // Função para lidar com clique no logo
+  const handleLogoClick = (logo: LogosApiData) => {
+    if (logo.url) {
+      window.open(logo.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <section className="py-24 bg-gray-100 overflow-hidden relative">
       
@@ -35,18 +60,21 @@ export default function Logos() {
         >
           {marqueeLogos.map((logo, index) => (
             <div 
-              key={index} 
+              key={`${logo.id}-${index}`}
               // Espaçamento generoso entre logos
               className="flex-shrink-0 pr-20 md:pr-44 group cursor-pointer"
+              onClick={() => handleLogoClick(logo)}
             >
               <Image
                 src={logo.src}
                 alt={logo.alt}
-                width={logo.width}
-                height={logo.height}
+                width={logo.width || 100}
+                height={logo.height || 100}
                 // AQUI ESTÁ A MUDANÇA: h-14 (Mobile) e h-24 (Desktop)
                 // Isso deixa os logos bem robustos na tela.
                 className="w-auto h-14 md:h-24 object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-105"
+                // Desativa a otimização do Next.js para imagens do domínio vercel-storage.com
+                unoptimized={logo.src.includes('vercel-storage.com')}
               />
             </div>
           ))}

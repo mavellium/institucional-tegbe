@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation"
 type HeaderVariant = 'ecommerce' | 'marketing' | 'sobre';
 
 interface HeaderProps {
-  variant?: HeaderVariant; 
+  variant?: HeaderVariant;
 }
 
 // 2. Adicionei a configuração 'sobre' com o Azul Tegbe (#0071E3)
@@ -18,7 +18,7 @@ const variantConfig = {
   ecommerce: {
     primary: "bg-[#FFCC00]",
     hoverBg: "hover:bg-[#FFDB15]",
-    textOnPrimary: "text-black", 
+    textOnPrimary: "text-black",
     accentText: "text-[#FFCC00]",
     hoverText: "group-hover:text-[#FFCC00]",
     border: "border-yellow-500/30",
@@ -28,7 +28,7 @@ const variantConfig = {
   marketing: {
     primary: "bg-[#E31B63]",
     hoverBg: "hover:bg-[#FF1758]",
-    textOnPrimary: "text-white", 
+    textOnPrimary: "text-white",
     accentText: "text-[#E31B63]",
     hoverText: "group-hover:text-[#E31B63]",
     border: "border-rose-500/30",
@@ -50,7 +50,7 @@ const variantConfig = {
 export function Header({ variant = 'ecommerce' }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname() 
+  const pathname = usePathname()
 
   const theme = variantConfig[variant];
 
@@ -85,11 +85,10 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out ${scrolled
             ? "bg-[#020202]/80 backdrop-blur-md border-b border-white/5 py-3"
             : "bg-transparent border-b border-transparent py-5"
-        }`}
+          }`}
       >
         <div className="w-full px-6">
           <div className="flex items-center justify-between mx-auto max-w-7xl">
@@ -132,7 +131,7 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
 
             {/* --- AÇÕES (DIREITA) --- */}
             <div className="hidden md:flex items-center gap-6">
-              
+
               {/* Badge Consultor (Apenas Desktop Grande) */}
               <a href="consultor-oficial" className="hidden lg:block opacity-70 hover:opacity-100 transition-opacity">
                 <Image
@@ -147,14 +146,14 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
               {/* Botão CTA Principal */}
               <a
                 aria-label="Agendar Diagnóstico"
-                href="https://api.whatsapp.com/send?phone=5514991779502"
+                href="https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio."
                 target="_blank"
                 className="group relative"
               >
                 {/* Glow Effect atrás do botão (Cor do Tema) */}
                 <div className={`absolute -inset-1 rounded-full opacity-40 blur-md transition duration-500 group-hover:opacity-70 ${theme.underline}`}></div>
 
-                <button 
+                <button
                   className={`
                     relative inline-flex h-10 items-center justify-center overflow-hidden rounded-full px-8 py-2 
                     font-bold text-sm transition-all duration-300 hover:scale-105 
@@ -199,35 +198,35 @@ export function Header({ variant = 'ecommerce' }: HeaderProps) {
           ${menuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"}`}
         >
           <nav className="flex flex-col items-center py-10 space-y-6">
-             {[
-                  { name: "Home", href: "/" },
-                  { name: "E-commerce", href: "/ecommerce" },
-                  { name: "Marketing", href: "/marketing" },
-                  { name: "Sobre", href: "/sobre" },
-             ].map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className={`text-xl font-medium text-gray-300 transition-all duration-300 hover:tracking-wider ${theme.hoverText}`}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-             ))}
+            {[
+              { name: "Home", href: "/" },
+              { name: "E-commerce", href: "/ecommerce" },
+              { name: "Marketing", href: "/marketing" },
+              { name: "Sobre", href: "/sobre" },
+            ].map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className={`text-xl font-medium text-gray-300 transition-all duration-300 hover:tracking-wider ${theme.hoverText}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.name}
+              </a>
+            ))}
 
             <div className="pt-6 w-full px-8 flex flex-col items-center gap-4">
-               {/* Logo Consultoria Mobile */}
-               <Image src="/logo-consultoria.svg" alt="Consultor" width={40} height={40} className="opacity-60" />
+              {/* Logo Consultoria Mobile */}
+              <Image src="/logo-consultoria.svg" alt="Consultor" width={40} height={40} className="opacity-60" />
 
-               {/* CTA Mobile */}
+              {/* CTA Mobile */}
               <a
                 href="https://api.whatsapp.com/send?phone=5514991779502"
                 target="_blank"
                 className="w-full flex justify-center"
                 onClick={() => setMenuOpen(false)}
               >
-                <Button 
-                    className={`w-full h-12 rounded-full font-bold text-base shadow-lg ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary}`}
+                <Button
+                  className={`w-full h-12 rounded-full font-bold text-base shadow-lg ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary}`}
                 >
                   AGENDAR DIAGNÓSTICO
                 </Button>

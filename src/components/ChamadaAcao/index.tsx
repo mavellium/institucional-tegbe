@@ -152,7 +152,7 @@ const useFinalCTAAnimations = (sectionRef: React.RefObject<HTMLElement | null>, 
         }
       });
 
-      tl.fromTo(".reveal-final", 
+      tl.fromTo(".reveal-final",
         { y: 30, autoAlpha: 0 },
         { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }
       );
@@ -188,9 +188,11 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
 
   // Componente de botão comum
   const ButtonCTA = () => (
-    <a 
+    <a
       aria-label={content.button.text.toLowerCase()}
-      href={variant === 'ecommerce' ? "#" : variant === 'marketing' ? "#diagnostico" : "#"}
+      href={variant === 'ecommerce' ? "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20solicitar%20meu%20diagn%C3%B3stico%20comercial%20personalizado." : variant === 'marketing' ? "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20construir%20uma%20m%C3%A1quina%20de%20vendas%20previs%C3%ADvel%20com%20a%20Tegbe." : "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio."}
+      target="_blank"
+      rel="noopener noreferrer"
       className={`
         group relative flex items-center justify-center gap-3 
         ${variant === 'sobre' ? 'cta-button' : ''}
@@ -204,8 +206,8 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
       <span className={`${variant === 'marketing' ? 'text-base sm:text-lg' : variant === 'sobre' ? 'text-lg tracking-wide' : 'text-sm sm:text-base'}`}>
         {content.button.text}
       </span>
-      <Icon 
-        icon={content.button.icon} 
+      <Icon
+        icon={content.button.icon}
         className={`
           ${variant === 'sobre' ? 'w-8 h-8 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-[#0071E3] transition-colors' : ''}
           ${variant === 'marketing' ? 'w-5 h-5 group-hover:translate-x-1 transition-transform' : ''}
@@ -255,7 +257,7 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
 
       <div className={`container relative z-10 ${variant === 'sobre' ? 'max-w-4xl' : variant === 'marketing' ? 'max-w-5xl' : 'max-w-4xl'}`}>
         <div className="flex flex-col items-center text-center w-full">
-          
+
           {/* Badge */}
           <div className={`
             reveal-final mb-8 inline-flex items-center gap-2 
@@ -268,11 +270,11 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
             )}
-            
+
             {variant === 'marketing' && content.badge.icon && (
               <Icon icon={content.badge.icon} className={`${variant === 'marketing' ? 'text-[#FF0F43]' : ''} w-4 h-4`} />
             )}
-            
+
             <span className={`
               ${variant === 'marketing' ? 'text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase' : ''}
               ${variant === 'ecommerce' ? 'text-yellow-500 font-bold tracking-[0.2em] uppercase text-[10px]' : ''}

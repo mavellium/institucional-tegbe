@@ -19,143 +19,143 @@ if (typeof window !== "undefined") {
 
 // Dados dinâmicos da seção
 const dnaData = {
-  dna: {
-    id: "dna-section",
-    configuracoes: {
-      layout: {
-        classes: "py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden",
-        container: "container flex flex-col justify-center relative z-10"
-      },
-      animacao: {
-        habilitada: true,
-        duracao: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          start: "top 70%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse"
-        }
-      },
-      swiper: {
-        direcao: "vertical",
-        autoplay: {
-          delay: 5000,
-          habilitado: true
+    dna: {
+        id: "dna-section",
+        configuracoes: {
+            layout: {
+                classes: "py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden",
+                container: "container flex flex-col justify-center relative z-10"
+            },
+            animacao: {
+                habilitada: true,
+                duracao: 0.8,
+                ease: "power2.out",
+                scrollTrigger: {
+                    start: "top 70%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse"
+                }
+            },
+            swiper: {
+                direcao: "vertical",
+                autoplay: {
+                    delay: 5000,
+                    habilitado: true
+                },
+                dimensoes: {
+                    mobile: "h-[400px]",
+                    sm: "sm:h-[450px]",
+                    md: "md:h-[500px]",
+                    lg: "lg:h-[600px]"
+                }
+            }
         },
-        dimensoes: {
-          mobile: "h-[400px]",
-          sm: "sm:h-[450px]",
-          md: "md:h-[500px]",
-          lg: "lg:h-[600px]"
-        }
-      }
-    },
-    badge: {
-      texto: "DNA DE PERFORMANCE",
-      visivel: true,
-      classes: "mb-4 px-3 py-1 rounded-full border border-gray-800 bg-gray-900/50 backdrop-blur-sm",
-      corTexto: "text-[#FFCC00]",
-      classesTexto: "text-xs font-semibold tracking-wider uppercase"
-    },
-    titulo: {
-      texto: "Sua operação guiada por quem entende o",
-      destaque: "DNA do Mercado Livre.",
-      visivel: true,
-      classes: "font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl text-white",
-      gradiente: "bg-gradient-to-r from-[#FFCC00] to-yellow-600"
-    },
-    subtitulo: {
-      texto: "Esqueça os 'hacks' temporários. Ser liderado por um <strong class='text-white font-medium'>Consultor Oficial Certificado</strong> significa estratégia baseada em dados diretos da fonte. Nós jogamos com o manual de regras debaixo do braço para garantir a segurança e a escala da sua conta.",
-      visivel: true,
-      classes: "text-base sm:text-lg text-gray-400 font-light leading-relaxed max-w-3xl"
-    },
-    paragrafoFinal: {
-      texto: "Mas estratégia sem braço não gera lucro. Por isso, Doni formou uma <strong class='text-white font-medium'>Tropa de Elite Operacional.</strong> Cada membro é especialista em um pilar vital: Tráfego, Design, Copy e Logística. Você não contrata apenas um consultor; você pluga seu negócio a um ecossistema que respira vendas 24h.",
-      visivel: true,
-      classes: "text-base sm:text-lg font-light leading-relaxed"
-    },
-    botao: {
-      texto: "CONTRATAR MEU TIME",
-      link: "https://api.whatsapp.com/send?phone=5514991779502",
-      icone: "lucide:arrow-right",
-      visivel: true,
-      ariaLabel: "Contratar meu time",
-      classes: {
-        container: "group relative",
-        glow: "absolute -inset-1 bg-yellow-500 rounded-full opacity-20 blur group-hover:opacity-40 transition duration-200",
-        botao: "relative shadow-xl bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] text-base sm:text-lg transition-all duration-300 h-14 px-8 rounded-full flex items-center gap-2"
-      }
-    },
-    controles: {
-      playPause: {
-        iconePlay: "solar:play-bold",
-        iconePause: "solar:pause-bold",
-        classesBotao: "flex items-center justify-center bg-[#1A1A1A] border border-white/10 text-white hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00] rounded-full p-0 h-12 w-12 shadow-lg transition-all duration-300 group",
-        classesIcone: "w-5 h-5"
-      },
-      dots: {
-        classesContainer: "flex gap-3 bg-[#1A1A1A] border border-white/5 px-4 py-4 lg:px-4 lg:py-4 rounded-full justify-center items-center shadow-lg",
-        cores: {
-          ativo: "bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]",
-          inativo: "bg-gray-600 hover:bg-gray-400"
+        badge: {
+            texto: "DNA DE PERFORMANCE",
+            visivel: true,
+            classes: "mb-4 px-3 py-1 rounded-full border border-gray-800 bg-gray-900/50 backdrop-blur-sm",
+            corTexto: "text-[#FFCC00]",
+            classesTexto: "text-xs font-semibold tracking-wider uppercase"
         },
-        dimensoes: {
-          mobile: {
-            ativo: "32px",
-            inativo: "10px"
-          },
-          desktop: {
-            ativo: "32px",
-            inativo: "10px"
-          }
+        titulo: {
+            texto: "Sua operação guiada por quem entende o",
+            destaque: "DNA do Mercado Livre.",
+            visivel: true,
+            classes: "font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl text-white",
+            gradiente: "bg-gradient-to-r from-[#FFCC00] to-yellow-600"
+        },
+        subtitulo: {
+            texto: "Esqueça os 'hacks' temporários. Ser liderado por um <strong class='text-white font-medium'>Consultor Oficial Certificado</strong> significa estratégia baseada em dados diretos da fonte. Nós jogamos com o manual de regras debaixo do braço para garantir a segurança e a escala da sua conta.",
+            visivel: true,
+            classes: "text-base sm:text-lg text-gray-400 font-light leading-relaxed max-w-3xl"
+        },
+        paragrafoFinal: {
+            texto: "Mas estratégia sem braço não gera lucro. Por isso, Doni formou uma <strong class='text-white font-medium'>Tropa de Elite Operacional.</strong> Cada membro é especialista em um pilar vital: Tráfego, Design, Copy e Logística. Você não contrata apenas um consultor; você pluga seu negócio a um ecossistema que respira vendas 24h.",
+            visivel: true,
+            classes: "text-base sm:text-lg font-light leading-relaxed"
+        },
+        botao: {
+            texto: "CONTRATAR MEU TIME",
+            link: "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Tenho%20interesse%20em%20contratar%20o%20time%20da%20Tegbe%20para%20me%20ajudar%20a%20crescer.",
+            icone: "lucide:arrow-right",
+            visivel: true,
+            ariaLabel: "Contratar meu time",
+            classes: {
+                container: "group relative",
+                glow: "absolute -inset-1 bg-yellow-500 rounded-full opacity-20 blur group-hover:opacity-40 transition duration-200",
+                botao: "relative shadow-xl bg-[#FFCC00] text-black font-bold hover:bg-[#E6B800] text-base sm:text-lg transition-all duration-300 h-14 px-8 rounded-full flex items-center gap-2"
+            }
+        },
+        controles: {
+            playPause: {
+                iconePlay: "solar:play-bold",
+                iconePause: "solar:pause-bold",
+                classesBotao: "flex items-center justify-center bg-[#1A1A1A] border border-white/10 text-white hover:bg-[#FFCC00] hover:text-black hover:border-[#FFCC00] rounded-full p-0 h-12 w-12 shadow-lg transition-all duration-300 group",
+                classesIcone: "w-5 h-5"
+            },
+            dots: {
+                classesContainer: "flex gap-3 bg-[#1A1A1A] border border-white/5 px-4 py-4 lg:px-4 lg:py-4 rounded-full justify-center items-center shadow-lg",
+                cores: {
+                    ativo: "bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]",
+                    inativo: "bg-gray-600 hover:bg-gray-400"
+                },
+                dimensoes: {
+                    mobile: {
+                        ativo: "32px",
+                        inativo: "10px"
+                    },
+                    desktop: {
+                        ativo: "32px",
+                        inativo: "10px"
+                    }
+                }
+            }
+        },
+        cards: [
+            {
+                id: 1,
+                image: "/equipe.png",
+                alt: "Equipe Tegbe 1"
+            },
+            {
+                id: 2,
+                image: "/equipe.png",
+                alt: "Equipe Tegbe 2"
+            },
+            {
+                id: 3,
+                image: "/equipe.png",
+                alt: "Equipe Tegbe 3"
+            },
+            {
+                id: 4,
+                image: "/equipe.png",
+                alt: "Equipe Tegbe 4"
+            }
+        ],
+        efeitos: {
+            glow: {
+                visivel: true,
+                classes: "absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none"
+            },
+            gradienteImagem: {
+                classes: "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500"
+            }
         }
-      }
-    },
-    cards: [
-      {
-        id: 1,
-        image: "/equipe.png",
-        alt: "Equipe Tegbe 1"
-      },
-      {
-        id: 2,
-        image: "/equipe.png",
-        alt: "Equipe Tegbe 2"
-      },
-      {
-        id: 3,
-        image: "/equipe.png",
-        alt: "Equipe Tegbe 3"
-      },
-      {
-        id: 4,
-        image: "/equipe.png",
-        alt: "Equipe Tegbe 4"
-      }
-    ],
-    efeitos: {
-      glow: {
-        visivel: true,
-        classes: "absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none"
-      },
-      gradienteImagem: {
-        classes: "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500"
-      }
     }
-  }
 };
 
 export function Dna() {
-    const { 
-        configuracoes, 
-        badge, 
-        titulo, 
-        subtitulo, 
-        paragrafoFinal, 
-        botao, 
-        controles, 
-        cards, 
-        efeitos 
+    const {
+        configuracoes,
+        badge,
+        titulo,
+        subtitulo,
+        paragrafoFinal,
+        botao,
+        controles,
+        cards,
+        efeitos
     } = dnaData.dna;
 
     const [isPlaying, setIsPlaying] = useState(true);
@@ -256,7 +256,7 @@ export function Dna() {
             )}
 
             <div className={configuracoes.layout.container}>
-                
+
                 {/* Texto Intro */}
                 <div className="flex flex-col items-center text-center w-full mb-12 text-white">
                     {badge.visivel && (
@@ -277,7 +277,7 @@ export function Dna() {
                     )}
 
                     {subtitulo.visivel && (
-                        <h2 
+                        <h2
                             className={subtitulo.classes}
                             dangerouslySetInnerHTML={{ __html: subtitulo.texto }}
                         />
@@ -286,7 +286,7 @@ export function Dna() {
 
                 {/* Container Principal: Swiper (Esq) + Controles (Dir) */}
                 <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 lg:gap-12">
-                    
+
                     {/* 1. SWIPER */}
                     <div className="w-full lg:w-4/5 overflow-visible">
                         <Swiper
@@ -323,10 +323,10 @@ export function Dna() {
                             ))}
                         </Swiper>
                     </div>
-                    
+
                     {/* 2. CONTROLES */}
                     <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-6">
-                        
+
                         {/* Dots de Navegação */}
                         <div className={`${windowWidth < 1024 ? 'flex-row' : 'flex-col'} ${controles.dots.classesContainer}`}>
                             {cards.map((_, index) => (
@@ -334,11 +334,10 @@ export function Dna() {
                                     key={index}
                                     aria-label="Botão de navegação do carrossel"
                                     onClick={() => goToSlide(index)}
-                                    className={`transition-all duration-500 focus:outline-none rounded-full ${
-                                        index === activeIndex
+                                    className={`transition-all duration-500 focus:outline-none rounded-full ${index === activeIndex
                                             ? controles.dots.cores.ativo
                                             : controles.dots.cores.inativo
-                                    }`}
+                                        }`}
                                     style={{
                                         width: dotDimensions.width(index),
                                         height: dotDimensions.height(index),
@@ -368,31 +367,32 @@ export function Dna() {
                 <div className="container relative z-20 px-6 mt-16">
                     <div className="max-w-3xl mx-auto text-gray-400 text-center space-y-8">
                         {paragrafoFinal.visivel && (
-                            <p 
+                            <p
                                 className={paragrafoFinal.classes}
                                 dangerouslySetInnerHTML={{ __html: paragrafoFinal.texto }}
                             />
                         )}
-                        
+
                         {botao.visivel && (
                             <div className="flex justify-center pt-2">
                                 <a
                                     aria-label={botao.ariaLabel}
                                     href={botao.link}
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                     className={botao.classes.container}
                                 >
                                     {/* Glow Effect */}
                                     <div className={botao.classes.glow}></div>
-                                    
-                                    <Button 
-                                        aria-label={botao.ariaLabel} 
+
+                                    <Button
+                                        aria-label={botao.ariaLabel}
                                         className={botao.classes.botao}
                                     >
                                         {botao.texto}
-                                        <Icon 
-                                            icon={botao.icone} 
-                                            className="w-5 h-5 group-hover:translate-x-1 transition-transform" 
+                                        <Icon
+                                            icon={botao.icone}
+                                            className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                                         />
                                     </Button>
                                 </a>

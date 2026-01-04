@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react' // Adicionei useState
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -11,8 +11,41 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Dados dinâmicos da seção
-const ecommerceData = {
+// Interface para os dados da API
+export interface EcommerceApiData {
+  titulo?: {
+    texto?: string;
+    visivel?: boolean;
+  };
+  heading?: {
+    texto?: string;
+    destaque?: string;
+    visivel?: boolean;
+  };
+  subtitulo?: {
+    texto?: string;
+    visivel?: boolean;
+  };
+  imagem?: {
+    src?: string;
+    alt?: string;
+    visivel?: boolean;
+  };
+  cards?: Array<{
+    id?: number;
+    numero?: string;
+    titulo?: string;
+    descricao?: string;
+    visivel?: boolean;
+  }>;
+}
+
+interface EcommerceProps {
+  data?: EcommerceApiData;
+}
+
+// Dados padrão (fallback)
+const defaultEcommerceData = {
   id: "diagnostico-section",
   titulo: {
     texto: "Diagnóstico",
@@ -31,7 +64,7 @@ const ecommerceData = {
     classes: "text-base sm:text-lg text-gray-600 font-medium leading-relaxed max-w-3xl"
   },
   imagem: {
-    src: "/ipad.png",
+    src: "/ipad.png", // IMAGEM LOCAL
     alt: "Dashboard Tegbe no iPad",
     visivel: true,
     classes: "object-contain pointer-events-none drop-shadow-2xl",
@@ -129,14 +162,76 @@ const ecommerceData = {
   }
 };
 
-export default function Ecommerce() {
+// Função para mesclar dados da API com padrão
+const mergeWithDefault = (apiData?: EcommerceApiData) => {
+  const defaultData = defaultEcommerceData;
+  
+  if (!apiData) return defaultData;
+
+  // Mesclar dados
+  const mergedData = {
+    ...defaultData,
+    titulo: {
+      ...defaultData.titulo,
+      ...(apiData.titulo?.texto && { texto: apiData.titulo.texto }),
+      ...(apiData.titulo?.visivel !== undefined && { visivel: apiData.titulo.visivel }),
+    },
+    heading: {
+      ...defaultData.heading,
+      ...(apiData.heading?.texto && { texto: apiData.heading.texto }),
+      ...(apiData.heading?.destaque && { destaque: apiData.heading.destaque }),
+      ...(apiData.heading?.visivel !== undefined && { visivel: apiData.heading.visivel }),
+    },
+    subtitulo: {
+      ...defaultData.subtitulo,
+      ...(apiData.subtitulo?.texto && { texto: apiData.subtitulo.texto }),
+      ...(apiData.subtitulo?.visivel !== undefined && { visivel: apiData.subtitulo.visivel }),
+    },
+    imagem: {
+      ...defaultData.imagem,
+      // Só usa a imagem da API se for uma URL válida e local
+      src: (apiData.imagem?.src && (apiData.imagem.src.startsWith('/') || apiData.imagem.src.startsWith('http'))) 
+        ? apiData.imagem.src 
+        : defaultData.imagem.src,
+      alt: apiData.imagem?.alt || defaultData.imagem.alt,
+      visivel: apiData.imagem?.visivel !== undefined ? apiData.imagem.visivel : defaultData.imagem.visivel,
+    },
+    cards: defaultData.cards.map((defaultCard, index) => {
+      const apiCard = apiData.cards?.[index];
+      if (!apiCard) return defaultCard;
+      
+      return {
+        ...defaultCard,
+        ...(apiCard.numero && { numero: apiCard.numero }),
+        ...(apiCard.titulo && { titulo: apiCard.titulo }),
+        ...(apiCard.descricao && { descricao: apiCard.descricao }),
+        ...(apiCard.visivel !== undefined && { visivel: apiCard.visivel }),
+      };
+    })
+  };
+
+  return mergedData;
+};
+
+// Função para verificar se é uma URL externa
+const isExternalUrl = (url: string): boolean => {
+  return url.startsWith('http://') || url.startsWith('https://');
+};
+
+export default function Ecommerce({ data }: EcommerceProps) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLParagraphElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const subtitleRef = useRef<HTMLHeadingElement>(null)
   const ipadRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement[]>([])
+  
+  // Estado para controlar erro de imagem
+  const [imageError, setImageError] = useState(false);
 
+  // Usar dados mesclados (API + padrão)
+  const ecommerceData = mergeWithDefault(data);
+  
   // Destructuring dos dados
   const { 
     titulo, 
@@ -293,6 +388,8 @@ export default function Ecommerce() {
             alt={imagem.alt}
             sizes={`(max-width: 768px) ${imagem.tamanhos.mobile}, ${imagem.tamanhos.desktop}`}
             quality={imagem.qualidade}
+            onError={() => setImageError(true)}
+            unoptimized={isExternalUrl(imagem.src) || imageError}
           />
         </div>
       )}

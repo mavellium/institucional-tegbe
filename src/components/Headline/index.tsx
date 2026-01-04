@@ -8,11 +8,44 @@ import { motion, AnimatePresence } from "framer-motion";
 // --- TIPAGEM ---
 type HeadlineVariant = 'home' | 'ecommerce' | 'marketing' | 'sobre';
 
-interface HeadlineProps {
+// Interface para dados da API
+export interface HeadlineApiData {
+  badge?: {
+    icon?: string;
+    text?: string;
+    visible?: boolean;
+  };
+  title?: {
+    // Para variante home
+    intro?: string;
+    animatedWords?: Array<{ text: string; color: string }>;
+    main?: string;
+    // Para outras variantes
+    line1?: string;
+    line2?: string;
+    line3?: string;
+  };
+  subtitle?: string;
+  button?: {
+    text?: string;
+    link?: string;
+    icon?: string;
+    visible?: boolean;
+  };
+  agenda?: {
+    text?: string;
+    visible?: boolean;
+    iconColor?: string;
+  };
   variant?: HeadlineVariant;
 }
 
-// --- TIPOS DE CONTEÚDO ---
+interface HeadlineProps {
+  variant?: HeadlineVariant;
+  data?: HeadlineApiData;
+}
+
+// --- TIPOS INTERNOS DO COMPONENTE ---
 interface AnimatedTitle {
   intro: string;
   animatedWords: { text: string; color: string }[];
@@ -149,8 +182,8 @@ const themeConfig = {
   }
 };
 
-// --- CONFIGURAÇÃO DE CONTEÚDO ---
-const contentConfig: Record<HeadlineVariant, HeadlineContent> = {
+// --- CONFIGURAÇÃO DE CONTEÚDO PADRÃO ---
+const defaultContentConfig: Record<HeadlineVariant, HeadlineContent> = {
   home: {
     badge: {
       icon: "mdi:check-decagram",
@@ -177,7 +210,7 @@ const contentConfig: Record<HeadlineVariant, HeadlineContent> = {
     subtitle: "A única assessoria com selo Oficial que <strong class='text-gray-100 font-medium border-b border-yellow-500/50 pb-0.5'>assume o operacional</strong> da sua loja. Pare de perder tempo com gestão técnica e foque apenas no lucro.",
     button: {
       text: "QUERO VENDER AGORA",
-      link: "#planos",
+      link: "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20come%C3%A7ar%20a%20vender%20agora.%20Podemos%20conversar%20sobre%20uma%20estrat%C3%A9gia%20imediata?",
       icon: "lucide:arrow-right",
       visible: true,
       classes: "px-10 py-7 rounded-full bg-[#FFCC00] text-black font-bold text-lg tracking-tight hover:bg-[#ffdb4d] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[inset_0px_1px_0px_rgba(255,255,255,0.4)] border border-yellow-500/20 flex items-center gap-3"
@@ -208,7 +241,7 @@ const contentConfig: Record<HeadlineVariant, HeadlineContent> = {
     subtitle: "Unimos tecnologia, gestão de elite e as <strong class='text-gray-100 font-medium border-b border-yellow-500/50 pb-0.5'>estratégias de quem domina os algoritmos</strong>. Se o seu objetivo é ver o gráfico de vendas subir todos os dias, você está no lugar certo.",
     button: {
       text: "QUERO VENDER MAIS AGORA",
-      link: "#planos",
+      link: "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20come%C3%A7ar%20a%20vender%20agora.%20Podemos%20conversar%20sobre%20uma%20estrat%C3%A9gia%20imediata?",
       icon: "lucide:arrow-right",
       visible: true,
       classes: "px-10 py-7 rounded-full bg-[#FFCC00] text-black font-bold text-lg tracking-tight hover:bg-[#ffdb4d] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[inset_0px_1px_0px_rgba(255,255,255,0.4)] border border-yellow-500/20 flex items-center gap-3"
@@ -239,7 +272,7 @@ const contentConfig: Record<HeadlineVariant, HeadlineContent> = {
     subtitle: "Sem hacks. Sem promessas vazias. Apenas a engenharia exata para transformar cliques em contratos assinados no seu CRM.",
     button: {
       text: "Estruturar meu Comercial",
-      link: "#diagnostico",
+      link: "https://api.whatsapp.com/send?phone=5514991779502&text=Preciso%20estruturar%20meu%20time%20comercial%20e%20quero%20a%20ajuda%20da%20Tegbe.",
       icon: "lucide:arrow-right",
       visible: true,
       classes: "px-8 py-4 rounded-full bg-[#E60045] text-white font-bold text-sm md:text-base tracking-wide hover:bg-[#ff1758] hover:scale-[1.01] active:scale-[0.99] transition-all border border-rose-500/20 flex items-center gap-2"
@@ -294,26 +327,87 @@ const globalConfig = {
 };
 
 // --- TYPE GUARDS ---
-function isAnimatedTitle(title: AnimatedTitle | StaticTitle): title is AnimatedTitle {
+function isAnimatedTitle(title: any): title is AnimatedTitle {
   return 'animatedWords' in title;
 }
 
-export function Headline({ variant = 'home' }: HeadlineProps) {
-  const [wordIndex, setWordIndex] = useState(0);
-  const theme = themeConfig[variant];
-  const content = contentConfig[variant];
+function mergeWithDefault(variant: HeadlineVariant, apiData?: HeadlineApiData): HeadlineContent {
+  const defaultContent = defaultContentConfig[variant];
+  
+  if (!apiData) return defaultContent;
 
-  // Configuração da animação apenas para a variant 'home'
+  // Determinar qual variante usar (API pode sobrescrever)
+  const actualVariant = apiData.variant || variant;
+  const themeVariant = themeConfig[actualVariant] || themeConfig[variant];
+  
+  // Mesclar dados
+  const mergedContent: HeadlineContent = {
+    badge: {
+      ...defaultContent.badge,
+      ...(apiData.badge?.icon && { icon: apiData.badge.icon }),
+      ...(apiData.badge?.text && { text: apiData.badge.text }),
+      ...(apiData.badge?.visible !== undefined && { visible: apiData.badge.visible }),
+    },
+    title: defaultContent.title,
+    subtitle: apiData.subtitle || defaultContent.subtitle,
+    button: {
+      ...defaultContent.button,
+      ...(apiData.button?.text && { text: apiData.button.text }),
+      ...(apiData.button?.link && { link: apiData.button.link }),
+      ...(apiData.button?.icon && { icon: apiData.button.icon }),
+      ...(apiData.button?.visible !== undefined && { visible: apiData.button.visible }),
+    },
+    agenda: {
+      ...defaultContent.agenda,
+      ...(apiData.agenda?.text && { text: apiData.agenda.text }),
+      ...(apiData.agenda?.visible !== undefined && { visible: apiData.agenda.visible }),
+      ...(apiData.agenda?.iconColor && { iconColor: apiData.agenda.iconColor }),
+    }
+  };
+
+  // Mesclar título com base no tipo
+  if (isAnimatedTitle(defaultContent.title) && apiData.title) {
+    // Para título animado (variante home)
+    const animatedTitle = defaultContent.title as AnimatedTitle;
+    mergedContent.title = {
+      ...animatedTitle,
+      ...(apiData.title.intro && { intro: apiData.title.intro }),
+      ...(apiData.title.animatedWords && { animatedWords: apiData.title.animatedWords }),
+      ...(apiData.title.main && { main: apiData.title.main }),
+    };
+  } else if (apiData.title) {
+    // Para título estático
+    const staticTitle = defaultContent.title as StaticTitle;
+    mergedContent.title = {
+      ...staticTitle,
+      ...(apiData.title.line1 && { line1: apiData.title.line1 }),
+      ...(apiData.title.line2 && { line2: apiData.title.line2 }),
+      ...(apiData.title.line3 && { line3: apiData.title.line3 }),
+    };
+  }
+
+  return mergedContent;
+}
+
+export function Headline({ variant = 'home', data }: HeadlineProps) {
+  const [wordIndex, setWordIndex] = useState(0);
+  
+  // Mesclar dados da API com padrão
+  const mergedContent = mergeWithDefault(variant, data);
+  const theme = themeConfig[variant];
+  const content = mergedContent;
+
+  // Configuração da animação apenas para a variante 'home'
   useEffect(() => {
     if (variant !== 'home') return;
-    
+
     const title = content.title;
     if (!isAnimatedTitle(title)) return;
-    
+
     const interval = setInterval(() => {
       setWordIndex((prevIndex) => (prevIndex + 1) % title.animatedWords.length);
     }, globalConfig.animationInterval);
-    
+
     return () => clearInterval(interval);
   }, [variant, content]);
 
@@ -328,21 +422,21 @@ export function Headline({ variant = 'home' }: HeadlineProps) {
       {globalConfig.effects.grid && (
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"></div>
       )}
-      
+
       {globalConfig.effects.spotlight && (
         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] ${theme.spotlight} rounded-full blur-[120px] opacity-40 mix-blend-screen pointer-events-none`} />
       )}
-      
+
       {globalConfig.effects.bottomShadow && (
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#020202] to-transparent z-10" />
       )}
 
       {/* --- CAMADA 2: Conteúdo Principal --- */}
       <div className="container relative z-20 px-4 md:px-6 flex flex-col items-center text-center">
-        
+
         {/* Badge Oficial */}
         {content.badge.visible && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -378,7 +472,7 @@ export function Headline({ variant = 'home' }: HeadlineProps) {
                 </span>
               </h2>
 
-              <motion.h1 
+              <motion.h1
                 className={content.title.classes.mainTitle}
                 dangerouslySetInnerHTML={renderHTML(content.title.main)}
               />
@@ -401,35 +495,37 @@ export function Headline({ variant = 'home' }: HeadlineProps) {
         </div>
 
         {/* Subtítulo */}
-        <motion.p 
+        <motion.p
           className="max-w-2xl mx-auto text-base sm:text-xl text-gray-400 leading-relaxed mb-12 font-light tracking-wide"
           dangerouslySetInnerHTML={renderHTML(content.subtitle)}
         />
 
         {/* Botão CTA e Agenda */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.7 }}
           className="flex flex-col items-center gap-6"
         >
           {content.button.visible && (
-            <a 
-              aria-label={content.button.text.toLowerCase()} 
-              href={content.button.link} 
+            <a
+              aria-label={content.button.text.toLowerCase()}
+              href={content.button.link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative"
             >
               {/* Glow effect atrás do botão */}
               <div className={`absolute -inset-1 bg-gradient-to-r ${theme.button.glow} rounded-full opacity-30 blur-lg group-hover:opacity-60 transition duration-500`}></div>
-              
-              <Button 
+
+              <Button
                 aria-label={content.button.text.toLowerCase()}
                 className={content.button.classes}
               >
                 {content.button.text}
-                <Icon 
-                  icon={content.button.icon} 
-                  className="w-5 h-5 transition-transform group-hover:translate-x-1" 
+                <Icon
+                  icon={content.button.icon}
+                  className="w-5 h-5 transition-transform group-hover:translate-x-1"
                 />
               </Button>
             </a>

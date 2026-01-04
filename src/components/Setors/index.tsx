@@ -16,35 +16,39 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface para tipagem
-interface CardData {
-  id: number;
-  image: string;
-  title: string;
-}
-
-interface SetorsProps {
-  data?: {
+// Interface para os dados da API
+export interface SetorsApiData {
+  title?: string;
+  highlightedText?: string;
+  afterText?: string;
+  cards?: Array<{
+    id?: number;
+    image?: string;
     title?: string;
-    highlightedText?: string;
-    cards?: CardData[];
-    controls?: {
-      showDots?: boolean;
-      showPlayPause?: boolean;
-      autoplay?: boolean;
-      autoplaySpeed?: number;
-    };
-    colors?: {
-      primary?: string;
-      background?: string;
-      text?: string;
-    };
+  }>;
+  controls?: {
+    showDots?: boolean;
+    showPlayPause?: boolean;
+    autoplay?: boolean;
+    autoplaySpeed?: number;
+  };
+  colors?: {
+    primary?: string;
+    background?: string;
+    text?: string;
   };
 }
 
-export function Setors({ data }: SetorsProps = {}) {
-  // Dados padrão ou personalizados
-  const defaultCards: CardData[] = [
+interface SetorsProps {
+  data?: SetorsApiData;
+}
+
+// Dados padrão (fallback)
+const defaultSetorsData = {
+  title: "Por que centralizar a operação está",
+  highlightedText: "travando",
+  afterText: " o seu crescimento?",
+  cards: [
     {
       id: 1,
       image: "/growth-1.png",
@@ -65,25 +69,72 @@ export function Setors({ data }: SetorsProps = {}) {
       image: "/growth-4.png",
       title: "**Padrão de Loja Oficial.** Fotos de celular e descrições genéricas matam sua margem. Elevamos sua marca com design profissional e copy persuasiva que transmitem autoridade e justificam seu preço.",
     },
-  ];
+  ],
+  controls: {
+    showDots: true,
+    showPlayPause: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+  },
+  colors: {
+    primary: "#FFCC00",
+    background: "#F4F4F4",
+    text: "#000000",
+  }
+};
 
-  const cards = data?.cards || defaultCards;
-  const title = data?.title || "Por que centralizar a operação está";
-  const highlightedText = data?.highlightedText || "travando";
-  const afterText = data?.title ? "" : " o seu crescimento?";
-  const primaryColor = data?.colors?.primary || "#FFCC00";
-  const backgroundColor = data?.colors?.background || "#F4F4F4";
-  const textColor = data?.colors?.text || "#000000";
+// Função para mesclar dados da API com padrão
+const mergeWithDefault = (apiData?: SetorsApiData) => {
+  const defaultData = defaultSetorsData;
   
-  const controlsConfig = {
-    showDots: data?.controls?.showDots ?? true,
-    showPlayPause: data?.controls?.showPlayPause ?? true,
-    autoplay: data?.controls?.autoplay ?? true,
-    autoplaySpeed: data?.controls?.autoplaySpeed ?? 5000,
+  if (!apiData) return defaultData;
+
+  // Mesclar dados
+  const mergedData = {
+    ...defaultData,
+    title: apiData.title || defaultData.title,
+    highlightedText: apiData.highlightedText || defaultData.highlightedText,
+    afterText: apiData.afterText || defaultData.afterText,
+    cards: apiData.cards && apiData.cards.length > 0 
+      ? apiData.cards.map((apiCard, index) => ({
+          id: apiCard.id || index + 1,
+          image: apiCard.image || `/growth-${(index % 4) + 1}.png`,
+          title: apiCard.title || `Card ${index + 1}`,
+        }))
+      : defaultData.cards,
+    controls: {
+      ...defaultData.controls,
+      ...(apiData.controls?.showDots !== undefined && { showDots: apiData.controls.showDots }),
+      ...(apiData.controls?.showPlayPause !== undefined && { showPlayPause: apiData.controls.showPlayPause }),
+      ...(apiData.controls?.autoplay !== undefined && { autoplay: apiData.controls.autoplay }),
+      ...(apiData.controls?.autoplaySpeed !== undefined && { autoplaySpeed: apiData.controls.autoplaySpeed }),
+    },
+    colors: {
+      ...defaultData.colors,
+      ...(apiData.colors?.primary && { primary: apiData.colors.primary }),
+      ...(apiData.colors?.background && { background: apiData.colors.background }),
+      ...(apiData.colors?.text && { text: apiData.colors.text }),
+    }
   };
 
+  return mergedData;
+};
+
+export function Setors({ data }: SetorsProps) {
+  // Usar dados mesclados (API + padrão)
+  const setorsData = mergeWithDefault(data);
+  
+  const {
+    title,
+    highlightedText,
+    afterText,
+    cards,
+    controls,
+    colors
+  } = setorsData;
+
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(controlsConfig.autoplay);
+  const [isPlaying, setIsPlaying] = useState(controls.autoplay);
   const [isHovering, setIsHovering] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const [descriptionHeight, setDescriptionHeight] = useState<number>(0);
@@ -97,7 +148,7 @@ export function Setors({ data }: SetorsProps = {}) {
     return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**")) {
         return (
-          <strong key={index} className="font-bold" style={{ color: textColor }}>
+          <strong key={index} className="font-bold" style={{ color: colors.text }}>
             {part.replace(/\*\*/g, "")}
           </strong>
         );
@@ -125,25 +176,25 @@ export function Setors({ data }: SetorsProps = {}) {
 
   // Autoplay Inteligente (Desktop)
   useEffect(() => {
-    if (isMobile || !isPlaying || isHovering || !controlsConfig.autoplay) return;
+    if (isMobile || !isPlaying || isHovering || !controls.autoplay) return;
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % cards.length);
-    }, controlsConfig.autoplaySpeed);
+    }, controls.autoplaySpeed);
 
     return () => clearInterval(interval);
-  }, [isMobile, isPlaying, isHovering, cards.length, controlsConfig.autoplay, controlsConfig.autoplaySpeed]);
+  }, [isMobile, isPlaying, isHovering, cards.length, controls.autoplay, controls.autoplaySpeed]);
 
   // Controle Swiper (Mobile)
   useEffect(() => {
     if (!swiperRef.current || !isMobile) return;
     
-    if (isPlaying && controlsConfig.autoplay) {
+    if (isPlaying && controls.autoplay) {
       swiperRef.current.autoplay?.start();
     } else {
       swiperRef.current.autoplay?.stop();
     }
-  }, [isMobile, isPlaying, controlsConfig.autoplay]);
+  }, [isMobile, isPlaying, controls.autoplay]);
 
   const goToSlide = (index: number) => {
     setActiveIndex(index);
@@ -209,7 +260,7 @@ export function Setors({ data }: SetorsProps = {}) {
     <section
       ref={sectionRef}
       className="py-20 w-full flex flex-col justify-center items-center px-4"
-      style={{ backgroundColor }}
+      style={{ backgroundColor: colors.background }}
       id="setors"
     >
       <div className="container flex flex-col justify-center items-center relative">
@@ -218,10 +269,10 @@ export function Setors({ data }: SetorsProps = {}) {
         <div className="text-center max-w-4xl mb-12">
           <h2 
             className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold leading-tight"
-            style={{ color: textColor }}
+            style={{ color: colors.text }}
           >
             {title}{' '}
-            <span style={{ color: primaryColor }}>{highlightedText}</span>
+            <span style={{ color: colors.primary }}>{highlightedText}</span>
             {afterText}
           </h2>
         </div>
@@ -232,8 +283,8 @@ export function Setors({ data }: SetorsProps = {}) {
             <Swiper
               modules={[Autoplay]}
               onSwiper={(swiper) => (swiperRef.current = swiper)}
-              autoplay={controlsConfig.autoplay ? { 
-                delay: controlsConfig.autoplaySpeed, 
+              autoplay={controls.autoplay ? { 
+                delay: controls.autoplaySpeed, 
                 disableOnInteraction: false 
               } : false}
               centeredSlides={true}
@@ -254,6 +305,7 @@ export function Setors({ data }: SetorsProps = {}) {
                         alt="Growth Tegbe"
                         fill
                         className="object-cover object-center rounded-2xl"
+                        unoptimized={card.image?.includes('vercel-storage.com')}
                       />
                     </div>
                     <motion.div
@@ -304,7 +356,7 @@ export function Setors({ data }: SetorsProps = {}) {
                     }}
                     transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                     className={`relative cursor-pointer overflow-hidden rounded-4xl shadow-lg border-2 ${isActive ? "" : "border-transparent"}`}
-                    style={isActive ? { borderColor: primaryColor } : {}}
+                    style={isActive ? { borderColor: colors.primary } : {}}
                   >
                     <div className="relative w-full h-[600px]">
                       <Image
@@ -312,6 +364,7 @@ export function Setors({ data }: SetorsProps = {}) {
                         alt={card.title}
                         fill
                         className="object-cover object-top"
+                        unoptimized={card.image?.includes('vercel-storage.com')}
                       />
                     </div>
                     {!isActive && <div className="absolute inset-0 bg-black/40 transition-colors duration-300" />}
@@ -337,7 +390,7 @@ export function Setors({ data }: SetorsProps = {}) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
                 className="rounded-2xl p-6 bg-white shadow-lg"
-                style={{ borderLeft: `4px solid ${primaryColor}` }}
+                style={{ borderLeft: `4px solid ${colors.primary}` }}
               >
                 <h2 className="text-lg md:text-xl font-medium leading-relaxed">
                   {renderBoldText(cards[activeIndex].title)}
@@ -356,10 +409,10 @@ export function Setors({ data }: SetorsProps = {}) {
           }}
         >
           {/* Dots */}
-          {controlsConfig.showDots && (
+          {controls.showDots && (
             <div 
               className="flex gap-3 bg-white border border-gray-200 h-14 px-6 rounded-full justify-center items-center shadow-lg"
-              style={{ borderColor: `${primaryColor}30` }}
+              style={{ borderColor: `${colors.primary}30` }}
             >
               {cards.map((_, index) => (
                 <button
@@ -374,7 +427,7 @@ export function Setors({ data }: SetorsProps = {}) {
                   style={{
                     width: index === activeIndex ? '32px' : '10px',
                     height: '10px',
-                    backgroundColor: index === activeIndex ? primaryColor : '#D1D5DB',
+                    backgroundColor: index === activeIndex ? colors.primary : '#D1D5DB',
                   }}
                 />
               ))}
@@ -382,15 +435,15 @@ export function Setors({ data }: SetorsProps = {}) {
           )}
 
           {/* Play/Pause */}
-          {controlsConfig.showPlayPause && (
+          {controls.showPlayPause && (
             <Button
               aria-label={isPlaying ? "Pausar carrossel" : "Tocar carrossel"}
               onClick={() => setIsPlaying((prev) => !prev)}
               className="flex items-center justify-center bg-white border text-gray-800 hover:text-black rounded-full h-14 w-14 shadow-lg transition-all duration-300"
               style={{
-                borderColor: `${primaryColor}30`,
-                backgroundColor: isPlaying ? `${primaryColor}20` : 'white',
-                color: textColor,
+                borderColor: `${colors.primary}30`,
+                backgroundColor: isPlaying ? `${colors.primary}20` : 'white',
+                color: colors.text,
               }}
             >
               {isPlaying ? (
