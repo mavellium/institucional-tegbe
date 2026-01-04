@@ -1,0 +1,38 @@
+{
+  "header": {
+    "badge": "Benchmarking de Mercado",
+    "title": "A diferença é óbvia.",
+    "subtitle": "Compare a profundidade da entrega. Não é sobre quantidade de aulas, é sobre a utilidade do que é ensinado."
+  },
+  "columns": {
+    "competitor": "Cursos Tradicionais",
+    "us": "Ecossistema TegPro"
+  },
+  "features": [
+    {
+      "label": "Origem do Método",
+      "competitor": "Teoria e Livros",
+      "us": "Campo de Batalha (R$ 45M+ Gerados)"
+    },
+    {
+      "label": "Foco do Conteúdo",
+      "competitor": "Gatilhos Mentais Genéricos",
+      "us": "Processos Operacionais de Escala"
+    },
+    {
+      "label": "Ferramentas Entregues",
+      "competitor": "Nenhuma (Apenas PDF)",
+      "us": "Templates de CRM, Scripts e Dashboards"
+    },
+    {
+      "label": "Suporte",
+      "competitor": "E-mail ou Ticket",
+      "us": "Comunidade Ativa no WhatsApp"
+    },
+    {
+      "label": "Atualização",
+      "competitor": "Anual (Se houver)",
+      "us": "Mensal (Baseado no que validamos na agência)"
+    }
+  ]
+}

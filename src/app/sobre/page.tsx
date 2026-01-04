@@ -1,5 +1,6 @@
 'use client';
 
+import videoConfig from "@/json/Video2/sobreConfig.json";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Schema from "@/components/Schema";
@@ -50,7 +51,7 @@ export default function EcommercePage() {
             <Header variant="sobre" />
             <SociosCrescimento variant="sobre" />
             <Sobre />
-            <Video2 />
+            <Video2 config={videoConfig} />
             <Cards variant="sobre" />
             <Historia />
             <Empresas variant="sobre" />

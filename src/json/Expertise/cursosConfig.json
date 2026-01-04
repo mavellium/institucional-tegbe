@@ -1,0 +1,29 @@
+{
+  "theme": {
+    "accentColor": "#FFD700",
+    "secondaryColor": "#B8860B"
+  },
+  "header": {
+    "badgeIcon": "ph:strategy-bold",
+    "badgeText": "Método Proprietário",
+    "titleLine1": "Não é sorte. É engenharia.",
+    "titleHighlight": "Processos que replicam sucesso."
+  },
+  "visual": {
+    "imageSrc": "/images/dashboard-course.jpg", 
+    "imageAlt": "Dashboards de Alunos TegPro",
+    "floatingCard": {
+      "icon": "ph:crown-simple-fill",
+      "title": "Protocolo Validado",
+      "subtitle": "Aplicado em +1.200 negócios"
+    }
+  },
+  "content": {
+    "paragraph1": "Você acabou de ver os resultados acima. Nenhum deles aconteceu por acaso. Eles aconteceram porque instalaram o <strong>Sistema Operacional TegPro</strong>.",
+    "paragraph2": "Não vendemos 'hacks' que param de funcionar na próxima atualização. Ensinamos <strong>fundamentos de negócios</strong>: aquisição de clientes, processos comerciais e gestão financeira. É assim que transformamos autônomos em <strong style='border-bottom: 1px solid #FFD700'>empresários de escala.</strong>"
+  },
+  "cta": {
+    "text": "Acessar o Protocolo",
+    "link": "#planos"
+  }
+}
