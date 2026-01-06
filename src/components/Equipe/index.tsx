@@ -11,13 +11,40 @@ if (typeof window !== "undefined") {
 }
 
 // --- TIPAGEM ---
-type WhyTegbeVariant = 'ecommerce' | 'marketing';
+export type WhyTegbeVariant = 'ecommerce' | 'marketing';
+
+// Interface baseada no JSON da API
+export interface WhyTegbeData {
+  badge: {
+    text: string;
+  };
+  title: {
+    part1: string;
+    part2: string;
+    gradient?: string;  // Pode vir como gradient (marketing)
+    highlight?: string; // Ou highlight (ecommerce)
+  };
+  subtitle: {
+    text: string;
+    strong1?: string;
+    strong2?: string;
+    highlight?: string;
+  };
+  cta: {
+    text: string;
+    icon: string;
+    href: string;
+  };
+  // API retorna string. O estilo visual (bolinha, cor) fica no tema.
+  ctaSubtitle: string; 
+}
 
 interface WhyTegbeProps {
   variant?: WhyTegbeVariant;
+  data: WhyTegbeData; // Dados agora obrigatórios
 }
 
-// --- INTERFACES ESPECÍFICAS ---
+// --- INTERFACES DE TEMA (VISUAL) ---
 interface EcommerceTheme {
   background: string;
   border: string;
@@ -83,52 +110,7 @@ interface MarketingTheme {
   };
 }
 
-interface EcommerceContent {
-  badge: {
-    text: string;
-  };
-  title: {
-    part1: string;
-    part2: string;
-    highlight: string;
-  };
-  subtitle: {
-    text: string;
-    highlight: string;
-  };
-  cta: {
-    text: string;
-    icon: string;
-  };
-  ctaSubtitle: string;
-}
-
-interface MarketingContent {
-  badge: {
-    text: string;
-  };
-  title: {
-    part1: string;
-    part2: string;
-    gradient: string;
-  };
-  subtitle: {
-    text: string;
-    strong1: string;
-    strong2: string;
-    highlight: string;
-  };
-  cta: {
-    text: string;
-    icon: string;
-    href: string;
-  };
-  ctaSubtitle: {
-    text: string;
-  };
-}
-
-// --- CONFIGURAÇÃO DE TEMA ---
+// --- CONFIGURAÇÃO DE TEMA (VISUAL - HARDCODED) ---
 const themeConfig: Record<WhyTegbeVariant, EcommerceTheme | MarketingTheme> = {
   ecommerce: {
     background: "bg-[#050505]",
@@ -195,67 +177,10 @@ const themeConfig: Record<WhyTegbeVariant, EcommerceTheme | MarketingTheme> = {
   }
 };
 
-// --- CONFIGURAÇÃO DE CONTEÚDO ---
-const contentConfig: Record<WhyTegbeVariant, EcommerceContent | MarketingContent> = {
-  ecommerce: {
-    badge: {
-      text: "Método Validado Tegbe"
-    },
-    title: {
-      part1: "Por que vender com a ",
-      part2: "Tegbe",
-      highlight: "e não sozinho?"
-    },
-    subtitle: {
-      text: "Vender sozinho é tentar a sorte. Com a Tegbe, você aplica o método que ",
-      highlight: "destrava o faturamento"
-    },
-    cta: {
-      text: "FALAR COM UM ESPECIALISTA",
-      icon: "ph:chart-line-up-bold"
-    },
-    ctaSubtitle: "Plano de guerra para vender mais"
-  },
-  marketing: {
-    badge: {
-      text: "Engenharia de Vendas"
-    },
-    title: {
-      part1: "Por que contratar a ",
-      part2: "Tegbe",
-      gradient: "e não uma agência comum?"
-    },
-    subtitle: {
-      text: "Agências comuns vendem 'posts criativos' e esperam um milagre. Nós instalamos um ",
-      strong1: "Ecossistema de Receita",
-      strong2: "(Tráfego + CRM + IA) que elimina a sorte e transforma dados em ",
-      highlight: "lucro líquido."
-    },
-    cta: {
-      text: "AGENDAR DIAGNÓSTICO",
-      icon: "lucide:arrow-right",
-      href: "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio."
-    },
-    ctaSubtitle: {
-      text: "Agenda de Consultoria Liberada"
-    }
-  }
-};
-
-// --- TYPE GUARDS ---
-function isMarketingContent(content: EcommerceContent | MarketingContent): content is MarketingContent {
-  return 'cta' in content && 'href' in content.cta;
-}
-
-function isMarketingTheme(theme: EcommerceTheme | MarketingTheme): theme is MarketingTheme {
-  return 'lighting' in theme && 'noise' in theme.lighting;
-}
-
 // --- COMPONENTE PARA ECOMMERCE ---
-const WhyTegbeEcommerce = () => {
+const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.ecommerce as EcommerceTheme;
-  const content = contentConfig.ecommerce as EcommerceContent;
 
   useGSAP(() => {
     gsap.from(".reveal-text", {
@@ -281,27 +206,40 @@ const WhyTegbeEcommerce = () => {
       <div className="container max-w-5xl relative z-10">
         <div className="flex flex-col items-center text-center w-full">
 
+          {/* Badge */}
           <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${theme.badge.dot} animate-pulse`}></span>
             <span className={`text-[10px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
-              {content.badge.text}
+              {data.badge.text}
             </span>
           </div>
 
+          {/* Title */}
           <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
-            {content.title.part1}<span className={theme.text.highlight}>{content.title.part2}</span> {content.title.highlight}
+            {data.title.part1}
+            <span className={theme.text.highlight}>{data.title.part2}</span> 
+            {/* Renderiza o resto do título (pode vir como highlight ou gradient no json) */}
+            {data.title.highlight || data.title.gradient}
           </h1>
 
+          {/* Subtitle */}
           <div className="reveal-text max-w-2xl space-y-5 mb-10">
             <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
-              {content.subtitle.text}<span className={theme.text.primary}>{content.subtitle.highlight}</span> e domina o algoritmo do Mercado Livre.
+              {data.subtitle.text}
+              {/* No Ecommerce, o destaque geralmente é o highlight */}
+              {data.subtitle.highlight && (
+                 <span className={theme.text.primary}>{data.subtitle.highlight}</span>
+              )}
+              {/* Fallback caso venha strongs no JSON de ecommerce também */}
+              {data.subtitle.strong1 && <strong> {data.subtitle.strong1}</strong>}
             </p>
           </div>
 
+          {/* CTA */}
           <div className="reveal-text">
             <a
-              aria-label={content.cta.text}
-              href="https://api.whatsapp.com/send?phone=5514991779502&text=Gostaria%20de%20falar%20com%20um%20especialista%20da%20Tegbe%20para%20tirar%20algumas%20d%C3%BAvidas."
+              aria-label={data.cta.text}
+              href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
               target="_blank"
               rel="noopener noreferrer"
               className={`
@@ -310,14 +248,14 @@ const WhyTegbeEcommerce = () => {
                 ${theme.cta.hover.background} hover:scale-105 ${theme.cta.hover.shadow}
               `}
             >
-              <span>{content.cta.text}</span>
+              <span>{data.cta.text}</span>
               <Icon
-                icon={content.cta.icon}
+                icon={data.cta.icon || "lucide:arrow-right"}
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
               />
             </a>
             <p className={`mt-4 text-[11px] ${theme.ctaSubtitle} font-medium tracking-widest uppercase`}>
-              {content.ctaSubtitle}
+              {data.ctaSubtitle}
             </p>
           </div>
         </div>
@@ -327,10 +265,9 @@ const WhyTegbeEcommerce = () => {
 };
 
 // --- COMPONENTE PARA MARKETING ---
-const WhyTegbeMarketing = () => {
+const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
-  const content = contentConfig.marketing as MarketingContent;
 
   useGSAP(() => {
     gsap.from(".reveal-text", {
@@ -361,30 +298,48 @@ const WhyTegbeMarketing = () => {
       <div className="container max-w-5xl relative z-10">
         <div className="flex flex-col items-center text-center w-full">
 
+          {/* Badge */}
           <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1.5 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.badge.dot.outer} opacity-75`}></span>
               <span className={`relative inline-flex rounded-full h-2 w-2 ${theme.badge.dot.inner}`}></span>
             </span>
             <span className={`text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
-              {content.badge.text}
+              {data.badge.text}
             </span>
           </div>
 
+          {/* Title */}
           <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
-            {content.title.part1}<span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>{content.title.part2}</span> {content.title.gradient}
+            {data.title.part1}
+            <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
+                {data.title.part2}
+            </span> 
+            {/* Fallback seguro */}
+            {data.title.gradient || data.title.highlight}
           </h1>
 
+          {/* Subtitle */}
           <div className="reveal-text max-w-3xl space-y-5 mb-10">
             <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
-              {content.subtitle.text}<strong className="text-white font-medium">{content.subtitle.strong1}</strong> {content.subtitle.strong2}<strong className="text-white border-b border-[#E31B63]">{content.subtitle.highlight}</strong>
+              {data.subtitle.text}
+              {data.subtitle.strong1 && (
+                  <strong className="text-white font-medium">{data.subtitle.strong1}</strong>
+              )}
+              {data.subtitle.strong2 && (
+                   <> {data.subtitle.strong2}</>
+              )}
+              {data.subtitle.highlight && (
+                  <strong className="text-white border-b border-[#E31B63]">{data.subtitle.highlight}</strong>
+              )}
             </p>
           </div>
 
+          {/* CTA */}
           <div className="reveal-text flex flex-col items-center">
             <a
-              aria-label={content.cta.text}
-              href={content.cta.href}
+              aria-label={data.cta.text}
+              href={data.cta.href}
               target="_blank"
               rel="noopener noreferrer"
               className={`
@@ -393,15 +348,15 @@ const WhyTegbeMarketing = () => {
                 ${theme.cta.hover.background} ${theme.cta.hover.text} hover:scale-105 ${theme.cta.hover.shadow}
               `}
             >
-              <span>{content.cta.text}</span>
+              <span>{data.cta.text}</span>
               <Icon
-                icon={content.cta.icon}
+                icon={data.cta.icon || "lucide:arrow-right"}
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
               />
             </a>
             <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>
               <span className={`w-1.5 h-1.5 rounded-full ${theme.ctaSubtitle.dot} animate-pulse`}></span>
-              {content.ctaSubtitle.text}
+              {data.ctaSubtitle}
             </p>
           </div>
         </div>
@@ -411,13 +366,16 @@ const WhyTegbeMarketing = () => {
 };
 
 // --- COMPONENTE PRINCIPAL ---
-export function Equipe({ variant = 'ecommerce' }: WhyTegbeProps) {
+export function Equipe({ variant = 'ecommerce', data }: WhyTegbeProps) {
+  // Segurança: se não vier dados, não quebra a tela
+  if (!data) return null;
+
   switch (variant) {
     case 'ecommerce':
-      return <WhyTegbeEcommerce />;
+      return <WhyTegbeEcommerce data={data} />;
     case 'marketing':
-      return <WhyTegbeMarketing />;
+      return <WhyTegbeMarketing data={data} />;
     default:
-      return <WhyTegbeEcommerce />;
+      return <WhyTegbeEcommerce data={data} />;
   }
 }

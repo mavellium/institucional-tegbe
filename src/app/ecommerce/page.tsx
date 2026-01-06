@@ -25,8 +25,19 @@ async function getSafeData(slug: string) {
 }
 
 export default async function EcommercePage() {
-    // 1. Busca os dados do Headline (que contém a variante 'ecommerce' no JSON)
-    const headlineResponse = await getSafeData('headline');
+    // 1. PERFORMANCE: Request Waterfall Zero.
+    // Buscando Headline, Company, CTA e agora EQUIPE em paralelo.
+    const [headlineResponse, companyResponse, ctaResponse, equipeResponse] = await Promise.all([
+        getSafeData('headline'),
+        getSafeData('company'),
+        getSafeData('call-to-action'),
+        getSafeData('equipe') // Endpoint: .../json/equipe
+    ]);
+
+    // 2. Extração Cirúrgica dos Nós
+    const companysData = companyResponse?.data?.ecommerce || null;
+    const ctaData = ctaResponse?.data?.ecommerce || null;
+    const equipeData = equipeResponse?.data?.ecommerce || null; // Dados extraídos para o componente Equipe
 
     return (
         <>
@@ -56,9 +67,16 @@ export default async function EcommercePage() {
             <Logos />
             <Cards variant="ecommerce" />
             <SectionImage variant="ecommerce" />
-            <Equipe variant="ecommerce"/>
-            <Companys variant="ecommerce" />
-            <ChamadaAcao variant="ecommerce" />
+            
+            {/* Equipe (Why Tegbe) agora Data-Driven */}
+            <Equipe variant="ecommerce" data={equipeData} />
+            
+            {/* Companys Data-Driven */}
+            <Companys variant="ecommerce" data={companysData} />
+            
+            {/* Call to Action Data-Driven */}
+            <ChamadaAcao variant="ecommerce" data={ctaData} />
+            
             <Footer />
         </>
     );

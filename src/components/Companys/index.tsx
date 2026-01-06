@@ -6,23 +6,37 @@ import { ChevronLeft, ChevronRight, TrendingUp, ArrowUpRight } from 'lucide-reac
 import { Icon } from '@iconify/react';
 
 // --- TIPAGEM ---
-type CompanysVariant = 'ecommerce' | 'marketing';
+export type CompanysVariant = 'ecommerce' | 'marketing';
 
-interface CompanysProps {
-  variant?: CompanysVariant;
-}
-
-// --- INTERFACES ESPECÍFICAS ---
-interface TestimonialItem {
+// Interface baseada no JSON da API
+export interface TestimonialItem {
   id: number;
   logo: string;
   name: string;
   description: string;
   result: string;
-  metric?: string;
+  metric?: string | null; // Aceita null ou string vinda da API
   tags: string[];
 }
 
+export interface SectionContent {
+  badge: {
+    text: string;
+    icon: string;
+  };
+  title: {
+    part1: string;
+    part2: string;
+  };
+  testimonials: TestimonialItem[];
+}
+
+interface CompanysProps {
+  variant?: CompanysVariant;
+  data: SectionContent; // Dados agora são obrigatórios via prop
+}
+
+// --- INTERFACES DE TEMA (VISUAL) ---
 interface EcommerceTheme {
   background: string;
   border: string;
@@ -111,31 +125,7 @@ interface MarketingTheme {
   };
 }
 
-interface EcommerceContent {
-  badge: {
-    text: string;
-    icon: string;
-  };
-  title: {
-    part1: string;
-    part2: string;
-  };
-  testimonials: TestimonialItem[];
-}
-
-interface MarketingContent {
-  badge: {
-    text: string;
-    icon: string;
-  };
-  title: {
-    part1: string;
-    part2: string;
-  };
-  testimonials: TestimonialItem[];
-}
-
-// --- CONFIGURAÇÃO DE TEMA ---
+// --- CONFIGURAÇÃO DE TEMA (HARDCODED - VISUAL) ---
 const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
   ecommerce: {
     background: "bg-[#050505]",
@@ -225,147 +215,8 @@ const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
   }
 };
 
-// --- CONFIGURAÇÃO DE CONTEÚDO ---
-const contentConfig: Record<CompanysVariant, EcommerceContent | MarketingContent> = {
-  ecommerce: {
-    badge: {
-      text: "Track Record",
-      icon: "solar:graph-up-bold"
-    },
-    title: {
-      part1: "Empresas que estão",
-      part2: "vendendo conosco."
-    },
-    testimonials: [
-      {
-        id: 1,
-        logo: "/equipe.png",
-        name: "Decora Fest",
-        description: "Loja de Decorações • Garça/SP",
-        result: "Aumento de 30% nas Vendas",
-        tags: ["E-commerce", "Gestão"]
-      },
-      {
-        id: 2,
-        logo: "/equipe.png",
-        name: "Tech Solutions",
-        description: "Tecnologia • São Paulo/SP",
-        result: "Redução de 40% no SLA",
-        tags: ["Automação", "Processos"]
-      },
-      {
-        id: 3,
-        logo: "/equipe.png",
-        name: "Bella Moda",
-        description: "Moda Feminina • Marília/SP",
-        result: "+50% Engajamento Social",
-        tags: ["Social Media", "Branding"]
-      },
-      {
-        id: 4,
-        logo: "/equipe.png",
-        name: "Sabor & Arte",
-        description: "Gastronomia • Bauru/SP",
-        result: "Aumento de 25% nas Reservas",
-        tags: ["Tráfego Local", "Google"]
-      },
-      {
-        id: 5,
-        logo: "/equipe.png",
-        name: "FitLife Academia",
-        description: "Fitness • Ribeirão Preto/SP",
-        result: "45% mais Matrículas",
-        tags: ["Leads", "Vendas"]
-      },
-      {
-        id: 6,
-        logo: "/equipe.png",
-        name: "Pet Care Plus",
-        description: "Veterinária • Campinas/SP",
-        result: "3x Clientes Recorrentes",
-        tags: ["CRM", "Fidelização"]
-      }
-    ]
-  },
-  marketing: {
-    badge: {
-      text: "Track Record",
-      icon: "mdi:chart-box-outline"
-    },
-    title: {
-      part1: "Empresas que",
-      part2: "escalaram conosco."
-    },
-    testimonials: [
-      {
-        id: 1,
-        logo: "/equipe.png",
-        name: "Construtora Viver",
-        description: "Imobiliário • SP",
-        result: "R$ 4.2Mi em VGV",
-        metric: "Em 3 meses de campanha",
-        tags: ["Google Ads", "CRM Kommo"]
-      },
-      {
-        id: 2,
-        logo: "/equipe.png",
-        name: "Dr. Ricardo Silva",
-        description: "Clínica de Estética • RJ",
-        result: "Agenda Lotada",
-        metric: "Custo por Lead: R$ 4,50",
-        tags: ["Meta Ads", "Automação"]
-      },
-      {
-        id: 3,
-        logo: "/equipe.png",
-        name: "Fintech Advance",
-        description: "B2B • Nacional",
-        result: "300% de ROI",
-        metric: "Otimização de Pipeline",
-        tags: ["Inbound", "Hubspot"]
-      },
-      {
-        id: 4,
-        logo: "/equipe.png",
-        name: "Educacional Alpha",
-        description: "Infoproduto • Online",
-        result: "ROAS de 14x",
-        metric: "Lançamento Perpétuo",
-        tags: ["Tráfego", "Copywriting"]
-      },
-      {
-        id: 5,
-        logo: "/equipe.png",
-        name: "Solar Energy",
-        description: "Energia Solar • MG",
-        result: "-40% no CAC",
-        metric: "Qualificação via IA",
-        tags: ["Leads", "Vendas"]
-      },
-      {
-        id: 6,
-        logo: "/equipe.png",
-        name: "Logística Express",
-        description: "Serviços • Sul",
-        result: "Recorde de Receita",
-        metric: "Previsibilidade total",
-        tags: ["BI", "Dashboards"]
-      }
-    ]
-  }
-};
-
-// --- TYPE GUARDS ---
-function isMarketingContent(content: EcommerceContent | MarketingContent): content is MarketingContent {
-  return 'testimonials' in content && content.testimonials.some(item => 'metric' in item);
-}
-
-function isMarketingTheme(theme: EcommerceTheme | MarketingTheme): theme is MarketingTheme {
-  return 'lighting' in theme && 'noise' in theme.lighting;
-}
-
 // --- COMPONENTE PARA ECOMMERCE ---
-const CompanysEcommerce = () => {
+const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -373,7 +224,6 @@ const CompanysEcommerce = () => {
   const x = useMotionValue(0);
 
   const theme = themeConfig.ecommerce as EcommerceTheme;
-  const content = contentConfig.ecommerce as EcommerceContent;
 
   const getCardWidth = () => {
     if (containerWidth < 640) return containerWidth - 48;
@@ -604,7 +454,7 @@ const CompanysEcommerce = () => {
 };
 
 // --- COMPONENTE PARA MARKETING ---
-const CompanysMarketing = () => {
+const CompanysMarketing = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -612,7 +462,6 @@ const CompanysMarketing = () => {
   const x = useMotionValue(0);
 
   const theme = themeConfig.marketing as MarketingTheme;
-  const content = contentConfig.marketing as MarketingContent;
 
   const getCardWidth = () => {
     if (containerWidth < 640) return containerWidth - 48;
@@ -789,7 +638,8 @@ const CompanysMarketing = () => {
                             <p className="text-3xl font-bold text-white leading-tight tracking-tight">
                                 {item.result}
                             </p>
-                            {item.metric && (
+                            {/* Renderiza metric apenas se existir e não for string vazia */}
+                            {item.metric && item.metric !== "" && (
                               <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
                                   <ArrowUpRight className={`w-3 h-3 ${theme.card.metricIcon}`} />
                                   {item.metric}
@@ -849,13 +699,16 @@ const CompanysMarketing = () => {
 };
 
 // --- COMPONENTE PRINCIPAL ---
-export function Companys({ variant = 'ecommerce' }: CompanysProps) {
+export function Companys({ variant = 'ecommerce', data }: CompanysProps) {
+  // Verificação de segurança: se não houver dados, retorna null para não quebrar a tela
+  if (!data) return null;
+
   switch (variant) {
     case 'ecommerce':
-      return <CompanysEcommerce />;
+      return <CompanysEcommerce content={data} />;
     case 'marketing':
-      return <CompanysMarketing />;
+      return <CompanysMarketing content={data} />;
     default:
-      return <CompanysEcommerce />;
+      return <CompanysEcommerce content={data} />;
   }
 }

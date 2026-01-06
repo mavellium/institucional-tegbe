@@ -11,13 +11,40 @@ if (typeof window !== "undefined") {
 }
 
 // --- TIPAGEM ---
-type FinalCTAVariant = 'ecommerce' | 'marketing' | 'sobre';
+export type FinalCTAVariant = 'ecommerce' | 'marketing' | 'sobre';
 
-interface FinalCTAProps {
-  variant?: FinalCTAVariant; // Default: 'ecommerce'
+// Interfaces baseadas no JSON da API
+export interface StatItem {
+  label: string;
+  sublabel: string;
 }
 
-// --- CONFIGURAÇÃO DE TEMA ---
+export interface CTAData {
+  badge: {
+    icon: string;
+    text: string;
+  };
+  title: string;
+  subtitle: string;
+  button: {
+    icon: string;
+    text: string;
+  };
+  footer: {
+    icon: string;
+    text: string;
+    // O stats pode ser string ("+40"), array (para 'sobre') ou vazio
+    stats?: string | StatItem[] | null; 
+  };
+  layout: string;
+}
+
+interface FinalCTAProps {
+  variant?: FinalCTAVariant; 
+  data: CTAData; // Dados obrigatórios
+}
+
+// --- CONFIGURAÇÃO DE TEMA (VISUAL - HARDCODED) ---
 const themeConfig = {
   ecommerce: {
     background: "bg-[#050505]",
@@ -78,72 +105,10 @@ const themeConfig = {
   }
 };
 
-// --- CONFIGURAÇÃO DE CONTEÚDO ---
-const contentConfig = {
-  ecommerce: {
-    badge: {
-      text: "O próximo passo para sua escala",
-      icon: null
-    },
-    title: "O próximo case de sucesso <br /><span class='text-yellow-500'>será o seu.</span>",
-    subtitle: "Trabalhamos com um <span class='text-white'>plano de guerra</span> desenhado para sua marca dominar o mercado e vender mais junto com a Tegbe.",
-    button: {
-      text: "SOLICITAR MEU DIAGNÓSTICO",
-      icon: "ph:arrow-right-bold"
-    },
-    footer: {
-      text: "Vagas limitadas para este mês",
-      icon: "mdi:check-decagram",
-      stats: null
-    },
-    layout: "simple"
-  },
-  marketing: {
-    badge: {
-      text: "Próximo Passo Lógico",
-      icon: "mdi:lightning-bolt"
-    },
-    title: "Sua empresa tem um teto de crescimento. <br class='hidden md:block' /> <span class='text-transparent bg-clip-text bg-gradient-to-r from-[#FF0F43] to-[#E31B63] drop-shadow-[0_0_20px_rgba(227,27,99,0.3)]'>Nós vamos quebrá-lo.</span>",
-    subtitle: "Não entregamos 'tentativas'. Entregamos um <strong class='text-white'>plano de engenharia comercial</strong> desenhado para dominar seu nicho e gerar previsibilidade de caixa.",
-    button: {
-      text: "CONSTRUIR MINHA MÁQUINA DE VENDAS",
-      icon: "lucide:arrow-right"
-    },
-    footer: {
-      text: "Empresas escaladas este ano",
-      icon: null,
-      stats: "+40"
-    },
-    layout: "complex"
-  },
-  sobre: {
-    badge: {
-      text: "Agenda Q1/2026: <span class='text-[#1d1d1f] font-bold'>Últimas Vagas</span>",
-      icon: null
-    },
-    title: "Sua operação está pronta <br /> para o <span class='text-transparent bg-clip-text bg-gradient-to-r from-[#0071E3] to-blue-600'>próximo nível?</span>",
-    subtitle: "Não procuramos clientes, procuramos parceiros de crescimento. Se você tem produto validado e ambição de escala, <span class='text-[#1d1d1f] font-bold'> nós temos a engenharia.</span>",
-    button: {
-      text: "AGENDAR SESSÃO ESTRATÉGICA",
-      icon: "ph:arrow-right-bold"
-    },
-    footer: {
-      text: "",
-      icon: null,
-      stats: [
-        { label: "30 Min", sublabel: "Duração da Sessão" },
-        { label: "Senior", sublabel: "Especialista Real" }
-      ]
-    },
-    layout: "refined"
-  }
-};
-
 // --- ANIMAÇÃO COMUM ---
 const useFinalCTAAnimations = (sectionRef: React.RefObject<HTMLElement | null>, variant: FinalCTAVariant) => {
   useGSAP(() => {
     if (variant === 'sobre') {
-      // Animação específica para "sobre"
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -163,7 +128,6 @@ const useFinalCTAAnimations = (sectionRef: React.RefObject<HTMLElement | null>, 
         "-=0.4"
       );
     } else {
-      // Animação para ecommerce e marketing
       gsap.from(".reveal-final", {
         y: variant === 'ecommerce' ? 20 : 30,
         opacity: 0,
@@ -179,18 +143,28 @@ const useFinalCTAAnimations = (sectionRef: React.RefObject<HTMLElement | null>, 
   }, { scope: sectionRef });
 };
 
-export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
+export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig[variant];
-  const content = contentConfig[variant];
+
+  // Fallback de segurança caso data venha null
+  if (!data) return null;
 
   useFinalCTAAnimations(sectionRef, variant);
 
-  // Componente de botão comum
+  // Mantive os links hardcoded pois não vieram no JSON, mas podem ser passados via prop se necessário
+  const getLink = () => {
+    switch(variant) {
+      case 'ecommerce': return "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20solicitar%20meu%20diagn%C3%B3stico%20comercial%20personalizado.";
+      case 'marketing': return "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20construir%20uma%20m%C3%A1quina%20de%20vendas%20previs%C3%ADvel%20com%20a%20Tegbe.";
+      default: return "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio.";
+    }
+  };
+
   const ButtonCTA = () => (
     <a
-      aria-label={content.button.text.toLowerCase()}
-      href={variant === 'ecommerce' ? "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20solicitar%20meu%20diagn%C3%B3stico%20comercial%20personalizado." : variant === 'marketing' ? "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20construir%20uma%20m%C3%A1quina%20de%20vendas%20previs%C3%ADvel%20com%20a%20Tegbe." : "https://api.whatsapp.com/send?phone=5514991779502&text=Ol%C3%A1!%20Gostaria%20de%20agendar%20um%20diagn%C3%B3stico%20estrat%C3%A9gico%20para%20avaliar%20meu%20neg%C3%B3cio."}
+      aria-label={data.button.text.toLowerCase()}
+      href={getLink()}
       target="_blank"
       rel="noopener noreferrer"
       className={`
@@ -204,10 +178,10 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
       `}
     >
       <span className={`${variant === 'marketing' ? 'text-base sm:text-lg' : variant === 'sobre' ? 'text-lg tracking-wide' : 'text-sm sm:text-base'}`}>
-        {content.button.text}
+        {data.button.text}
       </span>
       <Icon
-        icon={content.button.icon}
+        icon={data.button.icon}
         className={`
           ${variant === 'sobre' ? 'w-8 h-8 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-[#0071E3] transition-colors' : ''}
           ${variant === 'marketing' ? 'w-5 h-5 group-hover:translate-x-1 transition-transform' : ''}
@@ -217,7 +191,6 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
     </a>
   );
 
-  // Componente de glow para marketing
   const GlowEffect = () => (
     <div className={`
       absolute -inset-1 bg-gradient-to-r rounded-full opacity-40 blur-lg group-hover:opacity-70 transition duration-500
@@ -236,7 +209,7 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
         ${variant === 'sobre' ? 'md:py-32' : ''}
       `}
     >
-      {/* Efeitos de background específicos para cada variant */}
+      {/* Efeitos de background */}
       {variant === 'marketing' && (
         <>
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
@@ -271,8 +244,8 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
               </span>
             )}
 
-            {variant === 'marketing' && content.badge.icon && (
-              <Icon icon={content.badge.icon} className={`${variant === 'marketing' ? 'text-[#FF0F43]' : ''} w-4 h-4`} />
+            {variant === 'marketing' && data.badge.icon && (
+              <Icon icon={data.badge.icon} className={`${variant === 'marketing' ? 'text-[#FF0F43]' : ''} w-4 h-4`} />
             )}
 
             <span className={`
@@ -280,7 +253,7 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
               ${variant === 'ecommerce' ? 'text-yellow-500 font-bold tracking-[0.2em] uppercase text-[10px]' : ''}
               ${variant === 'sobre' ? 'text-xs font-mono text-gray-500 tracking-wider uppercase' : ''}
               ${theme.badge.text}
-            `} dangerouslySetInnerHTML={{ __html: content.badge.text }} />
+            `} dangerouslySetInnerHTML={{ __html: data.badge.text }} />
           </div>
 
           {/* Título */}
@@ -290,7 +263,7 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
             ${variant === 'sobre' ? 'text-4xl sm:text-5xl md:text-7xl mb-6 leading-[1.1] text-[#1d1d1f]' : ''}
             ${variant === 'ecommerce' ? 'text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight' : ''}
             ${theme.text.primary}
-          `} dangerouslySetInnerHTML={{ __html: content.title }} />
+          `} dangerouslySetInnerHTML={{ __html: data.title }} />
 
           {/* Subtítulo */}
           <p className={`
@@ -299,7 +272,7 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
             ${variant === 'sobre' ? 'text-lg mb-12 max-w-2xl font-medium' : ''}
             ${variant === 'ecommerce' ? 'text-base sm:text-lg max-w-xl' : ''}
             ${theme.text.secondary}
-          `} dangerouslySetInnerHTML={{ __html: content.subtitle }} />
+          `} dangerouslySetInnerHTML={{ __html: data.subtitle }} />
 
           {/* Botão CTA */}
           <div className="reveal-final flex flex-col items-center gap-5">
@@ -329,34 +302,43 @@ export function ChamadaAcao({ variant = 'ecommerce' }: FinalCTAProps) {
                   <div className="flex -space-x-2">
                     <div className="w-6 h-6 rounded-full bg-gray-700 border border-black"></div>
                     <div className="w-6 h-6 rounded-full bg-gray-600 border border-black"></div>
-                    <div className="w-6 h-6 rounded-full bg-gray-500 border border-black flex items-center justify-center text-[8px] font-bold">+40</div>
+                    <div className="w-6 h-6 rounded-full bg-gray-500 border border-black flex items-center justify-center text-[8px] font-bold">
+                        {/* Se stats for string, renderiza */}
+                        {typeof data.footer.stats === 'string' ? data.footer.stats : '+40'}
+                    </div>
                   </div>
                   <span className="text-[11px] text-gray-400 font-medium tracking-wide uppercase">
-                    {content.footer.text}
+                    {data.footer.text}
                   </span>
                 </>
               )}
 
               {variant === 'ecommerce' && (
                 <>
-                  <Icon icon="mdi:check-decagram" className="text-yellow-500 w-4 h-4" />
+                  {data.footer.icon && (
+                    <Icon icon={data.footer.icon} className="text-yellow-500 w-4 h-4" />
+                  )}
                   <span className="text-[11px] text-gray-400 font-medium tracking-wide uppercase">
-                    {content.footer.text}
+                    {data.footer.text}
                   </span>
                 </>
               )}
 
-              {variant === 'sobre' && content.footer.stats && (
+              {/* Lógica para Stats do tipo Array (Sobre) */}
+              {variant === 'sobre' && Array.isArray(data.footer.stats) && (
                 <>
-                  <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-                    <span className="text-[#1d1d1f] font-bold text-lg">30 Min</span>
-                    <span className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Duração da Sessão</span>
-                  </div>
-                  <div className="h-8 w-[1px] bg-gray-300"></div>
-                  <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-                    <span className="text-[#1d1d1f] font-bold text-lg">Senior</span>
-                    <span className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Especialista Real</span>
-                  </div>
+                  {data.footer.stats.map((stat, idx) => (
+                    <div key={idx} className="flex items-center gap-8 md:gap-12">
+                        <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                            <span className="text-[#1d1d1f] font-bold text-lg">{stat.label}</span>
+                            <span className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">{stat.sublabel}</span>
+                        </div>
+                        {/* Renderiza o divisor apenas se não for o último item */}
+                        {idx < (data.footer.stats as StatItem[]).length - 1 && (
+                            <div className="h-8 w-[1px] bg-gray-300"></div>
+                        )}
+                    </div>
+                  ))}
                 </>
               )}
             </div>
