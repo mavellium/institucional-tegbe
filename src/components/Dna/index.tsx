@@ -16,18 +16,20 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-// --- INTERFACES ---
+// --- INTERFACES DE ENTRADA (FLEXÍVEL - VEM DA API) ---
 export interface DnaInputData {
     id?: string;
-    badge?: { texto: string; classes: string; visivel: boolean; corTexto: string; classesTexto: string };
-    titulo?: { texto: string; destaque: string; visivel: boolean; classes: string; gradiente: string };
-    subtitulo?: { texto: string; classes: string; visivel: boolean };
-    paragrafoFinal?: { texto: string; classes: string; visivel: boolean };
+    badge?: string | { texto: string; classes: string; visivel: boolean; corTexto: string; classesTexto: string };
+    titulo?: string | { texto: string; destaque: string; visivel: boolean; classes: string; gradiente: string };
+    subtitulo?: string | { texto: string; classes: string; visivel: boolean };
+    paragrafoFinal?: string | { texto: string; classes: string; visivel: boolean };
+    textoIntroducao?: string; // Campo extra para compatibilidade
+    
     botao?: { 
         link: string; icone: string; texto: string; visivel: boolean; ariaLabel: string;
         classes: { glow: string; botao: string; container: string } 
     };
-    cards?: Array<{ id: number | string; alt: string; image: string }>;
+    cards?: Array<{ id: number | string; alt?: string; image?: string; imagem?: string }>;
     configuracoes?: {
         layout?: { classes: string; container: string };
         animacao?: { habilitada: boolean; duracao: number; ease: string; scrollTrigger: any };
@@ -37,16 +39,37 @@ export interface DnaInputData {
     controles?: any;
 }
 
+// --- INTERFACES INTERNAS (ESTRITAS - O QUE O COMPONENTE USA) ---
+interface StrictBadge { texto: string; classes: string; visivel: boolean; corTexto: string; classesTexto: string; }
+interface StrictTitulo { texto: string; destaque: string; visivel: boolean; classes: string; gradiente: string; }
+interface StrictTexto { texto: string; classes: string; visivel: boolean; }
+
 interface DnaProps {
     data?: DnaInputData;
 }
 
-// --- VISUAL PADRÃO (Para garantir que a seção apareça como na foto) ---
+// --- VISUAL PADRÃO ---
 const VISUAL_DEFAULTS = {
     layout: {
-        // Fundo preto e padding garantidos
         classes: "py-24 w-full flex flex-col justify-center items-center bg-[#050505] px-5 relative overflow-hidden",
         container: "container flex flex-col justify-center relative z-10"
+    },
+    textos: {
+        badge: {
+            classes: "mb-6 flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5",
+            classesTexto: "text-[10px] font-bold tracking-[0.2em] uppercase",
+            corTexto: "text-gray-400"
+        } as StrictBadge,
+        titulo: {
+            classes: "font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white",
+            gradiente: "from-[#FFD700] to-[#FDB931]"
+        } as StrictTitulo,
+        subtitulo: {
+            classes: "text-lg md:text-xl text-gray-400 font-light leading-relaxed max-w-2xl mx-auto mb-8"
+        } as StrictTexto,
+        paragrafoFinal: {
+            classes: "text-base text-gray-500 leading-relaxed font-light"
+        } as StrictTexto
     },
     animacao: {
         habilitada: true,
@@ -79,27 +102,47 @@ const VISUAL_DEFAULTS = {
 };
 
 export function Dna({ data }: DnaProps) {
-    // Se data for null, usamos um objeto vazio para permitir o uso dos defaults visuais
-    const safeData = data || {};
+    // 1. ADAPTADOR ESTRITO
+    const rawData = data || {};
 
-    // MERGE SEGURO:
-    // Pega o dado da API. Se não existir, pega o VISUAL_DEFAULTS.
-    // Isso garante que 'config.layout.classes' NUNCA seja undefined.
+    const content = {
+        // Cast explícito (as StrictBadge) diz ao TS: "Confia, isso aqui é um objeto completo"
+        badge: (typeof rawData.badge === 'string' 
+            ? { ...VISUAL_DEFAULTS.textos.badge, texto: rawData.badge, visivel: true }
+            : (rawData.badge || { ...VISUAL_DEFAULTS.textos.badge, texto: "DNA", visivel: true })) as StrictBadge,
+
+        titulo: (typeof rawData.titulo === 'string'
+            ? { ...VISUAL_DEFAULTS.textos.titulo, texto: rawData.titulo, destaque: ".", visivel: true }
+            : (rawData.titulo || { ...VISUAL_DEFAULTS.textos.titulo, texto: "", destaque: "", visivel: false })) as StrictTitulo,
+
+        subtitulo: (typeof rawData.subtitulo === 'string'
+            ? { ...VISUAL_DEFAULTS.textos.subtitulo, texto: rawData.subtitulo, visivel: true }
+            : (rawData.subtitulo || { ...VISUAL_DEFAULTS.textos.subtitulo, texto: "", visivel: false })) as StrictTexto,
+        
+        paragrafoFinal: (rawData.textoIntroducao 
+            ? { ...VISUAL_DEFAULTS.textos.paragrafoFinal, texto: rawData.textoIntroducao, visivel: true }
+            : (rawData.paragrafoFinal || { ...VISUAL_DEFAULTS.textos.paragrafoFinal, texto: "", visivel: false })) as StrictTexto,
+
+        cards: rawData.cards?.map(c => ({
+            ...c,
+            image: c.imagem || c.image || "/placeholder.png",
+            alt: c.alt || "Imagem DNA"
+        }))
+    };
+
     const config = {
-        layout: safeData.configuracoes?.layout || VISUAL_DEFAULTS.layout,
-        animacao: safeData.configuracoes?.animacao || VISUAL_DEFAULTS.animacao,
-        swiper: safeData.configuracoes?.swiper || VISUAL_DEFAULTS.swiper
+        layout: rawData.configuracoes?.layout || VISUAL_DEFAULTS.layout,
+        animacao: rawData.configuracoes?.animacao || VISUAL_DEFAULTS.animacao,
+        swiper: rawData.configuracoes?.swiper || VISUAL_DEFAULTS.swiper
     };
 
     const controles = {
-        dots: safeData.controles?.dots || VISUAL_DEFAULTS.controles.dots,
-        playPause: safeData.controles?.playPause || VISUAL_DEFAULTS.controles.playPause
+        dots: rawData.controles?.dots || VISUAL_DEFAULTS.controles.dots,
+        playPause: rawData.controles?.playPause || VISUAL_DEFAULTS.controles.playPause
     };
 
-    const efeitos = safeData.efeitos || VISUAL_DEFAULTS.efeitos;
-
-    // Conteúdo (Texto/Imagens)
-    const { badge, titulo, subtitulo, paragrafoFinal, botao, cards, id } = safeData;
+    const efeitos = rawData.efeitos || VISUAL_DEFAULTS.efeitos;
+    const botao = rawData.botao;
 
     // Hooks
     const [isPlaying, setIsPlaying] = useState(true);
@@ -119,7 +162,6 @@ export function Dna({ data }: DnaProps) {
         }
     }, []);
 
-    // Dimensões dos Dots (Seguro)
     const getDotDimensions = () => {
         const dim = controles.dots.dimensoes || VISUAL_DEFAULTS.controles.dots.dimensoes;
         if (windowWidth < 1024) {
@@ -182,8 +224,8 @@ export function Dna({ data }: DnaProps) {
     return (
         <section
             ref={sectionRef}
-            className={config.layout.classes} // Isso garante o fundo preto
-            id={id || "dna-section"}
+            className={config.layout.classes}
+            id={rawData.id || "dna-section"}
         >
             {/* Background Glow */}
             {efeitos.glow?.visivel && (
@@ -192,35 +234,35 @@ export function Dna({ data }: DnaProps) {
 
             <div className={config.layout.container}>
 
-                {/* Texto Intro - Só renderiza se tiver dados */}
+                {/* Texto Intro */}
                 <div className="flex flex-col items-center text-center w-full mb-12 text-white">
-                    {badge?.visivel && (
-                        <div className={badge.classes}>
-                            <span className={`${badge.corTexto} ${badge.classesTexto}`}>
-                                {badge.texto}
+                    {content.badge.visivel && (
+                        <div className={content.badge.classes}>
+                            <span className={`${content.badge.corTexto} ${content.badge.classesTexto}`}>
+                                {content.badge.texto}
                             </span>
                         </div>
                     )}
 
-                    {titulo?.visivel && (
-                        <h1 className={titulo.classes}>
-                            {titulo.texto}{" "}
-                            <span className={`text-transparent bg-clip-text ${titulo.gradiente}`}>
-                                {titulo.destaque}
+                    {content.titulo.visivel && (
+                        <h1 className={content.titulo.classes}>
+                            {content.titulo.texto}{" "}
+                            <span className={`text-transparent bg-clip-text ${content.titulo.gradiente}`}>
+                                {content.titulo.destaque}
                             </span>
                         </h1>
                     )}
 
-                    {subtitulo?.visivel && (
+                    {content.subtitulo.visivel && (
                         <h2
-                            className={subtitulo.classes}
-                            dangerouslySetInnerHTML={{ __html: subtitulo.texto }}
+                            className={content.subtitulo.classes}
+                            dangerouslySetInnerHTML={{ __html: content.subtitulo.texto }}
                         />
                     )}
                 </div>
 
-                {/* Container Principal (Swiper) - Só renderiza se tiver cards */}
-                {cards && cards.length > 0 && (
+                {/* Container Principal (Swiper) */}
+                {content.cards && content.cards.length > 0 && (
                     <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl mx-auto gap-8 lg:gap-12">
 
                         {/* Swiper */}
@@ -234,12 +276,12 @@ export function Dna({ data }: DnaProps) {
                                     disableOnInteraction: false,
                                 }}
                                 direction={config.swiper.direcao as "vertical" | "horizontal"}
-                               slidesPerView={1}
+                                slidesPerView={1}
                                 spaceBetween={20}
                                 centeredSlides={true}
                                 className={`w-full ${config.swiper.dimensoes.mobile} ${config.swiper.dimensoes.sm} ${config.swiper.dimensoes.md} ${config.swiper.dimensoes.lg} rounded-2xl`}
                             >
-                                {cards.map((card, index) => (
+                                {content.cards.map((card, index) => (
                                     <SwiperSlide key={card.id || index} className="overflow-hidden rounded-2xl group">
                                         <motion.div onClick={() => goToSlide(index)} className="w-full h-full relative cursor-pointer">
                                             <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl border border-white/5">
@@ -249,7 +291,7 @@ export function Dna({ data }: DnaProps) {
                                                     fill
                                                     className="object-cover object-center w-full h-full rounded-2xl transition-transform duration-700 group-hover:scale-105"
                                                     alt={card.alt || `Card ${index}`}
-                                                    unoptimized={true} 
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                 />
                                             </div>
                                         </motion.div>
@@ -261,7 +303,7 @@ export function Dna({ data }: DnaProps) {
                         {/* Controles */}
                         <div className="w-full lg:w-auto flex lg:flex-col flex-row items-center justify-center gap-6">
                             <div className={`${windowWidth < 1024 ? 'flex-row' : 'flex-col'} ${controles.dots.classesContainer}`}>
-                                {cards.map((_, index) => (
+                                {content.cards.map((_, index) => (
                                     <button
                                         key={index}
                                         onClick={() => goToSlide(index)}
@@ -283,13 +325,13 @@ export function Dna({ data }: DnaProps) {
                     </div>
                 )}
 
-                {/* Texto Final */}
+                {/* Texto Final (Paragrafo/Botão) */}
                 <div className="container relative z-20 px-6 mt-16">
                     <div className="max-w-3xl mx-auto text-gray-400 text-center space-y-8">
-                        {paragrafoFinal?.visivel && (
+                        {content.paragrafoFinal.visivel && (
                             <p
-                                className={paragrafoFinal.classes}
-                                dangerouslySetInnerHTML={{ __html: paragrafoFinal.texto }}
+                                className={content.paragrafoFinal.classes}
+                                dangerouslySetInnerHTML={{ __html: content.paragrafoFinal.texto }}
                             />
                         )}
                         {botao?.visivel && (

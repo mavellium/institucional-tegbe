@@ -6,32 +6,39 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 
-// Registrar o plugin ScrollTrigger
+// Registrar o plugin ScrollTrigger apenas no cliente
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
-const steps = [
+// Interface para tipagem estrita
+interface Step {
+    id: string;
+    image: string;
+    title: string;
+    subtitle: string;
+    description: string;
+}
+
+const steps: Step[] = [
     {
-        id: 1,
-        title: 'Case 40k',
-        subtitle: 'R$40.000,00 de faturamento em 90 dias',
-        description:
-            'Em apenas 90 dias, estruturamos uma operação que saltou para R$ 40.000,00 de faturamento e mais de 650 vendas. Escala real para quem busca resultados sólidos.',
-        image: '/steps1.png',
+        id: "venda-mais-ecommerce-0",
+        image: "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1767642104987-2.png",
+        title: "Case 40k",
+        subtitle: "R$40.000,00 de faturamento em 90 dias",
+        description: "Em apenas 90 dias, estruturamos uma operação que saltou para R$ 40.000,00 de faturamento e mais de 650 vendas. Escala real para quem busca resultados sólidos."
     },
     {
-        id: 2,
-        title: 'Case 12k',
-        subtitle: 'Sua operação pronta para o jogo.',
-        description:
-            'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-        image: '/steps1.png',
-    },
+        id: "venda-mais-ecommerce-1767642138009",
+        image: "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1767642157453-000.jpg",
+        title: "Case 12k",
+        subtitle: "Sua operação pronta para o jogo.",
+        description: "Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje."
+    }
 ]
 
 export default function SellMore() {
-    const [activeStep, setActiveStep] = useState(steps[0])
+    const [activeStep, setActiveStep] = useState<Step>(steps[0])
 
     // Referências para animações
     const sectionRef = useRef<HTMLDivElement>(null)
@@ -40,11 +47,10 @@ export default function SellMore() {
     const imageRef = useRef<HTMLImageElement>(null)
     const titleRef = useRef<HTMLHeadingElement>(null)
     const descriptionRef = useRef<HTMLParagraphElement>(null)
-    const stepButtonsRef = useRef<HTMLButtonElement[]>([])
+    const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
 
     // Inicializar a animação do primeiro step
     useEffect(() => {
-        // Resetar o primeiro botão para estado ativo
         const firstButton = stepButtonsRef.current[0]
         if (firstButton) {
             gsap.set(firstButton, { scale: 1.02 })
@@ -91,12 +97,13 @@ export default function SellMore() {
         })
 
         // Animar cada botão individualmente
-        const stepButtons = stepButtonsRef.current.filter(Boolean)
-        stepButtons.forEach((button, index) => {
+        const validButtons = stepButtonsRef.current.filter((btn): btn is HTMLButtonElement => btn !== null)
+        
+        validButtons.forEach((button, index) => {
             gsap.set(button, {
                 opacity: 0,
                 x: -30,
-                scale: index === 0 ? 1.02 : 1 // Primeiro botão já começa ativo
+                scale: index === 0 ? 1.02 : 1 // Primeiro botão já começa ativo visualmente
             })
 
             gsap.to(button, {
@@ -122,8 +129,12 @@ export default function SellMore() {
     }, { dependencies: [], scope: sectionRef })
 
     // Animação de troca de step
-    const handleStepChange = (step: typeof steps[0]) => {
+    const handleStepChange = (step: Step) => {
         if (step.id === activeStep.id) return
+
+        // Encontrar índices baseados no array steps, não no ID
+        const prevIndex = steps.findIndex(s => s.id === activeStep.id)
+        const nextIndex = steps.findIndex(s => s.id === step.id)
 
         // Animação de saída do conteúdo atual
         gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
@@ -133,7 +144,7 @@ export default function SellMore() {
             ease: "power2.in",
             onComplete: () => {
                 // Voltar o botão anterior ao normal
-                const prevButton = stepButtonsRef.current[activeStep.id - 1]
+                const prevButton = stepButtonsRef.current[prevIndex]
                 if (prevButton) {
                     gsap.to(prevButton, {
                         scale: 1,
@@ -146,7 +157,7 @@ export default function SellMore() {
                 setActiveStep(step)
 
                 // Animar o botão ativo com pulso
-                const activeButton = stepButtonsRef.current[step.id - 1]
+                const activeButton = stepButtonsRef.current[nextIndex]
                 if (activeButton) {
                     gsap.to(activeButton, {
                         scale: 1.02,
@@ -191,11 +202,9 @@ export default function SellMore() {
         })
     }
 
-    // Função para armazenar referências dos botões
+    // Função para armazenar referências dos botões usando o índice do array
     const setStepButtonRef = (el: HTMLButtonElement | null, index: number) => {
-        if (el) {
-            stepButtonsRef.current[index] = el
-        }
+        stepButtonsRef.current[index] = el
     }
 
     return (
@@ -216,11 +225,11 @@ export default function SellMore() {
                     </h1>
 
                     <div className="flex flex-col gap-4">
-                        {steps.map(step => (
+                        {steps.map((step, index) => (
                             <button
                                 aria-label={step.title}
                                 key={step.id}
-                                ref={(el) => setStepButtonRef(el, step.id - 1)}
+                                ref={(el) => setStepButtonRef(el, index)}
                                 onClick={() => handleStepChange(step)}
                                 className={`text-left p-5 rounded-xl border transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
                   ${activeStep.id === step.id
@@ -250,6 +259,8 @@ export default function SellMore() {
                             src={activeStep.image}
                             className="absolute inset-0 w-full h-full object-contain"
                             alt={activeStep.title}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority={activeStep.id === steps[0].id} // Prioriza carregamento da 1ª imagem
                         />
                     </div>
 
