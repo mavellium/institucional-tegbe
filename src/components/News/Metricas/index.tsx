@@ -10,47 +10,26 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const metrics = [
-  {
-    id: 1,
-    value: 45,
-    suffix: "M+",
-    label: "Faturamento Gerado",
-    description: "Receita direta atribuída às nossas campanhas nos últimos 12 meses.",
-    icon: "ph:currency-dollar-bold",
-    color: "text-[#0071E3]" 
-  },
-  {
-    id: 2,
-    value: 120,
-    suffix: "%",
-    label: "Média de Crescimento",
-    description: "Aumento médio de receita dos clientes no primeiro trimestre de gestão.",
-    icon: "ph:chart-line-up-bold",
-    color: "text-green-600"
-  },
-  {
-    id: 3,
-    value: 15,
-    suffix: "Mi",
-    label: "Verba Gerenciada",
-    description: "Capital de mídia administrado com responsabilidade e transparência total.",
-    icon: "ph:wallet-bold",
-    color: "text-[#1d1d1f]"
-  },
-  {
-    id: 4,
-    value: 98,
-    suffix: "%",
-    label: "Taxa de Retenção",
-    description: "Nossos clientes não saem. Eles escalam e renovam contratos.",
-    icon: "ph:handshake-bold",
-    color: "text-[#1d1d1f]"
-  }
-];
+// Interface baseada no JSON da API
+export interface MetricItem {
+  id: string;
+  icon: string;
+  color: string;
+  label: string;
+  value: string; // API retorna string ("45")
+  suffix: string; // ("Mi", "%")
+  description: string;
+}
 
-export default function MetricsSection() {
+interface MetricasProps {
+  data: MetricItem[];
+}
+
+const Metricas = ({ data }: MetricasProps) => {
   const containerRef = useRef(null);
+
+  // Se não houver dados, não renderiza
+  if (!data || data.length === 0) return null;
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -74,13 +53,19 @@ export default function MetricsSection() {
     );
 
     // Animação dos Números
-    metrics.forEach((metric) => {
-        const counterElement = document.getElementById(`counter-${metric.id}`);
-        if(counterElement) {
+    data.forEach((metric) => {
+        // Sanitização do ID para seletor (caso venha com caracteres especiais, embora o ID da API pareça seguro)
+        const selectorId = `counter-${metric.id.replace(/[^a-zA-Z0-9-_]/g, '')}`;
+        const counterElement = document.getElementById(selectorId);
+        
+        // Converte string para número para a animação
+        const finalValue = parseFloat(metric.value);
+
+        if(counterElement && !isNaN(finalValue)) {
             let proxy = { value: 0 };
             
             gsap.to(proxy, {
-                value: metric.value,
+                value: finalValue,
                 duration: 2.5,
                 ease: "power2.out",
                 scrollTrigger: {
@@ -88,16 +73,16 @@ export default function MetricsSection() {
                     start: "top 85%",
                 },
                 onUpdate: function() {
+                    // Math.ceil garante números inteiros durante a contagem
                     counterElement.textContent = Math.ceil(this.targets()[0].value).toString();
                 }
             });
         }
     });
 
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [data] });
 
   return (
-    // AJUSTE: Background padronizado para #F5F5F7
     <section ref={containerRef} className="py-24 bg-[#F5F5F7] px-6 relative overflow-hidden">
       
       {/* Background Decorativo */}
@@ -124,7 +109,6 @@ export default function MetricsSection() {
             <div className="hidden md:block pb-2">
                 <p className="text-sm font-medium text-gray-500 uppercase tracking-widest text-right">
                     Atualizado em <br/>
-                    {/* AJUSTE: Data atualizada */}
                     <span className="text-[#1d1d1f]">Janeiro 2026</span>
                 </p>
             </div>
@@ -132,7 +116,7 @@ export default function MetricsSection() {
 
         {/* Grid de Métricas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {metrics.map((metric) => (
+            {data.map((metric) => (
                 <div 
                     key={metric.id}
                     className="metric-card opacity-0 group relative bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-white hover:border-gray-200 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1"
@@ -144,10 +128,13 @@ export default function MetricsSection() {
 
                     {/* Número Grande */}
                     <div className="flex items-baseline gap-1 mb-4">
-                        {metric.id === 1 && <span className="text-2xl font-bold text-gray-400">R$</span>}
+                        {/* Lógica condicional: Se for faturamento, adiciona R$ */}
+                        {metric.label.toLowerCase().includes("faturamento") && (
+                             <span className="text-2xl font-bold text-gray-400">R$</span>
+                        )}
                         
                         <span 
-                            id={`counter-${metric.id}`} 
+                            id={`counter-${metric.id.replace(/[^a-zA-Z0-9-_]/g, '')}`} 
                             className={`text-6xl font-bold tracking-tighter ${metric.color}`}
                         >
                             0
@@ -192,3 +179,5 @@ export default function MetricsSection() {
     </section>
   );
 }
+
+export default Metricas;

@@ -8,19 +8,62 @@ import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import LogosMKTInvert from "@/components/Logos/LogosMKTInvert";
 import LogosMKT from "@/components/Logos/LogosMKT";
+import Image from "next/image";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// --- TIPAGEM ---
+// --- TIPAGEM DE DADOS (API) ---
+export interface LogoItemData {
+  alt: string;
+  src: string;
+  width: number;
+  height: number;
+}
+
+export interface EmpresasDataMarketing {
+  badge: {
+    icon: string;
+    text: string;
+  };
+  logos: {
+    row1: LogoItemData[];
+    row2: LogoItemData[];
+  };
+  title: string;
+  footer: string;
+  layout: string;
+}
+
+export interface EmpresasDataSobre {
+  badge: {
+    icon: string;
+    text: string;
+  };
+  stats: {
+    icon: string;
+    label: string;
+    description: string;
+  };
+  title: string;
+  subtitle: string;
+  footer: {
+    label: string;
+    linkText: string;
+  };
+  layout: string;
+}
+
+// Union Type para props
 type EmpresasVariant = 'marketing' | 'sobre';
 
 interface EmpresasProps {
   variant?: EmpresasVariant;
+  data: EmpresasDataMarketing | EmpresasDataSobre | null;
 }
 
-// --- INTERFACES ESPECÍFICAS ---
+// --- INTERFACES VISUAIS (TEMA) ---
 interface MarketingTheme {
   background: string;
   text: {
@@ -76,48 +119,11 @@ interface SobreTheme {
     spotlight: string;
   };
   stats: {
-    value: string;
-    label: string;
-    description: string;
-    icon: string;
-    show: string;
+    value: string; // Valor numérico hardcoded no tema (ex: +40M) pois o JSON trouxe apenas label/desc
   };
 }
 
-interface MarketingContent {
-  badge: {
-    text: string;
-    icon: string;
-  };
-  title: string;
-  footer: string;
-  layout: "marquee";
-  logos: {
-    row1: Array<{ src: string; alt: string; width: number; height: number }>;
-    row2: Array<{ src: string; alt: string; width: number; height: number }>;
-  };
-}
-
-interface SobreContent {
-  badge: {
-    text: string;
-    icon: string;
-  };
-  title: string;
-  subtitle: string;
-  layout: "bento-grid";
-  stats: {
-    label: string;
-    description: string;
-    icon: string;
-  };
-  footer: {
-    label: string;
-    linkText: string;
-  };
-}
-
-// --- CONFIGURAÇÃO DE TEMA ---
+// --- CONFIGURAÇÃO DE TEMA (VISUAL HARDCODED) ---
 const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
   marketing: {
     background: "bg-[#020202] border-t border-white/5",
@@ -173,76 +179,15 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
       spotlight: "bg-transparent"
     },
     stats: {
-      value: "+40M",
-      label: "Volume Tracionado",
-      description: "Soma do faturamento gerado sob nossa gestão direta nos últimos 12 meses.",
-      icon: "ph:trend-up-bold",
-      show: "block"
+      value: "+40M", // Mantendo valor visual hardcoded, já que o JSON trouxe descrição textual
     }
   }
 };
-
-// --- CONFIGURAÇÃO DE CONTEÚDO ---
-const contentConfig: Record<EmpresasVariant, MarketingContent | SobreContent> = {
-  marketing: {
-    badge: {
-      text: "Ecossistema Validado",
-      icon: "mdi:shield-check"
-    },
-    title: "Não testamos com o seu dinheiro. <br/><span class='text-transparent bg-clip-text bg-gradient-to-r from-[#FF0F43] to-[#E31B63]'>Validamos com o deles.</span>",
-    footer: "Empresas que escalaram acima de 7 dígitos/ano",
-    layout: "marquee",
-    logos: {
-      row1: [
-        { src: "/logos/logo1.svg", alt: "Client 1", width: 120, height: 40 },
-        { src: "/logos/logo2.svg", alt: "Client 2", width: 120, height: 40 },
-        { src: "/logos/logo3.svg", alt: "Client 3", width: 120, height: 40 },
-        { src: "/logos/logo4.svg", alt: "Client 4", width: 120, height: 40 },
-        { src: "/logos/logo5.svg", alt: "Client 5", width: 120, height: 40 },
-      ],
-      row2: [
-        { src: "/logos/logo6.svg", alt: "Client 6", width: 120, height: 40 },
-        { src: "/logos/logo7.svg", alt: "Client 7", width: 120, height: 40 },
-        { src: "/logos/logo8.svg", alt: "Client 8", width: 120, height: 40 },
-        { src: "/logos/logo9.svg", alt: "Client 9", width: 120, height: 40 },
-        { src: "/logos/logo10.svg", alt: "Client 10", width: 120, height: 40 },
-      ]
-    }
-  },
-  sobre: {
-    badge: {
-      text: "Hall de Clientes",
-      icon: "ph:crown-simple-bold"
-    },
-    title: "Onde os gigantes <br/>escolhem escalar.",
-    subtitle: "Não colecionamos logos. Colecionamos cases de expansão de market share.",
-    layout: "bento-grid",
-    stats: {
-      label: "Volume Tracionado",
-      description: "Soma do faturamento gerado sob nossa gestão direta nos últimos 12 meses.",
-      icon: "ph:trend-up-bold"
-    },
-    footer: {
-      label: "Ecossistema Validado",
-      linkText: "Ver todos os cases"
-    }
-  }
-};
-
-// --- TYPE GUARDS ---
-function isMarketingContent(content: MarketingContent | SobreContent): content is MarketingContent {
-  return content.layout === 'marquee';
-}
-
-function isMarketingTheme(theme: MarketingTheme | SobreTheme): theme is MarketingTheme {
-  return 'card' in theme && 'border' in theme.card;
-}
 
 // --- COMPONENTE PARA MARKETING ---
-const EmpresasMarketing = () => {
+const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
-  const content = contentConfig.marketing as MarketingContent;
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -260,25 +205,27 @@ const EmpresasMarketing = () => {
 
     tl.fromTo(".trust-card", 
       { y: 50, opacity: 0, scale: 0.95 },
-      { 
-        y: 0, 
-        opacity: 1, 
-        scale: 1, 
-        duration: 1, 
-        ease: "power2.out",
-      },
+      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
       "-=0.4"
     );
   }, { scope: sectionRef });
 
-  // Multiplicar logos para marquee
-  const marquee1 = [...content.logos.row1, ...content.logos.row1, ...content.logos.row1, ...content.logos.row1];
-  const marquee2 = [...content.logos.row2, ...content.logos.row2, ...content.logos.row2, ...content.logos.row2];
+  // Multiplicar logos para marquee suave
+  const marquee1 = [...data.logos.row1, ...data.logos.row1, ...data.logos.row1, ...data.logos.row1];
+  const marquee2 = [...data.logos.row2, ...data.logos.row2, ...data.logos.row2, ...data.logos.row2];
 
-  const LogoItem = ({ logo }: { logo: { alt: string } }) => (
+  const LogoItem = ({ logo }: { logo: LogoItemData }) => (
     <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-110">
-      <div className="h-10 md:h-12 w-32 bg-white/10 rounded flex items-center justify-center text-xs text-white">
-        {logo.alt}
+      <div className="h-10 md:h-12 w-32 flex items-center justify-center">
+        {/* Renderiza imagem vinda da API */}
+        <Image 
+            src={logo.src} 
+            alt={logo.alt} 
+            width={logo.width} 
+            height={logo.height} 
+            className="w-full h-full object-contain"
+            unoptimized
+        />
       </div>
     </div>
   );
@@ -298,14 +245,14 @@ const EmpresasMarketing = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div className="max-w-3xl">
             <div className={`reveal-trust mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
-              <Icon icon={content.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
+              <Icon icon={data.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
               <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
-                {content.badge.text}
+                {data.badge.text}
               </span>
             </div>
             <h2 
               className="reveal-trust text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
-              dangerouslySetInnerHTML={{ __html: content.title }}
+              dangerouslySetInnerHTML={{ __html: data.title }}
             />
           </div>
           
@@ -352,7 +299,7 @@ const EmpresasMarketing = () => {
         <div className="reveal-trust mt-6 flex justify-center opacity-60">
           <p className="text-xs text-gray-500 uppercase tracking-widest flex items-center gap-2">
             <span className={`w-1.5 h-1.5 rounded-full bg-[#E31B63] animate-pulse`}></span>
-            {content.footer}
+            {data.footer}
           </p>
         </div>
       </div>
@@ -361,10 +308,9 @@ const EmpresasMarketing = () => {
 };
 
 // --- COMPONENTE PARA SOBRE ---
-const EmpresasSobre = () => {
+const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.sobre as SobreTheme;
-  const content = contentConfig.sobre as SobreContent;
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -405,20 +351,20 @@ const EmpresasSobre = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div className="max-w-3xl">
             <div className={`reveal-head mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full ${theme.badge.background}`}>
-              <Icon icon={content.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
+              <Icon icon={data.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
               <span className="text-[11px] font-bold tracking-[0.2em] text-gray-500 uppercase">
-                {content.badge.text}
+                {data.badge.text}
               </span>
             </div>
-            <h2 className="reveal-head text-4xl md:text-5xl lg:text-6xl font-bold text-[#1d1d1f] tracking-tight leading-[1.05]">
-              {content.title.split('<br/>')[0]}<br/>
-              <span className="text-gray-400">{content.title.split('<br/>')[1]}</span>
-            </h2>
+            <h2 
+                className="reveal-head text-4xl md:text-5xl lg:text-6xl font-bold text-[#1d1d1f] tracking-tight leading-[1.05]"
+                dangerouslySetInnerHTML={{ __html: data.title }}
+            />
           </div>
           
           <div className="reveal-head hidden md:block max-w-xs text-right pb-2">
             <p className="text-sm text-gray-500 leading-relaxed font-medium">
-              {content.subtitle}
+              {data.subtitle}
             </p>
           </div>
         </div>
@@ -429,11 +375,11 @@ const EmpresasSobre = () => {
             
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                <Icon icon={content.stats.icon} className="text-white w-6 h-6" />
+                <Icon icon={data.stats.icon} className="text-white w-6 h-6" />
               </div>
-              <h3 className="text-lg font-medium text-gray-300 mb-2">{content.stats.label}</h3>
+              <h3 className="text-lg font-medium text-gray-300 mb-2">{data.stats.label}</h3>
               <p className="text-sm text-gray-500 leading-relaxed">
-                {content.stats.description}
+                {data.stats.description}
               </p>
             </div>
 
@@ -447,7 +393,7 @@ const EmpresasSobre = () => {
 
           <div className="logo-card opacity-0 lg:col-span-8 bg-white rounded-[2rem] border border-white shadow-[0_20px_40px_rgba(0,0,0,0.04)] p-10 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-6 left-8 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              {content.footer.label}
+              {data.footer.label}
             </div>
 
             <div className="w-full relative py-8">
@@ -465,7 +411,7 @@ const EmpresasSobre = () => {
             </div>
 
             <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity cursor-pointer group/link">
-              <span className="text-xs font-bold text-[#1d1d1f]">{content.footer.linkText}</span>
+              <span className="text-xs font-bold text-[#1d1d1f]">{data.footer.linkText}</span>
               <Icon icon="ph:arrow-right" className="w-3 h-3 group-hover/link:translate-x-1 transition-transform"/>
             </div>
           </div>
@@ -476,13 +422,17 @@ const EmpresasSobre = () => {
 };
 
 // --- COMPONENTE PRINCIPAL ---
-export function Empresas({ variant = 'marketing' }: EmpresasProps) {
+export function Empresas({ variant = 'marketing', data }: EmpresasProps) {
+  // Verificação de Segurança
+  if (!data) return null;
+
   switch (variant) {
     case 'marketing':
-      return <EmpresasMarketing />;
+        // Type assertion seguro baseado na variante
+      return <EmpresasMarketing data={data as EmpresasDataMarketing} />;
     case 'sobre':
-      return <EmpresasSobre />;
+      return <EmpresasSobre data={data as EmpresasDataSobre} />;
     default:
-      return <EmpresasMarketing />;
+      return <EmpresasMarketing data={data as EmpresasDataMarketing} />;
   }
 }

@@ -13,7 +13,7 @@ if (typeof window !== "undefined") {
 // --- TIPAGEM ---
 export type WhyTegbeVariant = 'ecommerce' | 'marketing';
 
-// Interface baseada no JSON da API
+// Interface ajustada para o JSON real
 export interface WhyTegbeData {
   badge: {
     text: string;
@@ -21,8 +21,8 @@ export interface WhyTegbeData {
   title: {
     part1: string;
     part2: string;
-    gradient?: string;  // Pode vir como gradient (marketing)
-    highlight?: string; // Ou highlight (ecommerce)
+    gradient?: string;
+    highlight?: string;
   };
   subtitle: {
     text: string;
@@ -35,13 +35,13 @@ export interface WhyTegbeData {
     icon: string;
     href: string;
   };
-  // API retorna string. O estilo visual (bolinha, cor) fica no tema.
-  ctaSubtitle: string; 
+  // Ajuste crucial: Aceita string (Ecommerce) ou Objeto (Marketing)
+  ctaSubtitle: string | { text: string }; 
 }
 
 interface WhyTegbeProps {
   variant?: WhyTegbeVariant;
-  data: WhyTegbeData; // Dados agora obrigatórios
+  data: WhyTegbeData;
 }
 
 // --- INTERFACES DE TEMA (VISUAL) ---
@@ -182,6 +182,9 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.ecommerce as EcommerceTheme;
 
+  // Normaliza o subtítulo do CTA (garante que seja string)
+  const ctaSubtitleText = typeof data.ctaSubtitle === 'object' ? data.ctaSubtitle.text : data.ctaSubtitle;
+
   useGSAP(() => {
     gsap.from(".reveal-text", {
       y: 30,
@@ -218,7 +221,6 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
           <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
             {data.title.part1}
             <span className={theme.text.highlight}>{data.title.part2}</span> 
-            {/* Renderiza o resto do título (pode vir como highlight ou gradient no json) */}
             {data.title.highlight || data.title.gradient}
           </h1>
 
@@ -226,12 +228,14 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
           <div className="reveal-text max-w-2xl space-y-5 mb-10">
             <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
               {data.subtitle.text}
-              {/* No Ecommerce, o destaque geralmente é o highlight */}
+              {/* Highlight (destrava o faturamento) */}
               {data.subtitle.highlight && (
                  <span className={theme.text.primary}>{data.subtitle.highlight}</span>
               )}
-              {/* Fallback caso venha strongs no JSON de ecommerce também */}
-              {data.subtitle.strong1 && <strong> {data.subtitle.strong1}</strong>}
+              {/* Strong1 (e domina o algoritmo...) - Agora dinâmico */}
+              {data.subtitle.strong1 && (
+                <span>{data.subtitle.strong1}</span>
+              )}
             </p>
           </div>
 
@@ -255,7 +259,7 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
               />
             </a>
             <p className={`mt-4 text-[11px] ${theme.ctaSubtitle} font-medium tracking-widest uppercase`}>
-              {data.ctaSubtitle}
+              {ctaSubtitleText}
             </p>
           </div>
         </div>
@@ -268,6 +272,9 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
 const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
+
+  // Normaliza o subtítulo do CTA (extrai .text se for objeto)
+  const ctaSubtitleText = typeof data.ctaSubtitle === 'object' ? data.ctaSubtitle.text : data.ctaSubtitle;
 
   useGSAP(() => {
     gsap.from(".reveal-text", {
@@ -315,7 +322,6 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
             <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
                 {data.title.part2}
             </span> 
-            {/* Fallback seguro */}
             {data.title.gradient || data.title.highlight}
           </h1>
 
@@ -323,12 +329,15 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
           <div className="reveal-text max-w-3xl space-y-5 mb-10">
             <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
               {data.subtitle.text}
+              {/* Strong1 (Ecossistema de Receita) */}
               {data.subtitle.strong1 && (
                   <strong className="text-white font-medium">{data.subtitle.strong1}</strong>
               )}
+              {/* Strong2 (Tráfego + CRM...) */}
               {data.subtitle.strong2 && (
                    <> {data.subtitle.strong2}</>
               )}
+              {/* Highlight (caso exista no futuro) */}
               {data.subtitle.highlight && (
                   <strong className="text-white border-b border-[#E31B63]">{data.subtitle.highlight}</strong>
               )}
@@ -339,7 +348,7 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
           <div className="reveal-text flex flex-col items-center">
             <a
               aria-label={data.cta.text}
-              href={data.cta.href}
+              href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
               target="_blank"
               rel="noopener noreferrer"
               className={`
@@ -356,7 +365,7 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
             </a>
             <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>
               <span className={`w-1.5 h-1.5 rounded-full ${theme.ctaSubtitle.dot} animate-pulse`}></span>
-              {data.ctaSubtitle}
+              {ctaSubtitleText}
             </p>
           </div>
         </div>
@@ -367,7 +376,7 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
 
 // --- COMPONENTE PRINCIPAL ---
 export function Equipe({ variant = 'ecommerce', data }: WhyTegbeProps) {
-  // Segurança: se não vier dados, não quebra a tela
+  // Segurança
   if (!data) return null;
 
   switch (variant) {

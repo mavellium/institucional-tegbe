@@ -16,7 +16,7 @@ import NaoEParaVoce from "@/components/NaoEParaVoce";
 import { Equipe } from "@/components/Equipe";
 import { fetchComponentData } from "@/lib/api";
 
-// Função Wrapper Segura para o Fetch
+// 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
   try {
     const res = await fetchComponentData(slug);
@@ -27,9 +27,47 @@ async function getSafeData(slug: string) {
   }
 }
 
+// 2. Wrapper para dados de Formulário (Estrutura plana 'values')
+async function getFormData(slug: string) {
+    try {
+        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/${slug}`, { 
+            next: { revalidate: 60 } 
+        });
+        if (!res.ok) throw new Error('Falha no fetch');
+        return res.json();
+    } catch (error) {
+        console.warn(`[MarketingPage] Erro ao carregar form ${slug}.`);
+        return { values: [] };
+    }
+}
+
 export default async function MarketingPage() {
-    // 1. Busca os dados do Headline (Variante Marketing será aplicada via prop)
-    const headlineResponse = await getSafeData('headline');
+    // 3. PERFORMANCE: Promise.all dispara 6 requisições em paralelo.
+    // Zero Waterfall. O tempo de carregamento será ditado pela requisição mais lenta, não pela soma delas.
+    const [
+        headlineResponse, 
+        companyResponse, 
+        ctaResponse, 
+        equipeResponse,   // Endpoint: .../json/equipe (Seção "Why Tegbe")
+        servicesResponse, // Endpoint: .../form/services
+        empresasResponse  // Endpoint: .../json/empresas (Seção "Logos/Social Proof")
+    ] = await Promise.all([
+        getSafeData('headline'),
+        getSafeData('company'),
+        getSafeData('call-to-action'),
+        getSafeData('equipe'), 
+        getFormData('services'),
+        getSafeData('empresas') 
+    ]);
+
+    // 4. Extração Cirúrgica dos Nós (Variante 'marketing')
+    const companysData = companyResponse?.data?.marketing || null;
+    const ctaData = ctaResponse?.data?.marketing || null;
+    const equipeData = equipeResponse?.data?.marketing || null;     // Dados para <Equipe />
+    const empresasData = empresasResponse?.data?.marketing || null; // Dados para <Empresas />
+    
+    // Extração do array de serviços
+    const servicesData = servicesResponse?.values || [];
 
     return (
         <>
@@ -45,23 +83,33 @@ export default async function MarketingPage() {
                 }}
             />
             
-            {/* Header com a cor Rosa (Marketing) */}
             <Header variant="marketing" />
             
-            {/* Headline consumindo API + Variante Marketing */}
             <Headline data={headlineResponse.data} variant="marketing" />
             
             <AgenciasFalham />
             <Video />
             <Cards variant="marketing" />
-            <ExploreDetails />
-            <Empresas variant="marketing" />
+            
+            {/* Seção Deep Dive / Services */}
+            <ExploreDetails features={servicesData} />
+            
+            {/* Seção Logos / Social Proof */}
+            <Empresas variant="marketing" data={empresasData} />
+            
             <NaoEParaVoce />
             <Expertise config={expertiseConfig}/>
             <SectionImage variant="marketing" />
-            <Equipe variant="marketing" />
-            <Companys variant="marketing" />
-            <ChamadaAcao variant="marketing" />
+            
+            {/* Seção Why Tegbe (Dados vindos de /json/equipe) */}
+            <Equipe variant="marketing" data={equipeData} />
+            
+            {/* Seção Depoimentos / Track Record */}
+            <Companys variant="marketing" data={companysData} />
+            
+            {/* Seção Final CTA */}
+            <ChamadaAcao variant="marketing" data={ctaData} />
+            
             <Footer variant="marketing" />
         </>
     );

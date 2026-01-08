@@ -33,7 +33,7 @@ export interface CTAData {
   footer: {
     icon: string;
     text: string;
-    // O stats pode ser string ("+40"), array (para 'sobre') ou vazio
+    // Aceita string ("+40"), array de objetos (Sobre) ou string vazia (Ecommerce)
     stats?: string | StatItem[] | null; 
   };
   layout: string;
@@ -41,7 +41,7 @@ export interface CTAData {
 
 interface FinalCTAProps {
   variant?: FinalCTAVariant; 
-  data: CTAData; // Dados obrigatórios
+  data: CTAData | null; // Aceita null para evitar crash antes do fetch
 }
 
 // --- CONFIGURAÇÃO DE TEMA (VISUAL - HARDCODED) ---
@@ -152,7 +152,6 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
 
   useFinalCTAAnimations(sectionRef, variant);
 
-  // Mantive os links hardcoded pois não vieram no JSON, mas podem ser passados via prop se necessário
   const getLink = () => {
     switch(variant) {
       case 'ecommerce': return "https://api.whatsapp.com/send?phone=5514991779502&text=Quero%20solicitar%20meu%20diagn%C3%B3stico%20comercial%20personalizado.";
@@ -297,13 +296,13 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
               ${variant === 'ecommerce' ? 'opacity-50' : ''}
               ${variant === 'sobre' ? 'mt-12 gap-8 md:gap-12 opacity-70' : ''}
             `}>
+              {/* Lógica para Marketing (String Stats) */}
               {variant === 'marketing' && (
                 <>
                   <div className="flex -space-x-2">
                     <div className="w-6 h-6 rounded-full bg-gray-700 border border-black"></div>
                     <div className="w-6 h-6 rounded-full bg-gray-600 border border-black"></div>
                     <div className="w-6 h-6 rounded-full bg-gray-500 border border-black flex items-center justify-center text-[8px] font-bold">
-                        {/* Se stats for string, renderiza */}
                         {typeof data.footer.stats === 'string' ? data.footer.stats : '+40'}
                     </div>
                   </div>
@@ -313,6 +312,7 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
                 </>
               )}
 
+              {/* Lógica para Ecommerce (Sem Stats) */}
               {variant === 'ecommerce' && (
                 <>
                   {data.footer.icon && (
@@ -324,7 +324,7 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
                 </>
               )}
 
-              {/* Lógica para Stats do tipo Array (Sobre) */}
+              {/* Lógica para Sobre (Array Stats) */}
               {variant === 'sobre' && Array.isArray(data.footer.stats) && (
                 <>
                   {data.footer.stats.map((stat, idx) => (

@@ -11,7 +11,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface Feature {
+// Interface compatível com o "values" do JSON
+export interface TimelineFeature {
   id: string;
   step: string;
   title: string;
@@ -19,11 +20,20 @@ interface Feature {
   image: string;
 }
 
-const Historia = () => {
+interface HistoriaProps {
+  data: TimelineFeature[];
+}
+
+const Historia = ({ data }: HistoriaProps) => {
+  // Se não houver dados, não renderiza a seção
+  if (!data || data.length === 0) return null;
+
   const [activeFeature, setActiveFeature] = useState(-1);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [currentDesktopImage, setCurrentDesktopImage] = useState("/images/tegbe-origin.jpg");
-  const [currentMobileImage, setCurrentMobileImage] = useState("/images/tegbe-origin.jpg");
+  
+  // Inicializa com a primeira imagem da API
+  const [currentDesktopImage, setCurrentDesktopImage] = useState(data[0]?.image || "");
+  const [currentMobileImage, setCurrentMobileImage] = useState(data[0]?.image || "");
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const buttonsContainerRef = useRef<HTMLDivElement>(null);
@@ -34,44 +44,7 @@ const Historia = () => {
   const previousActiveFeatureRef = useRef<number>(-1);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  const features: Feature[] = [
-    {
-      id: "1",
-      step: "2022",
-      title: "O Inconformismo",
-      description: "Nascemos da frustração. Vimos o mercado queimando verba em 'hacks' que não funcionavam. Decidimos que a Tegbe seria guiada por uma única bússola: o ROI do cliente.",
-      image: "/images/tegbe-origin.jpg"
-    },
-    {
-      id: "2",
-      step: "2023",
-      title: "A Virada de Chave",
-      description: "Abandonamos o feeling. Implementamos nossa stack proprietária de GA4 + Server Side Tracking. Paramos de adivinhar e começamos a prever resultados com precisão cirúrgica.",
-      image: "/images/tegbe-data.jpg"
-    },
-    {
-      id: "3",
-      step: "2024",
-      title: "Ecossistema Completo",
-      description: "Não bastava apenas tráfego. Integramos Design de Conversão e CRM. A Tegbe deixou de ser uma agência de ads para se tornar um braço de Growth completo.",
-      image: "/images/tegbe-team.jpg"
-    },
-    {
-      id: "4",
-      step: "2025",
-      title: "A Era da IA",
-      description: "Implementamos agentes autônomos para análise de dados e otimização de campanhas em tempo real. O que levava dias, agora fazemos em minutos.",
-      image: "/images/tegbe-ai.jpg"
-    },
-    {
-      id: "5",
-      step: "Futuro",
-      title: "Escala Infinita",
-      description: "Nosso objetivo agora é verticalizar. Criar soluções específicas para nichos de alta performance, mantendo a boutique na estratégia e a máquina na execução.",
-      image: "/images/tegbe-future.jpg"
-    }
-  ];
-
+  // Função para animar a transição de imagem
   const animateImageTransition = (
     containerRef: React.RefObject<HTMLDivElement | null>,
     newImage: string,
@@ -106,15 +79,19 @@ const Historia = () => {
     }, "+=0.05");
   };
 
+  // Efeito para troca de slide
   useEffect(() => {
     if (activeFeature !== previousActiveFeatureRef.current) {
-      const newImage = activeFeature >= 0 ? features[activeFeature].image : features[0].image;
+      // Pega a imagem do item ativo ou do primeiro se for -1
+      const newImage = activeFeature >= 0 ? data[activeFeature].image : data[0].image;
+      
       animateImageTransition(desktopImageContainerRef, newImage, setCurrentDesktopImage);
       animateImageTransition(mobileImageContainerRef, newImage, setCurrentMobileImage);
       previousActiveFeatureRef.current = activeFeature;
     }
-  }, [activeFeature, features]);
+  }, [activeFeature, data]);
 
+  // Animação de Entrada e ScrollTrigger
   useLayoutEffect(() => {
     if (!buttonsContainerRef.current || !sectionRef.current) return;
 
@@ -148,6 +125,7 @@ const Historia = () => {
         ease: "power3.out"
       }, "-=0.5");
 
+      // Ativa o primeiro item automaticamente após a animação de entrada
       timelineRef.current.add(() => {
           if (activeFeature === -1) handleFeatureChange(0);
       }, "-=0.2");
@@ -155,7 +133,7 @@ const Historia = () => {
     return () => {
       if (timelineRef.current) timelineRef.current.kill();
     };
-  }, []);
+  }, [data]); // Dependência adicionada caso os dados mudem
 
   const handleFeatureChange = (index: number) => {
     if (isTransitioning || index === activeFeature) return;
@@ -195,9 +173,9 @@ const Historia = () => {
     const current = activeFeature === -1 ? 0 : activeFeature;
     let newIndex;
     if (direction === 'next') {
-      newIndex = (current + 1) % features.length;
+      newIndex = (current + 1) % data.length;
     } else {
-      newIndex = (current - 1 + features.length) % features.length;
+      newIndex = (current - 1 + data.length) % data.length;
     }
     handleFeatureChange(newIndex);
   };
@@ -207,8 +185,8 @@ const Historia = () => {
       setIsTransitioning(true);
       const current = activeFeature === -1 ? 0 : activeFeature;
       const newIndex = direction === 'next' 
-        ? (current + 1) % features.length 
-        : (current - 1 + features.length) % features.length;
+        ? (current + 1) % data.length 
+        : (current - 1 + data.length) % data.length;
 
       gsap.to(mobileTextContainerRef.current, {
           y: -15, opacity: 0, duration: 0.25, ease: "power2.in",
@@ -246,10 +224,9 @@ const Historia = () => {
           <div className="w-[40%] p-10 flex flex-col relative bg-[#111111]">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#0071E3] via-[#0071E3]/50 to-transparent"></div>
 
-            {/* AQUI ESTÁ A CORREÇÃO: Classes utilitárias do Tailwind para esconder o scrollbar em todos os navegadores */}
             <div className="flex-1 overflow-y-auto pr-4 py-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <div ref={buttonsContainerRef} className="flex flex-col space-y-2">
-                {features.map((feature, index) => {
+                {data.map((feature, index) => {
                   const isActive = activeFeature === index;
                   return (
                     <button
@@ -308,13 +285,17 @@ const Historia = () => {
               ref={desktopImageContainerRef}
               className="w-full h-full relative transform-gpu"
             >
-                <Image
-                  src={currentDesktopImage}
-                  alt={activeFeature >= 0 ? features[activeFeature].title : "Tegbe História"}
-                  fill
-                  className="object-cover opacity-90" 
-                  priority
-                />
+                {/* Verifica se a imagem existe antes de tentar renderizar */}
+                {currentDesktopImage && (
+                  <Image
+                    src={currentDesktopImage}
+                    alt={activeFeature >= 0 ? data[activeFeature].title : "Tegbe História"}
+                    fill
+                    className="object-cover opacity-90" 
+                    priority
+                    unoptimized // Adicionado para garantir carregamento de URL externa sem config
+                  />
+                )}
             </div>
 
             <div className="absolute bottom-8 right-8 z-20 flex flex-col items-end gap-2">
@@ -322,7 +303,7 @@ const Historia = () => {
                     <div className="flex flex-col">
                         <span className="text-[10px] text-gray-500 uppercase tracking-wider leading-none mb-1">Marco Atual</span>
                         <span className="text-sm text-white font-bold leading-none">
-                            {activeFeature >= 0 ? features[activeFeature].step : features[0].step}
+                            {activeFeature >= 0 ? data[activeFeature].step : data[0].step}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-white/20"></div>
@@ -342,12 +323,15 @@ const Historia = () => {
         <div className="lg:hidden bg-[#111111] rounded-[32px] overflow-hidden shadow-xl border border-white/10 relative z-10">
           <div className="relative aspect-[4/3] w-full bg-[#1a1a1a]">
             <div ref={mobileImageContainerRef} className="w-full h-full relative transform-gpu">
-                <Image
-                  src={currentMobileImage}
-                  alt={activeFeature >= 0 ? features[activeFeature].title : "Feature"}
-                  fill
-                  className="object-cover opacity-90"
-                />
+                {currentMobileImage && (
+                  <Image
+                    src={currentMobileImage}
+                    alt={activeFeature >= 0 ? data[activeFeature].title : "Feature"}
+                    fill
+                    className="object-cover opacity-90"
+                    unoptimized
+                  />
+                )}
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent" />
           </div>
@@ -355,7 +339,7 @@ const Historia = () => {
           <div className="p-6 relative -mt-16 z-10">
              <div className="flex justify-between items-start mb-6">
                 <span className="px-3 py-1.5 bg-[#0071E3]/10 border border-[#0071E3]/30 text-[#0071E3] rounded-full text-xs font-mono font-bold tracking-wider backdrop-blur-sm shadow-sm">
-                    {activeFeature >= 0 ? features[activeFeature].step : features[0].step}
+                    {activeFeature >= 0 ? data[activeFeature].step : data[0].step}
                 </span>
                 <div className="flex gap-2 mt-1">
                     <button onClick={() => handleMobileNav('prev')} disabled={isTransitioning} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/5 flex items-center justify-center text-white active:scale-95 transition-all disabled:opacity-50">
@@ -369,15 +353,15 @@ const Historia = () => {
 
              <div ref={mobileTextContainerRef} className="min-h-[160px]">
                 <h3 className="text-2xl font-bold text-white mb-3">
-                    {activeFeature >= 0 ? features[activeFeature].title : features[0].title}
+                    {activeFeature >= 0 ? data[activeFeature].title : data[0].title}
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed font-light">
-                    {activeFeature >= 0 ? features[activeFeature].description : features[0].description}
+                    {activeFeature >= 0 ? data[activeFeature].description : data[0].description}
                 </p>
              </div>
 
              <div className="flex justify-center items-center gap-3 mt-6 pt-6 border-t border-white/10">
-                {features.map((_, i) => (
+                {data.map((_, i) => (
                     <button 
                         key={i}
                         onClick={() => !isTransitioning && handleFeatureChange(i)}

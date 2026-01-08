@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { motion, useMotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 
 // --- TIPAGEM ---
 export type CaseType = 'video' | 'image' | 'text';
@@ -21,52 +21,19 @@ export interface ClientCase {
   };
 }
 
-// --- DADOS MOCKADOS (Contexto: Cursos/Alunos) ---
-const casesData: ClientCase[] = [
-  {
-    id: "1",
-    type: "video",
-    clientName: "Lucas Martins",
-    clientRole: "Aluno - Dropshipping",
-    description: "Apliquei o módulo de tráfego na sexta-feira. No domingo, bati meu recorde de vendas diário.",
-    src: "/videos/case-lucas.webm", 
-    poster: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1000&auto=format&fit=crop",
-    stats: { value: "R$ 15k", label: "Em 48h" }
-  },
-  {
-    id: "2",
-    type: "text",
-    clientName: "Fernanda Costa",
-    clientRole: "Aluna - Info. High Ticket",
-    description: "O script de vendas do Módulo 3 pagou o curso na primeira aplicação. Surreal a clareza do processo.",
-  },
-  {
-    id: "3",
-    type: "image",
-    clientName: "Agência Scale",
-    clientRole: "Mentoria Empresarial",
-    description: "Estruturamos o comercial da agência seguindo o playbook da TegPro. O CAC caiu pela metade.",
-    src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop",
-    stats: { value: "-50%", label: "CAC" }
-  },
-  {
-    id: "4",
-    type: "text",
-    clientName: "Ricardo Oliveira",
-    clientRole: "Aluno - Gestão de Tráfego",
-    description: "Eu achava que sabia subir campanha até ver a aula de Estrutura de Testes. Mudou meu jogo.",
-  },
-  {
-    id: "5",
-    type: "video",
-    clientName: "Juliana Paes",
-    clientRole: "Aluna - E-commerce",
-    description: "A automação de recuperação de carrinho salvou 20% do meu faturamento no mês passado.",
-    src: "/videos/case-ju.webm",
-    poster: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop",
-    stats: { value: "+20%", label: "Recuperação" }
-  }
-];
+// Interface que espelha o JSON da API
+export interface TestimonialsData {
+  titulo: string;
+  subtitulo: string;
+  showStats: boolean;
+  textColor: string;
+  backgroundColor: string;
+  testimonials: ClientCase[];
+}
+
+interface CasesCarouselProps {
+  data: TestimonialsData | null;
+}
 
 // --- CARDS (DARK MODE & GOLD) ---
 
@@ -110,7 +77,7 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
 
       {/* Info */}
       <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
-         {data.stats && (
+         {data.stats && data.stats.value && (
            <div className="mb-4 inline-flex flex-col border-l-2 border-[#FFD700] pl-3 bg-black/20 backdrop-blur-sm pr-4 py-1 rounded-r-lg">
              <span className="text-2xl font-bold tracking-tight text-[#FFD700]">{data.stats.value}</span>
              <span className="text-[10px] text-gray-300 uppercase tracking-widest">{data.stats.label}</span>
@@ -140,7 +107,7 @@ const ImageCard = ({ data }: { data: ClientCase }) => (
 
       <div className="absolute bottom-0 left-0 w-full h-[40%] bg-[#0A0A0A] p-8 flex flex-col justify-between rounded-t-[2rem] border-t border-white/5">
          <div>
-            {data.stats && (
+            {data.stats && data.stats.value && (
                 <div className="absolute -top-10 right-8 bg-[#FFD700] text-black px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(255,215,0,0.2)]">
                     <p className="text-lg font-bold">{data.stats.value}</p>
                     <p className="text-[9px] uppercase font-bold opacity-70">{data.stats.label}</p>
@@ -170,6 +137,12 @@ const TextCard = ({ data }: { data: ClientCase }) => (
          <div className="mb-8 w-10 h-10 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700]">
             <Icon icon="ph:chat-teardrop-text-bold" className="w-5 h-5" />
          </div>
+         {data.stats && data.stats.value && (
+            <div className="mb-6">
+                <span className="text-3xl font-bold text-white block">{data.stats.value}</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">{data.stats.label}</span>
+            </div>
+         )}
          <p className="text-lg text-gray-200 leading-relaxed font-light italic">
             "{data.description}"
          </p>
@@ -189,15 +162,23 @@ const TextCard = ({ data }: { data: ClientCase }) => (
 
 
 // --- COMPONENTE PRINCIPAL (CARROSSEL) ---
-export default function CasesCarousel() {
+export default function CasesCarousel({ data }: CasesCarouselProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
+  // Recalcular largura do carrossel quando os dados mudarem
   useEffect(() => {
     if (carouselRef.current) {
-      setWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
+      // Pequeno timeout para garantir que o DOM renderizou
+      setTimeout(() => {
+          if(carouselRef.current) {
+             setWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
+          }
+      }, 100);
     }
-  }, []);
+  }, [data]);
+
+  if (!data) return null;
 
   return (
     <section className="py-24 w-full bg-[#020202] relative overflow-hidden">
@@ -214,12 +195,15 @@ export default function CasesCarousel() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700] animate-pulse"></span>
               <span className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
-                Resultados Comprovados
+                {data.titulo}
               </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.05]">
-              Quem aplica, <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">domina o mercado.</span>
+               {/* Lógica simples para quebrar o título ou destacar, se quiser customizar mais pode usar o campo 'subtitulo' */}
+               Resultados <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">
+                 {data.subtitulo || "Comprovados"}
+               </span>
             </h2>
           </div>
           <div className="hidden md:flex items-center gap-2 text-gray-500">
@@ -239,7 +223,7 @@ export default function CasesCarousel() {
                 dragConstraints={{ right: 0, left: -width }} 
                 className="flex gap-6"
             >
-                {casesData.map((item) => (
+                {data.testimonials.map((item) => (
                     <div key={item.id} className="relative">
                         {item.type === 'video' && <VideoCard data={item} />}
                         {item.type === 'image' && <ImageCard data={item} />}
@@ -249,21 +233,23 @@ export default function CasesCarousel() {
             </motion.div>
         </motion.div>
 
-        {/* FOOTER STATS */}
-        <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/5 pt-10">
-           <div className="text-center">
-              <p className="text-3xl font-bold text-white">+1.2k</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest">Alunos Formados</p>
-           </div>
-           <div className="text-center">
-              <p className="text-3xl font-bold text-[#FFD700]">R$ 45M+</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest">Gerados (Alunos)</p>
-           </div>
-           <div className="text-center">
-              <p className="text-3xl font-bold text-white">4.9/5</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest">Avaliação Média</p>
-           </div>
-        </div>
+        {/* FOOTER STATS (Opcional, baseado no showStats) */}
+        {data.showStats && (
+            <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/5 pt-10">
+            <div className="text-center">
+                <p className="text-3xl font-bold text-white">+1.2k</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Alunos Formados</p>
+            </div>
+            <div className="text-center">
+                <p className="text-3xl font-bold text-[#FFD700]">R$ 45M+</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Gerados (Alunos)</p>
+            </div>
+            <div className="text-center">
+                <p className="text-3xl font-bold text-white">4.9/5</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Avaliação Média</p>
+            </div>
+            </div>
+        )}
 
       </div>
     </section>

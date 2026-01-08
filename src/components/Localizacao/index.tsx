@@ -11,23 +11,41 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Lista de fotos do escritório
-const officeImages = [
-  "/images/office-1.jpg", 
-  "/images/office-2.jpg", 
-  "/images/office-3.jpg"  
-];
+// Interface baseada no JSON da API (estrutura 'values')
+export interface LocalizacaoItem {
+  id: string;
+  alt: string;
+  image: string;
+  title: string;
+  description: string;
+}
 
-export default function LocationHubLight() {
+interface LocalizacaoProps {
+  data: LocalizacaoItem[];
+}
+
+const Localizacao = ({ data }: LocalizacaoProps) => {
+  // Se não houver dados, não renderiza
+  if (!data || data.length === 0) return null;
+
   const sectionRef = useRef(null);
   const [currentImg, setCurrentImg] = useState(0);
 
+  // Extrai apenas as imagens disponíveis para o slider
+  // Se houver apenas 1 item na API, o slider terá apenas 1 slide
+  const images = data.map(item => item.image).filter(Boolean);
+  
+  // Dados principais de texto (assume-se que o primeiro item carrega os textos da seção)
+  const mainContent = data[0];
+
   useEffect(() => {
+    if (images.length <= 1) return; // Não roda slider se só tiver 1 imagem
+
     const timer = setInterval(() => {
-      setCurrentImg((prev) => (prev + 1) % officeImages.length);
+      setCurrentImg((prev) => (prev + 1) % images.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [images.length]);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -90,21 +108,29 @@ export default function LocationHubLight() {
                 </span>
             </div>
 
-            {/* Headline */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1d1d1f] mb-6 leading-[1.1] tracking-tight">
-                Sediados em Garça.<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0071E3] to-blue-500">
-                    Conectados ao Brasil.
-                </span>
+            {/* Headline Dinâmico */}
+            <h2 
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1d1d1f] mb-6 leading-[1.1] tracking-tight"
+            >
+                {/* Lógica simples para quebrar título e colorir a segunda parte se houver ponto final */}
+                {mainContent.title.includes('.') ? (
+                    <>
+                        {mainContent.title.split('.')[0]}.<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0071E3] to-blue-500">
+                            {mainContent.title.split('.').slice(1).join('.')}
+                        </span>
+                    </>
+                ) : (
+                    mainContent.title
+                )}
             </h2>
 
-            {/* Copy */}
+            {/* Copy Dinâmico */}
             <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-md font-medium">
-                Nossa base física está estrategicamente localizada no interior de São Paulo (Garça), longe do ruído e focada na execução. 
-                Daqui, monitoramos e aceleramos operações em <strong className="text-[#1d1d1f]">todos os estados do país</strong>.
+                {mainContent.description}
             </p>
 
-            {/* Stats */}
+            {/* Stats (Hardcoded por enquanto pois não vieram no JSON, mas são estáticos do negócio) */}
             <div className="flex gap-8 border-t border-gray-100 pt-8 w-full">
                 <div>
                     <span className="block text-3xl font-bold text-[#1d1d1f]">+24</span>
@@ -118,10 +144,15 @@ export default function LocationHubLight() {
             </div>
             
             {/* Link Google Maps */}
-            <div className="mt-8 flex items-center gap-2 text-sm text-[#0071E3] font-bold uppercase tracking-widest cursor-pointer group">
+            <a 
+                href="https://maps.app.goo.gl/seu-link-aqui" 
+                target="_blank"
+                rel="noreferrer"
+                className="mt-8 flex items-center gap-2 text-sm text-[#0071E3] font-bold uppercase tracking-widest cursor-pointer group"
+            >
                 <span>Ver no Google Maps</span>
                 <Icon icon="ph:arrow-right" className="group-hover:translate-x-1 transition-transform" />
-            </div>
+            </a>
         </div>
 
         {/* --- LADO DIREITO: IMAGEM (CARD FLUTUANTE) --- */}
@@ -136,22 +167,30 @@ export default function LocationHubLight() {
                     <div className="radar-circle w-20 h-20 border border-white/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 delay-300"></div>
                 </div>
 
-                {/* Slider de Imagens */}
-                {officeImages.map((src, index) => (
-                   <div 
-                      key={index}
-                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImg === index ? "opacity-100" : "opacity-0"}`}
-                   >
-                      <Image 
-                        src={src} 
-                        alt="Escritório Tegbe Garça" 
-                        fill 
-                        className="object-cover"
-                      />
-                      {/* Overlay escuro leve na base para o texto do card aparecer melhor */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                   </div>
-                ))}
+                {/* Slider de Imagens vindas da API */}
+                {images.length > 0 ? (
+                    images.map((src, index) => (
+                    <div 
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImg === index ? "opacity-100" : "opacity-0"}`}
+                    >
+                        <Image 
+                            src={src} 
+                            alt={mainContent.alt || "Escritório Tegbe Garça"} 
+                            fill 
+                            className="object-cover"
+                            unoptimized // Permite URLs externas sem config no next.config.js (útil para CMS)
+                        />
+                        {/* Overlay escuro leve na base para o texto do card aparecer melhor */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                    </div>
+                    ))
+                ) : (
+                    // Fallback visual caso não venha imagem
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <Icon icon="ph:image-broken" width="48" />
+                    </div>
+                )}
 
                 {/* Card Flutuante de Informação */}
                 <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md border border-white/40 p-4 rounded-xl flex items-center justify-between z-30 shadow-lg">
@@ -165,16 +204,18 @@ export default function LocationHubLight() {
                         </div>
                     </div>
                     
-                    {/* Indicadores do Slider */}
-                    <div className="flex gap-1.5">
-                        {officeImages.map((_, i) => (
-                            <div 
-                                key={i} 
-                                onClick={() => setCurrentImg(i)}
-                                className={`h-1.5 rounded-full transition-all cursor-pointer ${currentImg === i ? "w-6 bg-[#0071E3]" : "w-1.5 bg-gray-300 hover:bg-gray-400"}`}
-                            />
-                        ))}
-                    </div>
+                    {/* Indicadores do Slider (só mostra se tiver mais de 1 imagem) */}
+                    {images.length > 1 && (
+                        <div className="flex gap-1.5">
+                            {images.map((_, i) => (
+                                <div 
+                                    key={i} 
+                                    onClick={() => setCurrentImg(i)}
+                                    className={`h-1.5 rounded-full transition-all cursor-pointer ${currentImg === i ? "w-6 bg-[#0071E3]" : "w-1.5 bg-gray-300 hover:bg-gray-400"}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
             </div>
@@ -187,3 +228,5 @@ export default function LocationHubLight() {
     </section>
   );
 }
+
+export default Localizacao;

@@ -1,0 +1,73 @@
+{
+  "general": {
+    "logo": "/logo-tegbe-header.svg",
+    "logoAlt": "Tegbe Logo",
+    "consultantBadge": "/logo-consultoria.svg",
+    "ctaLink": "https://api.whatsapp.com/send?phone=5514991779502",
+    "ctaText": "Agendar agora"
+  },
+  "links": [
+    {
+      "name": "Home",
+      "href": "/"
+    },
+    {
+      "name": "E-commerce",
+      "href": "/ecommerce"
+    },
+    {
+      "name": "Marketing",
+      "href": "/marketing"
+    },
+    {
+      "name": "Cursos",
+      "href": "/cursos"
+    },
+    {
+      "name": "Sobre",
+      "href": "/sobre"
+    }
+  ],
+  "variants": {
+    "ecommerce": {
+      "primary": "bg-[#FFCC00]",
+      "hoverBg": "hover:bg-[#FFDB15]",
+      "textOnPrimary": "text-black",
+      "accentText": "text-[#FFCC00]",
+      "hoverText": "group-hover:text-[#FFCC00]",
+      "border": "border-yellow-500/30",
+      "glow": "shadow-[0_0_20px_rgba(255,204,0,0.4)]",
+      "underline": "bg-[#FFCC00]"
+    },
+    "marketing": {
+      "primary": "bg-[#E31B63]",
+      "hoverBg": "hover:bg-[#FF1758]",
+      "textOnPrimary": "text-white",
+      "accentText": "text-[#E31B63]",
+      "hoverText": "group-hover:text-[#E31B63]",
+      "border": "border-rose-500/30",
+      "glow": "shadow-[0_0_20px_rgba(227,27,99,0.4)]",
+      "underline": "bg-[#E31B63]"
+    },
+    "sobre": {
+      "primary": "bg-[#0071E3]",
+      "hoverBg": "hover:bg-[#2B8CFF]",
+      "textOnPrimary": "text-white",
+      "accentText": "text-[#0071E3]",
+      "hoverText": "group-hover:text-[#0071E3]",
+      "border": "border-blue-500/30",
+      "glow": "shadow-[0_0_20px_rgba(0,113,227,0.4)]",
+      "underline": "bg-[#0071E3]"
+    },
+    "cursos": {
+      "primary": "bg-[#FFD700]",
+      "hoverBg": "hover:bg-[#E5C100]",
+      "textOnPrimary": "text-black",
+      "accentText": "text-[#FFD700]",
+      "hoverText": "group-hover:text-[#FFD700]",
+      "border": "border-[#FFD700]/30",
+      "glow": "shadow-[0_0_25px_rgba(255,215,0,0.3)]",
+      "underline": "bg-[#FFD700]"
+    }
+  }
+}

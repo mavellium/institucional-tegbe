@@ -1,0 +1,122 @@
+{
+  "general": {
+    "logo": "/tegbe-logo-footer.svg",
+    "poweredByLogo": "/mavellium-logo-footer.svg",
+    "cnpj": "48.802.866/0001-42",
+    "address": "R. Santos Dumont, 133\nGarça - SP\nOperação Global",
+    "phone": "(14) 99177-9502",
+    "whatsappLink": "https://api.whatsapp.com/send?phone=5514991779502",
+    "socials": {
+      "instagram": "https://instagram.com/tegbecoomerce",
+      "linkedin": "#",
+      "youtube": "#"
+    }
+  },
+  "navigation": [
+    { "name": "Home", "href": "/" },
+    { "name": "E-commerce", "href": "/ecommerce" },
+    { "name": "Marketing", "href": "/marketing" },
+    { "name": "Cursos", "href": "/cursos" },
+    { "name": "Sobre", "href": "/sobre" }
+  ],
+  "content": {
+    "ecommerce": {
+      "badgeImage": "/logo-consultoria.svg",
+      "badgeTitle": "Consultoria Certificada",
+      "badgeDesc": "Selo oficial de qualidade e segurança Mercado Livre.",
+      "stats1": { "val": "+100M", "label": "Gerenciados" },
+      "stats2": { "val": "Top 1%", "label": "Performance" },
+      "columnTitle": "Expertise",
+      "links": ["Gestão Full Commerce", "Consultoria Oficial", "Ads & Performance", "Design & Branding"],
+      "email": "contato@tegbe.com.br",
+      "desc": "Aceleradora de E-commerce. Transformamos operação técnica em lucro real através de dados e estratégia."
+    },
+    "marketing": {
+      "badgeImage": "/logo-kommo.svg",
+      "badgeTitle": "Kommo Gold Partner",
+      "badgeDesc": "Especialistas certificados em CRM e Automação.",
+      "stats1": { "val": "+40", "label": "Implantações" },
+      "stats2": { "val": "24/7", "label": "Suporte IA" },
+      "columnTitle": "Soluções",
+      "links": ["Implementação CRM", "Tráfego de Elite", "Automação com IA", "Business Intelligence"],
+      "email": "comercial@tegbe.com.br",
+      "desc": "Engenharia de Vendas. Transformamos tráfego em receita previsível através de CRM, Dados e IA."
+    },
+    "sobre": {
+      "badgeImage": "/logo-tegbe-simbolo.svg",
+      "badgeTitle": "Cultura de Excelência",
+      "badgeDesc": "Growth Partners focados em Equity e Governança.",
+      "stats1": { "val": "2020", "label": "Fundação" },
+      "stats2": { "val": "Senior", "label": "Equipe" },
+      "columnTitle": "Institucional",
+      "links": ["Nossa História", "Manifesto", "Carreiras", "Imprensa"],
+      "email": "institucional@tegbe.com.br",
+      "desc": "Não somos uma agência. Somos o braço direito estratégico que constrói o futuro da sua operação."
+    },
+    "cursos": {
+      "badgeImage": "/logo-tegbe-simbolo.svg",
+      "badgeTitle": "TegPro Academy",
+      "badgeDesc": "Onde a teoria morre e a prática escala.",
+      "stats1": { "val": "+1.2k", "label": "Alunos" },
+      "stats2": { "val": "4.9", "label": "Avaliação" },
+      "columnTitle": "Ensino",
+      "links": ["Todos os Cursos", "Mentoria Black", "Comunidade", "Login Aluno"],
+      "email": "suporte@tegbe.com.br",
+      "desc": "Não ensinamos o que lemos. Ensinamos o que vivemos. O campo de batalha transformado em método."
+    }
+  },
+  "variants": {
+    "ecommerce": {
+      "primary": "text-[#FFCC00]",
+      "hoverText": "hover:text-[#FFCC00]",
+      "decoration": "decoration-[#FFCC00]",
+      "bgHover": "hover:bg-[#FFCC00]",
+      "borderHover": "hover:border-[#FFCC00]/30",
+      "glowGradient": "from-[#FFCC00]/0 via-[#FFCC00]/5 to-[#FFCC00]/0",
+      "glowAmbient": "bg-[#FFCC00]/5",
+      "iconBg": "text-[#FFCC00]",
+      "iconHoverText": "group-hover:text-black",
+      "iconHoverBg": "group-hover:bg-[#FFCC00]",
+      "topBorder": "border-white/10"
+    },
+    "marketing": {
+      "primary": "text-[#E31B63]",
+      "hoverText": "hover:text-[#E31B63]",
+      "decoration": "decoration-[#E31B63]",
+      "bgHover": "hover:bg-[#E31B63]",
+      "borderHover": "hover:border-[#E31B63]/30",
+      "glowGradient": "from-[#E31B63]/0 via-[#E31B63]/10 to-[#E31B63]/0",
+      "glowAmbient": "bg-[#E31B63]/10",
+      "iconBg": "text-[#E31B63]",
+      "iconHoverText": "group-hover:text-white",
+      "iconHoverBg": "group-hover:bg-[#E31B63]",
+      "topBorder": "border-rose-900/20"
+    },
+    "sobre": {
+      "primary": "text-[#0071E3]",
+      "hoverText": "hover:text-[#0071E3]",
+      "decoration": "decoration-[#0071E3]",
+      "bgHover": "hover:bg-[#0071E3]",
+      "borderHover": "hover:border-[#0071E3]/30",
+      "glowGradient": "from-[#0071E3]/0 via-[#0071E3]/10 to-[#0071E3]/0",
+      "glowAmbient": "bg-[#0071E3]/10",
+      "iconBg": "text-[#0071E3]",
+      "iconHoverText": "group-hover:text-white",
+      "iconHoverBg": "group-hover:bg-[#0071E3]",
+      "topBorder": "border-blue-900/20"
+    },
+    "cursos": {
+      "primary": "text-[#FFD700]",
+      "hoverText": "hover:text-[#FFD700]",
+      "decoration": "decoration-[#FFD700]",
+      "bgHover": "hover:bg-[#FFD700]",
+      "borderHover": "hover:border-[#FFD700]/30",
+      "glowGradient": "from-[#FFD700]/0 via-[#FFD700]/10 to-[#FFD700]/0",
+      "glowAmbient": "bg-[#FFD700]/5",
+      "iconBg": "text-[#FFD700]",
+      "iconHoverText": "group-hover:text-black",
+      "iconHoverBg": "group-hover:bg-[#FFD700]",
+      "topBorder": "border-[#FFD700]/20"
+    }
+  }
+}

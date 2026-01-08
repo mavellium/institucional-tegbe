@@ -2,9 +2,35 @@
 
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import config from "@/json/ComparacaoConcorrentes/config.json";
 
-export default function ComparisonTable() {
+// --- TIPAGEM DOS DADOS ---
+export interface ComparisonFeature {
+  label: string;
+  competitor: string;
+  us: string;
+}
+
+export interface ComparisonData {
+  header: {
+    badge: string;
+    title: string;
+    subtitle: string;
+  };
+  columns: {
+    competitor: string;
+    us: string;
+  };
+  features: ComparisonFeature[];
+}
+
+interface ComparisonTableProps {
+  data: ComparisonData | null;
+}
+
+export default function ComparacaoConcorrentes({ data }: ComparisonTableProps) {
+  // Segurança: Se não houver dados ou se a estrutura estiver errada (sem features), não renderiza
+  if (!data || !data.features) return null;
+
   return (
     <section className="py-24 bg-[#020202] relative overflow-hidden font-sans">
       
@@ -21,37 +47,36 @@ export default function ComparisonTable() {
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
               <Icon icon="ph:scales-bold" className="text-gray-400 w-4 h-4" />
               <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-gray-400 uppercase">
-                {config.header.badge}
+                {data.header.badge}
               </span>
            </div>
            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-             {config.header.title}
+             {data.header.title}
            </h2>
            <p className="text-gray-400 max-w-xl mx-auto">
-             {config.header.subtitle}
+             {data.header.subtitle}
            </p>
         </div>
 
         {/* TABELA */}
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-8 items-center">
             
-            {/* COLUNA 1: LABELS (Escondida no Mobile, aparece inline) */}
+            {/* COLUNA 1: LABELS (Escondida no Mobile) */}
             <div className="hidden md:flex flex-col gap-6 py-8">
-                {/* Espaço vazio para alinhar com header */}
                 <div className="h-16"></div> 
-                {config.features.map((feature, i) => (
+                {data.features.map((feature, i) => (
                     <div key={i} className="h-16 flex items-center text-gray-400 font-medium text-sm border-b border-white/5">
                         {feature.label}
                     </div>
                 ))}
             </div>
 
-            {/* COLUNA 2: CONCORRÊNCIA (Cinza/Apagado) */}
+            {/* COLUNA 2: CONCORRÊNCIA */}
             <div className="flex flex-col gap-6 p-8 rounded-2xl border border-white/5 bg-[#0A0A0A]/50 grayscale opacity-70">
                 <div className="h-16 flex flex-col justify-center border-b border-white/5">
-                    <h3 className="text-xl font-bold text-gray-500">{config.columns.competitor}</h3>
+                    <h3 className="text-xl font-bold text-gray-500">{data.columns.competitor}</h3>
                 </div>
-                {config.features.map((feature, i) => (
+                {data.features.map((feature, i) => (
                     <div key={i} className="h-auto md:h-16 flex flex-col justify-center border-b border-white/5 py-4 md:py-0">
                         <span className="md:hidden text-[10px] uppercase text-gray-600 font-bold mb-1">{feature.label}</span>
                         <div className="flex items-center gap-3">
@@ -62,14 +87,13 @@ export default function ComparisonTable() {
                 ))}
             </div>
 
-            {/* COLUNA 3: TEGPRO (Destaque Gold) */}
+            {/* COLUNA 3: TEGPRO (Destaque) */}
             <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6 }}
                 className="relative flex flex-col gap-6 p-8 rounded-2xl border border-[#FFD700]/30 bg-[#0F0F0F] shadow-[0_0_50px_rgba(255,215,0,0.1)] overflow-hidden group mt-8 md:mt-0"
             >
-                {/* Shine Effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-[#FFD700]/5 to-transparent pointer-events-none" />
                 
                 <div className="h-16 flex flex-col justify-center border-b border-[#FFD700]/10 relative z-10">
@@ -77,11 +101,11 @@ export default function ComparisonTable() {
                         RECOMENDADO
                     </div>
                     <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                        {config.columns.us}
+                        {data.columns.us}
                     </h3>
                 </div>
 
-                {config.features.map((feature, i) => (
+                {data.features.map((feature, i) => (
                     <div key={i} className="h-auto md:h-16 flex flex-col justify-center border-b border-[#FFD700]/10 py-4 md:py-0 relative z-10">
                         <span className="md:hidden text-[10px] uppercase text-[#FFD700]/50 font-bold mb-1">{feature.label}</span>
                         <div className="flex items-center gap-3">
@@ -93,7 +117,6 @@ export default function ComparisonTable() {
                     </div>
                 ))}
                 
-                {/* CTA Embutido na Tabela */}
                 <div className="mt-4 pt-4">
                     <button className="w-full py-3 rounded-lg bg-[#FFD700] hover:bg-[#E5C100] text-black font-bold text-sm uppercase tracking-wide transition-colors shadow-lg">
                         Escolher TegPro

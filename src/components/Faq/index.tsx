@@ -3,14 +3,34 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
-import config from "@/json/Faq/config.json";
 
-export default function FaqSection() {
+// --- TIPAGEM DOS DADOS ---
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface FaqData {
+  header: {
+    title: string;
+    subtitle: string;
+  };
+  questions: FaqItem[];
+}
+
+interface FaqProps {
+  data: FaqData | null;
+}
+
+export default function FaqSection({ data }: FaqProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const toggleIndex = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
+
+  // Segurança: Se não houver dados, não renderiza
+  if (!data || !data.questions) return null;
 
   return (
     <section className="py-24 bg-[#020202] relative font-sans border-t border-white/5">
@@ -18,13 +38,13 @@ export default function FaqSection() {
         
         {/* HEADER */}
         <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-2">{config.header.title}</h2>
-            <p className="text-gray-500">{config.header.subtitle}</p>
+            <h2 className="text-3xl font-bold text-white mb-2">{data.header.title}</h2>
+            <p className="text-gray-500">{data.header.subtitle}</p>
         </div>
 
         {/* QUESTIONS */}
         <div className="space-y-4">
-            {config.questions.map((item, index) => {
+            {data.questions.map((item, index) => {
                 const isOpen = activeIndex === index;
 
                 return (

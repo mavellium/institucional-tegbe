@@ -2,34 +2,39 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Button } from "../ui/button"; // Certifique-se que este caminho está correto no seu projeto
+import { Button } from "../ui/button"; 
 import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface Feature {
+// Interface baseada no objeto "values" da API
+export interface ServiceFeature {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image: string; // A API retorna uma única imagem
   icon: string;
 }
 
-const ExploreDetails = () => {
-  const [activeFeature, setActiveFeature] = useState(0); // Começar com o primeiro ativo fica mais elegante
+interface ExploreDetailsProps {
+  features: ServiceFeature[];
+}
+
+const ExploreDetails = ({ features = [] }: ExploreDetailsProps) => {
+  // Se não houver dados, não renderiza a seção para evitar erros
+  if (!features || features.length === 0) return null;
+
+  const [activeFeature, setActiveFeature] = useState(0); 
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  // Imagens placeholder (Substitua pelos prints reais do seu sistema/dashboard)
-  const [currentDesktopImage, setCurrentDesktopImage] = useState("https://placehold.co/1920x1080/111/333?text=Dashboard+Tegbe");
-  const [currentMobileImage, setCurrentMobileImage] = useState("https://placehold.co/1080x1920/111/333?text=Mobile+View");
+  // Inicializa com a primeira imagem da API ou uma string vazia segura
+  const [currentImage, setCurrentImage] = useState(features[0]?.image || "");
   
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const titlesRef = useRef<(HTMLHeadingElement | null)[]>([]);
   const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const buttonsContainerRef = useRef<HTMLDivElement>(null);
@@ -38,55 +43,22 @@ const ExploreDetails = () => {
   const mobileImageContainerRef = useRef<HTMLDivElement>(null);
   const previousActiveFeatureRef = useRef<number>(-1);
 
-  // DADOS REAIS TEGBE
-  const features: Feature[] = [
-    {
-      id: "1",
-      title: "Aquisição Cirúrgica",
-      description: "Tráfego pago focado em ICPs (Perfis de Cliente Ideal). Ignoramos curiosos e atraímos decisores com Google e Meta Ads de alta intenção.",
-      image: "https://placehold.co/1920x1080/0a0a0a/E31B63?text=Graficos+Trafego", // Substituir por print de Ads/Analytics
-      icon: "mdi:target-account"
-    },
-    {
-      id: "2",
-      title: "CRM Inteligente",
-      description: "Pipelines visuais no Kommo. Cada etapa do funil é rastreada para garantir que nenhum lead seja esquecido pela equipe comercial.",
-      image: "https://placehold.co/1920x1080/0a0a0a/E31B63?text=Pipeline+Kommo", // Substituir por print do Kommo
-      icon: "mdi:sitemap"
-    },
-    {
-      id: "3",
-      title: "Automação & IA",
-      description: "Atendimento 24/7. Nossa IA qualifica leads, responde dúvidas frequentes e agenda reuniões automaticamente.",
-      image: "https://placehold.co/1920x1080/0a0a0a/E31B63?text=Bot+Whatsapp", // Substituir por print de chat/bot
-      icon: "mdi:robot-industrial"
-    },
-    {
-      id: "4",
-      title: "Business Intelligence",
-      description: "Dashboards em tempo real. Saiba exatamente seu CAC, LTV e ROI sem precisar abrir planilhas complexas.",
-      image: "https://placehold.co/1920x1080/0a0a0a/E31B63?text=Dashboard+PowerBI", // Substituir por print de Dashboard
-      icon: "mdi:chart-box"
-    },
-    {
-      id: "5",
-      title: "Recuperação de Vendas",
-      description: "Estratégias de remarketing e follow-up automático para trazer de volta quem quase comprou.",
-      image: "https://placehold.co/1920x1080/0a0a0a/E31B63?text=Fluxo+Recuperacao",
-      icon: "mdi:restore"
+  // Efeito para sincronizar a imagem inicial quando os dados carregam
+  useEffect(() => {
+    if (features.length > 0 && previousActiveFeatureRef.current === -1) {
+        setCurrentImage(features[0].image);
     }
-  ];
+  }, [features]);
 
   // Função para animar a transição de imagem
   const animateImageTransition = (
     containerRef: React.RefObject<HTMLDivElement | null>, 
     newImage: string,
-    setImage: (img: string) => void,
     callback?: () => void
   ) => {
     const container = containerRef.current;
     if (!container) {
-      setImage(newImage);
+      setCurrentImage(newImage);
       callback?.();
       return;
     }
@@ -96,7 +68,7 @@ const ExploreDetails = () => {
       duration: 0.3,
       ease: "power2.in",
       onComplete: () => {
-        setImage(newImage);
+        setCurrentImage(newImage); // Atualiza o estado único da imagem
         setTimeout(() => {
           gsap.to(container, {
             opacity: 1,
@@ -109,26 +81,31 @@ const ExploreDetails = () => {
     });
   };
 
+  // Efeito de mudança de slide
   useEffect(() => {
+    // Evita rodar na primeira renderização se já estiver setado
     if (previousActiveFeatureRef.current !== activeFeature) {
-      const newImage = activeFeature >= 0 ? features[activeFeature].image : features[0].image;
+      const newImage = features[activeFeature]?.image || "";
       
-      animateImageTransition(desktopImageContainerRef, newImage, setCurrentDesktopImage);
-      animateImageTransition(mobileImageContainerRef, newImage, setCurrentMobileImage);
+      // Anima ambos os containers (Desktop e Mobile usam a mesma imagem da API por enquanto)
+      animateImageTransition(desktopImageContainerRef, newImage);
+      animateImageTransition(mobileImageContainerRef, newImage);
       
       previousActiveFeatureRef.current = activeFeature;
     }
-  }, [activeFeature]);
+  }, [activeFeature, features]);
 
-  // Animação de entrada dos botões
+  // Animação de entrada dos botões (ScrollTrigger)
   useEffect(() => {
     if (!buttonsContainerRef.current || features.length === 0) return;
 
+    // Limpa animações anteriores para evitar conflitos em re-renders
     const buttons = buttonsContainerRef.current.querySelectorAll('.feature-button');
+    gsap.killTweensOf(buttons);
     
     gsap.set(buttons, { opacity: 0, x: -30 });
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top 70%",
       onEnter: () => {
@@ -142,12 +119,14 @@ const ExploreDetails = () => {
       }
     });
 
+    return () => trigger.kill();
+
   }, [features.length]);
 
   const resetButtonToInactive = (index: number) => {
     if (buttonsRef.current[index]) {
       gsap.to(buttonsRef.current[index], {
-        backgroundColor: "rgba(255, 255, 255, 0.03)", // Volta para cor inativa dark
+        backgroundColor: "rgba(255, 255, 255, 0.03)", 
         borderColor: "rgba(255, 255, 255, 0.05)",
         scale: 1,
         duration: 0.3
@@ -161,9 +140,8 @@ const ExploreDetails = () => {
         duration: 0.3
       });
     }
-    // Resetar cor do ícone
     const icon = buttonsRef.current[index]?.querySelector('.feature-icon');
-    if(icon) gsap.to(icon, { color: "#6B7280", duration: 0.3 }); // cinza
+    if(icon) gsap.to(icon, { color: "#6B7280", duration: 0.3 }); 
   };
 
   const handleFeatureChange = (index: number) => {
@@ -171,22 +149,19 @@ const ExploreDetails = () => {
 
     setIsTransitioning(true);
     
-    // Resetar o anterior
     if (activeFeature !== -1) resetButtonToInactive(activeFeature);
 
     setActiveFeature(index);
 
-    // Animar o novo
     if (buttonsRef.current[index]) {
       gsap.to(buttonsRef.current[index], {
-        backgroundColor: "rgba(227, 27, 99, 0.1)", // Fundo Vermelho bem suave
-        borderColor: "#E31B63", // Borda Vermelha Tegbe
+        backgroundColor: "rgba(227, 27, 99, 0.1)", 
+        borderColor: "#E31B63", 
         scale: 1.02,
         duration: 0.3,
         onComplete: () => setIsTransitioning(false)
       });
       
-      // Animar ícone para vermelho
       const icon = buttonsRef.current[index]?.querySelector('.feature-icon');
       if(icon) gsap.to(icon, { color: "#E31B63", duration: 0.3 });
     }
@@ -225,33 +200,34 @@ const ExploreDetails = () => {
     animateMobileTextTransition(newIndex);
   };
 
-  // Inicialização do estado visual (abrir o primeiro item)
+  // Inicialização visual do primeiro item (sem animação de entrada)
   useEffect(() => {
-    if (buttonsRef.current[0] && activeFeature === 0) {
-        // Força visual do estado ativo inicial sem animação
-        gsap.set(buttonsRef.current[0], { 
-            backgroundColor: "rgba(227, 27, 99, 0.1)", 
-            borderColor: "#E31B63", 
-            scale: 1.02 
-        });
-        const icon = buttonsRef.current[0]?.querySelector('.feature-icon');
-        if(icon) gsap.set(icon, { color: "#E31B63" });
-        
-        if (descriptionsRef.current[0]) {
-            gsap.set(descriptionsRef.current[0], { height: "auto", opacity: 1, marginTop: 16 });
+    // Pequeno delay para garantir que o DOM foi montado
+    const timer = setTimeout(() => {
+        if (buttonsRef.current[0] && activeFeature === 0) {
+            gsap.set(buttonsRef.current[0], { 
+                backgroundColor: "rgba(227, 27, 99, 0.1)", 
+                borderColor: "#E31B63", 
+                scale: 1.02 
+            });
+            const icon = buttonsRef.current[0]?.querySelector('.feature-icon');
+            if(icon) gsap.set(icon, { color: "#E31B63" });
+            
+            if (descriptionsRef.current[0]) {
+                gsap.set(descriptionsRef.current[0], { height: "auto", opacity: 1, marginTop: 16 });
+            }
         }
-    }
-  }, []);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [features]); // Roda quando features mudam
 
   return (
     <section ref={sectionRef} className="py-24 bg-[#020202] px-6 relative border-t border-white/5">
       
-      {/* Texture Noise */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       <div className="mx-auto relative max-w-[1400px] z-10">
         
-        {/* Header */}
         <div className="mb-12 md:mb-16">
             <h2 className="text-sm font-bold text-[#E31B63] uppercase tracking-widest mb-3">
                 Deep Dive
@@ -264,7 +240,6 @@ const ExploreDetails = () => {
         {/* --- DESKTOP LAYOUT --- */}
         <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
           
-          {/* Coluna da Esquerda: Navegação (Lista de Features) */}
           <div className="col-span-4 sticky top-24">
             <div ref={buttonsContainerRef} className="flex flex-col space-y-3">
               {features.map((feature, index) => (
@@ -287,11 +262,9 @@ const ExploreDetails = () => {
                         />
                         {feature.title}
                     </h3>
-                    {/* Seta indicativa */}
                     <Icon icon="lucide:chevron-right" className={`w-5 h-5 transition-all ${activeFeature === index ? "text-[#E31B63] opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`} />
                   </div>
 
-                  {/* Descrição Expansível */}
                   <div
                     ref={(el) => { descriptionsRef.current[index] = el }}
                     className="overflow-hidden h-0 opacity-0"
@@ -305,31 +278,28 @@ const ExploreDetails = () => {
             </div>
           </div>
 
-          {/* Coluna da Direita: Visualização (Imagem/Tela) */}
           <div className="col-span-8">
             <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] shadow-2xl shadow-rose-900/10 aspect-video group">
               
-              {/* Glow Effect Topo */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-[#E31B63] blur-[20px] opacity-50"></div>
 
               <div 
                 ref={desktopImageContainerRef}
                 className="w-full h-full relative"
               >
-                {/* Aqui entra a imagem real do dashboard/serviço */}
-                <Image
-                  src={currentDesktopImage}
-                  alt="Tegbe Feature Dashboard"
-                  fill
-                  className="object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
-                  unoptimized
-                />
+                {currentImage && (
+                    <Image
+                    src={currentImage}
+                    alt="Tegbe Feature Dashboard"
+                    fill
+                    className="object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+                    unoptimized
+                    />
+                )}
                 
-                {/* Overlay Gradiente para integração */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60"></div>
               </div>
 
-              {/* Botão Flutuante Decorativo */}
               <div className="absolute bottom-6 right-6 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                  <span className="text-xs font-mono text-gray-300">SYSTEM: ONLINE</span>
@@ -341,23 +311,23 @@ const ExploreDetails = () => {
 
         {/* --- MOBILE LAYOUT --- */}
         <div className="lg:hidden bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden">
-          {/* Imagem Mobile */}
           <div className="aspect-[4/3] relative bg-black border-b border-white/5">
             <div 
               ref={mobileImageContainerRef}
               className="w-full h-full relative"
             >
-              <Image
-                src={currentMobileImage}
-                alt="Feature Mobile"
-                fill
-                className="object-cover"
-                unoptimized
-              />
+              {currentImage && (
+                  <Image
+                    src={currentImage}
+                    alt="Feature Mobile"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+              )}
             </div>
           </div>
 
-          {/* Controles Mobile */}
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
                 <Button onClick={() => handleMobileNavigation('prev')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 p-0 flex items-center justify-center">
@@ -383,7 +353,6 @@ const ExploreDetails = () => {
                 </p>
             </div>
 
-            {/* Dots Indicadores */}
             <div className="flex justify-center gap-2 mt-4">
                 {features.map((_, idx) => (
                     <div 

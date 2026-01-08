@@ -2,13 +2,12 @@
 
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 
 // --- INTERFACE DE DADOS (CMS) ---
 export interface ExpertiseData {
   theme: {
-    accentColor: string; // Ex: #E31B63 (Vermelho) ou #FFD700 (Dourado)
-    secondaryColor: string; // Tom mais escuro para gradientes
+    accentColor: string; // Ex: #FFD700
+    secondaryColor: string; // Ex: #B8860B
   };
   header: {
     badgeIcon: string;
@@ -26,8 +25,8 @@ export interface ExpertiseData {
     };
   };
   content: {
-    paragraph1: string; // Suporta HTML string para <strong>
-    paragraph2: string; // Suporta HTML string para <strong>
+    paragraph1: string; 
+    paragraph2: string; 
   };
   cta: {
     text: string;
@@ -35,11 +34,14 @@ export interface ExpertiseData {
   };
 }
 
-interface ExpertiseSectionProps {
-  config: ExpertiseData;
+interface ExpertiseProps {
+  config: ExpertiseData | null;
 }
 
-export default function ExpertiseSection({ config }: ExpertiseSectionProps) {
+export default function Expertise({ config }: ExpertiseProps) {
+  // Segurança: Se não houver dados, não renderiza a seção
+  if (!config) return null;
+
   const { theme, header, visual, content, cta } = config;
 
   return (
@@ -60,15 +62,14 @@ export default function ExpertiseSection({ config }: ExpertiseSectionProps) {
         <div 
           className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border bg-opacity-10 backdrop-blur-md"
           style={{ 
-            borderColor: `${theme.accentColor}4D`, // 30% opacity
-            backgroundColor: `${theme.accentColor}1A`, // 10% opacity
+            borderColor: `${theme.accentColor}4D`,
+            backgroundColor: `${theme.accentColor}1A`,
             boxShadow: `0 0 15px ${theme.accentColor}1A`
           }}
         >
             <Icon icon={header.badgeIcon} className="w-5 h-5" style={{ color: theme.accentColor }} />
             <span 
-              className="text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase"
-              style={{ color: '#fff' }} // Mantive branco para contraste, ou use theme.accentColor com opacidade
+              className="text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase text-white"
             >
                 {header.badgeText}
             </span>
@@ -91,12 +92,9 @@ export default function ExpertiseSection({ config }: ExpertiseSectionProps) {
         {/* IMAGEM */}
         <div className="relative rounded-3xl overflow-hidden flex justify-center w-full max-w-[1200px] group border border-white/10 bg-[#0A0A0A]">
           
-          {/* Brilho na borda ao hover (Dinâmico) */}
-          <div 
-            className="absolute inset-0 border-2 border-transparent rounded-3xl transition-colors duration-500 z-20 pointer-events-none group-hover:border-opacity-40"
-            style={{ borderColor: 'transparent' }} // Default
-          />
-          {/* Hack para hover border color dinâmico via style tag ou CSS variable seria ideal, mas aqui usaremos inline no parent se necessário, ou deixamos fixo e usamos opacity. */}
+          <div className="absolute inset-0 border-2 border-transparent rounded-3xl transition-colors duration-500 z-20 pointer-events-none group-hover:border-opacity-40" />
+          
+          {/* Borda Hover Dinâmica */}
           <div 
              className="absolute inset-0 rounded-3xl z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
              style={{ border: `2px solid ${theme.accentColor}66` }} 
@@ -119,7 +117,7 @@ export default function ExpertiseSection({ config }: ExpertiseSectionProps) {
             style={{ borderColor: `${theme.accentColor}33` }}
           >
              <div className="p-2 rounded-lg" style={{ backgroundColor: theme.accentColor }}>
-                <Icon icon={visual.floatingCard.icon} className="text-black w-6 h-6" /> {/* Icone preto para contraste no accent */}
+                <Icon icon={visual.floatingCard.icon} className="text-black w-6 h-6" />
              </div>
              <div>
                 <p className="text-white font-bold text-sm">{visual.floatingCard.title}</p>
@@ -145,7 +143,6 @@ export default function ExpertiseSection({ config }: ExpertiseSectionProps) {
         <div className="mt-12 flex justify-center">
           <a aria-label="cta button" href={cta.link} className="group relative">
             
-            {/* Glow Button */}
             <div 
               className="absolute -inset-1 rounded-full opacity-40 blur-md group-hover:opacity-70 transition duration-500"
               style={{ background: `linear-gradient(to right, ${theme.accentColor}, ${theme.secondaryColor})` }}

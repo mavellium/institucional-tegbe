@@ -4,19 +4,19 @@ import { useRef } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 
-// --- DADOS MOCKADOS (FOTOS DOS ALUNOS/EVENTOS) ---
-const galleryImages = [
-  { src: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?q=80&w=1000&auto=format&fit=crop", alt: "Evento Presencial Tegbe", span: "row-span-2" },
-  { src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop", alt: "Reunião de Mentoria", span: "row-span-1" },
-  { src: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1000&auto=format&fit=crop", alt: "Aluno Faturando", span: "row-span-1" },
-  { src: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1000&auto=format&fit=crop", alt: "Setup de Operação", span: "row-span-2" },
-  { src: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop", alt: "Networking Tegbe", span: "row-span-1" },
-  { src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop", alt: "Time Comercial", span: "row-span-1" },
-  { src: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1000&auto=format&fit=crop", alt: "Palestra Tegbe", span: "row-span-1" },
-  { src: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop", alt: "Workshop Vendas", span: "row-span-2" },
-];
+// --- TIPAGEM ---
+export interface GalleryItem {
+  id: string;
+  alt: string;
+  image: string; // API retorna 'image'
+  span: string;  // API retorna 'row-span-1' ou 'row-span-2'
+}
 
-export default function StudentGallery() {
+interface GaleriaFotosProps {
+  data: GalleryItem[] | null;
+}
+
+export default function GaleriaFotos({ data }: GaleriaFotosProps) {
   const containerRef = useRef(null);
   
   // Parallax suave ao rolar a página
@@ -28,6 +28,14 @@ export default function StudentGallery() {
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]); // Coluna 1 sobe
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -50]);  // Coluna 2 sobe menos
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]); // Coluna 3 sobe mais
+
+  if (!data || data.length === 0) return null;
+
+  // Distribuindo os dados nas colunas (Lógica simples de fatiamento)
+  // Ajuste os índices conforme a quantidade de fotos que você cadastrar no CMS
+  const col1 = data.slice(0, 3);
+  const col2 = data.slice(3, 6);
+  const col3 = data.slice(6, 9); // Restante vai para coluna 3
 
   return (
     <section ref={containerRef} className="py-24 bg-[#020202] relative overflow-hidden">
@@ -55,13 +63,13 @@ export default function StudentGallery() {
         </div>
 
         {/* MASONRY GRID (Com Parallax nas colunas para desktop) */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 h-[800px] md:h-[1000px] overflow-hidden mask-gradient-b">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 min-h-[800px] overflow-hidden mask-gradient-b">
             
             {/* COLUNA 1 */}
             <motion.div style={{ y: y1 }} className="flex flex-col gap-4 md:gap-6">
-                {galleryImages.slice(0, 3).map((img, i) => (
-                    <div key={i} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[400px]' : 'h-[250px]'}`}>
-                        <img src={img.src} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                {col1.map((img) => (
+                    <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[400px]' : 'h-[250px]'}`}>
+                        <img src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                             <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
@@ -71,9 +79,9 @@ export default function StudentGallery() {
 
             {/* COLUNA 2 (Deslocada para efeito masonry) */}
             <motion.div style={{ y: y2 }} className="flex flex-col gap-4 md:gap-6 pt-12 md:pt-24">
-                {galleryImages.slice(3, 6).map((img, i) => (
-                    <div key={i} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[450px]' : 'h-[300px]'}`}>
-                        <img src={img.src} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                {col2.map((img) => (
+                    <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[450px]' : 'h-[300px]'}`}>
+                        <img src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                              <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
@@ -83,14 +91,15 @@ export default function StudentGallery() {
 
             {/* COLUNA 3 (Apenas Desktop) */}
             <motion.div style={{ y: y3 }} className="hidden md:flex flex-col gap-4 md:gap-6">
-                {galleryImages.slice(6, 8).map((img, i) => (
-                    <div key={i} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 h-[350px]`}>
-                        <img src={img.src} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                {col3.map((img) => (
+                    <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-3' ? 'h-[500px]' : 'h-[350px]'}`}>
+                        <img src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                              <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
                     </div>
                 ))}
+                 
                  {/* Card Extra de CTA dentro do Grid */}
                  <div className="relative rounded-2xl overflow-hidden bg-[#0A0A0A] border border-[#FFD700]/20 flex flex-col items-center justify-center p-6 text-center h-[300px] group cursor-pointer hover:bg-[#FFD700]/5 transition-colors">
                     <div className="w-12 h-12 rounded-full bg-[#FFD700]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
