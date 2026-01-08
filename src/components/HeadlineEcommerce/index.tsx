@@ -30,7 +30,7 @@ export function HeadlineEcommerce({ content, theme }: HeadlineEcommerceProps) {
   }, []);
 
   return (
-    <section className="relative w-full h-screen flex items-center justify-center bg-[#050505] overflow-hidden pt-20">
+    <section className="relative w-full h-[screen] flex items-center justify-center bg-[#050505] overflow-hidden pt-30 pb-10">
       
       {/* --- 1. AMBIENCE & LIGHTING (Cinematografia) --- */}
       {/* O "Spotlight" Dourado vindo de cima, simulando uma luz divina/ouro */}

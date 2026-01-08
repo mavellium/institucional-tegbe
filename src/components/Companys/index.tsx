@@ -377,7 +377,7 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
                         <div className="flex items-center gap-4 mb-6">
                             <div className={`w-14 h-14 rounded-full bg-gray-800 overflow-hidden border border-white/10 group-hover:${theme.card.hoverBorder} transition-colors`}>
                                 <motion.img
-                                  src={item.logo}
+                                  src={item.logo || "/placeholder-logo.png"}
                                   alt={item.name}
                                   className="w-full h-full object-cover"
                                 />

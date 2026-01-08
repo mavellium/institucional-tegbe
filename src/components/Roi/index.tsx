@@ -73,7 +73,7 @@ function RoiCard({ card }: { card: RoiCardData }) {
           fill
           className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-50 transition-all duration-700 ease-out"
           alt={card.title}
-          quality={90}
+          quality={75}
         />
         {/* Gradiente personalizável */}
         <div 
