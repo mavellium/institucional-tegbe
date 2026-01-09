@@ -1,379 +1,246 @@
-'use client'
+"use client";
 
-import { useRef, useState } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
+import { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { motion, AnimatePresence } from "framer-motion";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-// --- 1. INTERFACES (Definições Estritas para uso interno) ---
-interface JsonCard {
-  id: number;
-  numero: string;
-  titulo: string;
-  descricao: string;
-  visivel: boolean;
-  classes: string;
-}
-
-interface JsonImagem {
-  src: string;
-  alt: string;
-  visivel: boolean;
-  classes: string;
-  tamanhos: { mobile: string; desktop: string };
-  dimensoes: { maxLargura: string; mobileAltura: string; tabletAltura: string; desktopAltura: string };
-  qualidade: number;
-}
-
-interface JsonTexto {
-  texto: string;
-  visivel: boolean;
-  classes: string;
-  destaque?: string;
-}
-
-interface JsonConfig {
-  animacao: any;
-  layout: any;
-  espacamento: any;
-  cores: any;
-}
-
-// Interface COMPLETA (Interna)
-export interface EcommerceJsonData {
-  id: string;
-  titulo: JsonTexto;
-  heading: JsonTexto;
-  subtitulo: JsonTexto;
-  imagem: JsonImagem;
-  cards: JsonCard[];
-  configuracoes: JsonConfig;
-}
-
-// --- 2. INTERFACES DE ENTRADA (Permite dados parciais da API/Page) ---
-// Isso resolve o erro de tipagem no page.tsx
-export interface EcommerceInputData {
-  id?: string;
-  titulo?: Partial<JsonTexto>;
-  heading?: Partial<JsonTexto>;
-  subtitulo?: Partial<JsonTexto>;
-  imagem?: Partial<JsonImagem>;
-  cards?: Partial<JsonCard>[];
-  configuracoes?: Partial<JsonConfig>;
-}
-
-interface EcommerceProps {
-  data?: EcommerceInputData; // Aceita dados parciais agora
-}
-
-// --- 3. DADOS PADRÃO (Fallback) ---
-const defaultEcommerceData: EcommerceJsonData = {
-  id: "diagnostico-section",
-  titulo: {
-    texto: "Diagnóstico",
-    visivel: true,
-    classes: "tracking-wide text-lg sm:text-xl mb-2 font-medium"
+// --- DADOS ---
+const PAIN_POINTS_LEFT = [
+  {
+    id: "01",
+    icon: "solar:wallet-money-bold-duotone",
+    title: "O Sócio Oculto",
+    stat: "-40% de Verba",
+    description: "Tráfego sem conversão não é investimento. É doação para o Zuckerberg."
   },
-  heading: {
-    texto: "Onde sua operação",
-    destaque: "aperta?",
-    visivel: true,
-    classes: "font-bold text-3xl sm:text-4xl md:text-5xl mb-6 leading-tight max-w-4xl"
-  },
-  subtitulo: {
-    texto: "Seja para quem está dando o primeiro passo ou para quem já domina os canais de venda, a complexidade não deve ser um freio. Se identifique abaixo e veja como a Tegbe é o motor que faltava.",
-    visivel: true,
-    classes: "text-base sm:text-lg text-gray-600 font-medium leading-relaxed max-w-3xl"
-  },
-  imagem: {
-    src: "/ipad.png",
-    alt: "Dashboard Tegbe no iPad",
-    visivel: true,
-    classes: "object-contain pointer-events-none drop-shadow-2xl",
-    tamanhos: {
-      mobile: "303px",
-      desktop: "470px"
-    },
-    qualidade: 75,
-    dimensoes: {
-      maxLargura: "520px",
-      mobileAltura: "420px",
-      tabletAltura: "520px",
-      desktopAltura: "650px"
-    }
-  },
-  cards: [],
-  configuracoes: {
-    animacao: {
-      habilitada: true,
-      duracao: 0.6,
-      ease: "power2.out",
-      scrollTrigger: {
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse"
-      },
-      sequencia: {
-        titulo: { delay: 0 },
-        heading: { delay: -0.3 },
-        subtitulo: { delay: -0.3 },
-        imagem: { delay: -0.2, duracao: 0.7, ease: "back.out(1.3)" },
-        cards: {
-          card1: { delay: -0.1 },
-          card2: { delay: -0.4 },
-          card3: { delay: -0.4 }
-        }
-      },
-      hover: {
-        escala: 1.03,
-        duracao: 0.3
-      }
-    },
-    layout: {
-      grid: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-      gap: "gap-8",
-      container: "max-w-6xl"
-    },
-    espacamento: {
-      secao: "my-12 md:my-20",
-      texto: "mb-12",
-      imagem: "mb-16"
-    },
-    cores: {
-      fundo: "bg-[#F4F4F4]",
-      texto: "text-black",
-      destaque: "#FFCC00",
-      textoSecundario: "text-gray-600",
-      card: {
-        fundo: "bg-white",
-        numero: {
-          normal: "text-gray-400",
-          hover: "text-[#FFCC00]"
-        },
-        circulo: {
-          normal: "bg-gray-100",
-          hover: "bg-[#FFCC00]/20"
-        }
-      }
-    }
+  {
+    id: "02",
+    icon: "solar:cart-large-minimalistic-bold-duotone",
+    title: "Vitrine Fantasma",
+    stat: "Sem Vendas",
+    description: "Sua loja é bonita, mas se não vende em 3s, é apenas um catálogo caro."
   }
+];
+
+const PAIN_POINT_RIGHT = {
+    id: "03",
+    icon: "solar:user-hand-up-bold-duotone",
+    title: "Gargalo Operacional",
+    stat: "CEO Operacional",
+    description: "Faz tráfego e embala pedido? Você é o funcionário mais caro da empresa."
 };
 
-// --- 4. FUNÇÃO DE MERGE (Robustez) ---
-const mergeWithDefault = (apiData?: EcommerceInputData): EcommerceJsonData => {
-  if (!apiData) return defaultEcommerceData;
+const WARNING_WORDS = [
+    { text: "MARGEM BAIXA", color: "text-amber-600" },
+    { text: "ROI NEGATIVO", color: "text-red-600" },
+    { text: "CUSTO ALTO", color: "text-orange-600" },
+    { text: "SEM CAIXA", color: "text-gray-600" },
+];
 
-  // Lógica de merge profundo manual para garantir segurança
-  return {
-    id: apiData.id || defaultEcommerceData.id,
-    
-    titulo: {
-      ...defaultEcommerceData.titulo,
-      ...apiData.titulo,
-    },
-    
-    heading: {
-      ...defaultEcommerceData.heading,
-      ...apiData.heading,
-    },
-    
-    subtitulo: {
-      ...defaultEcommerceData.subtitulo,
-      ...apiData.subtitulo,
-    },
-    
-    imagem: {
-      ...defaultEcommerceData.imagem,
-      ...apiData.imagem,
-      // Garante que sub-objetos não se percam se não vierem na API
-      tamanhos: { ...defaultEcommerceData.imagem.tamanhos, ...(apiData.imagem?.tamanhos || {}) },
-      dimensoes: { ...defaultEcommerceData.imagem.dimensoes, ...(apiData.imagem?.dimensoes || {}) },
-    },
-    
-    // Configurações: Mescla profunda
-    configuracoes: {
-        ...defaultEcommerceData.configuracoes,
-        ...apiData.configuracoes,
-        cores: { ...defaultEcommerceData.configuracoes.cores, ...(apiData.configuracoes?.cores || {}) },
-        animacao: { ...defaultEcommerceData.configuracoes.animacao, ...(apiData.configuracoes?.animacao || {}) },
-        layout: { ...defaultEcommerceData.configuracoes.layout, ...(apiData.configuracoes?.layout || {}) },
-        espacamento: { ...defaultEcommerceData.configuracoes.espacamento, ...(apiData.configuracoes?.espacamento || {}) },
-    },
+const ROTATION_DURATION = 3;
 
-    // Cards: Mapeamento inteligente
-    cards: (apiData.cards && apiData.cards.length > 0)
-      ? apiData.cards.map((card, index) => ({
-          // Valores padrão para um card genérico se faltar dado
-          id: card?.id || index + 1,
-          numero: card?.numero || String(index + 1),
-          titulo: card?.titulo || "",
-          descricao: card?.descricao || "",
-          visivel: card?.visivel !== undefined ? card.visivel : true,
-          classes: card?.classes || "bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-[#FFCC00] transition-colors duration-300 opacity-0 group cursor-default"
-        }))
-      : defaultEcommerceData.cards
-  };
-};
+export default function PainSectionFinal() {
+  const [wordIndex, setWordIndex] = useState(0);
 
-export default function Ecommerce({ data }: EcommerceProps) {
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const titleRef = useRef<HTMLParagraphElement>(null)
-  const headingRef = useRef<HTMLHeadingElement>(null)
-  const subtitleRef = useRef<HTMLHeadingElement>(null)
-  const ipadRef = useRef<HTMLDivElement>(null)
-  const cardsRef = useRef<HTMLDivElement[]>([])
-  
-  const [imageError, setImageError] = useState(false);
-
-  // Processar dados (Merge)
-  const ecommerceData = mergeWithDefault(data);
-  const { titulo, heading, subtitulo, imagem, cards, configuracoes } = ecommerceData;
-
-  const setCardRef = (el: HTMLDivElement | null, index: number) => {
-    if (el) cardsRef.current[index] = el
-  }
-
-  // --- ANIMAÇÕES GSAP ---
-  useGSAP(() => {
-    if (!sectionRef.current || !configuracoes.animacao.habilitada) return
-
-    gsap.set([titleRef.current, headingRef.current, subtitleRef.current, ipadRef.current, ...cardsRef.current], {
-      opacity: 0,
-      y: 50
-    })
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: configuracoes.animacao.scrollTrigger.start,
-        end: configuracoes.animacao.scrollTrigger.end,
-        toggleActions: configuracoes.animacao.scrollTrigger.toggleActions,
-      }
-    })
-
-    tl.to(titleRef.current, { 
-      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
-    })
-    .to(headingRef.current, { 
-      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
-    }, configuracoes.animacao.sequencia.heading.delay)
-    .to(subtitleRef.current, { 
-      opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
-    }, configuracoes.animacao.sequencia.subtitulo.delay)
-    .to(ipadRef.current, { 
-      opacity: 1, y: 0, duration: configuracoes.animacao.sequencia.imagem.duracao, ease: configuracoes.animacao.sequencia.imagem.ease 
-    }, configuracoes.animacao.sequencia.imagem.delay)
-    
-    cards.forEach((_, index) => {
-        const cardKey = `card${index + 1}` as keyof typeof configuracoes.animacao.sequencia.cards;
-        // Check seguro se a config de sequencia existe para esse card
-        const delay = (configuracoes.animacao.sequencia.cards && configuracoes.animacao.sequencia.cards[cardKey])
-             ? configuracoes.animacao.sequencia.cards[cardKey].delay 
-             : -0.2;
-        
-        // Check se o ref existe antes de animar
-        if (cardsRef.current[index]) {
-            tl.to(cardsRef.current[index], { 
-                opacity: 1, y: 0, duration: configuracoes.animacao.duracao, ease: configuracoes.animacao.ease 
-            }, delay)
-        }
-    });
-
-    cardsRef.current.forEach(card => {
-      if (!card) return
-      card.addEventListener('mouseenter', () => {
-        gsap.to(card, { scale: configuracoes.animacao.hover.escala, duration: configuracoes.animacao.hover.duracao, ease: configuracoes.animacao.ease })
-      })
-      card.addEventListener('mouseleave', () => {
-        gsap.to(card, { scale: 1, duration: configuracoes.animacao.hover.duracao, ease: configuracoes.animacao.ease })
-      })
-    })
-
-  }, { dependencies: [], scope: sectionRef })
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % WARNING_WORDS.length);
+    }, ROTATION_DURATION * 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <section 
-      ref={sectionRef}
-      id={ecommerceData.id}
-      className={`flex flex-col w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto ${configuracoes.espacamento.secao} ${configuracoes.cores.fundo}`}
-    >
-      <div className={`flex flex-col items-center text-center w-full ${configuracoes.espacamento.texto} ${configuracoes.cores.texto}`}>
-        {titulo.visivel && (
-          <p ref={titleRef} className={`${titulo.classes} opacity-0`}>
-            {titulo.texto}
-          </p>
-        )}
+    <section className="py-32 px-6 bg-[#FAFAFA] relative overflow-hidden">
+      
+      {/* Background Grid Técnico */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
 
-        {heading.visivel && (
-          <h1 ref={headingRef} className={`${heading.classes} opacity-0`}>
-            {heading.texto}{" "}
-            {heading.destaque && (
-                <span style={{ color: configuracoes.cores.destaque }}>{heading.destaque}</span>
-            )}
-          </h1>
-        )}
-
-        {subtitulo.visivel && (
-          <h2 ref={subtitleRef} className={`${subtitulo.classes} opacity-0`}>
-            {subtitulo.texto}
-          </h2>
-        )}
-      </div>
-
-      {imagem.visivel && (
-        <div 
-          ref={ipadRef}
-          className={`relative w-full mx-auto ${configuracoes.espacamento.imagem} opacity-0`}
-          style={{
-             maxWidth: imagem.dimensoes.maxLargura,
-             height: imagem.dimensoes.desktopAltura
-          }}
-        >
-          <div className="relative w-full h-[300px] sm:h-[420px] md:h-[520px] lg:h-[650px]">
-            <Image
-                src={imagem.src}
-                fill
-                className={imagem.classes}
-                alt={imagem.alt}
-                sizes={`(max-width: 768px) ${imagem.tamanhos.mobile}, ${imagem.tamanhos.desktop}`}
-                quality={imagem.qualidade}
-                onError={() => setImageError(true)}
-                unoptimized={true}
-            />
-          </div>
-        </div>
-      )}
-
-      <div className={`grid ${configuracoes.layout.grid} ${configuracoes.layout.gap} w-full ${configuracoes.layout.container} mx-auto ${configuracoes.cores.texto}`}>
-        {cards.filter(card => card.visivel).map((card, index) => (
-          <div 
-            key={card.id || index}
-            ref={(el) => setCardRef(el, index)}
-            className={card.classes}
-          >
-              <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 transition-colors ${configuracoes.cores.card.circulo.normal} hover:${configuracoes.cores.card.circulo.hover}`}
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-20">
+            <motion.div 
+               initial={{ opacity: 0, y: 10 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-amber-200 rounded-full shadow-sm mb-6"
             >
-              <span
-                className={`font-bold transition-colors ${configuracoes.cores.card.numero.normal} hover:${configuracoes.cores.card.numero.hover}`}
-              >
-                {card.numero}
-              </span>
-            </div>
-            <h3 className="font-bold text-lg mb-3 leading-tight">
-              {card.titulo}
-            </h3>
-            <p className="font-medium text-gray-600 text-sm sm:text-base leading-relaxed">
-              {card.descricao}
-            </p>
+                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Monitoramento Ativo</span>
+            </motion.div>
+
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1]">
+                O seu lucro está <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">
+                    sendo drenado agora.
+                </span>
+            </h2>
+        </div>
+
+        {/* --- GRID PRINCIPAL --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center relative min-h-[500px]">
+
+          {/* ESQUERDA */}
+          <div className="space-y-6 flex flex-col justify-center relative z-20 order-2 lg:order-1">
+            {PAIN_POINTS_LEFT.map((item, i) => (
+              <GlassCard key={item.id} item={item} index={i} align="left" />
+            ))}
           </div>
-        ))}
+
+          {/* CENTRO: O REATOR */}
+          <div className="relative h-full w-full flex items-center justify-center z-10 order-1 lg:order-2 mb-16 lg:mb-0">
+            
+            {/* SVG Lines */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none hidden lg:block overflow-visible">
+                <defs>
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="transparent" />
+                        <stop offset="50%" stopColor="#F59E0B" />
+                        <stop offset="100%" stopColor="transparent" />
+                    </linearGradient>
+                </defs>
+                <PathLine d="M 10,100 C 50,100 80,250 150,250" />
+                <PathLine d="M 10,400 C 50,400 80,250 150,250" />
+                <PathLine d="M 390,250 C 320,250 290,250 250,250" reverse={true} />
+            </svg>
+
+            {/* Círculo Giratório */}
+            <div className="relative w-72 h-72 md:w-80 md:h-80 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border border-gray-200" />
+                <div className="absolute inset-4 rounded-full border border-dashed border-gray-300 opacity-50" />
+
+                <motion.div
+                    className="absolute inset-0 w-full h-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: ROTATION_DURATION, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-amber-500 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] flex items-center justify-center z-20">
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
+                </motion.div>
+
+                {/* Núcleo Central */}
+                <div className="relative z-10 w-48 h-48 bg-white rounded-full border-[6px] border-gray-50 shadow-2xl shadow-amber-500/10 flex flex-col items-center justify-center overflow-hidden">
+                    <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-2">Diagnóstico</p>
+                    <div className="h-8 relative w-full flex justify-center items-center">
+                        <AnimatePresence mode="wait">
+                            <motion.h3
+                                key={wordIndex}
+                                initial={{ y: 20, opacity: 0, filter: "blur(4px)" }}
+                                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                                exit={{ y: -20, opacity: 0, filter: "blur(4px)" }}
+                                transition={{ duration: 0.3 }}
+                                className={`text-xl font-black italic tracking-tighter ${WARNING_WORDS[wordIndex].color}`}
+                            >
+                                {WARNING_WORDS[wordIndex].text}
+                            </motion.h3>
+                        </AnimatePresence>
+                    </div>
+                    {/* Barra de Progresso */}
+                    <div className="absolute bottom-10 w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                        <motion.div 
+                            className="h-full bg-amber-500"
+                            animate={{ width: ["0%", "100%"] }}
+                            transition={{ duration: ROTATION_DURATION, repeat: Infinity, ease: "linear" }}
+                        />
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          {/* DIREITA */}
+          <div className="flex flex-col justify-center relative z-20 h-full order-3">
+            <GlassCard item={PAIN_POINT_RIGHT} index={2} align="right" highlight={true} />
+          </div>
+
+        </div>
       </div>
     </section>
-  )
+  );
+}
+
+// --- SVG LINE ---
+function PathLine({ d, reverse = false }: { d: string, reverse?: boolean }) {
+    return (
+        <>
+            <path d={d} stroke="#e5e7eb" strokeWidth="1" fill="none" />
+            <motion.path 
+                d={d}
+                stroke="url(#lineGrad)" 
+                strokeWidth="2" 
+                fill="none"
+                strokeDasharray="10 20"
+                animate={{ strokeDashoffset: reverse ? [0, 200] : [200, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+        </>
+    )
+}
+
+// --- CARD PREMIUM (GLASS + BLUR REVEAL) ---
+function GlassCard({ item, index, align, highlight = false }: { item: any, index: number, align: 'left' | 'right', highlight?: boolean }) {
+    const isRight = align === 'right';
+    
+    return (
+        <motion.div 
+            initial={{ opacity: 0, x: isRight ? 40 : -40, filter: "blur(8px)" }} // Efeito Blur na entrada
+            whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            whileHover={{ y: -5, scale: 1.02 }} // Efeito magnético no hover
+            transition={{ duration: 0.6, delay: index * 0.2, ease: "circOut" }}
+            viewport={{ once: true, margin: "-50px" }}
+            className={`
+                group relative p-6 rounded-3xl bg-white/80 backdrop-blur-md border border-gray-100
+                shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]
+                transition-all duration-300
+                hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] hover:border-amber-500/30
+                ${highlight ? 'h-full flex flex-col justify-center' : ''}
+                ${isRight ? 'lg:text-right lg:items-end' : ''}
+                cursor-default overflow-hidden
+            `}
+        >
+            {/* Brilho de fundo no Hover (Spotlight Fake) */}
+            <div className={`
+                absolute inset-0 bg-gradient-to-br from-amber-500/0 via-transparent to-transparent opacity-0 
+                group-hover:opacity-10 group-hover:from-amber-500/10 transition-all duration-500 pointer-events-none
+                ${isRight ? 'bg-gradient-to-bl' : ''}
+            `} />
+
+            {/* Cabeçalho do Card */}
+            <div className={`relative flex items-center gap-4 mb-4 ${isRight ? 'lg:flex-row-reverse' : ''}`}>
+                
+                {/* Ícone com Animação */}
+                <div className="relative w-12 h-12">
+                     <div className="absolute inset-0 bg-amber-100 rounded-xl rotate-0 group-hover:rotate-6 transition-transform duration-300" />
+                     <div className="absolute inset-0 bg-white border border-amber-100 rounded-xl flex items-center justify-center text-amber-600 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
+                        <Icon icon={item.icon} className="w-6 h-6" />
+                     </div>
+                </div>
+
+                <div>
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-amber-500 transition-colors">
+                        Impacto Real
+                    </span>
+                    <span className="block text-xl font-black text-gray-900 leading-none mt-0.5">
+                        {item.stat}
+                    </span>
+                </div>
+            </div>
+            
+            {/* Texto */}
+            <div className="relative z-10">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">
+                    {item.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed font-medium group-hover:text-gray-600">
+                    {item.description}
+                </p>
+            </div>
+
+            {/* Indicador Visual de Conexão (Barra inferior que acende) */}
+            <div className={`
+                absolute bottom-0 h-[2px] bg-amber-500/0 group-hover:bg-amber-500 transition-all duration-500
+                ${isRight ? 'right-8 w-0 group-hover:w-16' : 'left-8 w-0 group-hover:w-16'}
+            `} />
+
+        </motion.div>
+    )
 }

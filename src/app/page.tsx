@@ -1,13 +1,19 @@
-import { Dna, DnaInputData } from "@/components/Dna";
-import Ecommerce, { EcommerceInputData } from "@/components/Ecommerce";
+
+import Dna from "@/components/Dna";
+import Ecommerce from "@/components/Ecommerce";
+import Fim from "@/components/Fim";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Headline } from "@/components/Headline";
 import Logos from "@/components/Logos";
-import News, { NewsInputData } from "@/components/News";
-import { Roi, defaultRoiData } from '@/components/Roi';
+import News from "@/components/News";
+import RedirectEcommerce from "@/components/RedirectEcommerce";
+import RedirectMarketing from "@/components/RedirectMarketing";
+import RedirectSobre from "@/components/RedirectSobre";
+import RedirectTegpro from "@/components/RedirectTegpro";
+import Roi from "@/components/Roi";
 import Schema from "@/components/Schema";
-import { Setors, SetorsApiData } from "@/components/Setors";
+import Setors from "@/components/Setors";
 import Steps from "@/components/Steps";
 import {
   fetchComponentData,
@@ -76,68 +82,6 @@ export default async function Home() {
 
   const stepsData = transformStepsData(stepsResponse.data);
 
-  // --- TRANSFORMAÇÃO: ECOMMERCE ---
-  const ecommerceData: EcommerceInputData | undefined = ecommerceResponse.data ? {
-    titulo: {
-      texto: ecommerceResponse.data.titulo?.texto,
-      visivel: ecommerceResponse.data.titulo?.visivel,
-    },
-    heading: {
-      texto: ecommerceResponse.data.heading?.texto,
-      destaque: ecommerceResponse.data.heading?.destaque,
-      visivel: ecommerceResponse.data.heading?.visivel,
-    },
-    subtitulo: {
-      texto: ecommerceResponse.data.subtitulo?.texto,
-      visivel: ecommerceResponse.data.subtitulo?.visivel,
-    },
-    imagem: {
-      src: ecommerceResponse.data.imagem?.src,
-      alt: ecommerceResponse.data.imagem?.alt,
-      visivel: ecommerceResponse.data.imagem?.visivel,
-    },
-    cards: Array.isArray(ecommerceResponse.data.cards) 
-      ? ecommerceResponse.data.cards.map((card: any, index: number) => ({
-          id: card.id || index + 1,
-          numero: card.numero || String(index + 1),
-          titulo: card.titulo || card.title,
-          descricao: card.descricao || card.description,
-          visivel: card.visivel !== undefined ? card.visivel : true,
-        }))
-      : []
-  } : undefined;
-
-  // --- TRANSFORMAÇÃO: SETORS ---
-  let setorsData: SetorsApiData | undefined = undefined;
-
-  if (setorsResponse.data) {
-    if (Array.isArray(setorsResponse.data)) {
-      setorsData = {
-        title: "Por que centralizar a operação está",
-        highlightedText: "travando",
-        afterText: " o seu crescimento?",
-        cards: setorsResponse.data.map((card: any) => ({
-          id: card.id,
-          image: card.image,
-          title: card.title
-        }))
-      };
-    } else {
-      setorsData = {
-        title: setorsResponse.data.title,
-        highlightedText: setorsResponse.data.highlightedText,
-        afterText: setorsResponse.data.afterText,
-        cards: setorsResponse.data.cards?.map((card: any, index: number) => ({
-          id: card.id || index + 1,
-          image: card.image || card.imagem || `/growth-${(index % 4) + 1}.png`,
-          title: card.title || card.titulo,
-        })),
-        controls: setorsResponse.data.controls,
-        colors: setorsResponse.data.colors,
-      };
-    }
-  }
-
   // --- TRANSFORMAÇÃO: LOGOS ---
   const logosData = Array.isArray(logosResponse.data) ?
     logosResponse.data.map((item: any, index: number) => ({
@@ -152,34 +96,34 @@ export default async function Home() {
   // --- TRANSFORMAÇÃO: HEADLINE ---
   const headlineData = headlineResponse.data || undefined;
 
-  // --- TRANSFORMAÇÃO: DNA ---
-  let dnaData: DnaInputData | undefined = undefined;
-  if (dnaResponse.data) {
-    const rawData = dnaResponse.data;
-    // Tenta pegar de 'values' (padrão) ou usa o objeto direto ou array direto
-    const actualContent = (rawData.values && Array.isArray(rawData.values)) 
-        ? rawData.values[0] 
-        : (Array.isArray(rawData) ? rawData[0] : rawData);
+  // // --- TRANSFORMAÇÃO: DNA ---
+  // let dnaData: DnaInputData | undefined = undefined;
+  // if (dnaResponse.data) {
+  //   const rawData = dnaResponse.data;
+  //   // Tenta pegar de 'values' (padrão) ou usa o objeto direto ou array direto
+  //   const actualContent = (rawData.values && Array.isArray(rawData.values)) 
+  //       ? rawData.values[0] 
+  //       : (Array.isArray(rawData) ? rawData[0] : rawData);
         
-    if (actualContent) {
-      dnaData = actualContent;
-    }
-  }
+  //   if (actualContent) {
+  //     dnaData = actualContent;
+  //   }
+  // }
 
   // --- TRANSFORMAÇÃO: NEWS (CASOS DE SUCESSO) ---
-  let newsData: NewsInputData | undefined = undefined;
-  if (newsResponse.data && Array.isArray(newsResponse.data)) {
-    newsData = {
-      items: newsResponse.data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        logo: item.logo || "",
-        description: item.description,
-        result: item.result,
-        tags: item.tags || []
-      }))
-    };
-  }
+  // let newsData: NewsInputData | undefined = undefined;
+  // if (newsResponse.data && Array.isArray(newsResponse.data)) {
+  //   newsData = {
+  //     items: newsResponse.data.map((item: any) => ({
+  //       id: item.id,
+  //       name: item.name,
+  //       logo: item.logo || "",
+  //       description: item.description,
+  //       result: item.result,
+  //       tags: item.tags || []
+  //     }))
+  //   };
+  // }
 
   return (
     <>
@@ -245,15 +189,17 @@ export default async function Home() {
       <Header />
       <main>
         <Headline data={headlineData} />
-        <Logos data={logosData} />
-        <Steps steps={stepsData} />
-        <Ecommerce data={ecommerceData} />
-        <Setors data={setorsData} />
-        
-        <Roi data={defaultRoiData} />
-        <Dna data={dnaData} />
-        
-        <News data={newsData} />
+        <Ecommerce/>
+        <Setors />
+        <Steps/>   
+        <Roi/>
+        <RedirectEcommerce/>
+        <RedirectMarketing/>
+        <RedirectTegpro/>
+        <News />
+        <RedirectSobre/>
+        <Dna/>
+        <Fim/>
       </main>
       <Footer />
     </>

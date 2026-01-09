@@ -1,331 +1,238 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect, useMemo } from 'react'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
+import { useState } from "react";
+import { Icon } from "@iconify/react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Definir os tipos aqui mesmo
-interface Step {
-  id: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  image: string;
-}
-
-interface StepsProps {
-  steps: Step[];
-}
-
-// Registrar o plugin ScrollTrigger
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-export default function Steps({ steps }: StepsProps) {
-  // Usar useMemo para evitar recriações desnecessárias
-  const stepsToUse = useMemo(() => {
-    if (steps && steps.length > 0) {
-      return steps;
-    }
-
-    return [
-      {
-        id: 1,
-        title: 'Aprender',
-        subtitle: 'Do zero ao primeiro faturamento.',
-        description: 'Validamos seu nicho e construímos sua base. Ideal para quem busca segurança no primeiro passo.',
-        image: '/steps1.png',
-      },
-      {
-        id: 2,
-        title: 'Começar',
-        subtitle: 'Sua operação pronta para o jogo.',
-        description: 'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-        image: '/steps1.png',
-      },
-      {
-        id: 3,
-        title: 'Estruturar',
-        subtitle: 'Organize o caos. Escale com segurança.',
-        description: 'Gestão de processos e integração 360º. Para quem já vende, mas precisa de braço operacional para gerenciar estoque, pedidos e atendimento sem perder o fôlego.',
-        image: '/steps1.png',
-      },
-      {
-        id: 4,
-        title: 'Performar',
-        subtitle: 'Máxima eficiência e lucratividade.',
-        description: 'O nível de elite do E-commerce. Otimização agressiva de margem, tráfego pago de alta performance e domínio de Share of Shelf em marketplaces.',
-        image: '/steps1.png',
-      },
-    ];
-  }, [steps]); // Só recria quando steps mudar
-
-  const [activeStep, setActiveStep] = useState<Step>(() => stepsToUse[0]);
-
-  // Referências para animações
-  const sectionRef = useRef<HTMLDivElement>(null)
-  const leftColumnRef = useRef<HTMLDivElement>(null)
-  const rightColumnRef = useRef<HTMLDivElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
-  const titleRef = useRef<HTMLHeadingElement>(null)
-  const descriptionRef = useRef<HTMLParagraphElement>(null)
-  const stepButtonsRef = useRef<HTMLButtonElement[]>([])
-
-  // Resetar activeStep apenas quando stepsToUse mudar significativamente
-  useEffect(() => {
-    // Só atualiza se o primeiro step for diferente do atual
-    if (stepsToUse[0]?.id !== activeStep.id) {
-      setActiveStep(stepsToUse[0]);
-
-      // Resetar o primeiro botão para estado ativo
-      const firstButton = stepButtonsRef.current[0];
-      if (firstButton) {
-        gsap.set(firstButton, { scale: 1.02 });
+// --- DADOS ESTRATÉGICOS ---
+const ROUTER_DATA = {
+  header: {
+    label: "Nossos Pilares",
+    title: "Escolha sua Escala.",
+    desc: "Não somos generalistas. Somos especialistas em três verticais de alto impacto financeiro."
+  },
+  services: [
+    {
+      id: "ecommerce",
+      number: "01",
+      title: "E-commerce",
+      verticalTitle: "ESTRUTURA",
+      icon: "solar:shop-2-bold-duotone",
+      image: "/ads-bg.png", 
+      description: "Sua loja validada com a segurança de uma Consultoria Oficial. Não entregamos apenas um site bonito, entregamos uma operação de vendas blindada contra falhas.",
+      buttonText: "Construir Máquina",
+      href: "/ecommerce",
+      theme: {
+        color: "text-amber-600",
+        bg: "bg-amber-50",
+        border: "border-amber-200",
+        btn: "hover:bg-amber-500"
+      }
+    },
+    {
+      id: "marketing",
+      number: "02",
+      title: "Growth & Ads",
+      verticalTitle: "TRAÇÃO",
+      icon: "solar:chart-2-bold-duotone",
+      image: "/ads-bg.png",
+      description: "Engenharia de tráfego e CRM avançado. Transformamos cliques anônimos em receita recorrente usando inteligência de dados proprietária.",
+      buttonText: "Acelerar Vendas",
+      href: "/marketing",
+      theme: {
+        color: "text-red-600",
+        bg: "bg-red-50",
+        border: "border-red-200",
+        btn: "hover:bg-red-600"
+      }
+    },
+    {
+      id: "cursos",
+      number: "03",
+      title: "Academy",
+      verticalTitle: "LEGADO",
+      icon: "solar:diploma-verified-bold-duotone",
+      image: "/ads-bg.png",
+      description: "O campo de batalha transformado em protocolo. Treine sua equipe interna com os processos exatos que usamos para gerar múltiplos 8 dígitos.",
+      buttonText: "Dominar o Jogo",
+      href: "/cursos",
+      theme: {
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
+        btn: "hover:bg-blue-600"
       }
     }
-  }, [stepsToUse]); // Removi activeStep.id das dependências para evitar loop
+  ]
+};
 
-  // Inicializar a animação do primeiro step apenas no mount
-  useEffect(() => {
-    const firstButton = stepButtonsRef.current[0];
-    if (firstButton) {
-      gsap.set(firstButton, { scale: 1.02 });
-    }
-  }, []); // Array vazio = roda apenas no mount
+// --- CORREÇÃO AQUI ---
+// Adicionamos 'as const' para o TS entender que são valores literais
+const springTransition = { 
+  type: "spring", 
+  stiffness: 100, 
+  damping: 25, 
+  mass: 1 
+} as const;
 
-  // Animação de entrada da seção
-  useGSAP(() => {
-    if (!sectionRef.current) return
-
-    // Reset das animações
-    gsap.set([leftColumnRef.current, rightColumnRef.current], {
-      opacity: 0,
-      y: 50
-    })
-
-    // Animar coluna esquerda
-    const leftAnimation = gsap.to(leftColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
-
-    // Animar coluna direita com atraso
-    const rightAnimation = gsap.to(rightColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      delay: 0.2,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
-
-    // Animar cada botão individualmente
-    const stepButtons = stepButtonsRef.current.filter(Boolean)
-    stepButtons.forEach((button, index) => {
-      gsap.set(button, {
-        opacity: 0,
-        x: -30,
-        scale: index === 0 ? 1.02 : 1
-      })
-
-      gsap.to(button, {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.1 * index,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: leftColumnRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        }
-      })
-    })
-
-    return () => {
-      leftAnimation.kill()
-      rightAnimation.kill()
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, { dependencies: [], scope: sectionRef })
-
-  // Animação de troca de step
-  const handleStepChange = (step: Step) => {
-    if (step.id === activeStep.id) return
-
-    // Animação de saída do conteúdo atual
-    gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
-      opacity: 0,
-      y: 20,
-      duration: 0.3,
-      ease: "power2.in",
-      onComplete: () => {
-        // Voltar o botão anterior ao normal
-        const prevButton = stepButtonsRef.current[activeStep.id - 1]
-        if (prevButton) {
-          gsap.to(prevButton, {
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.out"
-          })
-        }
-
-        // Atualizar o step ativo
-        setActiveStep(step)
-
-        // Animar o botão ativo com pulso
-        const activeButton = stepButtonsRef.current[step.id - 1]
-        if (activeButton) {
-          gsap.to(activeButton, {
-            scale: 1.02,
-            duration: 0.4,
-            ease: "back.out(1.7)"
-          })
-        }
-
-        // Animação de entrada do novo conteúdo
-        setTimeout(() => {
-          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], {
-            opacity: 0,
-            y: -20
-          })
-
-          const enterAnimation = gsap.timeline()
-
-          enterAnimation.to(imageRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out"
-          })
-
-          enterAnimation.to(titleRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.3")
-
-          enterAnimation.to(descriptionRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.2")
-        }, 50)
-      }
-    })
-  }
-
-  // Função para armazenar referências dos botões
-  const setStepButtonRef = (el: HTMLButtonElement | null, index: number) => {
-    if (el) {
-      stepButtonsRef.current[index] = el
-    }
-  }
+export default function ServiceRouterWhite() {
+  const [activeId, setActiveId] = useState<string>("ecommerce");
 
   return (
-    <section
-      ref={sectionRef}
-      className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]"
-    >
-      <div className="flex flex-col lg:flex-row gap-12 items-center">
-        {/* ESQUERDA – Steps */}
-        <div ref={leftColumnRef} className="w-full lg:w-1/2 opacity-0">
-          <p className="tracking-wide text-lg sm:text-xl mb-2 text-black">
-            E-commerce
-          </p>
+    <section id="solucoes" className="py-32 px-6 bg-white relative overflow-hidden font-sans">
+      
+      {/* Background Decorativo Suave */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gray-50 rounded-full blur-[100px] -z-10 translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gray-50 rounded-full blur-[80px] -z-10 -translate-x-1/3 translate-y-1/3" />
 
-          <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
-            Em qual estágio está a sua ambição no digital?
-          </h1>
-
-          <div className="flex flex-col gap-4">
-            {stepsToUse.map(step => (
-              <button
-                aria-label={step.title}
-                key={step.id}
-                ref={(el) => setStepButtonRef(el, step.id - 1)}
-                onClick={() => handleStepChange(step)}
-                className={`text-left p-5 rounded-xl border transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
-                  ${activeStep.id === step.id
-                    ? 'bg-white border-blue-500 shadow-lg'
-                    : 'bg-transparent border-gray-200 hover:bg-white'
-                  }
-                `}
-              >
-                <h1 className="font-bold text-base text-black">
-                  {step.title}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {step.subtitle}
-                </p>
-              </button>
-            ))}
+      <div className="max-w-7xl mx-auto h-full flex flex-col">
+        
+        {/* HEADER EXECUTIVO */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+          <div className="max-w-2xl">
+            <span className="inline-block py-1 px-3 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
+               {ROUTER_DATA.header.label}
+            </span>
+            <h2 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-[0.95]">
+              {ROUTER_DATA.header.title}
+            </h2>
           </div>
+          <p className="text-gray-500 text-lg md:max-w-sm leading-relaxed text-right md:text-left">
+            {ROUTER_DATA.header.desc}
+          </p>
         </div>
 
-        {/* DIREITA – Conteúdo dinâmico */}
-        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center opacity-0">
-          <div className="relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] 
-  h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
-            {activeStep.image.startsWith('/') ? (
-              <Image
-                ref={imageRef}
-                fill
-                sizes="(max-width: 768px) 281px, 520px"
-                quality={75}
-                src={activeStep.image}
-                className="absolute inset-0 w-full h-full object-contain"
-                alt={activeStep.title}
-                priority={activeStep.id === 1}
-              />
-            ) : (
-              <img
-                ref={imageRef as any}
-                src={activeStep.image}
-                className="absolute inset-0 w-full h-full object-contain"
-                alt={activeStep.title}
-              />
-            )}
-          </div>
+        {/* OS MONOLITOS (Cards Expansivos) */}
+        <div className="flex flex-col lg:flex-row gap-6 h-[700px] lg:h-[600px] w-full">
+          {ROUTER_DATA.services.map((service) => {
+            const isActive = activeId === service.id;
 
-          <h2
-            ref={titleRef}
-            className="font-bold text-xl sm:text-2xl mb-3 text-black"
-          >
-            {activeStep.subtitle}
-          </h2>
+            return (
+              <motion.div
+                key={service.id}
+                layout
+                onClick={() => setActiveId(service.id)}
+                transition={springTransition}
+                className={`
+                  relative rounded-[2rem] overflow-hidden cursor-pointer
+                  border transition-colors duration-500
+                  ${isActive ? `shadow-2xl shadow-gray-200/50 ${service.theme.border} bg-white` : 'border-gray-100 bg-gray-50 hover:bg-gray-100'}
+                `}
+                style={{
+                  flex: isActive ? 3 : 1, 
+                }}
+              >
+                
+                {/* 1. IMAGEM DE FUNDO */}
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    <motion.div 
+                        animate={{ opacity: isActive ? 0.08 : 0 }}
+                        className="relative w-full h-full"
+                    >
+                        <Image 
+                            src={service.image}
+                            alt="Background Texture"
+                            fill
+                            className="object-cover grayscale"
+                        />
+                    </motion.div>
+                </div>
 
-          <p
-            ref={descriptionRef}
-            className="text-sm sm:text-base text-gray-700 max-w-md"
-          >
-            {activeStep.description}
-          </p>
+                {/* 2. CONTEÚDO */}
+                <div className="relative z-10 w-full h-full p-8 md:p-10 flex flex-col justify-between overflow-hidden">
+                  
+                  {/* TOPO: Ícone e Número */}
+                  <div className="flex justify-between items-start">
+                    <motion.div 
+                      layout="position"
+                      className={`
+                        w-14 h-14 rounded-2xl flex items-center justify-center border
+                        transition-colors duration-500
+                        ${isActive ? `${service.theme.bg} ${service.theme.color} border-transparent` : 'bg-white border-gray-200 text-gray-400'}
+                      `}
+                    >
+                      <Icon icon={service.icon} className="w-7 h-7" />
+                    </motion.div>
+
+                    <span className={`text-xl font-mono font-bold transition-colors duration-500 ${isActive ? 'text-gray-200' : 'text-gray-300'}`}>
+                      {service.number}
+                    </span>
+                  </div>
+
+                  {/* MEIO: Títulos */}
+                  <div className="flex-1 flex items-center">
+                    <AnimatePresence mode="popLayout">
+                      {isActive ? (
+                        <motion.div 
+                          key="active-content"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.4, delay: 0.1 }}
+                          className="max-w-lg"
+                        >
+                          <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+                            {service.title}
+                          </h3>
+                          <p className="text-gray-500 text-lg leading-relaxed mb-8">
+                            {service.description}
+                          </p>
+                          
+                          <Link href={service.href}>
+                            <button className={`
+                                group flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-full 
+                                font-bold uppercase tracking-wider text-sm transition-all duration-300
+                                ${service.theme.btn}
+                            `}>
+                                {service.buttonText}
+                                <Icon icon="solar:arrow-right-linear" className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          </Link>
+                        </motion.div>
+                      ) : (
+                        <motion.div 
+                          key="inactive-content"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.4 }}
+                          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                        >
+                           <h3 className="hidden lg:block text-4xl font-bold text-gray-300 tracking-widest uppercase -rotate-90 whitespace-nowrap origin-center select-none">
+                              {service.verticalTitle}
+                           </h3>
+                           
+                           <h3 className="lg:hidden text-2xl font-bold text-gray-400">
+                              {service.title}
+                           </h3>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* RODAPÉ: Indicador */}
+                  <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden mt-auto">
+                     <motion.div 
+                        className={`h-full ${isActive ? 'bg-gray-900' : 'bg-transparent'}`}
+                        initial={{ width: 0 }}
+                        animate={{ width: isActive ? "100%" : "0%" }}
+                        transition={{ duration: 0.6 }}
+                     />
+                  </div>
+
+                </div>
+
+                {!isActive && (
+                    <div className="absolute inset-0 z-20 bg-transparent cursor-pointer hover:bg-black/[0.02] transition-colors" />
+                )}
+
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
-  )
+  );
 }
-
-export type { Step };
