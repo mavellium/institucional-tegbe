@@ -31,9 +31,9 @@ const PAIN_POINT_RIGHT = {
 };
 
 const WARNING_WORDS = [
-    { text: "MARGEM BAIXA", color: "text-amber-600" },
+    { text: "MARGEM BAIXA", color: "text-yellow-600" },
     { text: "ROI NEGATIVO", color: "text-red-600" },
-    { text: "CUSTO ALTO", color: "text-orange-600" },
+    { text: "CUSTO ALTO", color: "text-yellow-500" },
     { text: "SEM CAIXA", color: "text-gray-600" },
 ];
 
@@ -62,15 +62,15 @@ export default function PainSectionFinal() {
             <motion.div 
                initial={{ opacity: 0, y: 10 }}
                whileInView={{ opacity: 1, y: 0 }}
-               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-amber-200 rounded-full shadow-sm mb-6"
+               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-yellow-200 rounded-full shadow-sm mb-6"
             >
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Monitoramento Ativo</span>
             </motion.div>
 
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1]">
                 O seu lucro está <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
                     sendo drenado agora.
                 </span>
             </h2>
@@ -94,7 +94,7 @@ export default function PainSectionFinal() {
                 <defs>
                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stopColor="transparent" />
-                        <stop offset="50%" stopColor="#F59E0B" />
+                        <stop offset="50%" stopColor="#FACC15" /> {/* yellow-400 */}
                         <stop offset="100%" stopColor="transparent" />
                     </linearGradient>
                 </defs>
@@ -113,13 +113,13 @@ export default function PainSectionFinal() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: ROTATION_DURATION, repeat: Infinity, ease: "linear" }}
                 >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-amber-500 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] flex items-center justify-center z-20">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-yellow-400 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.6)] flex items-center justify-center z-20">
                         <div className="w-2 h-2 bg-white rounded-full" />
                     </div>
                 </motion.div>
 
                 {/* Núcleo Central */}
-                <div className="relative z-10 w-48 h-48 bg-white rounded-full border-[6px] border-gray-50 shadow-2xl shadow-amber-500/10 flex flex-col items-center justify-center overflow-hidden">
+                <div className="relative z-10 w-48 h-48 bg-white rounded-full border-[6px] border-gray-50 shadow-2xl shadow-yellow-500/10 flex flex-col items-center justify-center overflow-hidden">
                     <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-2">Diagnóstico</p>
                     <div className="h-8 relative w-full flex justify-center items-center">
                         <AnimatePresence mode="wait">
@@ -138,7 +138,7 @@ export default function PainSectionFinal() {
                     {/* Barra de Progresso */}
                     <div className="absolute bottom-10 w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
                         <motion.div 
-                            className="h-full bg-amber-500"
+                            className="h-full bg-yellow-400"
                             animate={{ width: ["0%", "100%"] }}
                             transition={{ duration: ROTATION_DURATION, repeat: Infinity, ease: "linear" }}
                         />
@@ -182,25 +182,25 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
     
     return (
         <motion.div 
-            initial={{ opacity: 0, x: isRight ? 40 : -40, filter: "blur(8px)" }} // Efeito Blur na entrada
+            initial={{ opacity: 0, x: isRight ? 40 : -40, filter: "blur(8px)" }}
             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            whileHover={{ y: -5, scale: 1.02 }} // Efeito magnético no hover
+            whileHover={{ y: -5, scale: 1.02 }}
             transition={{ duration: 0.6, delay: index * 0.2, ease: "circOut" }}
             viewport={{ once: true, margin: "-50px" }}
             className={`
                 group relative p-6 rounded-3xl bg-white/80 backdrop-blur-md border border-gray-100
                 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]
                 transition-all duration-300
-                hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] hover:border-amber-500/30
+                hover:shadow-[0_20px_40px_-15px_rgba(234,179,8,0.15)] hover:border-yellow-400/30
                 ${highlight ? 'h-full flex flex-col justify-center' : ''}
                 ${isRight ? 'lg:text-right lg:items-end' : ''}
                 cursor-default overflow-hidden
             `}
         >
-            {/* Brilho de fundo no Hover (Spotlight Fake) */}
+            {/* Brilho de fundo no Hover */}
             <div className={`
-                absolute inset-0 bg-gradient-to-br from-amber-500/0 via-transparent to-transparent opacity-0 
-                group-hover:opacity-10 group-hover:from-amber-500/10 transition-all duration-500 pointer-events-none
+                absolute inset-0 bg-gradient-to-br from-yellow-400/0 via-transparent to-transparent opacity-0 
+                group-hover:opacity-10 group-hover:from-yellow-400/10 transition-all duration-500 pointer-events-none
                 ${isRight ? 'bg-gradient-to-bl' : ''}
             `} />
 
@@ -209,14 +209,14 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
                 
                 {/* Ícone com Animação */}
                 <div className="relative w-12 h-12">
-                     <div className="absolute inset-0 bg-amber-100 rounded-xl rotate-0 group-hover:rotate-6 transition-transform duration-300" />
-                     <div className="absolute inset-0 bg-white border border-amber-100 rounded-xl flex items-center justify-center text-amber-600 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
+                     <div className="absolute inset-0 bg-yellow-50 rounded-xl rotate-0 group-hover:rotate-6 transition-transform duration-300" />
+                     <div className="absolute inset-0 bg-white border border-yellow-100 rounded-xl flex items-center justify-center text-yellow-500 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
                         <Icon icon={item.icon} className="w-6 h-6" />
                      </div>
                 </div>
 
                 <div>
-                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-amber-500 transition-colors">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-yellow-500 transition-colors">
                         Impacto Real
                     </span>
                     <span className="block text-xl font-black text-gray-900 leading-none mt-0.5">
@@ -227,7 +227,7 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
             
             {/* Texto */}
             <div className="relative z-10">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">
                     {item.title}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed font-medium group-hover:text-gray-600">
@@ -235,9 +235,9 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
                 </p>
             </div>
 
-            {/* Indicador Visual de Conexão (Barra inferior que acende) */}
+            {/* Indicador Visual de Conexão */}
             <div className={`
-                absolute bottom-0 h-[2px] bg-amber-500/0 group-hover:bg-amber-500 transition-all duration-500
+                absolute bottom-0 h-[2px] bg-yellow-400/0 group-hover:bg-yellow-400 transition-all duration-500
                 ${isRight ? 'right-8 w-0 group-hover:w-16' : 'left-8 w-0 group-hover:w-16'}
             `} />
 

@@ -25,10 +25,11 @@ const ROUTER_DATA = {
       buttonText: "Construir Máquina",
       href: "/ecommerce",
       theme: {
-        color: "text-amber-600",
-        bg: "bg-amber-50",
-        border: "border-amber-200",
-        btn: "hover:bg-amber-500"
+        color: "text-yellow-600",
+        bg: "bg-yellow-50",
+        border: "border-yellow-200",
+        btn: "hover:bg-yellow-400 hover:text-black",
+        bar: "bg-yellow-400"
       }
     },
     {
@@ -45,7 +46,8 @@ const ROUTER_DATA = {
         color: "text-red-600",
         bg: "bg-red-50",
         border: "border-red-200",
-        btn: "hover:bg-red-600"
+        btn: "hover:bg-red-600 hover:text-white",
+        bar: "bg-red-500"
       }
     },
     {
@@ -59,17 +61,16 @@ const ROUTER_DATA = {
       buttonText: "Dominar o Jogo",
       href: "/cursos",
       theme: {
-        color: "text-blue-600",
-        bg: "bg-blue-50",
-        border: "border-blue-200",
-        btn: "hover:bg-blue-600"
+        color: "text-yellow-600",
+        bg: "bg-yellow-50",
+        border: "border-yellow-200",
+        btn: "hover:bg-yellow-400 hover:text-black",
+        bar: "bg-yellow-400"
       }
     }
   ]
 };
 
-// --- CORREÇÃO AQUI ---
-// Adicionamos 'as const' para o TS entender que são valores literais
 const springTransition = { 
   type: "spring", 
   stiffness: 100, 
@@ -83,13 +84,11 @@ export default function ServiceRouterWhite() {
   return (
     <section id="solucoes" className="py-32 px-6 bg-white relative overflow-hidden font-sans">
       
-      {/* Background Decorativo Suave */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gray-50 rounded-full blur-[100px] -z-10 translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gray-50 rounded-full blur-[80px] -z-10 -translate-x-1/3 translate-y-1/3" />
 
       <div className="max-w-7xl mx-auto h-full flex flex-col">
         
-        {/* HEADER EXECUTIVO */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
           <div className="max-w-2xl">
             <span className="inline-block py-1 px-3 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
@@ -104,7 +103,6 @@ export default function ServiceRouterWhite() {
           </p>
         </div>
 
-        {/* OS MONOLITOS (Cards Expansivos) */}
         <div className="flex flex-col lg:flex-row gap-6 h-[700px] lg:h-[600px] w-full">
           {ROUTER_DATA.services.map((service) => {
             const isActive = activeId === service.id;
@@ -125,7 +123,6 @@ export default function ServiceRouterWhite() {
                 }}
               >
                 
-                {/* 1. IMAGEM DE FUNDO */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
                     <motion.div 
                         animate={{ opacity: isActive ? 0.08 : 0 }}
@@ -140,10 +137,8 @@ export default function ServiceRouterWhite() {
                     </motion.div>
                 </div>
 
-                {/* 2. CONTEÚDO */}
                 <div className="relative z-10 w-full h-full p-8 md:p-10 flex flex-col justify-between overflow-hidden">
                   
-                  {/* TOPO: Ícone e Número */}
                   <div className="flex justify-between items-start">
                     <motion.div 
                       layout="position"
@@ -156,12 +151,11 @@ export default function ServiceRouterWhite() {
                       <Icon icon={service.icon} className="w-7 h-7" />
                     </motion.div>
 
-                    <span className={`text-xl font-mono font-bold transition-colors duration-500 ${isActive ? 'text-gray-200' : 'text-gray-300'}`}>
+                    <span className={`text-xl font-mono font-bold transition-colors duration-500 ${isActive ? (service.id === 'marketing' ? 'text-red-200' : 'text-yellow-200') : 'text-gray-300'}`}>
                       {service.number}
                     </span>
                   </div>
 
-                  {/* MEIO: Títulos */}
                   <div className="flex-1 flex items-center">
                     <AnimatePresence mode="popLayout">
                       {isActive ? (
@@ -212,10 +206,9 @@ export default function ServiceRouterWhite() {
                     </AnimatePresence>
                   </div>
 
-                  {/* RODAPÉ: Indicador */}
                   <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden mt-auto">
                      <motion.div 
-                        className={`h-full ${isActive ? 'bg-gray-900' : 'bg-transparent'}`}
+                        className={`h-full ${isActive ? service.theme.bar : 'bg-transparent'}`}
                         initial={{ width: 0 }}
                         animate={{ width: isActive ? "100%" : "0%" }}
                         transition={{ duration: 0.6 }}

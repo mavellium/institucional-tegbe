@@ -4,166 +4,126 @@ import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-// --- CONFIGURAÇÃO (JSON) ---
 const TEGPRO_DATA = {
   theme: {
-    bg_section: "#FFFFFF",
-    hero_bg: "#000000",
-    text_light: "#FFFFFF",
-    text_dark: "#1D1D1F",
-    accent_gold: "#FFD700", // Ouro Puro
-    gold_gradient: "linear-gradient(to right, #FFD700, #FDB931)" // Ouro Metálico
+    bg_section: "#050505",
+    accent_gold: "#C5A059", // Dourado mais seco e sofisticado (Champagne)
+    gold_gradient: "linear-gradient(135deg, #C5A059 0%, #8E7037 100%)",
   },
   header: {
-    tag: "TegPro Academy",
-    title: "O código fonte da operação.",
-    subtitle: "Não ensinamos teoria. Ensinamos o método exato que usamos para escalar nossos clientes e nossa própria agência."
+    tag: "Higher Management",
+    title: "TegPro Academy",
+    subtitle: "A ciência por trás da gestão de e-commerces que escalam com previsibilidade e lucro real."
   },
-  // O Card Gigante (Cinematic)
   hero_card: {
-    title: "Mastery em Escala.",
-    subtitle: "Do Zero ao Exit.",
-    description: "Acesse os bastidores. Processos de contratação, planilhas de precificação, scripts de vendas e a engenharia financeira por trás de um negócio de múltiplos 7 dígitos.",
-    badge: "Acesso Vitalício",
-    cta: "Começar Agora",
+    title: "Gestão de E-commerce.",
+    subtitle: "O Método TegPro.",
+    description: "Abra a caixa preta da operação. Domine CMV, squads e engenharia logística com quem dita o ritmo do mercado.",
+    badge: "Formação de Elite",
+    cta: "Conhecer Metodologia",
     href: "/cursos"
   },
-  // Os Cards Menores (Tracks)
   tracks: [
-    {
-      title: "Gestão & Processos",
-      desc: "Como organizar a casa para não quebrar na escala.",
-      icon: "solar:bill-check-bold-duotone"
-    },
-    {
-      title: "Formação de Times",
-      desc: "Contrate A-Players e construa uma cultura forte.",
-      icon: "solar:users-group-rounded-bold-duotone"
-    },
-    {
-      title: "Mentalidade de Founder",
-      desc: "Saia do operacional e assuma a cadeira de CEO.",
-      icon: "solar:crown-star-bold-duotone"
-    }
+    { title: "Operação Implacável", desc: "Do setup à medalha Platinum.", icon: "solar:settings-minimalistic-linear" },
+    { title: "Finanças & Margem", desc: "O código do lucro real.", icon: "solar:wad-of-money-linear" },
+    { title: "Liderança de Squads", desc: "Gestão de times A-Players.", icon: "solar:users-group-two-rounded-linear" }
   ]
 };
 
-export default function TegProCinema() {
+export default function TegProRefined() {
   const { theme, header, hero_card, tracks } = TEGPRO_DATA;
 
   return (
-    <section className="py-32 px-6 font-sans relative overflow-hidden bg-white">
+    <section className="py-40 px-6 bg-[#050505] relative overflow-hidden font-sans flex items-center">
       
-      <div className="max-w-6xl mx-auto">
-        
-        {/* --- HEADER --- */}
-        <div className="mb-16 max-w-3xl">
-            <motion.span 
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="text-xs font-bold uppercase tracking-[0.2em] mb-4 block"
-                style={{ color: theme.accent_gold }} // Dourado no label
-            >
-                {header.tag}
-            </motion.span>
-            
-            <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-5xl md:text-6xl font-semibold tracking-tight leading-tight mb-6"
-                style={{ color: theme.text_dark }}
-            >
-                {header.title}
-            </motion.h2>
+      {/* Background: Glow extremamente sutil */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-[#C5A059]/[0.03] blur-[150px] rounded-full pointer-events-none" />
 
-            <motion.p 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl font-medium leading-relaxed text-gray-500 max-w-2xl"
+      <div className="max-w-6xl mx-auto w-full relative z-10">
+        
+        {/* TOP: Header Refinado (Menor e mais elegante) */}
+        <div className="mb-24">
+            <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 mb-8"
             >
+                <div className="w-8 h-[1px] bg-[#C5A059]/40" />
+                <span className="text-[10px] font-medium uppercase tracking-[0.5em] text-[#C5A059]/80">{header.tag}</span>
+            </motion.div>
+            
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8">
+                {header.title}
+            </h2>
+            <p className="text-lg text-zinc-500 font-medium max-w-xl leading-relaxed">
                 {header.subtitle}
-            </motion.p>
+            </p>
         </div>
 
-        {/* --- CINEMATIC HERO CARD (Wide) --- */}
+        {/* CENTER: O Monolito (Design de Superfície) */}
         <motion.div 
-            initial={{ opacity: 0, scale: 0.98, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} // Curva Apple suave
-            viewport={{ once: true }}
-            className="relative w-full rounded-[2.5rem] overflow-hidden bg-black text-white shadow-2xl shadow-gray-200 min-h-[500px] flex items-center group"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="relative rounded-[3rem] bg-[#0A0A0B] border border-white/[0.04] p-8 md:p-16 overflow-hidden"
         >
-            {/* Background Texture (Abstract Gold Dust) */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-b from-[#FFD700]/20 to-transparent blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                
+                {/* Lado Esquerdo: Conteúdo */}
+                <div className="lg:col-span-7 relative z-10">
+                    <div className="flex items-center gap-2 mb-8 opacity-60">
+                        <Icon icon="solar:crown-star-linear" className="text-[#C5A059] w-4 h-4" />
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{hero_card.badge}</span>
+                    </div>
+                    
+                    <h3 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight leading-[1.1]">
+                        {hero_card.title} <br/>
+                        <span className="text-[#C5A059] font-medium italic">
+                            {hero_card.subtitle}
+                        </span>
+                    </h3>
+                    
+                    <p className="text-base text-zinc-500 mb-12 max-w-md leading-relaxed">
+                        {hero_card.description}
+                    </p>
 
-            {/* Conteúdo (Lado Esquerdo) */}
-            <div className="relative z-10 p-10 md:p-16 max-w-2xl">
-                {/* Badge Dourada */}
-                <div 
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 backdrop-blur-md border border-white/10 bg-white/5"
-                >
-                    <div className="w-2 h-2 rounded-full bg-[#FFD700] animate-pulse shadow-[0_0_10px_#FFD700]" />
-                    <span className="text-xs font-bold uppercase tracking-widest text-[#FFD700]">{hero_card.badge}</span>
+                    <Link 
+                        href={hero_card.href}
+                        className="group/btn relative inline-flex items-center gap-6 px-10 py-5 rounded-2xl bg-transparent border border-white/10 overflow-hidden transition-all duration-500 hover:border-[#C5A059]/50"
+                    >
+                        {/* Fill Effect mais suave */}
+                        <div className="absolute inset-0 bg-[#C5A059] translate-y-[101%] group-hover/btn:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]" />
+                        
+                        <span className="relative z-10 text-[11px] font-bold uppercase tracking-[0.2em] text-white group-hover/btn:text-black transition-colors">
+                            {hero_card.cta}
+                        </span>
+                        <Icon icon="solar:arrow-right-linear" className="relative z-10 w-5 h-5 text-[#C5A059] group-hover/btn:text-black transition-all group-hover/btn:translate-x-1" />
+                    </Link>
                 </div>
 
-                <h3 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight leading-tight">
-                    {hero_card.title} <br />
-                    <span className="text-transparent bg-clip-text" style={{ backgroundImage: theme.gold_gradient }}>
-                        {hero_card.subtitle}
-                    </span>
-                </h3>
+                {/* Lado Direito: Tracks (Listagem Técnica) */}
+                <div className="lg:col-span-5 space-y-4 relative z-10">
+                    {tracks.map((track, i) => (
+                        <div 
+                            key={i}
+                            className="p-6 rounded-2xl bg-white/[0.01] border border-white/[0.03] flex items-center gap-5 hover:bg-white/[0.03] hover:border-white/10 transition-all duration-500 group"
+                        >
+                            <div className="w-10 h-10 rounded-xl bg-black border border-white/[0.05] flex items-center justify-center flex-shrink-0 group-hover:border-[#C5A059]/30 transition-colors">
+                                <Icon icon={track.icon} className="w-5 h-5 text-zinc-500 group-hover:text-[#C5A059] transition-colors" />
+                            </div>
+                            <div>
+                                <h4 className="text-white text-sm font-bold tracking-tight">{track.title}</h4>
+                                <p className="text-zinc-600 text-xs mt-0.5">{track.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-                <p className="text-lg md:text-xl text-gray-400 font-medium leading-relaxed mb-10 max-w-lg">
-                    {hero_card.description}
-                </p>
-
-                <Link 
-                    href={hero_card.href}
-                    className="group/btn inline-flex items-center gap-4 bg-white text-black px-10 py-5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-[#FFD700] transition-colors duration-300"
-                >
-                    {hero_card.cta}
-                    <Icon icon="solar:play-circle-bold" className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
-                </Link>
             </div>
 
-            {/* Elemento Visual (Direita - Abstract Play Button / Interface) */}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 md:translate-x-0 w-[400px] h-[300px] md:w-[500px] md:h-[400px] opacity-10 md:opacity-100 transition-all duration-700 pointer-events-none">
-                 {/* Círculos Concêntricos (Representando foco/lente) */}
-                 <div className="absolute inset-0 border border-white/10 rounded-full scale-[0.8]" />
-                 <div className="absolute inset-0 border border-white/5 rounded-full scale-[1.2]" />
-                 <div className="absolute inset-0 border border-white/5 rounded-full scale-[1.6]" />
-                 
-                 {/* Ícone Gigante Central */}
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#FFD700]/10 rotate-12 group-hover:rotate-0 transition-transform duration-700 ease-out">
-                    <Icon icon="solar:diploma-verified-bold" className="w-96 h-96" />
-                 </div>
-            </div>
-
+            {/* Grain Texture Sutil */}
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
         </motion.div>
-
-        {/* --- TRACKS GRID (Abaixo do Hero) --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            {tracks.map((track, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + (i * 0.1) }}
-                    viewport={{ once: true }}
-                    className="p-8 rounded-[2rem] bg-[#F5F5F7] hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 border border-transparent hover:border-gray-100 group"
-                >
-                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                        <Icon icon={track.icon} className="w-6 h-6 text-gray-900 group-hover:text-[#FFD700] transition-colors" />
-                    </div>
-                    <h4 className="text-xl font-bold text-[#1D1D1F] mb-2">{track.title}</h4>
-                    <p className="text-gray-500 font-medium text-sm leading-relaxed">{track.desc}</p>
-                </motion.div>
-            ))}
-        </div>
 
       </div>
     </section>

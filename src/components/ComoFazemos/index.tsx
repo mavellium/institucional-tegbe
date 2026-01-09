@@ -37,7 +37,7 @@ export default function MethodSectionPremium() {
           <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] opacity-70" />
           
           {/* Gradient Spotlights (Luzes de Fundo) */}
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-100/40 rounded-full blur-[100px]" />
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-yellow-100/40 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-gray-100/60 rounded-full blur-[100px]" />
       </div>
 
@@ -49,12 +49,12 @@ export default function MethodSectionPremium() {
               <motion.div 
                 initial={{ width: 0 }}
                 whileInView={{ width: "100px" }}
-                className="h-1 bg-amber-500 mb-6"
+                className="h-1 bg-yellow-400 mb-6"
               />
               
               <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.05]">
                 Não fazemos mágica.<br/>
-                Fazemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-500 relative">
+                Fazemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400 relative">
                     Engenharia.
                 </span>
               </h2>
@@ -74,7 +74,7 @@ export default function MethodSectionPremium() {
            <div className="hidden md:block absolute top-[4.5rem] left-[16%] right-[16%] h-[2px] bg-gray-100 z-0">
               {/* O Feixe de Energia percorrendo a linha */}
               <motion.div 
-                className="h-full w-1/3 bg-gradient-to-r from-transparent via-amber-400 to-transparent blur-[1px]"
+                className="h-full w-1/3 bg-gradient-to-r from-transparent via-yellow-300 to-transparent blur-[1px]"
                 animate={{ x: ["-100%", "300%"] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
               />
@@ -91,7 +91,7 @@ export default function MethodSectionPremium() {
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="group flex items-center gap-3 px-8 py-4 bg-[#0A0A0A] text-white rounded-full font-bold uppercase tracking-wider text-sm hover:bg-amber-500 hover:shadow-xl hover:shadow-amber-500/20 transition-all duration-300"
+                className="group flex items-center gap-3 px-8 py-4 bg-[#0A0A0A] text-white rounded-full font-bold uppercase tracking-wider text-sm hover:bg-yellow-400 hover:text-black hover:shadow-xl hover:shadow-yellow-400/20 transition-all duration-300"
             >
                 <span>Ver Planos de Execução</span>
                 <Icon icon="solar:arrow-right-linear" className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -120,13 +120,13 @@ function StepCard({ data, index }: { data: any, index: number }) {
 
                 <motion.div 
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="w-24 h-24 rounded-[2rem] bg-white border border-gray-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] flex items-center justify-center relative z-20 group-hover:border-amber-400 group-hover:shadow-[0_20px_40px_-10px_rgba(245,158,11,0.2)] transition-all duration-500"
+                    className="w-24 h-24 rounded-[2rem] bg-white border border-gray-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] flex items-center justify-center relative z-20 group-hover:border-yellow-400 group-hover:shadow-[0_20px_40px_-10px_rgba(250,204,21,0.2)] transition-all duration-500"
                 >
                     {/* Ícone */}
-                    <Icon icon={data.icon} className="w-10 h-10 text-gray-400 group-hover:text-amber-600 transition-colors duration-300" />
+                    <Icon icon={data.icon} className="w-10 h-10 text-gray-400 group-hover:text-yellow-600 transition-colors duration-300" />
                     
                     {/* Badge de Número Flutuante */}
-                    <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold font-mono border-4 border-white group-hover:bg-amber-500 transition-colors">
+                    <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold font-mono border-4 border-white group-hover:bg-yellow-400 group-hover:text-black transition-colors">
                         {data.id}
                     </div>
                 </motion.div>
@@ -137,12 +137,12 @@ function StepCard({ data, index }: { data: any, index: number }) {
                 
                 {/* Label Técnica */}
                 <div className="inline-block mb-3">
-                    <span className="px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-amber-600 group-hover:bg-amber-50 group-hover:border-amber-100 transition-all duration-300">
+                    <span className="px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-yellow-600 group-hover:bg-yellow-50 group-hover:border-yellow-100 transition-all duration-300">
                         // {data.label}
                     </span>
                 </div>
 
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-amber-600 transition-colors duration-300">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-yellow-600 transition-colors duration-300">
                     {data.title}
                 </h3>
 
@@ -153,7 +153,7 @@ function StepCard({ data, index }: { data: any, index: number }) {
                 {/* Efeito: Barra de Progresso 'Fake' no fundo do card */}
                 <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-12 h-1 bg-gray-100 rounded-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                      <motion.div 
-                        className="h-full bg-amber-500"
+                        className="h-full bg-yellow-400"
                         initial={{ x: "-100%" }}
                         whileInView={{ x: "0%" }}
                         transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1 }}

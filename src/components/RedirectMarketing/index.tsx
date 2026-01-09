@@ -4,78 +4,75 @@ import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-// --- CONFIGURAÇÃO (JSON) ---
+// --- CONFIGURAÇÃO DARK MARKETING ---
 const MARKETING_ARCADE_DATA = {
   theme: {
-    bg_section: "#FFFFFF",
-    // Cores do Card Dark (Apple Arcade Style)
-    card_dark_bg: "#101010", 
-    card_dark_text: "#FFFFFF",
-    // Cores dos Cards Light (Apple Widget Style)
-    card_light_bg: "#F5F5F7",
-    card_light_text: "#1D1D1F",
-    // Acento
-    accent_pink: "#FF2D55", 
-    accent_gradient: "linear-gradient(135deg, #FF2D55 0%, #FF375F 100%)"
+    bg_section: "#050505", 
+    card_main_bg: "#0A0A0B", 
+    card_sub_bg: "#121214",
+    text_primary: "#FFFFFF",
+    text_secondary: "#A1A1AA",
+    accent_rose: "#FF2D55", 
+    accent_gradient: "linear-gradient(135deg, #FF2D55 0%, #BA002E 100%)",
   },
   header: {
     tag: "Growth Ecosystem",
     title: "O motor de vendas.",
-    subtitle: "Tráfego pago é apenas o combustível. A Tegbe constrói o motor completo: Criativos que convertem + Gestão de Mídia + CRM que retém."
+    subtitle: "Tráfego pago é apenas o combustível. Construímos o motor completo: Criativos que convertem + Gestão de Mídia + CRM que retém."
   },
   cards: {
-    // CARD 1: O "TALL CARD" (Escuro, Esquerda)
     main: {
       title: "Growth Full-Stack.",
-      subtitle: "Dominamos toda a jornada.",
-      description: "Não contratamos 'gestores de tráfego'. Contratamos engenheiros de crescimento. Unificamos Google, Meta e TikTok em um dashboard único de atribuição.",
-      tags: ["Meta Ads", "Google Ads", "TikTok"],
-      cta: "Ver Estratégia Growth",
+      subtitle: "Performance sem limites.",
+      description: "Unificamos Google, Meta e TikTok em um dashboard único de atribuição. Decisões baseadas em dados reais, não em intuição.",
+      tags: ["Meta Ads", "Google Ads", "TikTok", "Analytics"],
+      cta: "Ativar Escala",
       href: "/marketing"
     },
-    // CARD 2: CRIATIVOS (Claro, Direita Topo)
     creative: {
       title: "Creative Studio.",
-      description: "Anúncios feios custam caro. Nosso time de Motion e Design cria peças validadas para CTR alto.",
+      description: "Anúncios validados para CTR alto. Motion e Design que param o scroll.",
       icon: "solar:palette-round-bold-duotone",
       stat: "+40% CTR"
     },
-    // CARD 3: CRM (Claro, Direita Base)
     crm: {
       title: "CRM & LTV.",
-      description: "Transformamos o 'cliente de uma vez' em cliente recorrente com automações de e-mail e WhatsApp.",
+      description: "Automações de e-mail e WhatsApp para máxima retenção.",
       icon: "solar:users-group-two-rounded-bold-duotone",
       stat: "Retenção Ativa"
     }
   }
 };
 
-export default function MarketingAppleArcade() {
+export default function MarketingDarkArcade() {
   const { theme, header, cards } = MARKETING_ARCADE_DATA;
 
   return (
-    <section className="py-32 px-6 font-sans relative overflow-hidden bg-white">
+    <section className="py-32 px-6 font-sans relative overflow-hidden" style={{ backgroundColor: theme.bg_section }}>
       
-      <div className="max-w-6xl mx-auto">
+      {/* Background Glows */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
         
         {/* --- HEADER --- */}
-        <div className="mb-16 max-w-2xl">
-            <motion.span 
+        <div className="mb-20">
+            <motion.div 
                 initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="text-xs font-bold uppercase tracking-[0.2em] mb-4 block"
-                style={{ color: theme.accent_pink }}
+                className="flex items-center gap-3 mb-6"
             >
-                {header.tag}
-            </motion.span>
+                <div className="w-10 h-[1px]" style={{ backgroundColor: theme.accent_rose }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: theme.accent_rose }}>
+                    {header.tag}
+                </span>
+            </motion.div>
             
             <motion.h2 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-5xl md:text-6xl font-semibold tracking-tight leading-tight mb-6"
-                style={{ color: theme.card_light_text }}
+                className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-white mb-8"
             >
                 {header.title}
             </motion.h2>
@@ -83,131 +80,139 @@ export default function MarketingAppleArcade() {
             <motion.p 
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl font-medium leading-relaxed text-gray-500 max-w-xl"
+                className="text-xl font-medium leading-relaxed text-zinc-500 max-w-xl"
             >
                 {header.subtitle}
             </motion.p>
         </div>
 
-        {/* --- ASSYMETRICAL LAYOUT (TOWER + STACK) --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[600px]">
+        {/* --- GRID --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:min-h-[600px]">
             
-            {/* --- COLUNA ESQUERDA: TOWER CARD (DARK MODE) --- */}
+            {/* CARD TOWER (ESQUERDA) */}
             <motion.div 
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "circOut" }}
-                viewport={{ once: true }}
-                className="lg:col-span-5 relative rounded-[2.5rem] overflow-hidden p-10 flex flex-col justify-between shadow-2xl shadow-gray-200 group"
-                style={{ backgroundColor: theme.card_dark_bg }}
+                className="lg:col-span-5 relative rounded-[3rem] border border-white/5 overflow-hidden p-12 flex flex-col justify-between group"
+                style={{ backgroundColor: theme.card_main_bg }}
             >
-                {/* Background Gradient Animated */}
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-[#FF2D55]/40 to-purple-600/20 blur-[100px] rounded-full opacity-60 group-hover:opacity-80 transition-opacity duration-700 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-rose-600/10 via-transparent to-transparent" />
                 
                 <div className="relative z-10">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8" style={{ background: theme.accent_gradient }}>
-                        <Icon icon="solar:graph-new-up-bold" className="w-7 h-7 text-white" />
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-rose-900/40" style={{ background: theme.accent_gradient }}>
+                        <Icon icon="solar:graph-new-up-bold" className="w-8 h-8 text-white" />
                     </div>
                     
-                    <h3 className="text-4xl font-bold text-white mb-2 tracking-tight">
+                    <h3 className="text-4xl font-bold text-white mb-4 tracking-tight">
                         {cards.main.title}
                     </h3>
-                    <p className="text-xl font-medium mb-6 text-gray-400">
+                    <p className="text-lg font-bold mb-6 text-rose-500 uppercase tracking-widest text-[11px]">
                         {cards.main.subtitle}
                     </p>
-                    <p className="text-base leading-relaxed text-gray-300 mb-8">
+                    <p className="text-zinc-400 leading-relaxed mb-10 font-medium">
                         {cards.main.description}
                     </p>
 
                     <div className="flex flex-wrap gap-2">
                         {cards.main.tags.map((tag, i) => (
-                            <span key={i} className="px-3 py-1 rounded-full border border-white/10 text-xs font-bold text-gray-300 bg-white/5">
+                            <span key={i} className="px-3 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-zinc-500 bg-white/5 uppercase tracking-tighter">
                                 {tag}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                <div className="relative z-10 mt-10">
-                    <Link 
-                        href={cards.main.href}
-                        className="w-full flex items-center justify-between px-6 py-4 rounded-full bg-white text-black font-bold text-sm hover:scale-[1.02] transition-transform duration-300"
-                    >
-                        <span>{cards.main.cta}</span>
-                        <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
-                            <Icon icon="solar:arrow-right-up-linear" className="w-4 h-4" />
-                        </div>
-                    </Link>
-                </div>
+                {/* CTA REFINADO: GHOST GLASS DESIGN */}
+                <Link 
+    href={cards.main.href}
+    className="mt-12 group/btn relative flex items-center justify-between px-10 py-6 rounded-2xl overflow-hidden transition-all duration-500 bg-[#0F0F10] border border-white/[0.08] hover:border-rose-500/50 hover:shadow-[0_0_30px_rgba(255,45,85,0.15)]"
+>
+    {/* Preenchimento Sólido de Impacto */}
+    <div className="absolute inset-0 bg-rose-600 translate-y-[101%] group-hover/btn:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]" />
+    
+    <div className="relative z-10 flex items-center justify-between w-full">
+        {/* TEXTO: Peso Extra Bold para máxima autoridade e intenção de clique */}
+        <span className="text-[13px] font-extrabold uppercase tracking-[0.15em] text-white group-hover/btn:text-black transition-colors duration-500">
+            {cards.main.cta}
+        </span>
+        
+        {/* ELEMENTO DE AÇÃO */}
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 group-hover/btn:bg-black/20 transition-all duration-500">
+             <Icon 
+                icon="solar:round-alt-arrow-right-bold" 
+                className="w-6 h-6 text-rose-500 group-hover/btn:text-black transition-all duration-500 group-hover/btn:translate-x-1" 
+            />
+        </div>
+    </div>
+</Link>
             </motion.div>
 
-            {/* --- COLUNA DIREITA: STACKED CARDS (LIGHT MODE) --- */}
-            <div className="lg:col-span-7 flex flex-col gap-6 h-full">
+            {/* STACKED CARDS (DIREITA) */}
+            <div className="lg:col-span-7 flex flex-col gap-8">
                 
-                {/* CARD SUPERIOR: CREATIVE */}
+                {/* CARD CREATIVE */}
                 <motion.div 
-                    initial={{ opacity: 0, x: 40 }}
+                    initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.6 }}
-                    viewport={{ once: true }}
-                    className="flex-1 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden group hover:shadow-lg transition-shadow duration-300"
-                    style={{ backgroundColor: theme.card_light_bg }}
+                    className="flex-1 rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10 border border-white/5 hover:border-rose-500/30 transition-all group"
+                    style={{ backgroundColor: theme.card_sub_bg }}
                 >
-                     <div className="flex-1 relative z-10">
-                        <h3 className="text-2xl font-bold mb-3 text-[#1D1D1F]">
+                     <div className="flex-1">
+                        <h3 className="text-3xl font-bold mb-3 text-white tracking-tight">
                             {cards.creative.title}
                         </h3>
-                        <p className="text-base text-[#86868B] font-medium leading-relaxed max-w-sm">
+                        <p className="text-zinc-500 font-medium leading-relaxed">
                             {cards.creative.description}
                         </p>
                      </div>
                      
-                     {/* Visual Element (Icon/Stat) */}
-                     <div className="relative flex-shrink-0">
-                        <div className="w-24 h-24 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                            <Icon icon={cards.creative.icon} className="w-10 h-10" style={{ color: theme.accent_pink }} />
+                     <div className="relative">
+                        <div className="w-28 h-28 rounded-3xl bg-white/5 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/10">
+                            <Icon icon={cards.creative.icon} className="w-12 h-12" style={{ color: theme.accent_rose }} />
                         </div>
-                        <div className="absolute -bottom-3 -right-3 bg-white px-4 py-1.5 rounded-full shadow-md text-xs font-bold text-[#1D1D1F]">
+                        <div className="absolute -bottom-2 -right-2 bg-rose-600 text-white px-4 py-1.5 rounded-lg shadow-lg text-[10px] font-black uppercase tracking-widest">
                             {cards.creative.stat}
                         </div>
                      </div>
                 </motion.div>
 
-                {/* CARD INFERIOR: CRM */}
+                {/* CARD CRM */}
                 <motion.div 
-                    initial={{ opacity: 0, x: 40 }}
+                    initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.6 }}
-                    viewport={{ once: true }}
-                    className="flex-1 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden group hover:shadow-lg transition-shadow duration-300"
-                    style={{ backgroundColor: theme.card_light_bg }}
+                    transition={{ delay: 0.1 }}
+                    className="flex-1 rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10 border border-white/5 hover:border-rose-500/30 transition-all group"
+                    style={{ backgroundColor: theme.card_sub_bg }}
                 >
-                     <div className="flex-1 relative z-10">
-                        <h3 className="text-2xl font-bold mb-3 text-[#1D1D1F]">
+                     <div className="flex-1">
+                        <h3 className="text-3xl font-bold mb-3 text-white tracking-tight">
                             {cards.crm.title}
                         </h3>
-                        <p className="text-base text-[#86868B] font-medium leading-relaxed max-w-sm">
+                        <p className="text-zinc-500 font-medium leading-relaxed">
                             {cards.crm.description}
                         </p>
                      </div>
 
-                     {/* Visual Element (Icon/Stat) */}
-                     <div className="relative flex-shrink-0">
-                        <div className="w-24 h-24 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                            <Icon icon={cards.crm.icon} className="w-10 h-10" style={{ color: theme.accent_pink }} />
+                     <div className="relative">
+                        <div className="w-28 h-28 rounded-3xl bg-white/5 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 border border-white/10">
+                            <Icon icon={cards.crm.icon} className="w-12 h-12" style={{ color: theme.accent_rose }} />
                         </div>
-                        <div className="absolute -bottom-3 -right-3 bg-white px-4 py-1.5 rounded-full shadow-md text-xs font-bold text-[#1D1D1F]">
+                        <div className="absolute -bottom-2 -right-2 bg-white text-black px-4 py-1.5 rounded-lg shadow-lg text-[10px] font-black uppercase tracking-widest">
                             {cards.crm.stat}
                         </div>
                      </div>
                 </motion.div>
 
             </div>
-
         </div>
-
       </div>
+      
+      {/* CSS Keyframes para o Shimmer Effect */}
+      <style jsx>{`
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
     </section>
   );
 }
