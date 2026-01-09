@@ -1,6 +1,5 @@
 import { Header } from "@/components/Header";
 import SellMore from "@/components/SellMore";
-import Plataforms from "@/components/Steps/Plataforms";
 import Logos from "@/components/Logos";
 import { Companys } from "@/components/Companys";
 import { Footer } from "@/components/Footer";
@@ -12,6 +11,7 @@ import Animacao from "@/components/Animacao";
 import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
 import { fetchComponentData } from "@/lib/api";
+import Plataforms from "@/components/Solucoes/Plataforms";
 
 // Função Wrapper Segura para o Fetch
 async function getSafeData(slug: string) {

@@ -1,24 +1,25 @@
 
-import Dna from "@/components/Dna";
-import Ecommerce from "@/components/Ecommerce";
-import Fim from "@/components/Fim";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { Headline } from "@/components/Headline";
-import Logos from "@/components/Logos";
-import News from "@/components/News";
-import RedirectEcommerce from "@/components/RedirectEcommerce";
-import RedirectMarketing from "@/components/RedirectMarketing";
-import RedirectSobre from "@/components/RedirectSobre";
-import RedirectTegpro from "@/components/RedirectTegpro";
-import Roi from "@/components/Roi";
-import Schema from "@/components/Schema";
-import Setors from "@/components/Setors";
-import Steps from "@/components/Steps";
 import {
   fetchComponentData,
   StepData,
 } from "@/lib/api";
+import ComoFazemos from "@/components/ComoFazemos";
+import { ChamadaAcao } from "@/components/ChamadaAcao";
+import { Footer } from "@/components/Footer";
+import FaqHome from "@/components/FaqHome";
+import RedirectSobre from "@/components/RedirectSobre";
+import RedirectTegpro from "@/components/RedirectTegpro";
+import RedirectMarketing from "@/components/RedirectMarketing";
+import RedirectEcommerce from "@/components/RedirectEcommerce";
+import Dores from "@/components/Dores";
+import { Headline } from "@/components/Headline";
+import { Header } from "@/components/Header";
+import Schema from "@/components/Schema";
+import Solucoes from "@/components/Solucoes";
+import Metricas from "@/components/Metricas";
+import UltimaChamadaAcao from "@/components/UltimaChamadaAcao";
+import News from "@/components/Resultados";
+import Resultados from "@/components/Resultados";
 
 // Função Wrapper Segura para o Fetch
 async function getSafeData(slug: string) {
@@ -189,17 +190,17 @@ export default async function Home() {
       <Header />
       <main>
         <Headline data={headlineData} />
-        <Ecommerce/>
-        <Setors />
-        <Steps/>   
-        <Roi/>
+        <Dores/>
+        <ComoFazemos />
+        <Solucoes/>   
+        <Metricas/>
         <RedirectEcommerce/>
         <RedirectMarketing/>
         <RedirectTegpro/>
-        <News />
+        <Resultados />
         <RedirectSobre/>
-        <Dna/>
-        <Fim/>
+        <FaqHome/>
+        <UltimaChamadaAcao/>
       </main>
       <Footer />
     </>

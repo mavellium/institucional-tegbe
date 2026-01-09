@@ -111,7 +111,7 @@ export function Header({ variant = 'ecommerce', data }: HeaderProps) {
                 width={150}
                 height={50}
                 priority 
-                className="brightness-0 invert object-contain w-32 md:w-36 lg:w-40 transition-opacity group-hover:opacity-80"
+                className="text-yellow-400 object-contain w-32 md:w-36 lg:w-40 transition-opacity group-hover:opacity-80"
                 style={{ width: 'auto', height: 'auto' }}
               />
             </Link>

@@ -8,7 +8,7 @@ import { Empresas } from "@/components/Empresas";
 import Historia from "@/components/ExploreDetails/Historia";
 import Sobre from "@/components/Sobre";
 import AnosMercado from "@/components/Expertise/AnosMercado";
-import Metricas from "@/components/News/Metricas";
+import Metricas from "@/components/Resultados/Metricas";
 import { SociosCrescimento } from "@/components/SociosCrescimento";
 import Video2 from "@/components/Video2";
 import Localizacao from "@/components/Localizacao";
