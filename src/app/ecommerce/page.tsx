@@ -26,19 +26,32 @@ async function getSafeData(slug: string) {
 }
 
 export default async function EcommercePage() {
-    // 1. PERFORMANCE: Request Waterfall Zero.
-    // Buscando Headline, Company, CTA e agora EQUIPE em paralelo.
-    const [headlineResponse, companyResponse, ctaResponse, equipeResponse] = await Promise.all([
+    // 1. PERFORMANCE: Buscando todos os dados necessários em paralelo
+    const [
+        headlineRes, 
+        companyRes, 
+        ctaRes, 
+        equipeRes,
+        stepsRes // Novo endpoint solicitado
+    ] = await Promise.all([
         getSafeData('headline'),
         getSafeData('company'),
         getSafeData('call-to-action'),
-        getSafeData('equipe') // Endpoint: .../json/equipe
+        getSafeData('equipe'),
+        // Buscamos diretamente do endpoint fornecido
+        fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/steps')
+            .then(res => res.ok ? res.json() : { steps: [] })
+            .catch(() => ({ steps: [] }))
     ]);
 
-    // 2. Extração Cirúrgica dos Nós
-    const companysData = companyResponse?.data?.ecommerce || null;
-    const ctaData = ctaResponse?.data?.ecommerce || null;
-    const equipeData = equipeResponse?.data?.ecommerce || null; // Dados extraídos para o componente Equipe
+    // 2. Extração Segura
+    const headlineData = headlineRes?.data ?? null;
+    const companysData = companyRes?.data?.ecommerce ?? null;
+    const ctaData = ctaRes?.data?.ecommerce ?? null;
+    const equipeData = equipeRes?.data?.ecommerce ?? null;
+    
+    // Extração dos passos (ajuste o caminho conforme a estrutura do JSON retornado)
+    const stepsData = stepsRes?.steps || stepsRes || [];
 
     return (
         <>
@@ -54,29 +67,24 @@ export default async function EcommercePage() {
                 }}
             />
             
-            {/* Header com a cor Amarela */}
             <Header variant="ecommerce" />
             
-            {/* Headline consumindo API + Variante */}
-            <Headline data={headlineResponse.data} variant="ecommerce" />
+            {headlineData && <Headline data={headlineData} variant="ecommerce" />}
             
-            {/* <Video /> */}
             <SellMore />
             <Cards variant="home" />
-            <Passos steps={[]}/>
+            
+            {/* Agora o componente Passos recebe dados reais da API */}
+            <Passos steps={stepsData} />
+            
             <Animacao/>
             <Plataforms />
             <Logos />
             <Cards variant="ecommerce" />
             <SectionImage variant="ecommerce" />
             
-            {/* Equipe (Why Tegbe) agora Data-Driven */}
             <Equipe variant="ecommerce" data={equipeData} />
-            
-            {/* Companys Data-Driven */}
             <Companys variant="ecommerce" data={companysData} />
-            
-            {/* Call to Action Data-Driven */}
             <ChamadaAcao variant="ecommerce" data={ctaData} />
             
             <Footer />
