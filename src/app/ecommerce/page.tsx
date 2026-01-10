@@ -14,44 +14,48 @@ import { fetchComponentData } from "@/lib/api";
 import Plataforms from "@/components/Solucoes/Plataforms";
 import Passos from "@/components/Passos";
 
-// Função Wrapper Segura para o Fetch
 async function getSafeData(slug: string) {
   try {
     const res = await fetchComponentData(slug);
+    
+    // Verificação baseada em existência, evitando o erro de propriedade 'status'
+    if (!res || !res.data) {
+      console.warn(`[Mavellium Build] Dados não encontrados para: ${slug}`);
+      return { data: null };
+    }
+    
     return res;
   } catch (error) {
-    console.warn(`[EcommercePage] Erro ao carregar dados de ${slug}. Usando fallback.`);
     return { data: null };
   }
 }
 
 export default async function EcommercePage() {
-    // 1. PERFORMANCE: Buscando todos os dados necessários em paralelo
+    // PERFORMANCE: Busca paralela
     const [
         headlineRes, 
         companyRes, 
         ctaRes, 
         equipeRes,
-        stepsRes // Novo endpoint solicitado
+        stepsRes 
     ] = await Promise.all([
         getSafeData('headline'),
         getSafeData('company'),
         getSafeData('call-to-action'),
         getSafeData('equipe'),
-        // Buscamos diretamente do endpoint fornecido
-        fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/steps')
-            .then(res => res.ok ? res.json() : { steps: [] })
-            .catch(() => ({ steps: [] }))
+        fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/steps', { next: { revalidate: 3600 } })
+            .then(res => res.ok ? res.json() : [])
+            .catch(() => [])
     ]);
 
-    // 2. Extração Segura
+    // Extração Segura (Null Coalescing)
     const headlineData = headlineRes?.data ?? null;
     const companysData = companyRes?.data?.ecommerce ?? null;
     const ctaData = ctaRes?.data?.ecommerce ?? null;
     const equipeData = equipeRes?.data?.ecommerce ?? null;
     
-    // Extração dos passos (ajuste o caminho conforme a estrutura do JSON retornado)
-    const stepsData = stepsRes?.steps || stepsRes || [];
+    // Tratamento para garantir que steps seja sempre um Array
+    const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 
     return (
         <>
