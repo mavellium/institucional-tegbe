@@ -12,6 +12,7 @@ import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
 import { fetchComponentData } from "@/lib/api";
 import Plataforms from "@/components/Solucoes/Plataforms";
+import Passos from "@/components/Passos";
 
 // Função Wrapper Segura para o Fetch
 async function getSafeData(slug: string) {
@@ -62,6 +63,7 @@ export default async function EcommercePage() {
             {/* <Video /> */}
             <SellMore />
             <Cards variant="home" />
+            <Passos steps={[]}/>
             <Animacao/>
             <Plataforms />
             <Logos />

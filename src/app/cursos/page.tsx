@@ -67,8 +67,8 @@ export default async function CursosPage() {
         getSafeData('alunos'),
         getFormData('gallery'),
         getSafeData('expertise-curso'),
-        getJsonData('concorrentes'), // Usa getJsonData
-        getJsonData('faq-curso')    // <--- Usa getJsonData com o slug 'faq-curso'
+        getJsonData('concorrentes'), 
+        getJsonData('faq-curso')   
     ]);
 
     // 5. Extração

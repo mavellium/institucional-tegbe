@@ -59,15 +59,22 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
     >
-      <video 
-        ref={videoRef}
-        src={data.src}
-        poster={data.poster}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        muted
-        loop
-        playsInline
-      />
+      {data.src ? (
+        <video 
+          ref={videoRef}
+          src={data.src}
+          poster={data.poster}
+          muted
+          playsInline
+          loop
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full bg-[#0A0A0A] flex items-center justify-center border border-white/5">
+           {/* Placeholder elegante para manter o padrão visual Mavellium */}
+           <div className="w-12 h-12 rounded-full border border-[#FFD700]/20 animate-pulse" />
+        </div>
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
       
       {/* Play Icon */}
@@ -101,7 +108,18 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
 const ImageCard = ({ data }: { data: ClientCase }) => (
   <div className="relative w-[350px] md:w-[400px] h-[500px] flex-shrink-0 overflow-hidden rounded-[2rem] group bg-[#0A0A0A] border border-white/10 hover:border-[#FFD700]/30 transition-all">
       <div className="absolute inset-0 h-[65%] overflow-hidden">
-        <img src={data.src} alt={data.clientName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        {data.src ? (
+  <img 
+    src={data.src} 
+    alt={data.clientName} 
+    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+  />
+) : (
+  <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
+    {/* Placeholder opcional para manter o visual Mavellium mesmo sem imagem */}
+    <span className="text-white/20 text-xs">Premium Content</span>
+  </div>
+)}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0A0A] opacity-100" />
       </div>
 
