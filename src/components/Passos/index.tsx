@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 
-// Definir os tipos aqui mesmo
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 interface Passos {
   id: number;
   title: string;
@@ -15,311 +18,152 @@ interface Passos {
   image: string;
 }
 
-interface StepsProps {
-  steps: Passos[];
+// Interface para o Schema completo da API
+interface ApiResponse {
+  id: string;
+  type: string;    // Atualmente mapeado para a Tag (ex: E-commerce)
+  subtype: string; // Atualmente mapeado para o Título (ex: Em qual estágio...)
+  values: Passos[];
 }
 
-// Registrar o plugin ScrollTrigger
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+export default function Steps() {
+  const [data, setData] = useState<ApiResponse | null>(null);
+  const [activeStep, setActiveStep] = useState<Passos | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export default function Steps({ steps }: StepsProps) {
-  // Usar useMemo para evitar recriações desnecessárias
-  const stepsToUse = useMemo(() => {
-    if (steps && steps.length > 0) {
-      return steps;
-    }
-
-    return [
-      {
-        id: 1,
-        title: 'Aprender',
-        subtitle: 'Do zero ao primeiro faturamento.',
-        description: 'Validamos seu nicho e construímos sua base. Ideal para quem busca segurança no primeiro passo.',
-        image: '/steps1.png',
-      },
-      {
-        id: 2,
-        title: 'Começar',
-        subtitle: 'Sua operação pronta para o jogo.',
-        description: 'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-        image: '/steps1.png',
-      },
-      {
-        id: 3,
-        title: 'Estruturar',
-        subtitle: 'Organize o caos. Escale com segurança.',
-        description: 'Gestão de processos e integração 360º. Para quem já vende, mas precisa de braço operacional para gerenciar estoque, pedidos e atendimento sem perder o fôlego.',
-        image: '/steps1.png',
-      },
-      {
-        id: 4,
-        title: 'Performar',
-        subtitle: 'Máxima eficiência e lucratividade.',
-        description: 'O nível de elite do E-commerce. Otimização agressiva de margem, tráfego pago de alta performance e domínio de Share of Shelf em marketplaces.',
-        image: '/steps1.png',
-      },
-    ];
-  }, [steps]); // Só recria quando steps mudar
-
-  const [activeStep, setActiveStep] = useState<Passos>(() => stepsToUse[0]);
-
-  // Referências para animações
   const sectionRef = useRef<HTMLDivElement>(null)
   const leftColumnRef = useRef<HTMLDivElement>(null)
   const rightColumnRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const descriptionRef = useRef<HTMLParagraphElement>(null)
-  const stepButtonsRef = useRef<HTMLButtonElement[]>([])
+  const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
 
-  // Resetar activeStep apenas quando stepsToUse mudar significativamente
   useEffect(() => {
-    // Só atualiza se o primeiro step for diferente do atual
-    if (stepsToUse[0]?.id !== activeStep.id) {
-      setActiveStep(stepsToUse[0]);
-
-      // Resetar o primeiro botão para estado ativo
-      const firstButton = stepButtonsRef.current[0];
-      if (firstButton) {
-        gsap.set(firstButton, { scale: 1.02 });
+    const loadSteps = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/json/passos');
+        const result: ApiResponse = await response.json();
+        
+        if (result.values && result.values.length > 0) {
+          setData(result);
+          setActiveStep(result.values[0]);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar estágios Mavellium:", error);
+      } finally {
+        setLoading(false);
       }
-    }
-  }, [stepsToUse]); // Removi activeStep.id das dependências para evitar loop
+    };
+    loadSteps();
+  }, []);
 
-  // Inicializar a animação do primeiro step apenas no mount
-  useEffect(() => {
-    const firstButton = stepButtonsRef.current[0];
-    if (firstButton) {
-      gsap.set(firstButton, { scale: 1.02 });
-    }
-  }, []); // Array vazio = roda apenas no mount
-
-  // Animação de entrada da seção
   useGSAP(() => {
-    if (!sectionRef.current) return
+    if (loading || !data || !sectionRef.current) return;
 
-    // Reset das animações
-    gsap.set([leftColumnRef.current, rightColumnRef.current], {
-      opacity: 0,
-      y: 50
-    })
+    gsap.set([leftColumnRef.current, rightColumnRef.current], { opacity: 0, y: 50 });
 
-    // Animar coluna esquerda
-    const leftAnimation = gsap.to(leftColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
+    gsap.to(leftColumnRef.current, {
+      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+    });
 
-    // Animar coluna direita com atraso
-    const rightAnimation = gsap.to(rightColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      delay: 0.2,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
+    gsap.to(rightColumnRef.current, {
+      opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+    });
 
-    // Animar cada botão individualmente
-    const stepButtons = stepButtonsRef.current.filter(Boolean)
-    stepButtons.forEach((button, index) => {
-      gsap.set(button, {
-        opacity: 0,
-        x: -30,
-        scale: index === 0 ? 1.02 : 1
-      })
-
-      gsap.to(button, {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.1 * index,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: leftColumnRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
+    stepButtonsRef.current.forEach((button, index) => {
+      if (!button) return;
+      gsap.fromTo(button, 
+        { opacity: 0, x: -30 },
+        { 
+          opacity: 1, x: 0, duration: 0.6, delay: 0.1 * index,
+          scrollTrigger: { trigger: leftColumnRef.current, start: "top 80%" }
         }
-      })
-    })
+      );
+    });
+  }, { dependencies: [loading, data], scope: sectionRef });
 
-    return () => {
-      leftAnimation.kill()
-      rightAnimation.kill()
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, { dependencies: [], scope: sectionRef })
-
-  // Animação de troca de step
   const handleStepChange = (step: Passos) => {
-    if (step.id === activeStep.id) return
+    if (!activeStep || step.id === activeStep.id || !data) return;
 
-    // Animação de saída do conteúdo atual
+    const prevIndex = data.values.findIndex(s => s.id === activeStep.id);
+    const nextIndex = data.values.findIndex(s => s.id === step.id);
+
     gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
-      opacity: 0,
-      y: 20,
-      duration: 0.3,
-      ease: "power2.in",
+      opacity: 0, y: 20, duration: 0.3, ease: "power2.in",
       onComplete: () => {
-        // Voltar o botão anterior ao normal
-        const prevButton = stepButtonsRef.current[activeStep.id - 1]
-        if (prevButton) {
-          gsap.to(prevButton, {
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.out"
-          })
+        if (stepButtonsRef.current[prevIndex]) {
+            gsap.to(stepButtonsRef.current[prevIndex], { scale: 1, duration: 0.3 });
         }
-
-        // Atualizar o step ativo
-        setActiveStep(step)
-
-        // Animar o botão ativo com pulso
-        const activeButton = stepButtonsRef.current[step.id - 1]
-        if (activeButton) {
-          gsap.to(activeButton, {
-            scale: 1.02,
-            duration: 0.4,
-            ease: "back.out(1.7)"
-          })
+        setActiveStep(step);
+        if (stepButtonsRef.current[nextIndex]) {
+            gsap.to(stepButtonsRef.current[nextIndex], { scale: 1.05, duration: 0.4, ease: "back.out(1.7)" });
         }
-
-        // Animação de entrada do novo conteúdo
         setTimeout(() => {
-          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], {
-            opacity: 0,
-            y: -20
-          })
-
-          const enterAnimation = gsap.timeline()
-
-          enterAnimation.to(imageRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out"
-          })
-
-          enterAnimation.to(titleRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.3")
-
-          enterAnimation.to(descriptionRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.2")
-        }, 50)
+          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { opacity: 0, y: -20 });
+          const tl = gsap.timeline();
+          tl.to(imageRef.current, { opacity: 1, y: 0, duration: 0.5 });
+          tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
+          tl.to(descriptionRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2");
+        }, 50);
       }
-    })
+    });
   }
 
-  // Função para armazenar referências dos botões
-  const setStepButtonRef = (el: HTMLButtonElement | null, index: number) => {
-    if (el) {
-      stepButtonsRef.current[index] = el
-    }
-  }
+  if (loading || !data || !activeStep) return null;
 
   return (
-    <section
-      ref={sectionRef}
-      className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]"
-    >
+    <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
       <div className="flex flex-col lg:flex-row gap-12 items-center">
-        {/* ESQUERDA – Steps */}
-        <div ref={leftColumnRef} className="w-full lg:w-1/2 opacity-0">
-          <p className="tracking-wide text-lg sm:text-xl mb-2 text-black">
-            E-commerce
+        
+        <div ref={leftColumnRef} className="w-full lg:w-1/2">
+          {/* Mapeamento do TYPE (Tag) */}
+          <p className="tracking-wide text-lg sm:text-xl mb-2 text-black font-medium uppercase">
+            {data.type}
           </p>
 
+          {/* Mapeamento do SUBTYPE (Título Principal) */}
           <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
-            Em qual estágio está a sua ambição no digital?
+            {data.subtype}
           </h1>
 
           <div className="flex flex-col gap-4">
-            {stepsToUse.map(step => (
+            {data.values.map((step, index) => (
               <button
-                aria-label={step.title}
                 key={step.id}
-                ref={(el) => setStepButtonRef(el, step.id - 1)}
+                ref={(el) => { stepButtonsRef.current[index] = el }}
                 onClick={() => handleStepChange(step)}
-                className={`text-left p-5 rounded-xl border transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
+                className={`text-left p-5 rounded-xl border transition-all duration-300 transform
                   ${activeStep.id === step.id
-                    ? 'bg-white border-blue-500 shadow-lg'
+                    ? 'bg-white border-blue-500 shadow-xl scale-[1.02]'
                     : 'bg-transparent border-gray-200 hover:bg-white'
                   }
                 `}
               >
-                <h1 className="font-bold text-base text-black">
-                  {step.title}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {step.subtitle}
-                </p>
+                <h1 className="font-bold text-base text-black">{step.title}</h1>
+                <p className="text-sm text-gray-600">{step.subtitle}</p>
               </button>
             ))}
           </div>
         </div>
 
-        {/* DIREITA – Conteúdo dinâmico */}
-        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center opacity-0">
-          <div className="relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] 
-  h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
-            {activeStep.image.startsWith('/') ? (
-              <Image
-                ref={imageRef}
-                fill
-                sizes="(max-width: 768px) 281px, 520px"
-                quality={75}
-                src={activeStep.image}
-                className="absolute inset-0 w-full h-full object-contain"
-                alt={activeStep.title}
-                priority={activeStep.id === 1}
-              />
-            ) : (
-              <img
-                ref={imageRef as any}
-                src={activeStep.image}
-                className="absolute inset-0 w-full h-full object-contain"
-                alt={activeStep.title}
-              />
-            )}
+        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
+          <div className="relative w-full max-w-[500px] h-[300px] md:h-[400px] mb-6">
+            <Image
+              ref={imageRef}
+              fill
+              src={activeStep.image}
+              className="object-contain"
+              alt={activeStep.title}
+              priority
+            />
           </div>
-
-          <h2
-            ref={titleRef}
-            className="font-bold text-xl sm:text-2xl mb-3 text-black"
-          >
+          <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black">
             {activeStep.subtitle}
           </h2>
-
-          <p
-            ref={descriptionRef}
-            className="text-sm sm:text-base text-gray-700 max-w-md"
-          >
+          <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed">
             {activeStep.description}
           </p>
         </div>
@@ -327,5 +171,3 @@ export default function Steps({ steps }: StepsProps) {
     </section>
   )
 }
-
-export type { Passos };

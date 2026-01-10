@@ -6,33 +6,30 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 
-// Registrar o plugin ScrollTrigger
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const steps = [
-  {
-    id: 1,
-    title: 'Mercado Livre',
-    subtitle: 'Consultoria Oficial Mercado Livre',
-    description:
-      'Não apenas operamos, nós ditamos o ritmo. Como Consultores Oficiais, temos acesso direto a estratégias e ferramentas que vendedores comuns desconhecem. Sua conta blindada e escalada com o aval da própria plataforma.',
-    image: '/steps1.png',
-  },
-  {
-    id: 2,
-    title: 'Shopee',
-    subtitle: 'Sua operação pronta para o jogo.',
-    description:
-      'Setup operacional completo. Criamos seus anúncios, produzimos fotografias que geram desejo e configuramos seus canais de venda para começar a faturar hoje.',
-    image: '/steps1.png',
-  },
-]
+interface ItemPlataforma {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+}
+
+interface ApiResponse {
+  id: string;
+  type: string;    // Tag (se houver no dashboard)
+  subtype: string; // Título Principal
+  values: ItemPlataforma[];
+}
 
 export default function Plataforms() {
-  const [activeStep, setActiveStep] = useState(steps[0])
-  
+  const [data, setData] = useState<ApiResponse | null>(null);
+  const [activeStep, setActiveStep] = useState<ItemPlataforma | null>(null);
+  const [loading, setLoading] = useState(true);
+
   // Referências para animações
   const sectionRef = useRef<HTMLDivElement>(null)
   const leftColumnRef = useRef<HTMLDivElement>(null)
@@ -40,227 +37,139 @@ export default function Plataforms() {
   const imageRef = useRef<HTMLImageElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const descriptionRef = useRef<HTMLParagraphElement>(null)
-  const stepButtonsRef = useRef<HTMLButtonElement[]>([])
+  const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
 
-  // Inicializar a animação do primeiro step
+  // --- FETCH DINÂMICO ---
   useEffect(() => {
-    // Resetar o primeiro botão para estado ativo
-    const firstButton = stepButtonsRef.current[0]
-    if (firstButton) {
-      gsap.set(firstButton, { scale: 1.02 })
-    }
-  }, [])
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/json/plataformas');
+        const result: ApiResponse = await response.json();
+        
+        if (result.values && result.values.length > 0) {
+          setData(result);
+          setActiveStep(result.values[0]);
+        }
+      } catch (error) {
+        console.error("Mavellium Engine - Erro ao carregar plataformas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
-  // Animação de entrada da seção
+  // Animação de entrada (Sincronizada com Loading)
   useGSAP(() => {
-    if (!sectionRef.current) return
+    if (loading || !data || !sectionRef.current) return;
 
-    // Reset das animações
-    gsap.set([leftColumnRef.current, rightColumnRef.current], {
-      opacity: 0,
-      y: 50
-    })
+    gsap.set([leftColumnRef.current, rightColumnRef.current], { opacity: 0, y: 50 });
 
-    // Animar coluna esquerda
-    const leftAnimation = gsap.to(leftColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
+    gsap.to(leftColumnRef.current, {
+      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+    });
 
-    // Animar coluna direita com atraso
-    const rightAnimation = gsap.to(rightColumnRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      delay: 0.2,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      }
-    })
+    gsap.to(rightColumnRef.current, {
+      opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: "power2.out",
+      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+    });
 
-    // Animar cada botão individualmente
-    const stepButtons = stepButtonsRef.current.filter(Boolean)
-    stepButtons.forEach((button, index) => {
-      gsap.set(button, { 
-        opacity: 0, 
-        x: -30,
-        scale: index === 0 ? 1.02 : 1 // Primeiro botão já começa ativo
-      })
-      
-      gsap.to(button, {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        delay: 0.1 * index,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: leftColumnRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
+    stepButtonsRef.current.forEach((button, index) => {
+      if (!button) return;
+      gsap.fromTo(button, 
+        { opacity: 0, x: -30 },
+        { 
+          opacity: 1, x: 0, duration: 0.6, delay: 0.1 * index,
+          scrollTrigger: { trigger: leftColumnRef.current, start: "top 80%" }
         }
-      })
-    })
+      );
+    });
+  }, { dependencies: [loading, data], scope: sectionRef });
 
-    return () => {
-      leftAnimation.kill()
-      rightAnimation.kill()
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, { dependencies: [], scope: sectionRef })
+  const handleStepChange = (step: ItemPlataforma) => {
+    if (!activeStep || step.id === activeStep.id || !data) return;
 
-  // Animação de troca de step
-  const handleStepChange = (step: typeof steps[0]) => {
-    if (step.id === activeStep.id) return
-    
-    // Animação de saída do conteúdo atual
+    const prevIndex = data.values.findIndex(s => s.id === activeStep.id);
+    const nextIndex = data.values.findIndex(s => s.id === step.id);
+
     gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
-      opacity: 0,
-      y: 20,
-      duration: 0.3,
-      ease: "power2.in",
+      opacity: 0, y: 20, duration: 0.3, ease: "power2.in",
       onComplete: () => {
-        // Voltar o botão anterior ao normal
-        const prevButton = stepButtonsRef.current[activeStep.id - 1]
-        if (prevButton) {
-          gsap.to(prevButton, {
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.out"
-          })
+        if (stepButtonsRef.current[prevIndex]) {
+            gsap.to(stepButtonsRef.current[prevIndex], { scale: 1, duration: 0.3 });
         }
-        
-        // Atualizar o step ativo
-        setActiveStep(step)
-        
-        // Animar o botão ativo com pulso
-        const activeButton = stepButtonsRef.current[step.id - 1]
-        if (activeButton) {
-          gsap.to(activeButton, {
-            scale: 1.02,
-            duration: 0.4,
-            ease: "back.out(1.7)"
-          })
+        setActiveStep(step);
+        if (stepButtonsRef.current[nextIndex]) {
+            gsap.to(stepButtonsRef.current[nextIndex], { scale: 1.02, duration: 0.4, ease: "back.out(1.7)" });
         }
-        
-        // Animação de entrada do novo conteúdo
         setTimeout(() => {
-          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], {
-            opacity: 0,
-            y: -20
-          })
-          
-          const enterAnimation = gsap.timeline()
-          
-          enterAnimation.to(imageRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out"
-          })
-          
-          enterAnimation.to(titleRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.3")
-          
-          enterAnimation.to(descriptionRef.current, {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            delay: 0.1,
-            ease: "power2.out"
-          }, "-=0.2")
-        }, 50)
+          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { opacity: 0, y: -20 });
+          const tl = gsap.timeline();
+          tl.to(imageRef.current, { opacity: 1, y: 0, duration: 0.5 });
+          tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
+          tl.to(descriptionRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2");
+        }, 50);
       }
-    })
+    });
   }
 
-  // Função para armazenar referências dos botões
-  const setStepButtonRef = (el: HTMLButtonElement | null, index: number) => {
-    if (el) {
-      stepButtonsRef.current[index] = el
-    }
-  }
+  if (loading || !data || !activeStep) return null;
 
   return (
-    <section 
-      ref={sectionRef}
-      className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]"
-    >
+    <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
       <div className="flex flex-col lg:flex-row gap-12 items-center">
-        {/* ESQUERDA – Steps */}
-        <div ref={leftColumnRef} className="w-full lg:w-1/2 opacity-0">
+        
+        {/* ESQUERDA – Conteúdo Dinâmico */}
+        <div ref={leftColumnRef} className="w-full lg:w-1/2">
+          {data.type && (
+            <p className="tracking-wide text-lg mb-2 text-blue-600 font-bold uppercase">
+              {data.type}
+            </p>
+          )}
 
           <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
-            Dominamos as Maiores Plataformas
+            {data.subtype}
           </h1>
 
           <div className="flex flex-col gap-4">
-            {steps.map(step => (
+            {data.values.map((step, index) => (
               <button
-                aria-label={step.title}
                 key={step.id}
-                ref={(el) => setStepButtonRef(el, step.id - 1)}
+                ref={(el) => { stepButtonsRef.current[index] = el }}
                 onClick={() => handleStepChange(step)}
-                className={`text-left p-5 rounded-xl border transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg
-                  ${
-                    activeStep.id === step.id
-                      ? 'bg-white border-blue-500 shadow-lg'
-                      : 'bg-transparent border-gray-200 hover:bg-white'
+                className={`text-left p-5 rounded-xl border transition-all duration-300 transform
+                  ${activeStep.id === step.id
+                    ? 'bg-white border-blue-500 shadow-lg scale-[1.02]'
+                    : 'bg-transparent border-gray-200 hover:bg-white'
                   }
                 `}
               >
-                <h1 className="font-bold text-base text-black">
-                  {step.title}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {step.subtitle}
-                </p>
+                <h1 className="font-bold text-base text-black">{step.title}</h1>
+                <p className="text-sm text-gray-600">{step.subtitle}</p>
               </button>
             ))}
           </div>
         </div>
 
-        {/* DIREITA – Conteúdo dinâmico */}
-        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center opacity-0">
-          <div className="relative w-full max-w-[420px] sm:max-w-[480px] md:max-w-[520px] 
-            h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] mb-6">
+        {/* DIREITA – Visual Dinâmico */}
+        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
+          <div className="relative w-full max-w-[420px] h-[280px] md:h-[420px] mb-6">
             <Image
               ref={imageRef}
-              src={activeStep.image}
               fill
-              className="absolute inset-0 w-full h-full object-contain"
+              src={activeStep.image}
+              className="object-contain"
               alt={activeStep.title}
+              priority
             />
           </div>
 
-          <h2 
-            ref={titleRef}
-            className="font-bold text-xl sm:text-2xl mb-3 text-black"
-          >
+          <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black">
             {activeStep.subtitle}
           </h2>
 
-          <p 
-            ref={descriptionRef}
-            className="text-sm sm:text-base text-gray-700 max-w-md"
-          >
+          <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed">
             {activeStep.description}
           </p>
         </div>

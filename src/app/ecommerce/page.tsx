@@ -6,13 +6,14 @@ import { Footer } from "@/components/Footer";
 import Schema from "@/components/Schema";
 import { Equipe } from "@/components/Equipe";
 import { ChamadaAcao } from "@/components/ChamadaAcao";
-import Cards from "@/components/Cards";
 import Animacao from "@/components/Animacao";
 import { Headline } from "@/components/Headline";
 import { SectionImage } from "@/components/SectionImage";
 import { fetchComponentData } from "@/lib/api";
 import Plataforms from "@/components/Solucoes/Plataforms";
 import Passos from "@/components/Passos";
+import ServiceFlow from "@/components/ServiceFlow";
+import CertifiedSection from "@/components/ServiceFlow/CertifiedSection";
 
 async function getSafeData(slug: string) {
   try {
@@ -20,7 +21,7 @@ async function getSafeData(slug: string) {
     
     // Verificação baseada em existência, evitando o erro de propriedade 'status'
     if (!res || !res.data) {
-      console.warn(`[Mavellium Build] Dados não encontrados para: ${slug}`);
+      console.warn(`[Tegbe Build] Dados não encontrados para: ${slug}`);
       return { data: null };
     }
     
@@ -57,6 +58,8 @@ export default async function EcommercePage() {
     // Tratamento para garantir que steps seja sempre um Array
     const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 
+    const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
+
     return (
         <>
             <Schema
@@ -76,16 +79,15 @@ export default async function EcommercePage() {
             {headlineData && <Headline data={headlineData} variant="ecommerce" />}
             
             <SellMore />
-            <Cards variant="home" />
-            
-            {/* Agora o componente Passos recebe dados reais da API */}
-            <Passos steps={stepsData} />
+            <ServiceFlow variant="home"/>
+
+            <Passos/>
             
             <Animacao/>
             <Plataforms />
             <Logos />
-            <Cards variant="ecommerce" />
-            <SectionImage variant="ecommerce" />
+            <CertifiedSection/>
+            <SectionImage variant="ecommerce" apiData={data}/>
             
             <Equipe variant="ecommerce" data={equipeData} />
             <Companys variant="ecommerce" data={companysData} />

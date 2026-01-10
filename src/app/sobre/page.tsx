@@ -3,7 +3,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Schema from "@/components/Schema";
 import { ChamadaAcao } from "@/components/ChamadaAcao";
-import Cards from "@/components/Cards";
 import { Empresas } from "@/components/Empresas";
 import Historia from "@/components/ExploreDetails/Historia";
 import Sobre from "@/components/Sobre";
@@ -13,6 +12,7 @@ import { SociosCrescimento } from "@/components/SociosCrescimento";
 import Video2 from "@/components/Video2";
 import Localizacao from "@/components/Localizacao";
 import { fetchComponentData } from "@/lib/api";
+import ServiceFlow from "@/components/ServiceFlow";
 
 // 1. Wrapper para dados de Forms (Estrutura plana: { values: [] })
 // Usado para Historia, Metricas, Localizacao
@@ -90,7 +90,7 @@ export default async function SobrePage() {
             
             <Video2 config={videoConfig} />
             
-            <Cards variant="sobre" />
+            <ServiceFlow variant="sobre"/>
             
             {/* Componentes Data-Driven */}
             <Historia data={historiaData} />

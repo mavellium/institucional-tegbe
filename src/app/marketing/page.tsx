@@ -3,7 +3,7 @@ import expertiseConfig from "@/json/Expertise/marketingConfig.json";
 import Video from "@/components/Video";
 import Schema from "@/components/Schema";
 import { ChamadaAcao } from "@/components/ChamadaAcao";
-import Cards from "@/components/Cards";
+
 import AgenciasFalham from "@/components/AgenciasFalham";
 import ExploreDetails from "@/components/ExploreDetails";
 import Expertise from "@/components/Expertise";
@@ -15,6 +15,7 @@ import { SectionImage } from "@/components/SectionImage";
 import NaoEParaVoce from "@/components/NaoEParaVoce";
 import { Equipe } from "@/components/Equipe";
 import { fetchComponentData } from "@/lib/api";
+import ServiceFlow from "@/components/ServiceFlow";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
@@ -89,7 +90,7 @@ export default async function MarketingPage() {
             
             <AgenciasFalham />
             <Video />
-            <Cards variant="marketing" />
+            <ServiceFlow variant="marketing"/>
             
             {/* Seção Deep Dive / Services */}
             <ExploreDetails features={servicesData} />
