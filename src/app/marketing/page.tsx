@@ -69,6 +69,7 @@ export default async function MarketingPage() {
     
     // Extração do array de serviços
     const servicesData = servicesResponse?.values || [];
+    const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
 
     return (
         <>
@@ -100,7 +101,7 @@ export default async function MarketingPage() {
             
             <NaoEParaVoce />
             <Expertise config={expertiseConfig}/>
-            <SectionImage variant="marketing" />
+            <SectionImage variant="marketing" apiData={data}/>
             
             {/* Seção Why Tegbe (Dados vindos de /json/equipe) */}
             <Equipe variant="marketing" data={equipeData} />
