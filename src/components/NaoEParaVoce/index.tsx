@@ -10,56 +10,55 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const FALLBACK_ANTIHERO = {
-  header: {
-    badge: "Filtro de Qualificação",
-    title_main: "A Tegbe",
-    title_highlight: "NÃO",
-    title_suffix: "é para você se...",
-    description: "Buscamos parceiros de crescimento, não aventuras. Se sua empresa se encaixa nos perfis abaixo, nossa engenharia não vai funcionar."
-  },
-  rejection_cards: [
-    {
-      id: 1,
-      icon: "mdi:camera-off",
-      title: "Busca Marketing de Vaidade",
-      description: "Você quer apenas 'postar no Instagram' para ganhar likes e inflar o ego, sem se preocupar com o Lucro Real que sobra no caixa da empresa no final do mês.",
-      highlight_terms: ["Lucro Real"],
-      status_label: "Incompatível"
-    },
-    {
-      id: 2,
-      icon: "mdi:chart-line-variant",
-      title: "Resiste aos Dados",
-      description: "Você prefere seguir sua intuição ou fazer 'o que todo mundo faz' ao invés de aceitar estratégias baseadas em números frios e testes A/B validados.",
-      highlight_terms: ["números frios"],
-      status_label: "Incompatível"
-    },
-    {
-      id: 3,
-      icon: "ph:armchair-bold",
-      title: "Ama a Zona de Conforto",
-      description: "Seu negócio não tem estrutura, equipe ou vontade real de escalar o atendimento quando o volume de leads qualificados triplicar.",
-      highlight_terms: ["vontade real de escalar"],
-      status_label: "Incompatível"
-    }
-  ]
-};
+interface RejectionCard {
+  id: number | string;
+  icon: string;
+  title: string;
+  description: string;
+  status_label: string;
+  highlight_terms: string[];
+}
 
-export default function MarketingAntiHero({ endpoint }: { endpoint?: string }) {
+interface AntiHeroData {
+  header: {
+    badge: string;
+    title_main: string;
+    title_highlight: string;
+    title_suffix: string;
+    description: string;
+  };
+  rejection_cards: RejectionCard[];
+}
+
+export default function MarketingAntiHero({ 
+  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/nao-para-voce" 
+}: { 
+  endpoint?: string 
+}) {
   const sectionRef = useRef(null);
-  const [data, setData] = useState(FALLBACK_ANTIHERO);
+  const [data, setData] = useState<AntiHeroData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (endpoint) {
-      fetch(endpoint)
-        .then(res => res.json())
-        .then(json => setData(json))
-        .catch(() => setData(FALLBACK_ANTIHERO));
-    }
+    const fetchData = async () => {
+      try {
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error("Falha na resposta da API");
+        const json = await res.json();
+        setData(json);
+      } catch (error) {
+        console.error("Erro ao carregar Filtro de Qualificação:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [endpoint]);
 
   useGSAP(() => {
+    if (!data || loading) return;
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
@@ -78,32 +77,42 @@ export default function MarketingAntiHero({ endpoint }: { endpoint?: string }) {
       { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.15, ease: "back.out(1.5)" }, 
       "-=0.4"
     );
-  }, { scope: sectionRef, dependencies: [data] });
+  }, { scope: sectionRef, dependencies: [data, loading] });
+
+  if (loading || !data) return (
+    <div className="h-96 bg-[#020202] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   return (
     <section ref={sectionRef} className="relative py-24 px-6 bg-[#020202] overflow-hidden border-t border-white/5">
       
-      {/* Texture & Atmosphere */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+      {/* Atmosphere - DNA Mavellium */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E31B63]/10 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl relative z-10 flex flex-col items-center">
         
-        {/* CABEÇALHO DINÂMICO */}
+        {/* CABEÇALHO ESTRATÉGICO */}
         <div className="text-center mb-16 max-w-4xl">
             <div className="reveal-anti-header mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 bg-red-950/10 backdrop-blur-md">
                 <Icon icon="mdi:filter-variant-remove" className="text-[#E31B63] w-4 h-4" />
-                <span className="text-[11px] font-bold tracking-[0.2em] text-red-100 uppercase">{data.header.badge}</span>
+                <span className="text-[11px] font-bold tracking-[0.2em] text-red-100 uppercase">
+                    {data.header.badge}
+                </span>
             </div>
 
             <h2 className="reveal-anti-header font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white">
-                {data.header.title_main} <span className="relative inline-block text-[#E31B63]">
+                {data.header.title_main}{" "}
+                <span className="relative inline-block text-[#E31B63]">
                     {data.header.title_highlight}
                     <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#E31B63]" viewBox="0 0 100 10" preserveAspectRatio="none">
                         <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.4" />
                         <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
                     </svg>
-                </span> {data.header.title_suffix}
+                </span>{" "}
+                {data.header.title_suffix}
             </h2>
             
             <p className="reveal-anti-header mt-6 text-gray-400 text-lg font-light max-w-2xl mx-auto">
@@ -111,10 +120,13 @@ export default function MarketingAntiHero({ endpoint }: { endpoint?: string }) {
             </p>
         </div>
 
-        {/* GRID DINÂMICO */}
+        {/* GRID DE QUALIFICAÇÃO REVERSA */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
             {data.rejection_cards.map((card) => (
-                <div key={card.id} className="anti-card group relative bg-[#0A0A0A] border border-white/5 p-8 rounded-[2rem] overflow-hidden hover:border-[#E31B63]/50 transition-all duration-500">
+                <div 
+                    key={card.id} 
+                    className="anti-card group relative bg-[#0A0A0A] border border-white/5 p-8 rounded-[2rem] overflow-hidden hover:border-[#E31B63]/50 transition-all duration-500"
+                >
                     <div className="absolute inset-0 bg-gradient-to-b from-[#E31B63]/0 to-[#E31B63]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     
                     <div className="relative z-10 flex flex-col h-full">
@@ -122,7 +134,9 @@ export default function MarketingAntiHero({ endpoint }: { endpoint?: string }) {
                             <Icon icon={card.icon} width="28" height="28" />
                         </div>
                         
-                        <h3 className="text-white font-bold text-xl mb-3 group-hover:text-[#E31B63] transition-colors">{card.title}</h3>
+                        <h3 className="text-white font-bold text-xl mb-3 group-hover:text-[#E31B63] transition-colors">
+                            {card.title}
+                        </h3>
                         
                         <p className="text-gray-400 text-sm leading-relaxed font-light">
                             {card.description.split(new RegExp(`(${card.highlight_terms.join('|')})`, 'g')).map((part, i) => (
