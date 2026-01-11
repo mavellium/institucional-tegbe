@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -10,22 +10,115 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// --- ESTRUTURA DE DADOS JSON ---
+interface StepData {
+  title: string;
+  label: string;
+  description?: string;
+}
+
+interface SalesEngineData {
+  title: {
+    badge: string;
+    main: string;
+    highlighted: string;
+  };
+  subtitle: string;
+  steps: StepData[];
+  cta: {
+    text: string;
+    link: string;
+  };
+  animationTiming: {
+    attraction: number;
+    interest: number;
+    conversion: number;
+    logistics: number;
+    scale: number;
+    pauses: number;
+  };
+}
+
+// Dados padrão (pode ser substituído por dados de um endpoint)
+const DEFAULT_DATA: SalesEngineData = {
+  title: {
+    badge: "Engenharia de Conversão Tegbe",
+    main: "NÃO É SORTE.",
+    highlighted: "É MÉTODO."
+  },
+  subtitle: "Aplicamos um processo validado que resolve sua operação de ponta a ponta e escala seu faturamento com previsibilidade.",
+  steps: [
+    { 
+      title: "Atração", 
+      label: "Anúncios Magnéticos",
+      description: "Criamos anúncios que capturam atenção imediata e geram desejo."
+    },
+    { 
+      title: "Interesse", 
+      label: "Desejo Imediato",
+      description: "Gatilhos visuais e psicológicos que convertem olhares em cliques."
+    },
+    { 
+      title: "Conversão", 
+      label: "Vendas Reais",
+      description: "Checkout otimizado e processos que transformam interesse em vendas."
+    },
+    { 
+      title: "Logística", 
+      label: "Entrega Ágil",
+      description: "Sistema integrado que garante entrega rápida e experiência perfeita."
+    },
+    { 
+      title: "Escala", 
+      label: "Lucro Máximo",
+      description: "Multiplicação de resultados com automação e análise de dados."
+    }
+  ],
+  cta: {
+    text: "Quero Vender Assim",
+    link: "https://api.whatsapp.com/send?phone=5514991779502&text=Vi%20a%20metodologia%20da%20Tegbe%20e%20quero%20vender%20exatamente%20desse%20jeito.%20Podemos%20conversar?"
+  },
+  animationTiming: {
+    attraction: 1.2,    // Tempo aumentado
+    interest: 0.8,
+    conversion: 1.0,
+    logistics: 1.5,     // Tempo aumentado
+    scale: 2.0,         // Tempo aumentado
+    pauses: 0.5         // Pausas entre etapas
+  }
+};
+
+// --- COMPONENTE PRINCIPAL ---
 export default function SalesEngineVisual() {
-  // --- CORREÇÃO DE TIPAGEM AQUI ---
   const containerRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const counterRef = useRef<HTMLHeadingElement>(null);
-  // --------------------------------
-
+  
   const [activeStep, setActiveStep] = useState(0);
+  const [componentData, setComponentData] = useState<SalesEngineData>(DEFAULT_DATA);
 
-  const steps = [
-    { title: "Atração", label: "O Anúncio" },
-    { title: "Interesse", label: "O Clique" },
-    { title: "Conversão", label: "O Pedido" },
-    { title: "Logística", label: "O Envio" },
-    { title: "Escala", label: "O Lucro" }
-  ];
+  // --- FUNÇÃO PARA CARREGAR DADOS DO ENDPOINT ---
+  const loadDataFromEndpoint = async () => {
+    try {
+      // Descomente e ajuste o endpoint quando necessário
+      // const response = await fetch('https://api.seusite.com/sales-engine-data');
+      // const data = await response.json();
+      // setComponentData(data);
+      
+      // Por enquanto, usando dados padrão
+      setComponentData(DEFAULT_DATA);
+    } catch (error) {
+      console.error("Erro ao carregar dados do endpoint:", error);
+      // Mantém os dados padrão em caso de erro
+      setComponentData(DEFAULT_DATA);
+    }
+  };
+
+  useEffect(() => {
+    loadDataFromEndpoint();
+  }, []);
+
+  const { steps, animationTiming } = componentData;
 
   // --- RESET TOTAL ---
   const resetStage = useCallback(() => {
@@ -59,107 +152,267 @@ export default function SalesEngineVisual() {
 
   }, []);
 
-  // --- SEQUÊNCIA DE ANIMAÇÃO ---
+  // --- SEQUÊNCIA DE ANIMAÇÃO (MAIS LENTA) ---
   const createAnimationSequence = useCallback(() => {
     const tl = gsap.timeline({
       onComplete: () => {
-        gsap.delayedCall(3, () => { if (tlRef.current) tlRef.current?.restart(); });
+        gsap.delayedCall(5, () => { 
+          if (tlRef.current) tlRef.current?.restart(); 
+        });
       }
     });
 
-    // 1. ATRAÇÃO
+    // 1. ATRAÇÃO (Mais lento)
     tl.call(() => setActiveStep(0))
       .fromTo(".obj-ad",
         { scale: 0, rotationX: 45, opacity: 0, y: 50 },
-        { scale: 1, rotationX: 0, opacity: 1, y: 0, duration: 0.6, ease: "elastic.out(1, 0.6)" }
+        { 
+          scale: 1, 
+          rotationX: 0, 
+          opacity: 1, 
+          y: 0, 
+          duration: animationTiming.attraction, 
+          ease: "elastic.out(1, 0.5)" 
+        }
       )
-      .fromTo(".shine-bar", { x: "-100%" }, { x: "200%", duration: 0.5, ease: "power2.inOut" }, "-=0.3")
+      .fromTo(".shine-bar", 
+        { x: "-100%" }, 
+        { x: "200%", duration: 0.8, ease: "power2.inOut" }, 
+        `-=${animationTiming.attraction * 0.7}`
+      )
+      .to({}, { duration: animationTiming.pauses }) // Pausa
 
       // 2. INTERESSE
       .call(() => setActiveStep(1))
-      .to(".cursor-hand", { opacity: 1, x: 0, y: 0, duration: 0.3, ease: "power2.out" }, "-=0.1")
-      .to(".cursor-hand", { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 })
-      .to(".obj-ad", { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 }, "<")
-      .to(".flash-overlay", { opacity: 0.2, duration: 0.05, yoyo: true, repeat: 1 }, "<")
-      .to(".cursor-hand", { x: 200, y: 150, opacity: 0, duration: 0.2 })
+      .to(".cursor-hand", { 
+        opacity: 1, 
+        x: 0, 
+        y: 0, 
+        duration: 0.5, 
+        ease: "power2.out" 
+      })
+      .to(".cursor-hand", { 
+        scale: 0.8, 
+        duration: 0.2, 
+        yoyo: true, 
+        repeat: 1 
+      })
+      .to(".obj-ad", { 
+        scale: 0.95, 
+        duration: 0.2, 
+        yoyo: true, 
+        repeat: 1 
+      }, "<")
+      .to(".flash-overlay", { 
+        opacity: 0.2, 
+        duration: 0.1, 
+        yoyo: true, 
+        repeat: 1 
+      }, "<")
+      .to(".cursor-hand", { 
+        x: 200, 
+        y: 150, 
+        opacity: 0, 
+        duration: 0.4 
+      })
+      .to({}, { duration: animationTiming.pauses }) // Pausa
 
       // 3. CONVERSÃO
       .call(() => setActiveStep(2))
-      .to(".obj-ad", { rotationY: 90, opacity: 0, duration: 0.2, ease: "power2.in" })
-      .to(".cube-wrapper", {
-        opacity: 1, scale: 1, z: 0, rotationY: -25, rotationX: -15,
-        duration: 0.6, ease: "back.out(1.2)"
-      }, "-=0.15")
-      .to(".cube-shadow", { opacity: 1, scale: 1, duration: 0.4 }, "<")
-      .to(".shipping-label", { opacity: 1, scale: 1, duration: 0.25, ease: "elastic.out(1, 0.5)" }, "-=0.2")
-
-      // 4. LOGÍSTICA
-      .call(() => setActiveStep(3))
-      .to(".obj-destination", { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" })
-      .to(".obj-path-line", { strokeDashoffset: 0, opacity: 0.4, duration: 0.5, ease: "power1.inOut" }, "<")
-      .to(".cube-wrapper", { y: 10, scaleY: 0.9, scaleX: 1.1, duration: 0.15, ease: "power1.inOut" })
-      .to(".cube-wrapper", { y: -60, z: 50, rotationX: -10, scale: 1.05, duration: 0.3, ease: "power1.out" })
-      .to(".cube-shadow", { scale: 0.5, opacity: 0.5, duration: 0.3 }, "<")
-      .to(".cube-wrapper", {
-        x: 280, y: -75, z: -300, rotationY: 180, rotationZ: 25, scale: 0.2, opacity: 0,
-        duration: 0.5, ease: "power2.in"
+      .to(".obj-ad", { 
+        rotationY: 90, 
+        opacity: 0, 
+        duration: 0.4, 
+        ease: "power2.in" 
       })
-      .to(".cube-shadow", { x: 280, opacity: 0, duration: 0.5 }, "<")
-      .to(".obj-destination", { scale: 1.4, duration: 0.1, yoyo: true, repeat: 1 }, "-=0.1")
-      .to([".obj-destination", ".obj-path-line"], { opacity: 0, duration: 0.3, delay: 0.1 })
+      .to(".cube-wrapper", {
+        opacity: 1, 
+        scale: 1, 
+        z: 0, 
+        rotationY: -25, 
+        rotationX: -15,
+        duration: animationTiming.conversion, 
+        ease: "back.out(1.2)"
+      }, `-=${animationTiming.conversion * 0.3}`)
+      .to(".cube-shadow", { 
+        opacity: 1, 
+        scale: 1, 
+        duration: animationTiming.conversion * 0.8 
+      }, "<")
+      .to(".shipping-label", { 
+        opacity: 1, 
+        scale: 1, 
+        duration: animationTiming.conversion * 0.5, 
+        ease: "elastic.out(1, 0.5)" 
+      }, `-=${animationTiming.conversion * 0.4}`)
+      .to({}, { duration: animationTiming.pauses }) // Pausa
 
+      // 4. LOGÍSTICA (Mais lento)
+      .call(() => setActiveStep(3))
+      .to(".obj-destination", { 
+        scale: 1, 
+        opacity: 1, 
+        duration: animationTiming.logistics * 0.6, 
+        ease: "back.out(1.7)" 
+      })
+      .to(".obj-path-line", { 
+        strokeDashoffset: 0, 
+        opacity: 0.4, 
+        duration: animationTiming.logistics * 0.8, 
+        ease: "power1.inOut" 
+      }, "<")
+      .to(".cube-wrapper", { 
+        y: 10, 
+        scaleY: 0.9, 
+        scaleX: 1.1, 
+        duration: animationTiming.logistics * 0.3, 
+        ease: "power1.inOut" 
+      })
+      .to(".cube-wrapper", { 
+        y: -60, 
+        z: 50, 
+        rotationX: -10, 
+        scale: 1.05, 
+        duration: animationTiming.logistics * 0.6, 
+        ease: "power1.out" 
+      })
+      .to(".cube-shadow", { 
+        scale: 0.5, 
+        opacity: 0.5, 
+        duration: animationTiming.logistics * 0.6 
+      }, "<")
+      .to(".cube-wrapper", {
+        x: 280, 
+        y: -75, 
+        z: -300, 
+        rotationY: 180, 
+        rotationZ: 25, 
+        scale: 0.2, 
+        opacity: 0,
+        duration: animationTiming.logistics, 
+        ease: "power2.inOut"
+      })
+      .to(".cube-shadow", { 
+        x: 280, 
+        opacity: 0, 
+        duration: animationTiming.logistics 
+      }, "<")
+      .to(".obj-destination", { 
+        scale: 1.4, 
+        duration: 0.2, 
+        yoyo: true, 
+        repeat: 1 
+      }, `-=${animationTiming.logistics * 0.2}`)
+      .to([".obj-destination", ".obj-path-line"], { 
+        opacity: 0, 
+        duration: 0.6, 
+        delay: 0.2 
+      })
+      .to({}, { duration: animationTiming.pauses }) // Pausa
 
-      // 5. ESCALA (Smartphone + Avalanche)
+      // 5. ESCALA (Smartphone + Avalanche - Mais lento)
       .call(() => setActiveStep(4))
-      .to(".scale-stage", { y: 0, opacity: 1, scale: 1, rotationX: 0, duration: 0.8, ease: "power3.out" })
-      .to(".scale-shockwave", { scale: 2, opacity: 0.5, duration: 0.6, ease: "power1.out" }, "-=0.4")
-      .to(".scale-shockwave", { opacity: 0, duration: 0.4 }, ">")
+      .to(".scale-stage", { 
+        y: 0, 
+        opacity: 1, 
+        scale: 1, 
+        rotationX: 0, 
+        duration: animationTiming.scale * 0.8, 
+        ease: "power3.out" 
+      })
+      .to(".scale-shockwave", { 
+        scale: 2, 
+        opacity: 0.5, 
+        duration: animationTiming.scale * 0.8, 
+        ease: "power1.out" 
+      }, `-=${animationTiming.scale * 0.6}`)
+      .to(".scale-shockwave", { 
+        opacity: 0, 
+        duration: animationTiming.scale * 0.6 
+      }, ">")
       .to(".notif-card", {
         y: (i) => -140 - (i * 65),
         z: (i) => i * 10,
         opacity: 1,
         scale: 1,
         rotationX: 0,
-        stagger: 0.08,
-        duration: 0.5,
+        stagger: 0.15, // Stagger mais lento
+        duration: animationTiming.scale * 0.8,
         ease: "back.out(1.2)"
-      }, "-=0.5")
+      }, `-=${animationTiming.scale * 0.7}`)
       .to({}, {
-        duration: 2,
+        duration: animationTiming.scale * 1.5,
         onUpdate: function () {
           const val = Math.floor(this.progress() * 145000);
           if (counterRef.current) counterRef.current.innerText = `R$ ${val.toLocaleString('pt-BR')}`;
         },
         ease: "power2.out"
-      }, "-=1.5")
-      .to(".scale-stage", { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 }, "-=0.5")
+      }, `-=${animationTiming.scale * 1.2}`)
+      .to(".scale-stage", { 
+        scale: 1.05, 
+        duration: 0.4, 
+        yoyo: true, 
+        repeat: 1 
+      }, `-=${animationTiming.scale * 0.8}`)
 
-      // Cleanup
-      .to(".scale-stage", { opacity: 0, y: -50, duration: 0.5, delay: 2 });
+      // Fade out final
+      .to(".scale-stage", { 
+        opacity: 0, 
+        y: -50, 
+        duration: 1, 
+        delay: 3 
+      });
 
     return tl;
-  }, []);
+  }, [animationTiming]);
 
+  // --- CONFIGURAÇÃO DO SCROLL TRIGGER ---
   useGSAP(() => {
     if (!containerRef.current) return;
+    
     resetStage();
-    ScrollTrigger.create({
+    
+    const scrollTrigger = ScrollTrigger.create({
       trigger: containerRef.current,
-      start: "top 60%", end: "bottom 40%",
+      start: "top 70%",
+      end: "bottom 30%",
       onEnter: () => {
-        if (tlRef.current) tlRef.current.kill();
+        if (tlRef.current) {
+          tlRef.current.kill();
+        }
         resetStage();
         tlRef.current = createAnimationSequence();
+        tlRef.current.play();
       },
-      onLeave: () => tlRef.current?.pause(),
       onEnterBack: () => {
-        if (tlRef.current) tlRef.current.kill();
+        if (tlRef.current) {
+          tlRef.current.kill();
+        }
         resetStage();
         tlRef.current = createAnimationSequence();
+        tlRef.current.play();
       },
-      onLeaveBack: () => { tlRef.current?.pause(); resetStage(); }
+      onLeave: () => {
+        if (tlRef.current) {
+          tlRef.current.pause();
+        }
+      },
+      onLeaveBack: () => {
+        if (tlRef.current) {
+          tlRef.current.pause();
+          tlRef.current.seek(0);
+        }
+        resetStage();
+      }
     });
-  }, { scope: containerRef });
+
+    return () => {
+      scrollTrigger.kill();
+      if (tlRef.current) {
+        tlRef.current.kill();
+      }
+    };
+  }, { scope: containerRef, dependencies: [createAnimationSequence] });
 
   return (
     <section ref={containerRef} className="py-24 bg-[#F4F4F4] overflow-hidden min-h-[900px] flex flex-col items-center justify-center relative select-none">
@@ -170,12 +423,15 @@ export default function SalesEngineVisual() {
 
         <div className="text-center mb-24">
           <span className="text-[#3483FA] font-bold tracking-[0.2em] text-xs uppercase mb-4 block">
-            Engenharia de Conversão Tegbe
+            {componentData.title.badge}
           </span>
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-[0.9] text-black">
-            NÃO É SORTE.<br />
-            É <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3483FA] to-blue-700">MÉTODO.</span>
+            {componentData.title.main}<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3483FA] to-blue-700">{componentData.title.highlighted}</span>
           </h2>
+          <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto mt-6">
+            {componentData.subtitle}
+          </p>
         </div>
 
         {/* --- O PALCO 3D --- */}
@@ -229,23 +485,18 @@ export default function SalesEngineVisual() {
             <div className="absolute inset-0 bg-[#5E4225]" style={{ transform: "rotateX(-90deg) translateZ(96px)" }} />
           </div>
 
-          {/* 4. LOGÍSTICA (Pino CORRIGIDO) */}
+          {/* 4. LOGÍSTICA */}
           <div className="obj-path-container absolute z-10 w-full h-full pointer-events-none">
             <div className="obj-destination absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center" style={{ marginLeft: '280px', marginTop: '-60px' }}>
-
-              {/* Container ajustado para o tamanho exato do ícone (60px) */}
               <div className="relative w-[60px] h-[60px]">
-                {/* Ícone com tamanho travado */}
                 <Icon
                   icon="ph:map-pin-fill"
                   width="60"
                   height="60"
                   className="text-[#2D3277] drop-shadow-xl absolute top-0 left-0"
                 />
-                {/* Bola Branca centralizada matematicamente */}
                 <div className="absolute top-[18px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-inner" />
               </div>
-
               <div className="w-10 h-2 bg-black/20 blur-sm rounded-full mt-[-8px]" />
             </div>
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible">
@@ -281,20 +532,25 @@ export default function SalesEngineVisual() {
 
         </div>
 
-        {/* CONTROLES VISUAIS - VERTICAL NO MOBILE, HORIZONTAL NO DESKTOP */}
+        {/* CONTROLES VISUAIS */}
         <div className="w-full max-w-4xl mt-16 md:mt-32 px-4 md:px-0">
           {/* VERSÃO DESKTOP (HORIZONTAL) */}
           <div className="hidden md:block relative">
             <div className="absolute top-[19px] left-0 w-full h-[2px] bg-gray-200 rounded-full" />
-            <div className="absolute top-[19px] left-0 h-[2px] bg-black rounded-full transition-all duration-500" style={{ width: `${(activeStep / 4) * 100}%` }} />
+            <div className="absolute top-[19px] left-0 h-[2px] bg-black rounded-full transition-all duration-700" style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }} />
             <div className="grid grid-cols-5 relative z-10">
               {steps.map((step, i) => (
-                <div key={i} className={`flex flex-col items-center transition-all z-10 duration-300 ${activeStep === i ? "opacity-100 scale-105" : "opacity-100"}`}>
-                  <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
+                <div key={i} className={`flex flex-col items-center transition-all z-10 duration-500 ${activeStep === i ? "opacity-100 scale-105" : "opacity-100"}`}>
+                  <div className={`w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-500 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
                     {activeStep > i ? <Icon icon="lucide:check" className="text-black" width="16" /> : <span className="text-xs font-bold">{i + 1}</span>}
                   </div>
                   <span className="mt-3 text-xs font-black uppercase tracking-widest text-black">{step.title}</span>
                   <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>
+                  {step.description && (
+                    <p className="text-xs text-gray-600 text-center mt-2 max-w-[180px] hidden lg:block">
+                      {step.description}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -302,34 +558,32 @@ export default function SalesEngineVisual() {
 
           {/* VERSÃO MOBILE (VERTICAL) */}
           <div className="md:hidden relative pl-12">
-            {/* Linha vertical de fundo */}
             <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-gray-200 rounded-full" />
-
-            {/* Linha de progresso vertical */}
             <div
-              className="absolute left-6 top-0 w-[2px] bg-black rounded-full transition-all duration-500"
-              style={{ height: `${(activeStep / 4) * 100}%` }}
+              className="absolute left-6 top-0 w-[2px] bg-black rounded-full transition-all duration-700"
+              style={{ height: `${(activeStep / (steps.length - 1)) * 100}%` }}
             />
-
             <div className="flex flex-col space-y-8 relative z-10">
               {steps.map((step, i) => (
                 <div
                   key={i}
-                  className={`flex items-start transition-all duration-300 ${activeStep === i ? "opacity-100" : "opacity-90"}`}
+                  className={`flex items-start transition-all duration-500 ${activeStep === i ? "opacity-100" : "opacity-90"}`}
                 >
-                  {/* Círculo com número */}
-                  <div className={`relative w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-300 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
+                  <div className={`relative w-10 h-10 rounded-full border-[3px] flex items-center justify-center bg-[#F4F4F4] z-50 transition-colors duration-500 ${activeStep >= i ? "border-black" : "border-gray-300"} ${activeStep === i ? "bg-black text-white" : ""}`}>
                     {activeStep > i ? (
                       <Icon icon="lucide:check" className={`${activeStep === i ? "text-white" : "text-black"}`} width="16" />
                     ) : (
                       <span className={`text-xs font-bold ${activeStep === i ? "text-white" : "text-black"}`}>{i + 1}</span>
                     )}
                   </div>
-
-                  {/* Textos à direita */}
                   <div className="ml-4 flex-1 pt-1">
                     <span className="text-sm font-black uppercase tracking-wider text-black">{step.title}</span>
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mt-1">{step.label}</span>
+                    {step.description && (
+                      <p className="text-xs text-gray-600 mt-2">
+                        {step.description}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -337,11 +591,19 @@ export default function SalesEngineVisual() {
           </div>
         </div>
 
+        {/* BOTÃO CTA */}
         <div className="mt-24">
-          <a aria-label="quero vender assim" href="https://api.whatsapp.com/send?phone=5514991779502&text=Vi%20a%20metodologia%20da%20Tegbe%20e%20quero%20vender%20exatamente%20desse%20jeito.%20Podemos%20conversar?" target="_blank"
-            rel="noopener noreferrer">
-            <button aria-label="Quero vender assim" className="bg-black hover:bg-[#0071E3] text-white px-12 py-5 rounded-full font-black text-lg uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3">
-              Quero Vender Assim
+          <a 
+            aria-label={componentData.cta.text}
+            href={componentData.cta.link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button 
+              aria-label={componentData.cta.text}
+              className="bg-black hover:bg-[#0071E3] text-white px-12 py-5 rounded-full font-black text-lg uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3"
+            >
+              {componentData.cta.text}
               <Icon icon="lucide:arrow-right" />
             </button>
           </a>
