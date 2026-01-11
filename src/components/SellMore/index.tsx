@@ -112,7 +112,7 @@ export default function SellMore() {
                 <div ref={leftColumnRef} className="w-full lg:w-1/2">
                     <p className="text-black font-bold mb-2">Venda mais</p>
                     <h1 className="font-bold text-2xl md:text-4xl mb-8 text-black leading-tight">
-                        Onde muitos veem dificuldade, nossos parceiros encontram lucro.
+                        O resultado que o seu negócio merece.
                     </h1>
 
                     <div className="flex flex-col gap-4">
