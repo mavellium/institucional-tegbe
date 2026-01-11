@@ -215,20 +215,20 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
   const marquee2 = [...data.logos.row2, ...data.logos.row2, ...data.logos.row2, ...data.logos.row2];
 
   const LogoItem = ({ logo }: { logo: LogoItemData }) => (
-    <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-110">
-      <div className="h-10 md:h-12 w-32 flex items-center justify-center">
-        {/* Renderiza imagem vinda da API */}
-        <Image 
-            src={logo.src} 
-            alt={logo.alt} 
-            width={logo.width} 
-            height={logo.height} 
-            className="w-full h-full object-contain"
-            unoptimized
-        />
-      </div>
+  <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-125">
+    {/* Aumentado de w-32 para w-44/52 e h-12 para h-20 */}
+    <div className="h-16 md:h-20 w-44 md:w-52 flex items-center justify-center p-2">
+      <Image 
+          src={logo.src} 
+          alt={logo.alt} 
+          width={logo.width * 1.5} // Multiplicador de escala para garantir nitidez
+          height={logo.height * 1.5} 
+          className="w-full h-full object-contain"
+          unoptimized
+      />
     </div>
-  );
+  </div>
+);
 
   return (
     <section 

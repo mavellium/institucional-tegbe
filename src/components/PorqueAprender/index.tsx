@@ -22,46 +22,34 @@ export interface PorqueAprenderData {
     };
 }
 
-const FALLBACKS: Record<string, PorqueAprenderData> = {
-    cursos: {
-        theme: { accentColor: "#FFD700", secondaryColor: "#B8860B" },
-        badge: "Vivência de Campo",
-        features: [
-            { icon: "mdi:currency-usd", label: "Liberdade Financeira" },
-            { icon: "mdi:clock-fast", label: "Resultado Prático" }
-        ],
-        headline: { prefix: "Por que aprender com a ", highlight: "Tegbe", suffix: ` e não com um "guru"?`},
-        description: {
-            paragraph1: { text: "O mercado está cheio de professores que nunca venderam nada. A Tegbe é, antes de tudo, uma ", bold: "operação de vendas ativa." },
-            paragraph2: { text: "Não ensinamos teorias de livros antigos. Nós abrimos a caixa-preta das estratégias que geram milhões todos os meses.", highlight: "Você aprende o que nós aplicamos hoje." }
-        }
-    }
-};
-
 interface PorqueAprenderProps {
     endpoint?: string;
-    variant?: "marketing" | "cursos";
+    variant?: "cursos";
 }
 
-export default function PorqueAprender({ endpoint, variant = "cursos" }: PorqueAprenderProps) {
-    const sectionRef = useRef(null);
-    const [mounted, setMounted] = useState(false); // Trava de hidratação
-    const initialData = FALLBACKS[variant] || FALLBACKS.cursos;
-    const [data, setData] = useState<PorqueAprenderData>(initialData);
+export default function PorqueAprender({ 
+    endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/aprender", 
+    variant = "cursos" 
+}: PorqueAprenderProps) {
+    const sectionRef = useRef<HTMLElement>(null); // Referência correta
+    const [mounted, setMounted] = useState(false);
+    const [data, setData] = useState<PorqueAprenderData | null>(null);
 
     useEffect(() => {
-        setMounted(true); // Garante que o código do cliente só rode após montagem
+        setMounted(true);
         if (endpoint) {
             fetch(endpoint)
                 .then(res => res.json())
-                .then(json => setData(json))
-                .catch(() => setData(initialData));
+                .then(json => {
+                    // Acessa a chave correta do JSON (cursos)
+                    setData(json[variant]);
+                })
+                .catch(err => console.error("Erro ao carregar Aprender:", err));
         }
-    }, [endpoint, variant, initialData]);
+    }, [endpoint, variant]);
 
     useGSAP(() => {
-        // Só dispara a animação se estiver montado e o ScrollTrigger puder encontrar os elementos
-        if (!mounted) return;
+        if (!mounted || !data) return;
 
         gsap.from(".reveal-text-p", {
             y: 30,
@@ -76,15 +64,20 @@ export default function PorqueAprender({ endpoint, variant = "cursos" }: PorqueA
         });
     }, { scope: sectionRef, dependencies: [data, mounted] });
 
-    // Padrão Mavellium: Em vez de return null, mantemos a estrutura com opacidade 0
-    // Isso evita o erro "Node.insertBefore" pois o nó sempre existe no DOM.
+    // Correção do erro: Agora usa sectionRef no estado de carregamento
+    if (!mounted || !data) {
+        return <section ref={sectionRef} className="py-24 bg-[#020202] min-h-[600px] flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/10 border-t-[#FFD700] rounded-full animate-spin" />
+        </section>;
+    }
+
     const accent = data.theme?.accentColor || "#FFD700";
     const secondary = data.theme?.secondaryColor || "#B8860B";
 
     return (
         <section
             ref={sectionRef}
-            className={`py-24 w-full flex flex-col justify-center items-center bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`}
+            className="py-24 w-full flex flex-col justify-center items-center bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden"
         >
             {/* Texture Noise */}
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
@@ -136,15 +129,15 @@ export default function PorqueAprender({ endpoint, variant = "cursos" }: PorqueA
                             {data.description.paragraph1.text} <strong className="text-white font-medium">{data.description.paragraph1.bold}</strong>
                         </p>
                         <p className="text-base md:text-lg text-gray-500 font-light leading-relaxed">
-                            {data.description.paragraph2.text} <span style={{ color: accent }}>{data.description.paragraph2.highlight}</span>
+                            {data.description.paragraph2.text} <span className="font-medium" style={{ color: accent }}>{data.description.paragraph2.highlight}</span>
                         </p>
                     </div>
 
                     {/* Features */}
                     <div className="reveal-text-p flex flex-wrap justify-center gap-4 md:gap-6 mt-4">
                         {data.features.map((feature, index) => (
-                            <div key={index} className="flex items-center gap-3 px-5 py-3 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-sm">
-                                <Icon icon={feature.icon} className="text-xl" style={{ color: accent }} />
+                            <div key={index} className="flex items-center gap-3 px-5 py-3 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-sm group hover:border-white/10 transition-all">
+                                <Icon icon={feature.icon} className="text-xl group-hover:scale-110 transition-transform" style={{ color: accent }} />
                                 <span className="text-sm font-medium text-gray-300">{feature.label}</span>
                             </div>
                         ))}
