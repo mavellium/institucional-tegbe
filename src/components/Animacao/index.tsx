@@ -100,13 +100,13 @@ export default function SalesEngineVisual() {
   // --- FUNÇÃO PARA CARREGAR DADOS DO ENDPOINT ---
   const loadDataFromEndpoint = async () => {
     try {
-      // Descomente e ajuste o endpoint quando necessário
-      // const response = await fetch('https://api.seusite.com/sales-engine-data');
-      // const data = await response.json();
-      // setComponentData(data);
+
+      const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/animacao');
+      const data = await response.json();
+      setComponentData(data);
       
       // Por enquanto, usando dados padrão
-      setComponentData(DEFAULT_DATA);
+      // setComponentData(DEFAULT_DATA);
     } catch (error) {
       console.error("Erro ao carregar dados do endpoint:", error);
       // Mantém os dados padrão em caso de erro
