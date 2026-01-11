@@ -100,7 +100,7 @@ export default async function MarketingPage() {
             <Empresas variant="marketing" data={empresasData} />
             
             <NaoEParaVoce />
-            <Expertise config={expertiseConfig}/>
+            <Expertise/>
             <SectionImage variant="marketing" apiData={data}/>
             
             {/* Seção Why Tegbe (Dados vindos de /json/equipe) */}

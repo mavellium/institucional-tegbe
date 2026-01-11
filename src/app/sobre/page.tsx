@@ -88,7 +88,7 @@ export default async function SobrePage() {
             
             <Sobre />
             
-            <Video2 config={videoConfig} />
+            <Video2 variant="sobre" />
             
             <ServiceFlow variant="sobre"/>
             

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 // --- IMPORTAÇÕES DOS LAYOUTS ---
 import { HeadlineEcommerce } from "@/components/HeadlineEcommerce";
@@ -38,16 +38,29 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
   const [data, setData] = useState<HeadlineJsonData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // --- ENGINE 3D MAVELLIUM ---
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+  
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
   useEffect(() => {
     const fetchHeadline = async () => {
       try {
         const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline');
         const result = await response.json();
-        if (result) {
-          setData(result);
-        }
+        if (result) setData(result);
       } catch (error) {
-        console.error("Mavellium Engine - Erro ao carregar Headline:", error);
+        console.error("Mavellium Engine - Error:", error);
       } finally {
         setLoading(false);
       }
@@ -57,7 +70,7 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
 
   if (loading || !data) return (
     <div className="h-screen w-full bg-[#020202] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin" />
     </div>
   );
 
@@ -65,16 +78,66 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
   const content = data[activeVariant] || data.home;
   const theme = themeConfig[activeVariant] || themeConfig.home;
 
-  // Lógica de Renderização de Layouts Específicos
   if (activeVariant === 'ecommerce') return <HeadlineEcommerce content={content} theme={theme} />;
   if (activeVariant === 'marketing') return <HeadlineMarketing content={content} theme={theme} />;
   if (activeVariant === 'home') return <HeadlineHome content={content} theme={theme} />;
 
-  // Fallback Minimalista
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center items-center bg-[#020202] text-center p-6">
-       <h1 className="text-white text-5xl font-bold mb-4">{content.titulo?.chamada}</h1>
-       <p className="text-gray-400 max-w-2xl">{content.subtitulo}</p>
+    <section 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      className="relative w-full h-screen flex flex-col justify-center items-center bg-[#020202] text-center px-4 overflow-hidden"
+      style={{ perspective: "1500px" }}
+    >
+      {/* Background Glow */}
+      <div className={`absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 pointer-events-none ${theme.spotlight}`} />
+
+      // Dentro do seu componente Headline, aplique estas classes e estilos:
+
+<div className="flex flex-col items-start text-left w-full max-w-7xl mx-auto px-4 z-10">
+    
+    <motion.h1 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col gap-1 mb-4" // Reduzi gap e margin
+        style={{ transformStyle: "preserve-3d" }}
+    >
+        {/* Chamada: Texto de apoio menor e mais elegante */}
+        <span className="text-xs md:text-sm font-bold text-yellow-500/80 tracking-[0.2em] uppercase mb-2">
+            {content.titulo?.chamada}
+        </span>
+        
+        {/* Título Principal: Redução de escala e leading agressivo para "compactar" o impacto */}
+        <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[clamp(2rem,5.5vw,4.5rem)] font-black text-white leading-[0.9] tracking-tighter uppercase max-w-[12ch] md:max-w-[15ch]"
+              style={{ transform: "translateZ(50px)" }}>
+            {content.titulo?.tituloPrincipal}
+        </span>
+
+        {/* Palavra de Destaque: Ajustada para não empurrar o layout para baixo */}
+        {content.titulo?.palavrasAnimadas?.[0] && (
+            <span 
+                className="text-4xl md:text-6xl lg:text-[clamp(2.5rem,6vw,5rem)] font-black italic leading-[0.8] drop-shadow-2xl"
+                style={{ 
+                    color: content.titulo.palavrasAnimadas[0].cor,
+                    transform: "translateZ(80px)"
+                }}
+            >
+                {content.titulo.palavrasAnimadas[0].texto}
+            </span>
+        )}
+    </motion.h1>
+
+    {/* Subtítulo: Largura controlada para não colidir com o dashboard à direita */}
+    <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
+        style={{ transform: "translateZ(30px)" }}
+    >
+        {content.subtitulo}
+    </motion.p>
+</div>
     </section>
   );
 }

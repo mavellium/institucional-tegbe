@@ -97,14 +97,14 @@ export default async function CursosPage() {
             
             <Header variant="cursos" />
             <HeadlineCurso/>
-            <PorqueAprender data={whyLearnData} />
-            <Video2 config={videoConfig}/>
+            <PorqueAprender />
+            <Video2 variant="cursos"/>
             <Cursos/>
             <CasesCarousel data={testimonialsData} />
             <GaleriaFotos data={galleryData} />
             <Localizacao2/>
             
-            <Expertise config={expertiseData}/>
+            <Expertise variant="cursos"/>
             
             <ComparacaoConcorrentes data={comparisonData}/>
 

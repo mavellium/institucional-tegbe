@@ -1,132 +1,245 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { motion } from "framer-motion";
-import config from "@/json/Localizacao/config.json"; 
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
-export default function LocationsSection() {
+// Swiper para o visor principal
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Autoplay, EffectFade, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-fade';
+import 'swiper/css/navigation';
+
+// --- INTERFACES ---
+interface Location {
+  id: string;
+  city: string;
+  role: string;
+  description: string;
+  features: string[];
+  address: string;
+  mapLink: string; // Adicionado para o CTA de localização
+  images: string[];
+}
+
+interface LocationsConfig {
+  theme: { accentColor: string; };
+  header: { badge: string; title: string; subtitle: string; };
+  locations: Location[];
+  cta: { text: string; link: string; };
+}
+
+// --- DADOS REAIS MAVELLIUM ---
+const FALLBACK_DATA: LocationsConfig = {
+  theme: { accentColor: "#FFFFFF" }, // Apple Style: Foco no Branco/Prata
+  header: {
+    badge: "Operational Presence",
+    title: "Nossos Centros",
+    subtitle: "Infraestrutura de elite projetada para performance e criatividade."
+  },
+  locations: [
+    {
+      id: "sp-01",
+      city: "São Paulo",
+      role: "Hub de Inteligência & IA",
+      description: "Nossa central de comando com infraestrutura de elite para imersões executivas e engenharia de dados aplicada.",
+      features: ["Estrategistas Sênior", "Laboratório IA", "Setup Apple Pro"],
+      address: "Av. Paulista, Jardins - SP",
+      mapLink: "https://maps.google.com",
+      images: ["/card1.png", "/card2.png", "/ads-bg.png"]
+    },
+    {
+      id: "rj-02",
+      city: "Rio de Janeiro",
+      role: "Célula de Growth & Social",
+      description: "Ambiente disruptivo focado em produção de conteúdo de alto impacto e escala de tráfego orgânico.",
+      features: ["Studio Pro", "Growth Social", "Célula de Performance"],
+      address: "Barra da Tijuca - RJ",
+      mapLink: "https://maps.google.com",
+      images: ["/ads-bg.png", "/ads-bg.png"]
+    }
+  ],
+  cta: { text: "Agendar Visita Técnica", link: "#contato" }
+};
+
+export default function LocationsSection({ endpoint }: { endpoint?: string }) {
+  const [mounted, setMounted] = useState(false);
+  const [data, setData] = useState<LocationsConfig>(FALLBACK_DATA);
+  const [activeLoc, setActiveLoc] = useState(FALLBACK_DATA.locations[0]);
+
+  useEffect(() => {
+    setMounted(true);
+    if (endpoint) {
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(json => {
+            setData(json);
+            setActiveLoc(json.locations[0]);
+        })
+        .catch(() => setData(FALLBACK_DATA));
+    }
+  }, [endpoint]);
+
+  if (!mounted) return <div className="h-[700px] bg-[#020202] animate-pulse" />;
+
+  const accent = data.theme?.accentColor || "#FFFFFF";
+
   return (
-    <section className="relative py-24 bg-[#020202] overflow-hidden font-sans border-t border-white/5">
+    <section className="relative py-24 bg-[#050505] overflow-hidden font-sans">
       
-      {/* --- BACKGROUND MAPA TÁTICO (SVG) --- */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        {/* Padrão de Grid Tático */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#222_1px,transparent_1px),linear-gradient(to_bottom,#222_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-        
-        {/* Mapa Mundi Pontilhado (Simulado via imagem ou SVG inline para performance) */}
-        <div className="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/2/2f/World_map_dots_grey.svg')] bg-no-repeat bg-center bg-contain opacity-30 grayscale invert mix-blend-overlay"></div>
-      </div>
+      {/* Apple-style Gradient Background (Substituindo a Grade) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Luz Dourada Central */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FFD700]/5 rounded-full blur-[150px] pointer-events-none" />
-
-      <div className="container px-4 md:px-6 relative z-10 max-w-6xl mx-auto">
+      <div className="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
         
-        {/* HEADER */}
-        <div className="text-center mb-16 space-y-4">
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md">
-              <Icon icon="ph:map-pin-fill" className="text-[#FFD700] w-4 h-4" />
-              <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-[#FFD700] uppercase">
-                {config.header.badge}
-              </span>
-           </div>
-           <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-             {config.header.title}
-           </h2>
-           <p className="text-gray-400 max-w-2xl mx-auto text-lg font-light leading-relaxed">
-             {config.header.subtitle}
-           </p>
+        {/* HEADER LIMPO */}
+        <div className="flex flex-col items-center text-center mb-20">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-6"
+            >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }}></span>
+                <span className="text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase">{data.header.badge}</span>
+            </motion.div>
+            <h2 className="text-4xl md:text-6xl font-semibold text-white tracking-tight mb-4">
+                {data.header.title}
+            </h2>
+            <p className="text-gray-400 max-w-lg text-sm md:text-base leading-relaxed">
+                {data.header.subtitle}
+            </p>
         </div>
 
-        {/* LOCATIONS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            {config.locations.map((loc, index) => (
-                <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.2, duration: 0.6 }}
-                    className="group relative rounded-3xl bg-[#0A0A0A] border border-white/10 overflow-hidden hover:border-[#FFD700]/30 transition-all duration-500"
-                >
-                    {/* Imagem/Mapa do Local (Placeholder visual de mapa escuro) */}
-                    <div className="h-48 w-full bg-[#111] relative overflow-hidden">
-                        {/* Efeito de Radar */}
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                             <div className="relative flex items-center justify-center w-24 h-24">
-                                <span className="absolute inline-flex h-full w-full rounded-full bg-[#FFD700] opacity-10 animate-ping duration-[3s]"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#FFD700]"></span>
-                             </div>
-                        </div>
-                        {/* Label Cidade */}
-                        <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10">
-                            <span className="text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                                <Icon icon="ph:navigation-arrow-fill" className="text-[#FFD700]" />
-                                {loc.city}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Conteúdo */}
-                    <div className="p-8">
-                        <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-[#FFD700] transition-colors">
-                            {loc.role}
-                        </h3>
-                        <p className="text-gray-500 text-sm mb-6 font-mono">
+        {/* INTERFACE PRINCIPAL - GLASSMORPHISM */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white/[0.02] rounded-[2.5rem] border border-white/10 overflow-hidden backdrop-blur-2xl shadow-2xl">
+            
+            {/* SIDEBAR DE NAVEGAÇÃO */}
+            <div className="lg:col-span-4 flex flex-col border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
+                <div className="p-6 border-b border-white/5">
+                    <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Unidades Operacionais</span>
+                </div>
+                {data.locations.map((loc) => (
+                    <button
+                        key={loc.id}
+                        onClick={() => setActiveLoc(loc)}
+                        className={`relative p-8 text-left transition-all duration-500 group ${activeLoc.id === loc.id ? 'bg-white/[0.05]' : 'hover:bg-white/[0.02]'}`}
+                    >
+                        <h3 className={`text-xl font-medium transition-all ${activeLoc.id === loc.id ? 'text-white' : 'text-gray-500'}`}>
                             {loc.city}
+                        </h3>
+                        <p className={`text-xs mt-1 transition-colors ${activeLoc.id === loc.id ? 'text-white/60' : 'text-gray-700'}`}>
+                            {loc.role}
                         </p>
+                        
+                        {activeLoc.id === loc.id && (
+                            <motion.div layoutId="activeTab" className="absolute right-6 top-1/2 -translate-y-1/2">
+                                <Icon icon="ph:caret-right-bold" className="text-white w-4 h-4" />
+                            </motion.div>
+                        )}
+                    </button>
+                ))}
 
-                        <p className="text-gray-400 leading-relaxed mb-6 text-sm">
-                            {loc.description}
-                        </p>
-
-                        {/* Features */}
-                        <div className="flex flex-wrap gap-2 mb-8">
-                            {loc.features.map((feat, i) => (
-                                <span key={i} className="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-400 border border-white/5 uppercase tracking-wide">
-                                    {feat}
-                                </span>
-                            ))}
-                        </div>
-
-                        {/* Footer Card */}
-                        <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div className="flex items-start gap-3">
-                                <Icon icon="ph:map-trifold-bold" className="text-[#FFD700] w-5 h-5 mt-0.5" />
-                                <span className="text-xs text-gray-300 max-w-[180px]">
-                                    {loc.address}
-                                </span>
-                            </div>
-                            
-                            <a 
-                                href={loc.link} 
-                                target="_blank" 
-                                className="flex items-center gap-2 text-xs font-bold text-white hover:text-[#FFD700] transition-colors uppercase tracking-wider group/link"
-                            >
-                                Ver no Mapa
-                                <Icon icon="ph:arrow-up-right-bold" className="w-3 h-3 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                            </a>
+                {/* INFO DA UNIDADE + CTA LOCALIZAÇÃO */}
+                <div className="mt-auto p-8 border-t border-white/5 space-y-6">
+                    <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                            <Icon icon="ph:map-pin-light" className="text-white/40 w-5 h-5 mt-0.5" />
+                            <span className="text-xs text-gray-400 leading-relaxed">{activeLoc.address}</span>
                         </div>
                     </div>
-                </motion.div>
-            ))}
+                    
+                    <a 
+                        href={activeLoc.mapLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-[11px] font-bold text-white uppercase tracking-wider group/map"
+                    >
+                        Ver localização no mapa
+                        <Icon icon="ph:arrow-up-right" className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </a>
+                </div>
+            </div>
+
+            {/* CARROSSEL PRINCIPAL */}
+            <div className="lg:col-span-8 relative h-[400px] lg:h-[600px] bg-black">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeLoc.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="h-full w-full"
+                    >
+                        <Swiper
+                            modules={[Pagination, Autoplay, EffectFade, Navigation]}
+                            effect="fade"
+                            autoplay={{ delay: 4000 }}
+                            pagination={{ clickable: true }}
+                            navigation={{ nextEl: '.s-next', prevEl: '.s-prev' }}
+                            className="h-full w-full location-swiper"
+                        >
+                            {activeLoc.images.map((img, i) => (
+                                <SwiperSlide key={i}>
+                                    <div className="relative h-full w-full">
+                                        <Image 
+                                            src={img} 
+                                            alt={activeLoc.city} 
+                                            fill 
+                                            className="object-cover transition-transform duration-[10s] scale-105" 
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+
+                        {/* CONTROLES CUSTOMIZADOS */}
+                        <div className="absolute bottom-8 right-8 z-30 flex gap-3">
+    <button className="s-prev w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-black/40 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-300 shadow-2xl">
+        <Icon icon="ph:caret-left-bold" className="w-5 h-5" />
+    </button>
+    <button className="s-next w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-black/40 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-300 shadow-2xl">
+        <Icon icon="ph:caret-right-bold" className="w-5 h-5" />
+    </button>
+</div>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
         </div>
 
         {/* CTA FINAL */}
-        <div className="mt-16 flex justify-center">
-             <a 
-                href={config.cta.link}
-                target="_blank"
-                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-full hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] transition-all duration-300"
-             >
-                <Icon icon="ph:coffee-bold" className="w-5 h-5 text-[#FFD700] group-hover:text-black transition-colors" />
-                <span className="text-sm font-bold uppercase tracking-widest text-white group-hover:text-black transition-colors">
-                    {config.cta.text}
-                </span>
-             </a>
+        <div className="mt-20 text-center">
+            <a 
+                href={data.cta.link}
+                className="inline-flex items-center gap-6 px-10 py-5 rounded-full bg-white text-black font-bold uppercase text-[10px] tracking-[0.2em] hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/5"
+            >
+                {data.cta.text}
+                <Icon icon="ph:calendar-check-fill" className="w-4 h-4" />
+            </a>
         </div>
-
       </div>
+
+      <style jsx global>{`
+        .location-swiper .swiper-pagination-bullet {
+            background: white !important;
+            opacity: 0.3;
+        }
+        .location-swiper .swiper-pagination-bullet-active {
+            opacity: 1;
+            width: 20px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .location-swiper .swiper-pagination {
+            bottom: 32px !important;
+            left: 32px !important;
+            text-align: left !important;
+            width: auto !important;
+        }
+      `}</style>
     </section>
   );
 }
