@@ -1,57 +1,80 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const QUESTIONS = [
-  {
-    question: "Preciso ter um faturamento mínimo para contratar?",
-    answer: "Trabalhamos com escalas diferentes. Para a Consultoria e Agência (Marketing), recomendamos que você já tenha um produto validado e orçamento para tráfego (mínimo R$ 2k/mês). Se você está começando do absoluto zero, indicamos iniciar pelo TegPro Academy para validar sua oferta sem queimar caixa."
-  },
-  {
-    question: "Em quanto tempo vejo o ROI?",
-    answer: "Não vendemos milagres, vendemos engenharia. Em média, nossos clientes de E-commerce veem a maturação das campanhas entre 45 a 60 dias (período de aprendizado do algoritmo). Porém, com a implementação do CRM e CRO, melhorias na conversão costumam ser notadas já nas primeiras semanas."
-  },
-  {
-    question: "Vocês atendem qual nicho?",
-    answer: "Somos agnósticos de nicho, mas especialistas em modelo de negócio. Se você vende produtos físicos (E-commerce) ou serviços de alto ticket (Clínicas, Escritórios, B2B), nosso protocolo funciona. Não atendemos: Dropshipping genérico ou PLR de baixa qualidade."
-  },
-  {
-    question: "Qual a diferença entre a Tegbe e uma agência comum?",
-    answer: "A agência comum quer seus 'likes' e foca em métricas de vaidade. A Tegbe foca no seu LTV (Lifetime Value) e Lucro Líquido. Somos parceiros de negócio. Se você não lucra, a gente não renova. Simples assim."
-  }
-];
+// --- INTERFACES PARA O SCHEMA DINÂMICO ---
+interface FAQItem {
+  id: string | number;
+  question: string;
+  answer: string;
+  order?: number;
+}
+
+interface FAQData {
+  header: {
+    tag: string;
+    title: string;
+    subtitle: string;
+    tag_icon: string;
+  };
+  questions_and_answers: FAQItem[];
+}
 
 export default function FaqSection() {
+  const [data, setData] = useState<FAQData | null>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [loading, setLoading] = useState(true);
+
+  // --- FETCH DINÂMICO MAVELLIUM ---
+  useEffect(() => {
+    const loadFAQ = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/faq-home');
+        const result = await response.json();
+        if (result.faq_section) {
+          setData(result.faq_section);
+        }
+      } catch (error) {
+        console.error("Mavellium Engine - Erro ao carregar FAQ:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadFAQ();
+  }, []);
+
+  if (loading || !data) return null;
 
   return (
     <section className="py-24 px-6 bg-white border-t border-gray-100">
       <div className="max-w-4xl mx-auto">
         
-        {/* HEADER */}
+        {/* HEADER DINÂMICO */}
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold uppercase tracking-widest mb-4">
-            <Icon icon="solar:question-circle-linear" />
-            Clarificação Estratégica
+            <Icon icon={data.header.tag_icon || "solar:question-circle-linear"} />
+            {data.header.tag}
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight">
-            Dúvidas de quem <br className="md:hidden" /> joga sério.
+            {data.header.title.split('.').map((part, i) => (
+                <span key={i}>{part}{part && '.'}{i === 0 && <br className="md:hidden" />}</span>
+            ))}
           </h2>
           <p className="text-gray-500 text-lg">
-            Sem letras miúdas. Transparência radical antes do aperto de mão.
+            {data.header.subtitle}
           </p>
         </div>
 
-        {/* ACCORDION */}
+        {/* ACCORDION (LAYOUT IDÊNTICO AO ENVIADO) */}
         <div className="space-y-4">
-          {QUESTIONS.map((item, i) => {
+          {data.questions_and_answers.map((item, i) => {
             const isOpen = openIndex === i;
             
             return (
               <div 
-                key={i} 
+                key={item.id} 
                 className={`
                   group rounded-2xl border transition-all duration-300 overflow-hidden
                   ${isOpen ? 'bg-gray-50 border-gray-200 shadow-sm' : 'bg-white border-transparent hover:border-gray-200'}

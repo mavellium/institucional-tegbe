@@ -87,7 +87,7 @@ export default async function MarketingPage() {
             
             <Header variant="marketing" />
             
-            <Headline data={headlineResponse.data} variant="marketing" />
+            <Headline variant="marketing" />
             
             <AgenciasFalham />
             <Video />

@@ -1,23 +1,72 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 
-// --- DADOS REAIS ---
-const PARTNER_LOGOS = [
-  { id: "ml", src: "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1767659970226-logo1.svg", alt: "Mercado Livre", width: 140, height: 60 },
-  { id: "vtex", src: "https://upload.wikimedia.org/wikipedia/commons/a/a8/VTEX_Logo.svg", alt: "VTEX", width: 120, height: 60 },
-  { id: "shopify", src: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg", alt: "Shopify", width: 130, height: 60 },
-  { id: "google", src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg", alt: "Google", width: 110, height: 60 },
-  { id: "meta", src: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg", alt: "Meta", width: 120, height: 60 },
-  { id: "tiktok", src: "https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", alt: "TikTok", width: 110, height: 60 },
-  { id: "shopee", src: "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1767659999428-logo4.svg", alt: "Shopee", width: 120, height: 60 },
-];
+interface StatCard {
+  id: string;
+  type: string;
+  label: string;
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  theme: string;
+  badge?: string;
+  icon?: string;
+}
+
+interface Partner {
+  id: string;
+  alt: string;
+  src: string;
+}
+
+interface AuthorityData {
+  header: {
+    label: string;
+    title_sub: string;
+    title_main: string;
+    live_data_label: string;
+  };
+  stats_bento: StatCard[];
+  infrastructure: {
+    label: string;
+    partners: Partner[];
+  };
+}
 
 export default function AuthoritySectionFinal() {
-  const marqueeLogos = [...PARTNER_LOGOS, ...PARTNER_LOGOS, ...PARTNER_LOGOS, ...PARTNER_LOGOS];
+  const [data, setData] = useState<AuthorityData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAuthorityData = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/metricas-home');
+        const result = await response.json();
+        if (result.authority_section) {
+          setData(result.authority_section);
+        }
+      } catch (error) {
+        console.error("Mavellium Engine Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadAuthorityData();
+  }, []);
+
+  if (loading || !data) return null;
+
+  const statHero = data.stats_bento.find(s => s.type === "hero") || data.stats_bento[0];
+  const statRoas = data.stats_bento.find(s => s.id.includes("stat_1768090748040_2")) || data.stats_bento[1];
+  const statAlunos = data.stats_bento.find(s => s.id.includes("stat_1768091650137_3")) || data.stats_bento[2];
+  const statCanais = data.stats_bento.find(s => s.id.includes("stat_1768091699091_4")) || data.stats_bento[3];
+
+  // LOGO ESTRATÉGIA: Multiplicar por 10 para garantir que nunca haja buraco no marquee
+  const marqueeLogos = Array(10).fill(data.infrastructure.partners).flat();
 
   return (
     <section className="py-32 bg-[#FAFAFA] relative overflow-hidden font-sans">
@@ -28,148 +77,115 @@ export default function AuthoritySectionFinal() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* HEADER */}
+        {/* HEADER (Mantido) */}
         <div className="mb-24 flex flex-col md:flex-row items-end justify-between gap-10">
             <div className="max-w-3xl">
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 mb-6"
-                >
+                <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} className="flex items-center gap-3 mb-6">
                     <div className="h-px w-8 bg-yellow-400"></div>
                     <span className="text-xs font-bold text-yellow-500 uppercase tracking-[0.2em]">
-                        Performance Auditada
+                        {data.header.label}
                     </span>
                 </motion.div>
-                <motion.h2 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tighter leading-[0.95]"
-                >
-                    Não prometemos. <br/>
+                <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tighter leading-[0.95]">
+                    {data.header.title_sub} <br/>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                        Nós provamos.
+                        {data.header.title_main}
                     </span>
                 </motion.h2>
             </div>
             
             <div className="text-right hidden md:block">
-                <p className="text-sm font-bold text-gray-900">Live Data 2026</p>
+                <p className="text-sm font-bold text-gray-900">{data.header.live_data_label}</p>
                 <p className="text-[10px] text-yellow-600 font-mono mt-1 uppercase tracking-widest font-bold">Atualizado em tempo real</p>
             </div>
         </div>
 
-        {/* --- BENTO GRID (STATS) --- */}
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-24 h-auto md:h-[500px]">
-            
-            {/* CARD 1: HERO (GMV) */}
-            <BentoCard 
-                className="md:col-span-3 md:row-span-2 bg-gray-900 text-white overflow-hidden relative"
-                delay={0}
-            >
+        {/* --- BENTO GRID (Mantido) --- */}
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-32 h-auto md:h-[500px]">
+            {/* ... Seus cards GMV, ROAS, ALUNOS, CANAIS (Mantidos conforme o código anterior) ... */}
+            <BentoCard className="md:col-span-3 md:row-span-2 bg-gray-900 text-white overflow-hidden relative" delay={0}>
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
                 <div className="absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-gradient-to-br from-yellow-400/20 to-transparent rounded-full blur-[80px]" />
-
                 <div className="relative z-10 flex flex-col justify-between h-full p-10">
                     <div className="flex justify-between items-start">
-                        <Icon icon="solar:wad-of-money-bold-duotone" className="w-12 h-12 text-yellow-400" />
+                        <Icon icon={statHero.icon || "solar:wad-of-money-bold-duotone"} className="w-12 h-12 text-yellow-400" />
                         <span className="px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-xs font-bold uppercase tracking-widest text-yellow-400">
-                            Recorde Anual
+                            {statHero.badge}
                         </span>
                     </div>
                     <div>
-                        <AnimatedNumber value={100} prefix="+" suffix="M" className="text-8xl md:text-9xl font-bold tracking-tighter text-white leading-none mb-2" />
-                        <p className="text-lg text-gray-400 font-medium">GMV (Faturamento) Gerenciado</p>
+                        <AnimatedNumber value={statHero.value} prefix={statHero.prefix} suffix={statHero.suffix} className="text-8xl md:text-9xl font-bold tracking-tighter text-white leading-none mb-2" />
+                        <p className="text-lg text-gray-400 font-medium">{statHero.label}</p>
                     </div>
                 </div>
             </BentoCard>
 
-            {/* CARD 2: ROAS */}
-            <BentoCard 
-                className="md:col-span-3 bg-white border border-gray-100"
-                delay={0.1}
-            >
+            <BentoCard className="md:col-span-3 bg-white border border-gray-100" delay={0.1}>
                 <div className="flex items-center justify-between h-full p-8">
                     <div>
-                         <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Retorno Médio (ROAS)</p>
-                         <AnimatedNumber value={8.4} suffix="x" className="text-6xl md:text-7xl font-bold text-gray-900 tracking-tighter leading-none" />
+                         <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{statRoas.label}</p>
+                         <AnimatedNumber value={statRoas.value} prefix={statRoas.prefix} suffix={statRoas.suffix} className="text-6xl md:text-7xl font-bold text-gray-900 tracking-tighter leading-none" />
                     </div>
                     <div className="w-24 h-16 opacity-80">
                         <svg viewBox="0 0 100 50" className="w-full h-full stroke-yellow-400 fill-none stroke-[3px]">
-                            <motion.path 
-                                d="M0 45 L20 35 L40 40 L60 20 L80 25 L100 5" 
-                                initial={{ pathLength: 0 }}
-                                whileInView={{ pathLength: 1 }}
-                                transition={{ duration: 1.5, delay: 0.5 }}
-                            />
+                            <motion.path d="M0 45 L20 35 L40 40 L60 20 L80 25 L100 5" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.5 }} />
                         </svg>
                     </div>
                 </div>
             </BentoCard>
 
-            {/* CARD 3: ALUNOS */}
-            <BentoCard 
-                className="md:col-span-2 bg-white border border-gray-100"
-                delay={0.2}
-            >
+            <BentoCard className="md:col-span-2 bg-white border border-gray-100" delay={0.2}>
                 <div className="flex flex-col justify-center h-full p-8">
-                    <AnimatedNumber value={1.2} suffix="k" className="text-5xl font-bold text-gray-900 tracking-tighter" />
-                    <p className="text-sm font-bold text-gray-400 uppercase tracking-wide mt-2">Alunos & Mentorados</p>
+                    <AnimatedNumber value={statAlunos.value} prefix={statAlunos.prefix} suffix={statAlunos.suffix} className="text-5xl font-bold text-gray-900 tracking-tighter" />
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-wide mt-2">{statAlunos.label}</p>
                 </div>
             </BentoCard>
 
-            {/* CARD 4: ECOSSISTEMA */}
-            <BentoCard 
-                className="md:col-span-1 bg-yellow-50/50 border border-yellow-100"
-                delay={0.3}
-            >
+            <BentoCard className="md:col-span-1 bg-yellow-50/50 border border-yellow-100" delay={0.3}>
                  <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                    <Icon icon="solar:layers-minimalistic-bold-duotone" className="w-10 h-10 text-yellow-500 mb-4" />
-                    <AnimatedNumber value={15} suffix="+" className="text-4xl font-bold text-gray-900 tracking-tighter" />
-                    <p className="text-[10px] font-bold text-yellow-700 uppercase tracking-widest mt-2">Canais</p>
+                    <Icon icon={statCanais.icon || "solar:layers-minimalistic-bold-duotone"} className="w-10 h-10 text-yellow-500 mb-4" />
+                    <AnimatedNumber value={statCanais.value} prefix={statCanais.prefix} suffix={statCanais.suffix} className="text-4xl font-bold text-gray-900 tracking-tighter" />
+                    <p className="text-[10px] font-bold text-yellow-700 uppercase tracking-widest mt-2">{statCanais.label}</p>
                 </div>
             </BentoCard>
-
         </div>
 
-        {/* --- INFRASTRUCTURE CAPSULE --- */}
-        <div className="relative">
-            <div className="text-center mb-8">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">
-                    Plataformas que Trabalhamos
-                </p>
+        {/* --- INFRASTRUCTURE MARQUEE (MELHORADO) --- */}
+        <div className="relative mt-20">
+            <div className="text-center mb-10">
+                <span className="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] shadow-sm">
+                    Ecossistema de Parceiros
+                </span>
             </div>
 
-            <div className="relative w-full max-w-6xl mx-auto h-32 rounded-[2.5rem] bg-white border border-gray-200 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] overflow-hidden flex items-center">
+            {/* Container Marquee Premium */}
+            <div className="relative w-full overflow-hidden py-10 bg-white/40 backdrop-blur-sm border-y border-gray-200/50 flex items-center">
                 
-                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none" />
+                {/* Degradês de Máscara laterais para suavizar a entrada/saída */}
+                <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-[#FAFAFA] to-transparent z-20 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#FAFAFA] to-transparent z-20 pointer-events-none" />
 
                 <motion.div 
-                    className="flex items-center gap-16 md:gap-24 pl-10"
-                    animate={{ x: "-50%" }}
-                    transition={{ repeat: Infinity, duration: 60, ease: "linear" }}
+                    className="flex items-center gap-20 md:gap-32"
+                    animate={{ x: [0, -1000] }} // Ajuste baseado no tamanho real das logos
+                    transition={{ 
+                        repeat: Infinity, 
+                        duration: 40, // Mais lento = mais luxuoso
+                        ease: "linear" 
+                    }}
                 >
                      {marqueeLogos.map((logo, index) => (
-                        <div 
-                            key={`${logo.id}-${index}`} 
-                            className="relative flex-shrink-0 group cursor-default"
-                        >
-                            <div className="relative h-10 w-auto md:h-12 transition-all duration-500 filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110">
-                                <Image 
-                                    src={logo.src}
-                                    alt={logo.alt}
-                                    width={logo.width}
-                                    height={logo.height}
-                                    className="w-auto h-full object-contain"
+                        <div key={`${logo.id}-${index}`} className="relative flex-shrink-0 group">
+                            <div className="h-12 md:h-16 w-auto flex items-center justify-center grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out">
+                                <img 
+                                    src={logo.src} 
+                                    alt={logo.alt} 
+                                    className="h-full w-auto object-contain max-w-[180px]" 
                                 />
                             </div>
                         </div>
                      ))}
                 </motion.div>
-                
-                <div className="absolute inset-0 rounded-[2.5rem] border border-white/50 pointer-events-none ring-1 ring-black/5" />
             </div>
         </div>
 
@@ -178,17 +194,11 @@ export default function AuthoritySectionFinal() {
   );
 }
 
-// --- SUBCOMPONENTES ---
+// --- SUBCOMPONENTES (MANTIDOS ORIGINAIS) ---
 
 function BentoCard({ children, className, delay }: { children: React.ReactNode, className?: string, delay: number }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: delay, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true }}
-            className={`rounded-[2rem] shadow-sm hover:shadow-xl hover:border-yellow-200/50 transition-all duration-500 ${className}`}
-        >
+        <motion.div initial={{ opacity: 0, y: 20, scale: 0.98 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.8, delay: delay, ease: [0.22, 1, 0.36, 1] }} viewport={{ once: true }} className={`rounded-[2rem] shadow-sm hover:shadow-xl hover:border-yellow-200/50 transition-all duration-500 ${className}`}>
             {children}
         </motion.div>
     )
@@ -199,8 +209,7 @@ function AnimatedNumber({ value, prefix = "", suffix = "", className }: any) {
     const isInView = useInView(ref, { once: true, margin: "-50px" });
     const springValue = useSpring(0, { stiffness: 45, damping: 20, mass: 1 });
     const displayValue = useTransform(springValue, (current) => {
-        if (Number.isInteger(value)) return Math.floor(current).toString();
-        return current.toFixed(1);
+        return Number.isInteger(value) ? Math.floor(current).toString() : current.toFixed(1);
     });
 
     useEffect(() => {

@@ -76,7 +76,7 @@ export default async function EcommercePage() {
             
             <Header variant="ecommerce" />
             
-            {headlineData && <Headline data={headlineData} variant="ecommerce" />}
+            {headlineData && <Headline variant="ecommerce" />}
             
             <SellMore />
             <ServiceFlow variant="home"/>

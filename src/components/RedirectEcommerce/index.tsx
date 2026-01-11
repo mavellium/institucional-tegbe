@@ -1,172 +1,194 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 
-// --- CONFIGURAÇÃO SUAVE (ML SOFT DNA) ---
-const ECOMMERCE_DATA = {
+interface BentoCard {
+  id: string;
+  type: "hero" | "stat" | "action";
+  title: string;
+  description: string;
+  colSpan: string;
+  image?: string;
+  badge?: string;
+  icon?: string;
+  stat?: string;
+  ctaText?: string;
+  href?: string;
+}
+
+interface EcommerceData {
   theme: {
-    bg_section: "#FAFAFA",
-    bg_card: "#FFFFFF",
-    text_primary: "#2D2D2D",
-    text_secondary: "#6E6E73",
-    ml_yellow_soft: "#FFF9C4", // Amarelo pastel para fundos
-    ml_yellow_solid: "#FFE600", // Amarelo ML para ícones
-  },
+    accent: string;
+    bg_card: string;
+    bg_section: string;
+    text_primary: string;
+    text_secondary: string;
+  };
   header: {
-    tag: "Marketplace Solutions",
-    title: "Sua loja. Em todo lugar.",
-    subtitle: "A integração nativa com os maiores canais de venda do país. Transformamos sua operação em uma potência onipresente no Mercado Livre e Shopee."
-  },
-  bento_cards: [
-    {
-      id: "card_main",
-      colSpan: "md:col-span-2",
-      type: "hero",
-      title: "Reputação Blindada.",
-      description: "Não buscamos apenas vendas. Buscamos a medalha Platinum. Gestão estratégica para conquistar e manter o BuyBox.",
-      image: "/ads-bg.png",
-      badge: "Vendedor Lider Platinum"
-    },
-    {
-      id: "card_ads",
-      colSpan: "md:col-span-1",
-      type: "stat",
-      title: "Product Ads.",
-      description: "Algoritmos proprietários para dominar a primeira página e vencer a concorrência.",
-      icon: "solar:rocket-bold-duotone",
-      stat: "+35% ROAS"
-    },
-    {
-      id: "card_logistics",
-      colSpan: "md:col-span-1",
-      type: "stat",
-      title: "Full & Coleta.",
-      description: "Integração completa com os centros de distribuição para entrega no dia seguinte.",
-      icon: "solar:box-minimalistic-bold-duotone",
-      stat: "24h Entrega"
-    },
-    {
-      id: "card_cta",
-      colSpan: "md:col-span-2",
-      type: "action",
-      title: "4 Planos de Aceleração.",
-      description: "Do setup inicial à escala agressiva. Escolha a velocidade do seu crescimento no ecossistema.",
-      ctaText: "Ver Planos de Escala",
-      href: "/ecommerce"
-    }
-  ]
-};
+    tag: string;
+    title: string;
+    subtitle: string;
+  };
+  bento_cards: BentoCard[];
+}
 
 export default function EcommerceBentoFixed() {
-  const { theme, header, bento_cards } = ECOMMERCE_DATA;
+  const [data, setData] = useState<EcommerceData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/ecommerce-home');
+        const result = await response.json();
+        if (result) setData(result);
+      } catch (error) {
+        console.error("Mavellium Engine - Erro ao carregar Bento:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  if (loading || !data) return null;
+
+  const { theme, header, bento_cards } = data;
 
   return (
     <section 
-        className="py-32 px-6 font-sans relative"
+        className="py-32 px-6 font-sans relative overflow-hidden"
         style={{ backgroundColor: theme.bg_section }}
     >
       <div className="max-w-6xl mx-auto">
         
-        {/* --- HEADER --- */}
-        <div className="text-center mb-16 max-w-3xl mx-auto space-y-6">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-yellow-700 bg-yellow-50 px-4 py-2 rounded-full border border-yellow-100">
+        {/* --- HEADER ( DNA APPLE ) --- */}
+        <div className="text-center mb-20 max-w-3xl mx-auto space-y-6">
+            <motion.span 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="text-[10px] font-bold uppercase tracking-[0.3em] px-5 py-2 rounded-full border inline-block"
+                style={{ 
+                    color: theme.accent, 
+                    backgroundColor: `${theme.accent}15`, 
+                    borderColor: `${theme.accent}30` 
+                }}
+            >
                 {header.tag}
-            </span>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tight text-[#1D1D1F]">
+            </motion.span>
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[0.95]" style={{ color: theme.text_primary }}>
                 {header.title}
             </h2>
-            <p className="text-xl font-medium text-gray-500">
+            <p className="text-xl font-medium opacity-70" style={{ color: theme.text_secondary }}>
                 {header.subtitle}
             </p>
         </div>
 
         {/* --- BENTO GRID --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(320px,auto)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(340px,auto)]">
             
             {bento_cards.map((card, index) => (
                 <motion.div
                     key={card.id}
-                    initial={{ opacity: 0, y: 15 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    transition={{ delay: index * 0.1, duration: 0.6 }}
                     viewport={{ once: true }}
                     className={`
                         ${card.colSpan} 
-                        rounded-[2.5rem] overflow-hidden 
-                        bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:border-yellow-200 transition-all duration-500
-                        flex flex-col group
+                        rounded-[2.5rem] overflow-hidden border group relative
+                        transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col
                     `}
+                    style={{ 
+                        backgroundColor: theme.bg_card, 
+                        borderColor: 'rgba(0,0,0,0.05)' 
+                    }}
                 >
-                    {/* --- LAYOUT TIPO 1: HERO (Suave) --- */}
+                    {/* --- LAYOUT TIPO 1: HERO (RESTAURADO) --- */}
                     {card.type === "hero" && (
-                        <div className="flex flex-col md:flex-row h-full">
-                            <div className="p-10 flex-1 flex flex-col justify-center bg-gradient-to-br from-white to-[#FDFDFD]">
-                                <div className="mb-4 inline-flex items-center gap-2 bg-yellow-50 border border-yellow-100 px-3 py-1 rounded-full w-fit">
+                        <div className="flex flex-col md:flex-row h-full relative">
+                            <div className="p-10 flex-1 flex flex-col justify-center z-20 bg-gradient-to-br from-white to-transparent">
+                                <div className="mb-5 inline-flex items-center gap-2 bg-yellow-50 border border-yellow-100 px-3 py-1 rounded-full w-fit shadow-sm">
                                     <Icon icon="solar:medal-star-bold" className="text-yellow-600 w-3.5 h-3.5" />
                                     <span className="text-[10px] font-bold text-yellow-700 uppercase tracking-wider">{card.badge}</span>
                                 </div>
-                                <h3 className="text-3xl font-bold mb-4 text-gray-900">
+                                <h3 className="text-4xl font-bold mb-4 leading-tight text-gray-900">
                                     {card.title}
                                 </h3>
-                                <p className="text-lg font-medium text-gray-500">
+                                <p className="text-lg font-medium text-gray-500 leading-relaxed">
                                     {card.description}
                                 </p>
                             </div>
                             
-                            <div className="relative h-64 md:h-auto md:w-1/2 bg-gray-50 overflow-hidden">
-                                <Image
+                            <div className="relative h-72 md:h-auto md:w-1/2 overflow-hidden bg-gray-50">
+                                <img
                                     src={card.image!}
                                     alt={card.title}
-                                    fill
-                                    className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+                                    className="absolute inset-0 w-full h-full object-cover opacity-95 group-hover:scale-110 transition-transform duration-1000 ease-out"
                                 />
+                                {/* Overlay Suave para mesclar com o texto */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-white md:via-transparent to-transparent z-10" />
                             </div>
                         </div>
                     )}
 
-                    {/* --- LAYOUT TIPO 2: STAT (Ícone Amarelo, Fundo Neutro) --- */}
+                    {/* --- LAYOUT TIPO 2: STAT (RESTAURADO) --- */}
                     {card.type === "stat" && (
-                        <div className="p-10 h-full flex flex-col justify-between hover:bg-yellow-50/20 transition-colors">
-                            <div>
-                                <div className="mb-6 w-14 h-14 rounded-2xl bg-yellow-50 border border-yellow-100 flex items-center justify-center text-yellow-600 group-hover:bg-yellow-100 transition-colors">
+                        <div className="p-10 h-full flex flex-col justify-between relative overflow-hidden">
+                            {/* Glow sutil no hover */}
+                            <div className="absolute -right-4 -top-4 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"
+                                 style={{ backgroundColor: theme.accent }} />
+                            
+                            <div className="relative z-10">
+                                <div className="mb-8 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-xl"
+                                     style={{ backgroundColor: theme.accent, color: 'white' }}>
                                     <Icon icon={card.icon!} className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-3xl font-bold mb-3 text-gray-900">
+                                <h3 className="text-3xl font-bold mb-4 text-gray-900 leading-snug">
                                     {card.title}
                                 </h3>
-                                <p className="text-lg font-medium text-gray-500">
+                                <p className="text-base font-medium text-gray-500 opacity-80">
                                     {card.description}
                                 </p>
                             </div>
-                            <div className="mt-6">
-                                <span className="text-xs font-bold bg-gray-900 text-white px-4 py-2 rounded-lg uppercase tracking-widest">
+                            <div className="mt-8 relative z-10">
+                                <span className="text-sm font-black bg-[#1D1D1F] text-white px-5 py-2.5 rounded-xl uppercase tracking-widest inline-block shadow-xl group-hover:scale-105 transition-transform">
                                     {card.stat}
                                 </span>
                             </div>
                         </div>
                     )}
 
-                    {/* --- LAYOUT TIPO 3: ACTION (Elegante e Profundo) --- */}
+                    {/* --- LAYOUT TIPO 3: ACTION (RESTAURADO) --- */}
                     {card.type === "action" && (
-                        <div className="p-10 h-full flex flex-col justify-center items-start bg-[#1A1A1A] relative overflow-hidden">
-                            {/* Glow Amarelo Suave no fundo */}
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-yellow-400/5 blur-[80px] rounded-full" />
+                        <div className="p-12 h-full flex flex-col justify-center items-start bg-[#0A0A0A] relative overflow-hidden">
+                            {/* Animated Glow Pulsante */}
+                            <motion.div 
+                                animate={{ 
+                                    scale: [1, 1.2, 1],
+                                    opacity: [0.1, 0.2, 0.1]
+                                }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute -right-20 -top-20 w-96 h-96 rounded-full blur-[100px]" 
+                                style={{ backgroundColor: theme.accent }} 
+                            />
                             
-                            <h3 className="text-3xl font-bold mb-4 text-white relative z-10">
+                            <h3 className="text-4xl font-bold mb-6 text-white relative z-10 leading-tight">
                                 {card.title}
                             </h3>
-                            <p className="text-lg font-medium mb-8 max-w-lg text-gray-400 relative z-10">
+                            <p className="text-lg font-medium mb-10 max-w-lg text-gray-400 relative z-10 leading-relaxed">
                                 {card.description}
                             </p>
                             <Link 
                                 href={card.href!} 
-                                className="inline-flex items-center gap-3 bg-yellow-400 text-black px-10 py-5 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg relative z-10"
+                                className="group/btn inline-flex items-center gap-4 px-10 py-5 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] transition-all relative z-10 hover:scale-105 active:scale-95 shadow-2xl"
+                                style={{ backgroundColor: theme.accent, color: '#FFF' }}
                             >
                                 {card.ctaText}
-                                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
+                                <Icon icon="solar:arrow-right-linear" className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                             </Link>
                         </div>
                     )}

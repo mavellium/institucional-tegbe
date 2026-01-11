@@ -4,50 +4,69 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- DADOS ---
-const PAIN_POINTS_LEFT = [
-  {
-    id: "01",
-    icon: "solar:wallet-money-bold-duotone",
-    title: "O Sócio Oculto",
-    stat: "-40% de Verba",
-    description: "Tráfego sem conversão não é investimento. É doação para o Zuckerberg."
-  },
-  {
-    id: "02",
-    icon: "solar:cart-large-minimalistic-bold-duotone",
-    title: "Vitrine Fantasma",
-    stat: "Sem Vendas",
-    description: "Sua loja é bonita, mas se não vende em 3s, é apenas um catálogo caro."
-  }
-];
+interface PainPoint {
+  id: string;
+  icon: string;
+  stat: string;
+  title?: string;
+  description: string;
+}
 
-const PAIN_POINT_RIGHT = {
-    id: "03",
-    icon: "solar:user-hand-up-bold-duotone",
-    title: "Gargalo Operacional",
-    stat: "CEO Operacional",
-    description: "Faz tráfego e embala pedido? Você é o funcionário mais caro da empresa."
-};
+interface WarningWord {
+  text: string;
+  color: string;
+}
 
-const WARNING_WORDS = [
-    { text: "MARGEM BAIXA", color: "text-yellow-600" },
-    { text: "ROI NEGATIVO", color: "text-red-600" },
-    { text: "CUSTO ALTO", color: "text-yellow-500" },
-    { text: "SEM CAIXA", color: "text-gray-600" },
-];
-
-const ROTATION_DURATION = 3;
+interface PainSectionData {
+  config: {
+    primary_color: string;
+    section_theme: string;
+    rotation_duration_seconds: number;
+  };
+  pain_points: {
+    left: PainPoint[];
+    right: PainPoint;
+  };
+  section_title: {
+    badge: string;
+    color: string;
+    title_normal: string;
+    title_effect: string;
+  };
+  warning_words: WarningWord[];
+}
 
 export default function PainSectionFinal() {
+  const [data, setData] = useState<PainSectionData | null>(null);
   const [wordIndex, setWordIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % WARNING_WORDS.length);
-    }, ROTATION_DURATION * 1000);
-    return () => clearInterval(timer);
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api-tegbe/tegbe-institucional/pain-points');
+        const result = await response.json();
+        if (result) setData(result);
+      } catch (error) {
+        console.error("Erro API PainPoints:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, []);
+
+  useEffect(() => {
+    if (!data) return;
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % data.warning_words.length);
+    }, (data.config.rotation_duration_seconds || 3) * 1000);
+    return () => clearInterval(timer);
+  }, [data]);
+
+  if (loading || !data) return null;
+
+  const ROTATION_DURATION = data.config.rotation_duration_seconds || 3;
 
   return (
     <section className="py-32 px-6 bg-[#FAFAFA] relative overflow-hidden">
@@ -57,7 +76,7 @@ export default function PainSectionFinal() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Header */}
+        {/* Header Dinâmico */}
         <div className="text-center mb-20">
             <motion.div 
                initial={{ opacity: 0, y: 10 }}
@@ -65,13 +84,15 @@ export default function PainSectionFinal() {
                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-yellow-200 rounded-full shadow-sm mb-6"
             >
                 <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Monitoramento Ativo</span>
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                    {data.section_title.badge}
+                </span>
             </motion.div>
 
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1]">
-                O seu lucro está <br/>
+                {data.section_title.title_normal} <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
-                    sendo drenado agora.
+                    {data.section_title.title_effect}
                 </span>
             </h2>
         </div>
@@ -81,7 +102,7 @@ export default function PainSectionFinal() {
 
           {/* ESQUERDA */}
           <div className="space-y-6 flex flex-col justify-center relative z-20 order-2 lg:order-1">
-            {PAIN_POINTS_LEFT.map((item, i) => (
+            {data.pain_points.left.map((item, i) => (
               <GlassCard key={item.id} item={item} index={i} align="left" />
             ))}
           </div>
@@ -89,12 +110,11 @@ export default function PainSectionFinal() {
           {/* CENTRO: O REATOR */}
           <div className="relative h-full w-full flex items-center justify-center z-10 order-1 lg:order-2 mb-16 lg:mb-0">
             
-            {/* SVG Lines */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none hidden lg:block overflow-visible">
                 <defs>
                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stopColor="transparent" />
-                        <stop offset="50%" stopColor="#FACC15" /> {/* yellow-400 */}
+                        <stop offset="50%" stopColor="#FACC15" /> 
                         <stop offset="100%" stopColor="transparent" />
                     </linearGradient>
                 </defs>
@@ -121,7 +141,7 @@ export default function PainSectionFinal() {
                 {/* Núcleo Central */}
                 <div className="relative z-10 w-48 h-48 bg-white rounded-full border-[6px] border-gray-50 shadow-2xl shadow-yellow-500/10 flex flex-col items-center justify-center overflow-hidden">
                     <p className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-2">Diagnóstico</p>
-                    <div className="h-8 relative w-full flex justify-center items-center">
+                    <div className="h-8 relative w-full flex justify-center items-center px-4 text-center">
                         <AnimatePresence mode="wait">
                             <motion.h3
                                 key={wordIndex}
@@ -129,9 +149,9 @@ export default function PainSectionFinal() {
                                 animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
                                 exit={{ y: -20, opacity: 0, filter: "blur(4px)" }}
                                 transition={{ duration: 0.3 }}
-                                className={`text-xl font-black italic tracking-tighter ${WARNING_WORDS[wordIndex].color}`}
+                                className={`text-xl font-black italic tracking-tighter ${data.warning_words[wordIndex].color.replace('text-amber-500', 'text-yellow-500')}`}
                             >
-                                {WARNING_WORDS[wordIndex].text}
+                                {data.warning_words[wordIndex].text}
                             </motion.h3>
                         </AnimatePresence>
                     </div>
@@ -149,7 +169,7 @@ export default function PainSectionFinal() {
 
           {/* DIREITA */}
           <div className="flex flex-col justify-center relative z-20 h-full order-3">
-            <GlassCard item={PAIN_POINT_RIGHT} index={2} align="right" highlight={true} />
+            <GlassCard item={data.pain_points.right} index={2} align="right" highlight={true} />
           </div>
 
         </div>
@@ -158,7 +178,7 @@ export default function PainSectionFinal() {
   );
 }
 
-// --- SVG LINE ---
+// ... PathLine e GlassCard mantidos conforme original para não quebrar o layout técnico
 function PathLine({ d, reverse = false }: { d: string, reverse?: boolean }) {
     return (
         <>
@@ -176,8 +196,7 @@ function PathLine({ d, reverse = false }: { d: string, reverse?: boolean }) {
     )
 }
 
-// --- CARD PREMIUM (GLASS + BLUR REVEAL) ---
-function GlassCard({ item, index, align, highlight = false }: { item: any, index: number, align: 'left' | 'right', highlight?: boolean }) {
+function GlassCard({ item, index, align, highlight = false }: { item: PainPoint, index: number, align: 'left' | 'right', highlight?: boolean }) {
     const isRight = align === 'right';
     
     return (
@@ -197,24 +216,16 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
                 cursor-default overflow-hidden
             `}
         >
-            {/* Brilho de fundo no Hover */}
-            <div className={`
-                absolute inset-0 bg-gradient-to-br from-yellow-400/0 via-transparent to-transparent opacity-0 
-                group-hover:opacity-10 group-hover:from-yellow-400/10 transition-all duration-500 pointer-events-none
-                ${isRight ? 'bg-gradient-to-bl' : ''}
-            `} />
+            <div className={`absolute inset-0 bg-gradient-to-br from-yellow-400/0 via-transparent to-transparent opacity-0 
+                group-hover:opacity-10 group-hover:from-yellow-400/10 transition-all duration-500 pointer-events-none ${isRight ? 'bg-gradient-to-bl' : ''}`} />
 
-            {/* Cabeçalho do Card */}
             <div className={`relative flex items-center gap-4 mb-4 ${isRight ? 'lg:flex-row-reverse' : ''}`}>
-                
-                {/* Ícone com Animação */}
                 <div className="relative w-12 h-12">
                      <div className="absolute inset-0 bg-yellow-50 rounded-xl rotate-0 group-hover:rotate-6 transition-transform duration-300" />
                      <div className="absolute inset-0 bg-white border border-yellow-100 rounded-xl flex items-center justify-center text-yellow-500 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
                         <Icon icon={item.icon} className="w-6 h-6" />
                      </div>
                 </div>
-
                 <div>
                     <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider group-hover:text-yellow-500 transition-colors">
                         Impacto Real
@@ -225,22 +236,15 @@ function GlassCard({ item, index, align, highlight = false }: { item: any, index
                 </div>
             </div>
             
-            {/* Texto */}
             <div className="relative z-10">
                 <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">
-                    {item.title}
+                    {item.title || "Ponto de Atenção"}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed font-medium group-hover:text-gray-600">
                     {item.description}
                 </p>
             </div>
-
-            {/* Indicador Visual de Conexão */}
-            <div className={`
-                absolute bottom-0 h-[2px] bg-yellow-400/0 group-hover:bg-yellow-400 transition-all duration-500
-                ${isRight ? 'right-8 w-0 group-hover:w-16' : 'left-8 w-0 group-hover:w-16'}
-            `} />
-
+            <div className={`absolute bottom-0 h-[2px] bg-yellow-400/0 group-hover:bg-yellow-400 transition-all duration-500 ${isRight ? 'right-8 w-0 group-hover:w-16' : 'left-8 w-0 group-hover:w-16'}`} />
         </motion.div>
     )
 }

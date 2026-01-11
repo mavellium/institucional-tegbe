@@ -1,131 +1,23 @@
-
-import {
-  fetchComponentData,
-  StepData,
-} from "@/lib/api";
-import ComoFazemos from "@/components/ComoFazemos";
-import { ChamadaAcao } from "@/components/ChamadaAcao";
-import { Footer } from "@/components/Footer";
-import FaqHome from "@/components/FaqHome";
-import RedirectSobre from "@/components/RedirectSobre";
-import RedirectTegpro from "@/components/RedirectTegpro";
-import RedirectMarketing from "@/components/RedirectMarketing";
-import RedirectEcommerce from "@/components/RedirectEcommerce";
-import Dores from "@/components/Dores";
-import { Headline } from "@/components/Headline";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import Schema from "@/components/Schema";
+import { Headline } from "@/components/Headline";
+import Dores from "@/components/Dores";
+import ComoFazemos from "@/components/ComoFazemos";
 import Solucoes from "@/components/Solucoes";
 import Metricas from "@/components/Metricas";
-import UltimaChamadaAcao from "@/components/UltimaChamadaAcao";
-import News from "@/components/Resultados";
+import RedirectEcommerce from "@/components/RedirectEcommerce";
+import RedirectMarketing from "@/components/RedirectMarketing";
+import RedirectTegpro from "@/components/RedirectTegpro";
 import Resultados from "@/components/Resultados";
+import RedirectSobre from "@/components/RedirectSobre";
+import FaqHome from "@/components/FaqHome";
+import UltimaChamadaAcao from "@/components/UltimaChamadaAcao";
 
-// Função Wrapper Segura para o Fetch
-async function getSafeData(slug: string) {
-  try {
-    const res = await fetchComponentData(slug);
-    return res;
-  } catch (error) {
-    console.warn(`[Page] Erro ao carregar dados de ${slug}. Usando fallback.`);
-    return { data: null };
-  }
-}
+// --- REMOVEMOS O GETSAFEDATA E O FETCHCOMPONENTDATA DAQUI ---
+// Não queremos que a Home dependa de um slug que pode dar 404 e derrubar o site.
 
 export default async function Home() {
-  const [
-    stepsResponse,
-    ecommerceResponse,
-    setorsResponse,
-    logosResponse,
-    headlineResponse,
-    dnaResponse,
-    newsResponse,
-  ] = await Promise.all([
-    getSafeData('steps'),
-    getSafeData('ecommerce'),
-    getSafeData('setors'),
-    getSafeData('logos'),
-    getSafeData('headline'),
-    getSafeData('dna'),
-    getSafeData('casos-sucesso'),
-  ]);
-
-  // --- TRANSFORMAÇÃO: STEPS ---
-  const transformStepsData = (apiData: any): StepData[] => {
-    if (!apiData) return [];
-
-    if (Array.isArray(apiData)) {
-      return apiData.map((item: any, index: number) => ({
-        id: item.id || index + 1,
-        title: item.title || item.nome || `Step ${index + 1}`,
-        subtitle: item.subtitle || item.subtitulo || '',
-        description: item.description || item.descricao || '',
-        image: item.image || item.imagem || '/steps1.png'
-      }));
-    }
-
-    if (typeof apiData === 'object') {
-      const arrayKeys = Object.keys(apiData).filter(key => Array.isArray(apiData[key]));
-      if (arrayKeys.length > 0) {
-        return apiData[arrayKeys[0]].map((item: any, index: number) => ({
-          id: item.id || index + 1,
-          title: item.title || item.nome || `Step ${index + 1}`,
-          subtitle: item.subtitle || item.subtitulo || '',
-          description: item.description || item.descricao || '',
-          image: item.image || item.imagem || '/steps1.png'
-        }));
-      }
-    }
-
-    return [];
-  };
-
-  const stepsData = transformStepsData(stepsResponse.data);
-
-  // --- TRANSFORMAÇÃO: LOGOS ---
-  const logosData = Array.isArray(logosResponse.data) ?
-    logosResponse.data.map((item: any, index: number) => ({
-      id: item.id || index + 1,
-      src: item.logo || item.src || item.image || `/logo${(index % 4) + 1}.svg`,
-      alt: item.name || item.alt || `Logo ${index + 1}`,
-      width: item.width || 100,
-      height: item.height || 100,
-      url: item.url || item.link,
-    })) : [];
-
-  // --- TRANSFORMAÇÃO: HEADLINE ---
-  const headlineData = headlineResponse.data || undefined;
-
-  // // --- TRANSFORMAÇÃO: DNA ---
-  // let dnaData: DnaInputData | undefined = undefined;
-  // if (dnaResponse.data) {
-  //   const rawData = dnaResponse.data;
-  //   // Tenta pegar de 'values' (padrão) ou usa o objeto direto ou array direto
-  //   const actualContent = (rawData.values && Array.isArray(rawData.values)) 
-  //       ? rawData.values[0] 
-  //       : (Array.isArray(rawData) ? rawData[0] : rawData);
-        
-  //   if (actualContent) {
-  //     dnaData = actualContent;
-  //   }
-  // }
-
-  // --- TRANSFORMAÇÃO: NEWS (CASOS DE SUCESSO) ---
-  // let newsData: NewsInputData | undefined = undefined;
-  // if (newsResponse.data && Array.isArray(newsResponse.data)) {
-  //   newsData = {
-  //     items: newsResponse.data.map((item: any) => ({
-  //       id: item.id,
-  //       name: item.name,
-  //       logo: item.logo || "",
-  //       description: item.description,
-  //       result: item.result,
-  //       tags: item.tags || []
-  //     }))
-  //   };
-  // }
-
   return (
     <>
       <Schema
@@ -187,21 +79,30 @@ export default async function Home() {
           }
         }}
       />
+      
       <Header />
+      
       <main>
-        <Headline data={headlineData} />
-        <Dores/>
+        {/* ESTRATÉGIA MAVELLIUM:
+          Cada componente abaixo agora deve ter seu próprio useEffect e fetch interno.
+          Isso evita que um erro de API em um componente quebre a página toda.
+        */}
+        <Headline /> 
+        <Dores />
         <ComoFazemos />
-        <Solucoes/>   
-        <Metricas/>
-        <RedirectEcommerce/>
-        <RedirectMarketing/>
-        <RedirectTegpro/>
+        <Solucoes />   
+        <Metricas />
+        
+        <RedirectEcommerce />
+        <RedirectMarketing />
+        <RedirectTegpro />
+        
         <Resultados />
-        <RedirectSobre/>
-        <FaqHome/>
-        <UltimaChamadaAcao/>
+        <RedirectSobre />
+        <FaqHome />
+        <UltimaChamadaAcao />
       </main>
+
       <Footer />
     </>
   );
