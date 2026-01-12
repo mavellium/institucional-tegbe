@@ -50,98 +50,86 @@ export function Header({ variant = 'default', data }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
-  // LÓGICA PRINCIPAL:
-  // Se vier dados da API (data), usa eles.
-  // Se não, usa o JSON importado (headerConfig).
   const config = (data || headerConfig) as HeaderData;
-
-  // Garante que links seja sempre um array seguro
   const navLinks = config.links || [];
 
   const theme = useMemo(() => {
-    // Tenta pegar a variante do config. Se não existir, pega 'ecommerce'
     return config.variants[variant] || config.variants['ecommerce'];
   }, [variant, config]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 20
-      if (isScrolled !== scrolled) setScrolled(isScrolled)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [scrolled])
+  }, [])
 
+  // Lock scroll quando menu mobile estiver aberto
   useEffect(() => {
-    const handleResize = () => window.innerWidth >= 768 && setMenuOpen(false)
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuOpen && !document.getElementById("mobileMenu")?.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-
-    window.addEventListener("resize", handleResize)
-    window.addEventListener("click", handleClickOutside)
-    return () => {
-      window.removeEventListener("resize", handleResize)
-      window.removeEventListener("click", handleClickOutside)
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
     }
   }, [menuOpen])
 
-  // Se por algum motivo o config estiver vazio (arquivo json corrompido), não renderiza
+  const logoStyle = useMemo(() => {
+    return variant === 'marketing' ? "brightness-0 invert" : "";
+  }, [variant]);
+
   if (!config) return null;
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${
         scrolled
-          ? "bg-[#020202]/80 backdrop-blur-md border-b border-white/5 py-3"
-          : "bg-transparent border-b border-transparent py-5"
+          ? "bg-black/40 backdrop-blur-xl border-b border-white/5 py-3"
+          : "bg-transparent border-b border-transparent py-6"
       }`}
     >
-      <div className="w-full px-6">
-        <div className="flex items-center justify-between mx-auto max-w-7xl">
+      <div className="container mx-auto px-4 md:px-8">
+        <div className="flex items-center justify-between gap-4">
 
           {/* --- LOGO --- */}
-          <div className="flex items-center gap-6">
-            <Link href="/" aria-label="Home" className="flex items-center group">
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center group transition-transform active:scale-95">
               <Image
                 src={config.general.logo}
                 alt={config.general.logoAlt}
-                width={150}
-                height={50}
+                width={160}
+                height={40}
                 priority 
-                className="text-yellow-400 object-contain w-32 md:w-36 lg:w-40 transition-opacity group-hover:opacity-80"
-                style={{ width: 'auto', height: 'auto' }}
+                // A mágica acontece aqui: logoStyle injeta a classe de branco se for marketing
+                className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${logoStyle}`}
               />
             </Link>
-
-            {/* --- NAVEGAÇÃO DESKTOP --- */}
-            <nav aria-label="Menu principal" className="hidden md:flex items-center gap-8 ml-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`text-sm font-medium transition-all duration-300 relative group ${
-                    pathname === link.href ? "text-white" : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  {link.name}
-                  <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${theme.underline} transition-all duration-300 group-hover:w-full`}></span>
-                </Link>
-              ))}
-            </nav>
           </div>
 
-          {/* --- AÇÕES (DIREITA) --- */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/consultor-oficial" className="hidden lg:block opacity-70 hover:opacity-100 transition-opacity">
+          {/* --- RESTANTE DO CÓDIGO (Navegação, CTA, Mobile Menu...) --- */}
+          {/* Mantenha exatamente como a versão anterior que ajustamos para o iPad */}
+          
+          <nav aria-label="Menu principal" className="hidden xl:flex items-center gap-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`text-sm font-medium tracking-tight transition-all duration-300 relative group ${
+                  pathname === link.href ? "text-white" : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {link.name}
+                <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] ${theme.underline} transition-all duration-300 group-hover:w-full`}></span>
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3 sm:gap-6">
+            <Link href="/consultor-oficial" className="hidden md:block opacity-60 hover:opacity-100 transition-all hover:scale-110">
               <Image
                 src={config.general.consultantBadge}
                 alt="Consultor Oficial"
-                width={40}
-                height={40}
-                className="w-10 h-10"
+                width={36}
+                height={36}
+                className={`w-8 h-8 lg:w-9 lg:h-9`}
               />
             </Link>
 
@@ -149,71 +137,61 @@ export function Header({ variant = 'default', data }: HeaderProps) {
               href={config.general.ctaLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative"
-              aria-label={config.general.ctaText}
+              className="hidden sm:block group relative"
             >
-              <div className={`absolute -inset-1 rounded-full opacity-40 blur-md transition duration-500 group-hover:opacity-70 ${theme.underline}`}></div>
+              <div className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}></div>
               <button
-                className={`relative inline-flex h-10 items-center justify-center overflow-hidden rounded-full px-8 py-2 font-bold text-sm transition-all duration-300 hover:scale-105 ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary} ${theme.glow}`}
+                className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary} border border-white/10`}
               >
-                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-10" />
-                <span className="relative z-20 tracking-wide uppercase">{config.general.ctaText}</span>
+                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
+                <span className="relative z-20 uppercase">{config.general.ctaText}</span>
               </button>
             </a>
-          </div>
 
-          {/* --- MENU HAMBURGER --- */}
-          <Button
-            size="icon"
-            variant="ghost"
-            aria-controls="mobileMenu"
-            aria-expanded={menuOpen}
-            aria-label="Abrir Menu"
-            className="md:hidden text-white hover:bg-white/10"
-            onClick={(e) => {
-              e.stopPropagation()
-              setMenuOpen(!menuOpen)
-            }}
-          >
-            <Icon
-              icon={menuOpen ? "solar:close-circle-linear" : "solar:hamburger-menu-outline"}
-              className={`size-8 transition-colors ${menuOpen ? theme.accentText : "text-white"}`}
-            />
-          </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="xl:hidden text-white hover:bg-white/5 rounded-full"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <Icon
+                icon={menuOpen ? "ph:x-light" : "ph:list-light"}
+                className={`size-7 transition-all duration-300 ${menuOpen ? 'rotate-90' : 'rotate-0'}`}
+              />
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* --- MENU MOBILE --- */}
+      {/* --- MENU MOBILE / TABLET OVERLAY --- */}
       <div
-        id="mobileMenu"
-        className={`absolute top-full left-0 w-full bg-[#050505]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl overflow-hidden transition-all duration-500 ease-in-out md:hidden ${
-          menuOpen ? "max-h-[500px] opacity-100 visible" : "max-h-0 opacity-0 invisible"
+        className={`fixed inset-0 top-[60px] w-full bg-black/95 backdrop-blur-2xl z-[-1] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] xl:hidden ${
+          menuOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
         }`}
       >
-        <nav className="flex flex-col items-center py-10 space-y-6">
-          {navLinks.map((link) => (
+        <nav className="flex flex-col items-center justify-center h-full space-y-8 pb-20">
+          {navLinks.map((link, i) => (
             <Link
               key={link.name}
               href={link.href}
-              className={`text-xl font-medium text-gray-300 transition-all duration-300 hover:tracking-wider ${theme.hoverText}`}
+              style={{ transitionDelay: `${i * 50}ms` }}
+              className={`text-3xl font-light tracking-tighter text-white/70 transition-all hover:text-white hover:tracking-normal ${
+                menuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+              }`}
               onClick={() => setMenuOpen(false)}
             >
               {link.name}
             </Link>
           ))}
 
-          <div className="pt-6 w-full px-8 flex flex-col items-center gap-4">
-            <Image src={config.general.consultantBadge} alt="Consultor" width={40} height={40} className="opacity-60" />
-            <a
+          <div className={`pt-10 flex flex-col items-center gap-6 transition-all duration-700 delay-300 ${menuOpen ? "opacity-100" : "opacity-0"}`}>
+             <div className="h-[1px] w-12 bg-white/20" />
+             <a
               href={config.general.ctaLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex justify-center"
+              className="text-sm uppercase tracking-[0.2em] font-bold text-white py-4 px-10 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all"
               onClick={() => setMenuOpen(false)}
             >
-              <Button className={`w-full h-12 rounded-full font-bold text-base shadow-lg ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary}`}>
-                {config.general.ctaText.toUpperCase()}
-              </Button>
+              {config.general.ctaText}
             </a>
           </div>
         </nav>
