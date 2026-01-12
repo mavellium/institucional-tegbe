@@ -167,7 +167,7 @@ export default function CertifiedSection() {
               <span className="relative z-10">{content.cta.text}</span>
               <Icon 
                 icon="mdi:arrow-right" 
-                className="absolute right-4 opacity-0 group-hover:opacity-100 transition-all duration-300" 
+                className="absolute z-10 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300" 
                 width="24"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />

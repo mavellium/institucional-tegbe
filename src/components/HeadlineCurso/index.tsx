@@ -178,7 +178,7 @@ export default function HeroSplit({
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 flex justify-center w-full items-center sm:w-auto">
               <a href={data.content.cta.primary.url} className="group relative">
                 <div 
                     className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"

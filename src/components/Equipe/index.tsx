@@ -255,7 +255,7 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
               <span>{data.cta.text}</span>
               <Icon
                 icon={data.cta.icon || "lucide:arrow-right"}
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-x-1"
               />
             </a>
             <p className={`mt-4 text-[11px] ${theme.ctaSubtitle} font-medium tracking-widest uppercase`}>

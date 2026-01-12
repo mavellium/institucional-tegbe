@@ -179,6 +179,8 @@ export default function AuthoritySectionFinal() {
                             <div className="h-12 md:h-16 w-auto flex items-center justify-center grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out">
                                 <img 
                                     src={logo.src} 
+                                    width={500}
+                                    height={100}
                                     alt={logo.alt} 
                                     className="h-full w-auto object-contain max-w-[180px]" 
                                 />
