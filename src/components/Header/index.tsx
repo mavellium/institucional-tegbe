@@ -7,24 +7,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Icon } from "@iconify/react"
 
-// IMPORTAÇÃO DIRETA DO JSON (Sua fonte de verdade)
-import headerConfig from "@/json/Header/config.json"
-
 // --- TIPAGEM ---
-
-export type HeaderVariant = 'default' | 'marketing';
-
-interface ThemeConfig {
-  primary: string;
-  hoverBg: string;
-  textOnPrimary: string;
-  accentText: string;
-  hoverText: string;
-  border: string;
-  glow: string;
-  underline: string;
-}
-
 export interface HeaderData {
   general: {
     logo: string;
@@ -37,26 +20,33 @@ export interface HeaderData {
     name: string;
     href: string;
   }>;
-  variants: Record<string, ThemeConfig>; // Alterado para string para aceitar o JSON flexível
 }
 
 interface HeaderProps {
-  variant?: HeaderVariant;
-  data?: HeaderData | null; // Dados opcionais vindos da API
+  variant?: 'default' | 'marketing';
 }
 
-export function Header({ variant = 'default', data }: HeaderProps) {
+export function Header({ variant = 'default' }: HeaderProps) {
+  const [data, setData] = useState<HeaderData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
-  const config = (data || headerConfig) as HeaderData;
-  const navLinks = config.links || [];
+  // 1. INTEGRAÇÃO COM O ENDPOINT
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header')
+        const result = await response.json()
+        setData(result)
+      } catch (error) {
+        console.error("Erro ao carregar dados do Header:", error)
+      }
+    }
+    fetchData()
+  }, [])
 
-  const theme = useMemo(() => {
-    return config.variants[variant] || config.variants['ecommerce'];
-  }, [variant, config]);
-
+  // 2. CONTROLE DE ESTADOS
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll, { passive: true })
@@ -64,54 +54,61 @@ export function Header({ variant = 'default', data }: HeaderProps) {
   }, [])
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
+    document.body.style.overflow = menuOpen ? 'hidden' : 'unset'
   }, [menuOpen])
 
-  const logoStyle = useMemo(() => {
-    return variant === 'marketing' ? "brightness-0 invert" : "";
+  // 3. CORES FIXAS (Bilateral Tegbe/Marketing - Padrão Mavellium)
+  const theme = useMemo(() => {
+    if (variant === 'marketing') {
+      return {
+        primary: "bg-[#E31B63]",
+        hoverBg: "hover:bg-[#FF1758]",
+        textOnPrimary: "text-white",
+        underline: "bg-[#E31B63]",
+        logoFilter: "brightness-0 invert"
+      }
+    }
+    // Default / Ecommerce
+    return {
+      primary: "bg-[#FFCC00]",
+      hoverBg: "hover:bg-[#FFDB15]",
+      textOnPrimary: "text-black",
+      underline: "bg-[#FFCC00]",
+      logoFilter: ""
+    }
   }, [variant]);
 
-  // LÓGICA DE UNIFORMIDADE:
-  // Se o menu estiver aberto, ignoramos o 'py-3' do scroll e mantemos o fundo sólido.
   const headerStyles = useMemo(() => {
-    if (menuOpen) {
-      return "bg-[#050505] py-5 border-b border-white/10"; // Estado uniforme quando aberto
-    }
+    if (menuOpen) return "bg-[#050505] py-5 border-b border-white/10";
     return scrolled
       ? "bg-black/40 backdrop-blur-xl border-b border-white/5 py-3"
       : "bg-transparent border-b border-transparent py-6";
   }, [scrolled, menuOpen]);
 
-  if (!config) return null;
+  if (!data) return null;
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${headerStyles}`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${headerStyles}`}>
       <div className="container mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between gap-4">
-
-          {/* --- LOGO --- */}
+          
+          {/* LOGO */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center group transition-transform active:scale-95" onClick={() => setMenuOpen(false)}>
               <Image
-                src={config.general.logo}
-                alt={config.general.logoAlt}
+                src={data.general.logo}
+                alt={data.general.logoAlt}
                 width={160}
                 height={40}
                 priority 
-                className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${logoStyle}`}
+                className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${theme.logoFilter}`}
               />
             </Link>
           </div>
 
-          {/* --- NAVEGAÇÃO DESKTOP --- */}
+          {/* NAVEGAÇÃO DESKTOP */}
           <nav aria-label="Menu principal" className="hidden xl:flex items-center gap-x-8">
-            {navLinks.map((link) => (
+            {data.links.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
@@ -125,75 +122,60 @@ export function Header({ variant = 'default', data }: HeaderProps) {
             ))}
           </nav>
 
-          {/* --- AÇÕES --- */}
+          {/* AÇÕES (CTA FIXO COM CORES DAS VARIANTES) */}
           <div className="flex items-center gap-3 sm:gap-6">
             <Link href="/consultor-oficial" className="hidden md:block opacity-60 hover:opacity-100 transition-all hover:scale-110">
-              <Image
-                src={config.general.consultantBadge}
-                alt="Consultor Oficial"
-                width={36}
-                height={36}
-                className={`w-8 h-8 lg:w-9 lg:h-9`}
-              />
+              <Image src={data.general.consultantBadge} alt="Badge" width={36} height={36} className={`w-8 h-8 lg:w-9 lg:h-9 `} />
             </Link>
 
-            <a href={config.general.ctaLink} target="_blank" rel="noopener noreferrer" className="hidden sm:block group relative">
+            <a href={data.general.ctaLink} target="_blank" rel="noopener noreferrer" className="hidden sm:block group relative">
               <div className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}></div>
-              <button className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 ${theme.primary} ${theme.hoverBg} ${theme.textOnPrimary} border border-white/10`}>
+              <button className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}>
                 <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
-                <span className="relative z-20 uppercase">{config.general.ctaText}</span>
+                <span className="relative z-20 uppercase">{data.general.ctaText}</span>
               </button>
             </a>
 
-            {/* BOTÃO HAMBURGER - Aumentado para melhor UX no toque */}
-            <Button
-              size="icon"
-              variant="ghost"
-              className="xl:hidden text-white hover:bg-white/5 rounded-full z-[110]"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <Icon
-                icon={menuOpen ? "ph:x-light" : "ph:list-light"}
-                className={`size-8 transition-all duration-300 ${menuOpen ? 'rotate-90' : 'rotate-0'}`}
-              />
+            <Button size="icon" variant="ghost" className="xl:hidden text-white hover:bg-white/5 rounded-full z-[110]" onClick={() => setMenuOpen(!menuOpen)}>
+              <Icon icon={menuOpen ? "ph:x-light" : "ph:list-light"} className="size-8 transition-all duration-300" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* --- MENU MOBILE OVERLAY (Correção de Visual e Uniformidade) --- */}
-      <div
-        className={`fixed inset-0 top-0 w-full h-screen bg-[#050505] z-[-1] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] xl:hidden ${
+      {/* MENU MOBILE OVERLAY: CORREÇÃO PARA ALTURAS < 700PX */}
+      <div className={`fixed inset-0 w-full h-screen bg-[#050505] z-[-1] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] xl:hidden ${
           menuOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
-        }`}
-      >
-        <nav className="flex flex-col items-center justify-center h-full space-y-8 px-6">
-          {navLinks.map((link, i) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              style={{ transitionDelay: menuOpen ? `${i * 70}ms` : "0ms" }}
-              className={`text-3xl font-light tracking-tighter text-white/70 transition-all active:scale-95 ${
-                menuOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
+        }`}>
+        <div className="h-full w-full overflow-y-auto overscroll-contain flex flex-col items-center pt-24 pb-12">
+          <nav className="flex flex-col items-center space-y-8 px-6 w-full">
+            {data.links.map((link, i) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                style={{ transitionDelay: menuOpen ? `${i * 70}ms` : "0ms" }}
+                className={`text-3xl font-light tracking-tighter text-white/70 transition-all active:scale-95 ${
+                  menuOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                }`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
 
-          <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-             <div className="h-[1px] w-12 bg-white/20" />
-             <a
-              href={config.general.ctaLink}
-              className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 ${theme.primary} ${theme.textOnPrimary} shadow-2xl shadow-white/5`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {config.general.ctaText}
-            </a>
-            <Image src={config.general.consultantBadge} alt="Badge" width={40} height={40} className={`opacity-40`} />
-          </div>
-        </nav>
+            <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+               <div className="h-[1px] w-12 bg-white/20" />
+               <a
+                href={data.general.ctaLink}
+                className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 shadow-2xl shadow-white/5 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {data.general.ctaText}
+              </a>
+              <Image src={data.general.consultantBadge} alt="Badge" width={40} height={40} className={`opacity-40`} />
+            </div>
+          </nav>
+        </div>
       </div>
     </header>
   )
