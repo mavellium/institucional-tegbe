@@ -12,7 +12,7 @@ import headerConfig from "@/json/Header/config.json"
 
 // --- TIPAGEM ---
 
-export type HeaderVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
+export type HeaderVariant = 'default' | 'marketing';
 
 interface ThemeConfig {
   primary: string;
@@ -45,7 +45,7 @@ interface HeaderProps {
   data?: HeaderData | null; // Dados opcionais vindos da API
 }
 
-export function Header({ variant = 'ecommerce', data }: HeaderProps) {
+export function Header({ variant = 'default', data }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()

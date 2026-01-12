@@ -74,7 +74,7 @@ export default async function EcommercePage() {
                 }}
             />
             
-            <Header variant="ecommerce" />
+            <Header/>
             
             {headlineData && <Headline variant="ecommerce" />}
             

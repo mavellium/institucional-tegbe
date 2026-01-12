@@ -11,8 +11,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface compatível com o "values" do JSON
-export interface TimelineFeature {
+// Interface compatível com o JSON da API
+export interface TimelineItem {
   id: string;
   step: string;
   title: string;
@@ -20,20 +20,19 @@ export interface TimelineFeature {
   image: string;
 }
 
-interface HistoriaProps {
-  data: TimelineFeature[];
+interface HistoriaData {
+  header: { badge: string; title: string; subtitle: string; };
+  timeline: TimelineItem[];
 }
 
-const Historia = ({ data }: HistoriaProps) => {
-  // Se não houver dados, não renderiza a seção
-  if (!data || data.length === 0) return null;
-
-  const [activeFeature, setActiveFeature] = useState(-1);
+const Historia = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/historia" }) => {
+  const [data, setData] = useState<HistoriaData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeFeature, setActiveFeature] = useState(0); // Começa no 0 para evitar vácuo
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  // Inicializa com a primeira imagem da API
-  const [currentDesktopImage, setCurrentDesktopImage] = useState(data[0]?.image || "");
-  const [currentMobileImage, setCurrentMobileImage] = useState(data[0]?.image || "");
+  const [currentDesktopImage, setCurrentDesktopImage] = useState("");
+  const [currentMobileImage, setCurrentMobileImage] = useState("");
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const buttonsContainerRef = useRef<HTMLDivElement>(null);
@@ -44,24 +43,41 @@ const Historia = ({ data }: HistoriaProps) => {
   const previousActiveFeatureRef = useRef<number>(-1);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Função para animar a transição de imagem
+  // 1. Fetch de Dados
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(endpoint);
+        const json = await res.json();
+        if (json && json.timeline) {
+          setData(json);
+          setCurrentDesktopImage(json.timeline[0].image);
+          setCurrentMobileImage(json.timeline[0].image);
+        }
+      } catch (err) {
+        console.error("Erro na API:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [endpoint]);
+
+  // Função de transição de imagem original
   const animateImageTransition = (
     containerRef: React.RefObject<HTMLDivElement | null>,
     newImage: string,
     setImage: (img: string) => void
   ) => {
     const container = containerRef.current;
-    if (!container) {
+    if (!container || !newImage) {
       setImage(newImage);
       return;
     }
 
     gsap.killTweensOf(container);
-
     const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.set(container, { clearProps: "all" });
-      }
+      onComplete: () => { gsap.set(container, { clearProps: "all" }); }
     });
 
     tl.to(container, {
@@ -81,19 +97,17 @@ const Historia = ({ data }: HistoriaProps) => {
 
   // Efeito para troca de slide
   useEffect(() => {
-    if (activeFeature !== previousActiveFeatureRef.current) {
-      // Pega a imagem do item ativo ou do primeiro se for -1
-      const newImage = activeFeature >= 0 ? data[activeFeature].image : data[0].image;
-      
+    if (data && activeFeature !== previousActiveFeatureRef.current) {
+      const newImage = data.timeline[activeFeature]?.image || "";
       animateImageTransition(desktopImageContainerRef, newImage, setCurrentDesktopImage);
       animateImageTransition(mobileImageContainerRef, newImage, setCurrentMobileImage);
       previousActiveFeatureRef.current = activeFeature;
     }
   }, [activeFeature, data]);
 
-  // Animação de Entrada e ScrollTrigger
+  // Animação de Entrada
   useLayoutEffect(() => {
-    if (!buttonsContainerRef.current || !sectionRef.current) return;
+    if (loading || !data || !buttonsContainerRef.current || !sectionRef.current) return;
 
     const buttons = buttonsContainerRef.current.querySelectorAll('.feature-button');
     const imagePanel = sectionRef.current.querySelector('.image-panel');
@@ -110,36 +124,17 @@ const Historia = ({ data }: HistoriaProps) => {
     });
 
     timelineRef.current
-      .to(buttons, {
-        opacity: 1,
-        x: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: "power3.out"
-      })
-      .to(imagePanel, {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        duration: 0.9,
-        ease: "power3.out"
-      }, "-=0.5");
+      .to(buttons, { opacity: 1, x: 0, duration: 0.7, stagger: 0.1, ease: "power3.out" })
+      .to(imagePanel, { opacity: 1, x: 0, scale: 1, duration: 0.9, ease: "power3.out" }, "-=0.5");
 
-      // Ativa o primeiro item automaticamente após a animação de entrada
-      timelineRef.current.add(() => {
-          if (activeFeature === -1) handleFeatureChange(0);
-      }, "-=0.2");
-
-    return () => {
-      if (timelineRef.current) timelineRef.current.kill();
-    };
-  }, [data]); // Dependência adicionada caso os dados mudem
+    return () => { if (timelineRef.current) timelineRef.current.kill(); };
+  }, [loading, data]);
 
   const handleFeatureChange = (index: number) => {
-    if (isTransitioning || index === activeFeature) return;
+    if (isTransitioning || index === activeFeature || !data) return;
     setIsTransitioning(true);
     
-    if (activeFeature !== -1 && descriptionsRef.current[activeFeature]) {
+    if (descriptionsRef.current[activeFeature]) {
       gsap.to(descriptionsRef.current[activeFeature], {
         height: 0,
         opacity: 0,
@@ -169,24 +164,21 @@ const Historia = ({ data }: HistoriaProps) => {
   };
 
   const handleNavigation = (direction: 'prev' | 'next') => {
-    if (isTransitioning) return;
-    const current = activeFeature === -1 ? 0 : activeFeature;
-    let newIndex;
-    if (direction === 'next') {
-      newIndex = (current + 1) % data.length;
-    } else {
-      newIndex = (current - 1 + data.length) % data.length;
-    }
+    if (isTransitioning || !data) return;
+    const current = activeFeature;
+    const newIndex = direction === 'next' 
+      ? (current + 1) % data.timeline.length 
+      : (current - 1 + data.timeline.length) % data.timeline.length;
     handleFeatureChange(newIndex);
   };
 
   const handleMobileNav = (direction: 'prev' | 'next') => {
-      if (isTransitioning) return;
+      if (isTransitioning || !data) return;
       setIsTransitioning(true);
-      const current = activeFeature === -1 ? 0 : activeFeature;
+      const current = activeFeature;
       const newIndex = direction === 'next' 
-        ? (current + 1) % data.length 
-        : (current - 1 + data.length) % data.length;
+        ? (current + 1) % data.timeline.length 
+        : (current - 1 + data.timeline.length) % data.timeline.length;
 
       gsap.to(mobileTextContainerRef.current, {
           y: -15, opacity: 0, duration: 0.25, ease: "power2.in",
@@ -200,6 +192,12 @@ const Historia = ({ data }: HistoriaProps) => {
       });
   };
 
+  if (loading || !data) return (
+    <div className="h-[600px] flex items-center justify-center bg-[#F5F5F7]">
+      <div className="w-10 h-10 border-2 border-[#FFD700] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
   return (
     <section ref={sectionRef} className="bg-[#F5F5F7] py-24 px-6 relative overflow-hidden">
       
@@ -208,53 +206,53 @@ const Historia = ({ data }: HistoriaProps) => {
       <div className="mx-auto relative max-w-[1400px]">
         
         <div className="mb-12 md:mb-16 section-header">
-            <h4 className="text-[#0071E3] font-bold tracking-widest uppercase text-xs mb-3 flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-[#0071E3]"></span>
-                Linha do Tempo
+            <h4 className="text-[#FFD700] font-bold tracking-widest uppercase text-xs mb-3 flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-[#FFD700]"></span>
+                {data.header.badge}
             </h4>
             <h1 className="text-4xl lg:text-5xl font-bold text-[#1d1d1f] tracking-tight">
-            A Evolução da Eficiência
+                {data.header.title}
             </h1>
         </div>
 
-        {/* DESKTOP LAYOUT */}
+        {/* DESKTOP LAYOUT - EXATAMENTE O SOLICITADO */}
         <div className="hidden lg:flex flex-row overflow-hidden rounded-[40px] shadow-2xl shadow-black/20 bg-[#111111] border border-white/10 h-[650px] relative z-10">
           
           {/* Lado Esquerdo: Navegação */}
           <div className="w-[40%] p-10 flex flex-col relative bg-[#111111]">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#0071E3] via-[#0071E3]/50 to-transparent"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#FFD700] via-[#FFD700]/50 to-transparent"></div>
 
-            <div className="flex-1 overflow-y-auto pr-4 py-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex-1 overflow-y-auto pr-4 py-4 scrollbar-hide">
               <div ref={buttonsContainerRef} className="flex flex-col space-y-2">
-                {data.map((feature, index) => {
+                {data.timeline.map((item, index) => {
                   const isActive = activeFeature === index;
                   return (
                     <button
-                      key={feature.id}
+                      key={item.id}
                       onClick={() => handleFeatureChange(index)}
                       disabled={isTransitioning}
                       className={`feature-button group w-full text-left transition-all duration-500 ease-out border-l-[3px] pl-6 py-5 relative rounded-r-2xl outline-none
                         ${isActive 
-                          ? "border-[#0071E3] bg-gradient-to-r from-[#0071E3]/10 to-transparent" 
+                          ? "border-[#FFD700] bg-gradient-to-r from-[#FFD700]/10 to-transparent" 
                           : "border-white/10 hover:border-white/30 hover:bg-white/[0.02]"
                         }`}
                     >
                       <div className="flex items-center gap-4">
-                        <span className={`text-sm font-mono font-bold tracking-wider transition-colors duration-300 ${isActive ? "text-[#0071E3]" : "text-gray-500 group-hover:text-gray-400"}`}>
-                            {feature.step}
+                        <span className={`text-sm font-mono font-bold tracking-wider transition-colors duration-300 ${isActive ? "text-[#FFD700]" : "text-gray-500 group-hover:text-gray-400"}`}>
+                            {item.step}
                         </span>
                         <h3 className={`font-semibold text-xl transition-colors duration-300 ${isActive ? "text-white" : "text-gray-400 group-hover:text-white"}`}>
-                            {feature.title}
+                            {item.title}
                         </h3>
                       </div>
 
                       <div
                         ref={(el) => { descriptionsRef.current[index] = el }}
                         className="overflow-hidden"
-                        style={{ height: 0, opacity: 0 }}
+                        style={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
                       >
                         <p className="text-gray-400 mt-4 text-sm leading-relaxed font-light pr-6 pl-12 border-l border-white/10">
-                            {feature.description}
+                            {item.description}
                         </p>
                       </div>
                     </button>
@@ -266,10 +264,10 @@ const Historia = ({ data }: HistoriaProps) => {
             <div className="pt-6 mt-4 border-t border-white/10 flex justify-between items-center">
                 <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Navegue pela história</span>
                 <div className="flex gap-3">
-                    <Button variant="ghost" onClick={() => handleNavigation('prev')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#0071E3] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                    <Button variant="ghost" onClick={() => handleNavigation('prev')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
                         <Icon icon="ph:arrow-left-bold" width="18" />
                     </Button>
-                    <Button variant="ghost" onClick={() => handleNavigation('next')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#0071E3] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                    <Button variant="ghost" onClick={() => handleNavigation('next')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
                         <Icon icon="ph:arrow-right-bold" width="18" />
                     </Button>
                 </div>
@@ -281,19 +279,15 @@ const Historia = ({ data }: HistoriaProps) => {
             <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-transparent to-transparent z-10 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/80 via-transparent to-transparent z-10 pointer-events-none" />
             
-            <div 
-              ref={desktopImageContainerRef}
-              className="w-full h-full relative transform-gpu"
-            >
-                {/* Verifica se a imagem existe antes de tentar renderizar */}
+            <div ref={desktopImageContainerRef} className="w-full h-full relative transform-gpu">
                 {currentDesktopImage && (
                   <Image
                     src={currentDesktopImage}
-                    alt={activeFeature >= 0 ? data[activeFeature].title : "Tegbe História"}
+                    alt={data.timeline[activeFeature]?.title || "Tegbe"}
                     fill
                     className="object-cover opacity-90" 
                     priority
-                    unoptimized // Adicionado para garantir carregamento de URL externa sem config
+                    unoptimized
                   />
                 )}
             </div>
@@ -303,14 +297,14 @@ const Historia = ({ data }: HistoriaProps) => {
                     <div className="flex flex-col">
                         <span className="text-[10px] text-gray-500 uppercase tracking-wider leading-none mb-1">Marco Atual</span>
                         <span className="text-sm text-white font-bold leading-none">
-                            {activeFeature >= 0 ? data[activeFeature].step : data[0].step}
+                            {data.timeline[activeFeature]?.step}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-white/20"></div>
-                    <span className="text-xs text-[#0071E3] font-bold flex items-center gap-1.5">
+                    <span className="text-xs text-[#FFD700] font-bold flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0071E3] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0071E3]"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFD700] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFD700]"></span>
                         </span>
                         Validado
                     </span>
@@ -326,7 +320,7 @@ const Historia = ({ data }: HistoriaProps) => {
                 {currentMobileImage && (
                   <Image
                     src={currentMobileImage}
-                    alt={activeFeature >= 0 ? data[activeFeature].title : "Feature"}
+                    alt="Mobile Step"
                     fill
                     className="object-cover opacity-90"
                     unoptimized
@@ -338,8 +332,8 @@ const Historia = ({ data }: HistoriaProps) => {
 
           <div className="p-6 relative -mt-16 z-10">
              <div className="flex justify-between items-start mb-6">
-                <span className="px-3 py-1.5 bg-[#0071E3]/10 border border-[#0071E3]/30 text-[#0071E3] rounded-full text-xs font-mono font-bold tracking-wider backdrop-blur-sm shadow-sm">
-                    {activeFeature >= 0 ? data[activeFeature].step : data[0].step}
+                <span className="px-3 py-1.5 bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700] rounded-full text-xs font-mono font-bold tracking-wider backdrop-blur-sm shadow-sm">
+                    {data.timeline[activeFeature]?.step}
                 </span>
                 <div className="flex gap-2 mt-1">
                     <button onClick={() => handleMobileNav('prev')} disabled={isTransitioning} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/5 flex items-center justify-center text-white active:scale-95 transition-all disabled:opacity-50">
@@ -353,21 +347,21 @@ const Historia = ({ data }: HistoriaProps) => {
 
              <div ref={mobileTextContainerRef} className="min-h-[160px]">
                 <h3 className="text-2xl font-bold text-white mb-3">
-                    {activeFeature >= 0 ? data[activeFeature].title : data[0].title}
+                    {data.timeline[activeFeature]?.title}
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed font-light">
-                    {activeFeature >= 0 ? data[activeFeature].description : data[0].description}
+                    {data.timeline[activeFeature]?.description}
                 </p>
              </div>
 
              <div className="flex justify-center items-center gap-3 mt-6 pt-6 border-t border-white/10">
-                {data.map((_, i) => (
+                {data.timeline.map((_, i) => (
                     <button 
                         key={i}
                         onClick={() => !isTransitioning && handleFeatureChange(i)}
                         className={`rounded-full transition-all duration-500 ease-out ${
                             i === activeFeature 
-                                ? "w-8 h-1.5 bg-[#0071E3]" 
+                                ? "w-8 h-1.5 bg-[#FFD700]" 
                                 : "w-1.5 h-1.5 bg-gray-700 hover:bg-gray-500"
                         }`}
                         aria-label={`Ir para o passo ${i + 1}`}

@@ -81,30 +81,19 @@ export default async function SobrePage() {
                 }}
             />
 
-            <Header variant="sobre" />
-            
-            {/* Se SociosCrescimento for estático, ok. Se precisar de dados, adicione aqui */}
+            <Header/>
+             
             <SociosCrescimento variant="sobre" />
-            
             <Sobre />
-            
             <Video2 variant="sobre" />
-            
             <ServiceFlow variant="sobre"/>
-            
-            {/* Componentes Data-Driven */}
-            <Historia data={historiaData} />
-            
-            <Empresas variant="sobre" data={empresasData} />
-            
+            <Historia />
+            <Empresas variant="sobre" data={empresasData} />   
             <AnosMercado />
-            
-            <Metricas data={metricasData} />
-            
+            <Metricas />
             <Localizacao data={localizacaoData} />
-            
             <ChamadaAcao variant="sobre" data={ctaData} />
-            
+        
             <Footer variant="sobre" />
         </>
     );

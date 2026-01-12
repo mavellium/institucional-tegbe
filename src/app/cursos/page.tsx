@@ -95,7 +95,7 @@ export default async function CursosPage() {
                 }}
             />
             
-            <Header variant="cursos" />
+            <Header/>
             <HeadlineCurso/>
             <PorqueAprender />
             <Video2 variant="cursos"/>

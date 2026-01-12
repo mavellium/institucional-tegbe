@@ -72,13 +72,14 @@ export const THEMES: Record<string, ServiceTheme> = {
     card: {
       background: "bg-white",
       border: "border-white",
-      hover: "hover:border-[#0071E3]/20 hover:shadow-[0_15px_40px_rgba(0,0,0,0.06)]",
+      // Ajustado hover para brilho amarelo sutil
+      hover: "hover:border-[#FFCC00]/20 hover:shadow-[0_15px_40px_rgba(255,204,0,0.08)]",
       wideBackground: "bg-white"
     },
-    accent: "#0071E3",
+    accent: "#FFCC00", // AMARELO TEGBE
     badge: {
-      background: "bg-[#F5F5F7] text-[#1d1d1f]",
-      color: "#0071E3"
+      background: "bg-[#F5F5F7]",
+      color: "#FFCC00" // Cor do ponto/ícone no badge
     }
   }
 };

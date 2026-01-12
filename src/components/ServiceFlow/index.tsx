@@ -28,7 +28,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
       try {
         setLoading(true);
         // Usando o proxy configurado para evitar o NetworkError
-        const response = await fetch('/api-tegbe/tegbe-institucional/json/cards');
+        const response = await fetch('/api-tegbe/tegbe-institucional/cards');
         const allVariants = await response.json();
 
         // Filtra o conteúdo com base na variante da prop
