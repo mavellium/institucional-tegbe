@@ -224,7 +224,6 @@ export default function NewsCarousel() {
                 {Array.from({ length: maxIndex + 1 }).map((_, index) => (
                 <button
                     key={index}
-                    aria-label='Botão de Paginação'
                     onClick={() => {
                     setCurrentIndex(index);
                     snapToPosition(index);

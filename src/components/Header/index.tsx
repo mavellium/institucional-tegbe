@@ -130,7 +130,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
             <a href={data.general.ctaLink} target="_blank" rel="noopener noreferrer" className="hidden sm:block group relative">
               <div className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}></div>
-              <button aria-label="Botão de Menu" className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}>
+              <button className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}>
                 <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
                 <span className="relative z-20 uppercase">{data.general.ctaText}</span>
               </button>
