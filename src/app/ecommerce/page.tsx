@@ -16,29 +16,29 @@ import ServiceFlow from "@/components/ServiceFlow";
 import CertifiedSection from "@/components/ServiceFlow/CertifiedSection";
 
 async function getSafeData(slug: string) {
-  try {
-    const res = await fetchComponentData(slug);
-    
-    // Verificação baseada em existência, evitando o erro de propriedade 'status'
-    if (!res || !res.data) {
-      console.warn(`[Tegbe Build] Dados não encontrados para: ${slug}`);
-      return { data: null };
+    try {
+        const res = await fetchComponentData(slug);
+
+        // Verificação baseada em existência, evitando o erro de propriedade 'status'
+        if (!res || !res.data) {
+            console.warn(`[Tegbe Build] Dados não encontrados para: ${slug}`);
+            return { data: null };
+        }
+
+        return res;
+    } catch (error) {
+        return { data: null };
     }
-    
-    return res;
-  } catch (error) {
-    return { data: null };
-  }
 }
 
 export default async function EcommercePage() {
     // PERFORMANCE: Busca paralela
     const [
-        headlineRes, 
-        companyRes, 
-        ctaRes, 
+        headlineRes,
+        companyRes,
+        ctaRes,
         equipeRes,
-        stepsRes 
+        stepsRes
     ] = await Promise.all([
         getSafeData('headline'),
         getSafeData('company'),
@@ -54,7 +54,7 @@ export default async function EcommercePage() {
     const companysData = companyRes?.data?.ecommerce ?? null;
     const ctaData = ctaRes?.data?.ecommerce ?? null;
     const equipeData = equipeRes?.data?.ecommerce ?? null;
-    
+
     // Tratamento para garantir que steps seja sempre um Array
     const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 
@@ -67,32 +67,65 @@ export default async function EcommercePage() {
                     "@context": "https://schema.org",
                     "@type": "Service",
                     name: "E-commerce",
+                    description: "Consultoria especializada em e-commerce para escalar vendas online. Estratégia, tráfego pago, marketplaces, CRM e performance digital com foco em resultados reais.",
                     provider: {
                         "@type": "Organization",
                         name: "Tegbe",
+                        description: "Agência de marketing digital e consultoria especializada em transformar presença online em resultados reais de vendas, especializada em e-commerce e performance digital.",
+                        url: "https://tegbe.com.br",
+                        logo: "https://tegbe.com.br/logo.png",
+                        contactPoint: [{
+                            "@type": "ContactPoint",
+                            contactType: "customer support",
+                            telephone: "+55 14 98828-1001",
+                            email: "contato@tegbe.com.br",
+                            availableLanguage: "Portuguese"
+                        }],
+                        address: {
+                            "@type": "PostalAddress",
+                            streetAddress: "R. Santos Dumont, 133, Ferrarópolis",
+                            addressLocality: "Garça",
+                            addressRegion: "SP",
+                            postalCode: "17400-074",
+                            addressCountry: "BR"
+                        },
+                        sameAs: [
+                            "https://www.instagram.com/agenciategbe",
+                            "https://www.facebook.com/TegbeSolucoes",
+                            "https://www.linkedin.com/company/tegbe/"
+                        ]
+                    },
+                    areaServed: {
+                        "@type": "Place",
+                        address: {
+                            "@type": "PostalAddress",
+                            addressLocality: "Garça",
+                            addressRegion: "SP",
+                            addressCountry: "BR"
+                        }
                     },
                 }}
             />
-            
-            <Header/>
-            
-            {headlineData && <Headline variant="ecommerce" />}
-            
-            <SellMore />
-            <ServiceFlow variant="home"/>
 
-            <Passos/>
-            
-            <Animacao/>
+            <Header />
+
+            {headlineData && <Headline variant="ecommerce" />}
+
+            <SellMore />
+            <ServiceFlow variant="home" />
+
+            <Passos />
+
+            <Animacao />
             <Plataforms />
             <Logos />
-            <CertifiedSection/>
-            <SectionImage variant="ecommerce" apiData={data}/>
-            
+            <CertifiedSection />
+            <SectionImage variant="ecommerce" apiData={data} />
+
             <Equipe variant="ecommerce" data={equipeData} />
             <Companys variant="ecommerce" data={companysData} />
             <ChamadaAcao variant="ecommerce" data={ctaData} />
-            
+
             <Footer />
         </>
     );

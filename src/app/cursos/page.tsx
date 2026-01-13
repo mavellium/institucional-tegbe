@@ -4,12 +4,12 @@ import Schema from "@/components/Schema";
 import { Footer } from "@/components/Footer";
 import Expertise from "@/components/Expertise";
 import HeadlineCurso from "@/components/HeadlineCurso";
-import PorqueAprender from "@/components/PorqueAprender"; 
+import PorqueAprender from "@/components/PorqueAprender";
 import Video2 from "@/components/Video2";
 import Cursos from "@/components/Cursos";
 import CasesCarousel from "@/components/Carrossel";
 import GaleriaFotos from "@/components/GaleriaFotos";
-import ComparacaoConcorrentes from "@/components/ComparacaoConcorrentes"; 
+import ComparacaoConcorrentes from "@/components/ComparacaoConcorrentes";
 import Preco from "@/components/Preco";
 import Faq from "@/components/Faq";
 import Localizacao2 from "@/components/Localizacao2";
@@ -18,8 +18,8 @@ import { fetchComponentData } from "@/lib/api";
 // 1. Wrapper para dados de FORMS (.../form/slug)
 async function getFormData(slug: string) {
     try {
-        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/${slug}`, { 
-            next: { revalidate: 60 } 
+        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/${slug}`, {
+            next: { revalidate: 60 }
         });
         if (!res.ok) throw new Error('Falha no fetch form');
         return res.json();
@@ -31,8 +31,8 @@ async function getFormData(slug: string) {
 // 2. Wrapper para dados de JSON (.../json/slug) - ESSENCIAL PARA FAQ E CONCORRENTES
 async function getJsonData(slug: string) {
     try {
-        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/${slug}`, { 
-            next: { revalidate: 60 } 
+        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/${slug}`, {
+            next: { revalidate: 60 }
         });
         if (!res.ok) throw new Error(`Falha no fetch json ${slug}`);
         return res.json();
@@ -44,13 +44,13 @@ async function getJsonData(slug: string) {
 
 // 3. Wrapper Genérico para Componentes
 async function getSafeData(slug: string) {
-  try {
-    const res = await fetchComponentData(slug);
-    return res;
-  } catch (error) {
-    console.warn(`[CursosPage] Erro ao carregar dados de ${slug}. Usando fallback.`);
-    return { data: null };
-  }
+    try {
+        const res = await fetchComponentData(slug);
+        return res;
+    } catch (error) {
+        console.warn(`[CursosPage] Erro ao carregar dados de ${slug}. Usando fallback.`);
+        return { data: null };
+    }
 }
 
 export default async function CursosPage() {
@@ -67,8 +67,8 @@ export default async function CursosPage() {
         getSafeData('alunos'),
         getFormData('gallery'),
         getSafeData('expertise-curso'),
-        getJsonData('concorrentes'), 
-        getJsonData('faq-curso')   
+        getJsonData('concorrentes'),
+        getJsonData('faq-curso')
     ]);
 
     // 5. Extração
@@ -76,7 +76,7 @@ export default async function CursosPage() {
     const testimonialsData = testimonialsResponse?.data || null;
     const galleryData = galleryResponse?.values || [];
     const expertiseData = expertiseResponse?.data || null;
-    
+
     // Para getJsonData, pegamos a resposta direta (pois o JSON não tem wrapper "data")
     const comparisonData = comparisonResponse || null;
     const faqData = faqResponse || null;
@@ -88,28 +88,61 @@ export default async function CursosPage() {
                     "@context": "https://schema.org",
                     "@type": "Service",
                     name: "Cursos e Treinamentos",
+                    description: "Cursos práticos de marketing digital, e-commerce e marketplaces. Aprenda com especialistas da Tegbe e aplique estratégias reais para vender mais online.",
                     provider: {
                         "@type": "Organization",
                         name: "Tegbe",
+                        description: "Agência de marketing digital e consultoria especializada em transformar presença online em resultados reais de vendas, especializada em e-commerce e performance digital.",
+                        url: "https://tegbe.com.br",
+                        logo: "https://tegbe.com.br/logo.png",
+                        contactPoint: [{
+                            "@type": "ContactPoint",
+                            contactType: "customer support",
+                            telephone: "+55 14 98828-1001",
+                            email: "contato@tegbe.com.br",
+                            availableLanguage: "Portuguese"
+                        }],
+                        address: {
+                            "@type": "PostalAddress",
+                            streetAddress: "R. Santos Dumont, 133, Ferrarópolis",
+                            addressLocality: "Garça",
+                            addressRegion: "SP",
+                            postalCode: "17400-074",
+                            addressCountry: "BR"
+                        },
+                        sameAs: [
+                            "https://www.instagram.com/agenciategbe",
+                            "https://www.facebook.com/TegbeSolucoes",
+                            "https://www.linkedin.com/company/tegbe/"
+                        ]
+                    },
+                    areaServed: {
+                        "@type": "Place",
+                        address: {
+                            "@type": "PostalAddress",
+                            addressLocality: "Garça",
+                            addressRegion: "SP",
+                            addressCountry: "BR"
+                        }
                     },
                 }}
             />
-            
-            <Header/>
-            <HeadlineCurso/>
+
+            <Header />
+            <HeadlineCurso />
             <PorqueAprender />
-            <Video2 variant="cursos"/>
-            <Cursos/>
+            <Video2 variant="cursos" />
+            <Cursos />
             <CasesCarousel data={testimonialsData} />
             <GaleriaFotos data={galleryData} />
-            <Localizacao2/>
-            
-            <Expertise variant="cursos"/>
-            
-            <ComparacaoConcorrentes data={comparisonData}/>
+            <Localizacao2 />
 
-            <Faq data={faqData}/>
-            
+            <Expertise variant="cursos" />
+
+            <ComparacaoConcorrentes data={comparisonData} />
+
+            <Faq data={faqData} />
+
             <Footer variant="cursos" />
         </>
     );
