@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 // --- IMPORTAÇÕES DOS LAYOUTS ---
 import { HeadlineEcommerce } from "@/components/HeadlineEcommerce";
@@ -34,9 +34,36 @@ const themeConfig = {
   sobre: { primary: "#0071E3", selection: "selection:bg-blue-500/30", badge: { border: "border-blue-500/10", bg: "bg-blue-900/5" }, spotlight: "bg-blue-900/20", button: { glow: "from-blue-600 to-blue-400", bg: "bg-[#0071E3]", hover: "hover:bg-[#1a81eb]", border: "border-blue-500/20", text: "text-white" }, text: { highlight: "border-b border-blue-500/50", shadow: "drop-shadow-[0_0_15px_rgba(0,113,227,0.4)]" } }
 };
 
+// Dados fallback para LCP (otimização Core Web Vitals)
+const fallbackContent: JsonVariantData = {
+  titulo: {
+    chamada: "",
+    separador: "|",
+    tituloPrincipal: "Unimos Tecnologia, Marketing e Educação",
+    palavrasAnimadas: []
+  },
+  subtitulo: "Criamos máquinas de vendas escaláveis e inteligentes.",
+  badge: { cor: "#FFCC00", icone: "lucide:star", texto: "Destaque", visivel: false },
+  botao: { link: "#", icone: "lucide:arrow-right", texto: "Saiba mais", estilo: "primary", visivel: false },
+  agenda: { mes: "Janeiro", texto: "Agenda aberta", status: "Disponível", visivel: false, corStatus: "#10B981" },
+  configuracoes: {
+    efeitos: { grid: true, spotlight: true, brilhoTitulo: "medium", sombraInferior: true },
+    corFundo: "#020202",
+    corDestaque: "#FFCC00",
+    intervaloAnimacao: 3000
+  }
+};
+
+const fallbackData: HeadlineJsonData = {
+  home: fallbackContent,
+  sobre: fallbackContent,
+  ecommerce: fallbackContent,
+  marketing: fallbackContent,
+  defaultTheme: 'home'
+};
+
 export function Headline({ variant }: { variant?: HeadlineVariant }) {
   const [data, setData] = useState<HeadlineJsonData | null>(null);
-  const [loading, setLoading] = useState(true);
 
   // --- ENGINE 3D MAVELLIUM ---
   const x = useMotionValue(0);
@@ -61,21 +88,15 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
         if (result) setData(result);
       } catch (error) {
         console.error("Mavellium Engine - Error:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchHeadline();
   }, []);
 
-  if (loading || !data) return (
-    <div className="h-screen w-full bg-[#020202] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin" />
-    </div>
-  );
-
-  const activeVariant = (variant || data.defaultTheme || 'home') as HeadlineVariant;
-  const content = data[activeVariant] || data.home;
+  // SEM SPINNER - sempre renderiza com fallback ou dados reais
+  const activeVariant = (variant || data?.defaultTheme || 'home') as HeadlineVariant;
+  const activeData = data || fallbackData;
+  const content = activeData[activeVariant] || fallbackContent;
   const theme = themeConfig[activeVariant] || themeConfig.home;
 
   if (activeVariant === 'ecommerce') return <HeadlineEcommerce content={content} theme={theme} />;
@@ -92,52 +113,52 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
       {/* Background Glow */}
       <div className={`absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 pointer-events-none ${theme.spotlight}`} />
 
-      // Dentro do seu componente Headline, aplique estas classes e estilos:
-
-<div className="flex flex-col items-start text-left w-full max-w-7xl mx-auto px-4 z-10">
-    
-    <motion.h1 
-        initial={false}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col gap-1 mb-4" // Reduzi gap e margin
-        style={{ transformStyle: "preserve-3d" }}
-    >
-        {/* Chamada: Texto de apoio menor e mais elegante */}
-        <span className="text-xs md:text-sm font-bold text-yellow-500/80 tracking-[0.2em] uppercase mb-2">
-            {content.titulo?.chamada}
-        </span>
+      <div className="flex flex-col items-start text-left w-full max-w-7xl mx-auto px-4 z-10">
         
-        {/* Título Principal: Redução de escala e leading agressivo para "compactar" o impacto */}
-        <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[clamp(2rem,5.5vw,4.5rem)] font-black text-white leading-[0.9] tracking-tighter uppercase max-w-[12ch] md:max-w-[15ch]"
-              style={{ transform: "translateZ(50px)" }}>
-            {content.titulo?.tituloPrincipal}
-        </span>
-
-        {/* Palavra de Destaque: Ajustada para não empurrar o layout para baixo */}
-        {content.titulo?.palavrasAnimadas?.[0] && (
-            <span 
-                className="text-4xl md:text-6xl lg:text-[clamp(2.5rem,6vw,5rem)] font-black italic leading-[0.8] drop-shadow-2xl"
-                style={{ 
-                    color: content.titulo.palavrasAnimadas[0].cor,
-                    transform: "translateZ(80px)"
-                }}
-            >
-                {content.titulo.palavrasAnimadas[0].texto}
+        <motion.h1 
+            initial={false}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col gap-1 mb-4"
+            style={{ transformStyle: "preserve-3d" }}
+        >
+            {/* Chamada */}
+            {content.titulo?.chamada && (
+              <span className="text-xs md:text-sm font-bold text-yellow-500/80 tracking-[0.2em] uppercase mb-2">
+                  {content.titulo.chamada}
+              </span>
+            )}
+            
+            {/* Título Principal */}
+            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[clamp(2rem,5.5vw,4.5rem)] font-black text-white leading-[0.9] tracking-tighter uppercase max-w-[12ch] md:max-w-[15ch]"
+                  style={{ transform: "translateZ(50px)" }}>
+                {content.titulo?.tituloPrincipal}
             </span>
-        )}
-    </motion.h1>
 
-    {/* Subtítulo: Largura controlada para não colidir com o dashboard à direita */}
-    <motion.p 
-        initial={false}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
-        style={{ transform: "translateZ(30px)" }}
-    >
-        {content.subtitulo}
-    </motion.p>
-</div>
+            {/* Palavra de Destaque */}
+            {content.titulo?.palavrasAnimadas?.[0] && (
+                <span 
+                    className="text-4xl md:text-6xl lg:text-[clamp(2.5rem,6vw,5rem)] font-black italic leading-[0.8] drop-shadow-2xl"
+                    style={{ 
+                        color: content.titulo.palavrasAnimadas[0].cor,
+                        transform: "translateZ(80px)"
+                    }}
+                >
+                    {content.titulo.palavrasAnimadas[0].texto}
+                </span>
+            )}
+        </motion.h1>
+
+        {/* Subtítulo */}
+        <motion.p 
+            initial={false}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
+            style={{ transform: "translateZ(30px)" }}
+        >
+            {content.subtitulo}
+        </motion.p>
+      </div>
     </section>
   );
 }
