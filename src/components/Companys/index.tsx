@@ -322,7 +322,6 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
 
           <div className="hidden sm:flex gap-3">
             <motion.button
-              aria-label="Depoimento anterior"
               onClick={handlePrev}
               disabled={currentIndex === 0}
               className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
@@ -331,7 +330,6 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
               <ChevronLeft className="w-6 h-6" />
             </motion.button>
             <motion.button
-              aria-label="Próximo depoimento"
               onClick={handleNext}
               disabled={currentIndex >= maxIndex}
               className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
@@ -423,7 +421,6 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
             {Array.from({ length: maxIndex + 1 }).map((_, index) => (
               <motion.button
                 key={index}
-                aria-label={`Ir para depoimento ${index + 1}`}
                 onClick={() => {
                   setCurrentIndex(index);
                   animate(x, -index * (cardWidth + cardGap), {
@@ -443,20 +440,10 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
           </div>
 
            <div className="flex sm:hidden justify-center gap-4 mt-6">
-                <button 
-                  aria-label="Depoimento anterior"
-                  onClick={handlePrev} 
-                  disabled={currentIndex === 0} 
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30"
-                >
+                <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button 
-                  aria-label="Próximo depoimento"
-                  onClick={handleNext} 
-                  disabled={currentIndex >= maxIndex} 
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30"
-                >
+                <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronRight className="w-5 h-5" />
                 </button>
            </div>
@@ -596,7 +583,6 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
 
           <div className="hidden sm:flex gap-3">
             <motion.button
-              aria-label="Depoimento anterior"
               onClick={handlePrev}
               disabled={currentIndex === 0}
               className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
@@ -605,7 +591,6 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
               <ChevronLeft className="w-6 h-6" />
             </motion.button>
             <motion.button
-              aria-label="Próximo depoimento"
               onClick={handleNext}
               disabled={currentIndex >= maxIndex}
               className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
@@ -700,7 +685,6 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
             {Array.from({ length: maxIndex + 1 }).map((_, index) => (
               <motion.button
                 key={index}
-                aria-label={`Ir para depoimento ${index + 1}`}
                 onClick={() => {
                   setCurrentIndex(index);
                   animate(x, -index * (cardWidth + cardGap), {
@@ -720,20 +704,10 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
           </div>
 
            <div className="flex sm:hidden justify-center gap-4 mt-6">
-                <button 
-                  aria-label="Depoimento anterior"
-                  onClick={handlePrev} 
-                  disabled={currentIndex === 0} 
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30"
-                >
+                <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button 
-                  aria-label="Próximo depoimento"
-                  onClick={handleNext} 
-                  disabled={currentIndex >= maxIndex} 
-                  className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30"
-                >
+                <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
                     <ChevronRight className="w-5 h-5" />
                 </button>
            </div>
