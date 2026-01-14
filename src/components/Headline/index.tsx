@@ -97,7 +97,7 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
 <div className="flex flex-col items-start text-left w-full max-w-7xl mx-auto px-4 z-10">
     
     <motion.h1 
-        initial={{ opacity: 0, x: -20 }}
+        initial={false}
         animate={{ opacity: 1, x: 0 }}
         className="flex flex-col gap-1 mb-4" // Reduzi gap e margin
         style={{ transformStyle: "preserve-3d" }}
@@ -129,7 +129,7 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
 
     {/* Subtítulo: Largura controlada para não colidir com o dashboard à direita */}
     <motion.p 
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
         className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
