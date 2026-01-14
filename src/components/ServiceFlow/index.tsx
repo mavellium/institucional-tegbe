@@ -9,6 +9,7 @@ import { THEMES } from './constants/themes';
 import CertifiedSection from './CertifiedSection';
 import ServiceHeader from './ServiceHeader';
 import ServiceCard from './ServiceCard';
+import { Icon } from '@iconify/react';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -134,6 +135,29 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
           ))}
         </div>
       </div>
+      {/* CTA */}
+          <div className="reveal-text flex flex-col items-center mt-12">
+            <a
+              aria-label="Entre em contato pelo WhatsApp"
+              href="https://api.whatsapp.com/send?phone=5514991779502"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`
+                group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
+              `}
+            >
+              <span>Quero Estruturar e Escalar Meu Negócio</span>
+              <Icon
+                icon="lucide:arrow-right"
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </a>
+            <p className={`mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2`}>
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse`}></span>
+              Anúncios, operação e dados trabalhando juntos para vender mais.
+            </p>
+          </div>
     </section>
   );
 }

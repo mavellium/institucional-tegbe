@@ -111,12 +111,12 @@ export default async function EcommercePage() {
 
             {headlineData && <Headline variant="ecommerce" />}
 
-            <SellMore />
+            {/* <SellMore /> */}
             <ServiceFlow variant="home" />
 
             <Passos />
 
-            <Animacao />
+            {/* <Animacao /> */}
             <Plataforms />
             <Logos />
             <CertifiedSection />

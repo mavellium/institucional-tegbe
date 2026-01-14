@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
+import { Icon } from '@iconify/react'
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -44,7 +45,7 @@ export default function Steps() {
       try {
         const response = await fetch('/api-tegbe/tegbe-institucional/json/passos');
         const result: ApiResponse = await response.json();
-        
+
         if (result.values && result.values.length > 0) {
           setData(result);
           setActiveStep(result.values[0]);
@@ -75,9 +76,9 @@ export default function Steps() {
 
     stepButtonsRef.current.forEach((button, index) => {
       if (!button) return;
-      gsap.fromTo(button, 
+      gsap.fromTo(button,
         { opacity: 0, x: -30 },
-        { 
+        {
           opacity: 1, x: 0, duration: 0.6, delay: 0.1 * index,
           scrollTrigger: { trigger: leftColumnRef.current, start: "top 80%" }
         }
@@ -95,11 +96,11 @@ export default function Steps() {
       opacity: 0, y: 20, duration: 0.3, ease: "power2.in",
       onComplete: () => {
         if (stepButtonsRef.current[prevIndex]) {
-            gsap.to(stepButtonsRef.current[prevIndex], { scale: 1, duration: 0.3 });
+          gsap.to(stepButtonsRef.current[prevIndex], { scale: 1, duration: 0.3 });
         }
         setActiveStep(step);
         if (stepButtonsRef.current[nextIndex]) {
-            gsap.to(stepButtonsRef.current[nextIndex], { scale: 1.05, duration: 0.4, ease: "back.out(1.7)" });
+          gsap.to(stepButtonsRef.current[nextIndex], { scale: 1.05, duration: 0.4, ease: "back.out(1.7)" });
         }
         setTimeout(() => {
           gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { opacity: 0, y: -20 });
@@ -117,7 +118,7 @@ export default function Steps() {
   return (
     <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
       <div className="flex flex-col lg:flex-row gap-12 items-center">
-        
+
         <div ref={leftColumnRef} className="w-full lg:w-1/2">
           {/* Mapeamento do TYPE (Tag) */}
           <p className="tracking-wide text-lg sm:text-xl mb-2 text-black font-medium uppercase">
@@ -167,6 +168,25 @@ export default function Steps() {
             {activeStep.description}
           </p>
         </div>
+      </div>
+      {/* CTA */}
+      <div className="reveal-text flex flex-col items-center mt-12">
+        <a
+          aria-label="Entre em contato pelo WhatsApp"
+          href="https://api.whatsapp.com/send?phone=5514991779502"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`
+                      group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                      hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
+                    `}
+        >
+          <span>Quero Estruturar e Escalar Meu Negócio</span>
+          <Icon
+            icon="lucide:arrow-right"
+            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </a>
       </div>
     </section>
   )
