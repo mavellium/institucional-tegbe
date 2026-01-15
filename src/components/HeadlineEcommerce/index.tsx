@@ -107,7 +107,9 @@ export function HeadlineEcommerce({ content, theme }: HeadlineEcommerceProps) {
             {content.botao?.visivel && (
                 <a href={content.botao.link} target="_blank" className="group relative w-full sm:w-auto">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FFCC00] to-yellow-600 rounded-lg opacity-40 blur transition duration-200 group-hover:opacity-70"></div>
-                    <Button className="relative h-11 md:h-12 px-5 md:px-6 bg-[#0a0a0a] hover:bg-[#111] text-white border border-[#FFCC00]/50 rounded-lg text-sm font-medium flex items-center justify-center gap-2 w-full sm:w-auto">
+                    <Button
+                    aria-label={content.botao.texto}
+                     className="relative h-11 md:h-12 px-5 md:px-6 bg-[#0a0a0a] hover:bg-[#111] text-white border border-[#FFCC00]/50 rounded-lg text-sm font-medium flex items-center justify-center gap-2 w-full sm:w-auto">
                         <span className="relative z-10 truncate text-sm md:text-base">{content.botao.texto}</span>
                         <div className="absolute inset-0 bg-[#FFCC00] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
                         <Icon icon="solar:arrow-right-up-bold" className="w-4 h-4 md:w-5 md:h-5 text-[#FFCC00]" />

@@ -87,6 +87,8 @@ export const metadata: Metadata = {
   category: "Consultoria de Negócios",
 };
 
+export { reportWebVitals } from "./web-vitals";
+
 export default function RootLayout({
   children,
 }: Readonly<{

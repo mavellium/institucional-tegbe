@@ -101,7 +101,9 @@ export function HeadlineMarketing({ content, theme }: HeadlineMarketingProps) {
             {content.botao?.visivel && (
                 <a href={content.botao.link} target="_blank" className="group relative w-full sm:w-auto">
                     <div className="absolute -inset-1 bg-gradient-to-r from-[#E31B63] to-purple-600 rounded-lg blur opacity-40 group-hover:opacity-80 transition duration-500"></div>
-                    <Button className="relative w-full sm:w-auto h-14 px-10 bg-[#0A0A0A] hover:bg-[#111] text-white border border-[#E31B63]/50 rounded-lg text-base font-bold tracking-wide uppercase flex items-center justify-center gap-3 transition-all group-hover:tracking-wider">
+                    <Button
+                    aria-label={content.botao.texto}
+                     className="relative w-full sm:w-auto h-14 px-10 bg-[#0A0A0A] hover:bg-[#111] text-white border border-[#E31B63]/50 rounded-lg text-base font-bold tracking-wide uppercase flex items-center justify-center gap-3 transition-all group-hover:tracking-wider">
                         {content.botao.texto}
                         <Icon icon="solar:target-bold" className="w-5 h-5 text-[#E31B63]" />
                     </Button>

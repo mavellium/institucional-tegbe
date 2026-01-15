@@ -185,6 +185,7 @@ export default function HeroSplit({
                     style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
                 />
                 <Button 
+                    aria-label={data.content.cta.primary.text}
                     className="relative h-14 px-10 rounded-full font-black text-sm lg:text-base tracking-widest transition-all border border-white/10 active:scale-[0.98]"
                     style={{ 
                         backgroundColor: data.theme.accentColor,

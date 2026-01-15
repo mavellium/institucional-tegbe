@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -31,6 +31,9 @@ export function Header({ variant = 'default' }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const menuRef = useRef<HTMLDivElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
 
   // 1. INTEGRAÇÃO COM O ENDPOINT
   useEffect(() => {
@@ -53,10 +56,40 @@ export function Header({ variant = 'default' }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Fecha o menu ao pressionar ESC
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : 'unset'
-    return () => {
-      document.body.style.overflow = 'unset'
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && menuOpen) {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [menuOpen])
+
+  // Foco no primeiro item do menu quando aberto
+  useEffect(() => {
+    if (menuOpen && firstMenuItemRef.current) {
+      // Pequeno delay para garantir a renderização
+      setTimeout(() => {
+        firstMenuItemRef.current?.focus()
+      }, 100)
+    }
+  }, [menuOpen])
+
+  // Fecha o menu ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node) && 
+          menuButtonRef.current && !menuButtonRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [menuOpen])
 
@@ -89,6 +122,14 @@ export function Header({ variant = 'default' }: HeaderProps) {
   }, [scrolled, menuOpen]);
 
   if (!data) return null;
+
+  const handleMenuToggle = () => {
+    const newState = !menuOpen
+    setMenuOpen(newState)
+    if (!newState) {
+      menuButtonRef.current?.focus()
+    }
+  }
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${headerStyles}`}>
@@ -163,10 +204,11 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
             {/* BOTÃO MENU MOBILE COM ARIA-LABEL CORRETO */}
             <Button 
+              ref={menuButtonRef}
               size="icon" 
               variant="ghost" 
               className="xl:hidden text-white hover:bg-white/5 rounded-full z-[110]" 
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={handleMenuToggle}
               aria-label={menuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
@@ -177,56 +219,82 @@ export function Header({ variant = 'default' }: HeaderProps) {
         </div>
       </div>
 
-      {/* MENU MOBILE OVERLAY COM ARIA-LABEL */}
-      <div 
-        id="mobile-menu"
-        className={`fixed inset-0 w-full h-screen bg-[#050505] z-[-1] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] xl:hidden ${
-          menuOpen ? "translate-y-0 opacity-100 visible" : "-translate-y-full opacity-0 invisible"
-        }`}
-        aria-hidden={!menuOpen}
-        aria-label="Menu de navegação mobile"
-      >
-        <div className="h-full w-full overflow-y-auto overscroll-contain flex flex-col items-center pt-24 pb-12">
-          <nav 
-            className="flex flex-col items-center space-y-8 px-6 w-full"
-            aria-label="Navegação principal mobile"
+      {/* MENU MOBILE OVERLAY */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 xl:hidden z-[99]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mobile-menu-title"
+        >
+          {/* Backdrop escurecido */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-500"
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
+          
+          {/* Conteúdo do menu */}
+          <div 
+            ref={menuRef}
+            id="mobile-menu"
+            className={`absolute top-0 left-0 right-0 w-full h-screen bg-[#050505] overflow-y-auto overscroll-contain flex flex-col items-center pt-24 pb-12 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+              menuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+            }`}
           >
-            {data.links.map((link, i) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                style={{ transitionDelay: menuOpen ? `${i * 70}ms` : "0ms" }}
-                className={`text-3xl font-light tracking-tighter text-white/70 transition-all active:scale-95 ${
-                  menuOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-                }`}
-                onClick={() => setMenuOpen(false)}
-                aria-current={pathname === link.href ? "page" : undefined}
-              >
-                {link.name}
-              </Link>
-            ))}
+            <h2 id="mobile-menu-title" className="sr-only">Menu de navegação</h2>
+            
+            <nav 
+              className="flex flex-col items-center space-y-8 px-6 w-full"
+              aria-label="Navegação principal mobile"
+            >
+              {data.links.map((link, i) => (
+                <Link
+                  key={link.name}
+                  ref={i === 0 ? firstMenuItemRef : undefined}
+                  href={link.href}
+                  style={{ transitionDelay: menuOpen ? `${i * 70}ms` : "0ms" }}
+                  className={`text-3xl font-light tracking-tighter text-white/70 transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/30 focus:rounded-lg ${
+                    menuOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                  }`}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={pathname === link.href ? "page" : undefined}
+                >
+                  {link.name}
+                </Link>
+              ))}
 
-            <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-              <div className="h-[1px] w-12 bg-white/20" aria-hidden="true" />
-              <a
-                href={data.general.ctaLink}
-                className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 shadow-2xl shadow-white/5 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
-                onClick={() => setMenuOpen(false)}
-                aria-label={data.general.ctaText}
-              >
-                {data.general.ctaText}
-              </a>
-              <Image 
-                src={data.general.consultantBadge} 
-                alt="Badge de Consultor Oficial Tegbe" 
-                width={40} 
-                height={40} 
-                className={`opacity-40`} 
-              />
-            </div>
-          </nav>
+              <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${
+                menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}>
+                <div className="h-[1px] w-12 bg-white/20" aria-hidden="true" />
+                <a
+                  href={data.general.ctaLink}
+                  className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 shadow-2xl shadow-white/5 focus:outline-none focus:ring-2 focus:ring-white/30 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
+                  onClick={() => setMenuOpen(false)}
+                  aria-label={data.general.ctaText}
+                >
+                  {data.general.ctaText}
+                </a>
+                <Link 
+                  href="/consultor-oficial" 
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Ver badge de consultor oficial"
+                  className="focus:outline-none focus:ring-2 focus:ring-white/30 focus:rounded-lg"
+                >
+                  <Image 
+                    src={data.general.consultantBadge} 
+                    alt="Badge de Consultor Oficial Tegbe" 
+                    width={40} 
+                    height={40} 
+                    className={`opacity-40 hover:opacity-100 transition-opacity`} 
+                  />
+                </Link>
+              </div>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
     </header>
   )
 }

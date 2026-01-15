@@ -121,6 +121,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
               <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full opacity-0 group-hover:opacity-50 blur-md transition duration-500"></div>
               
               <Button 
+                aria-label={content.botao.texto}
                 className={`relative px-9 h-14 rounded-full font-bold text-lg tracking-tight flex items-center gap-3 transition-transform active:scale-95 ${theme.button.bg} hover:bg-[#E6B800] text-black border border-yellow-400/20`}
               >
                 {content.botao.texto}

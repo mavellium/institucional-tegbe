@@ -330,7 +330,7 @@ const ExploreDetails = ({ features = [] }: ExploreDetailsProps) => {
 
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-                <Button onClick={() => handleMobileNavigation('prev')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 p-0 flex items-center justify-center">
+                <Button aria-label="Anterior" onClick={() => handleMobileNavigation('prev')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 p-0 flex items-center justify-center">
                     <Icon icon="lucide:arrow-left" className="text-white" />
                 </Button>
                 
@@ -338,7 +338,7 @@ const ExploreDetails = ({ features = [] }: ExploreDetailsProps) => {
                     {String(activeFeature + 1).padStart(2, '0')} / {String(features.length).padStart(2, '0')}
                 </span>
 
-                <Button onClick={() => handleMobileNavigation('next')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 p-0 flex items-center justify-center">
+                <Button aria-label="Proximo" onClick={() => handleMobileNavigation('next')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 p-0 flex items-center justify-center">
                     <Icon icon="lucide:arrow-right" className="text-white" />
                 </Button>
             </div>

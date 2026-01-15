@@ -264,10 +264,10 @@ const Historia = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-ins
             <div className="pt-6 mt-4 border-t border-white/10 flex justify-between items-center">
                 <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Navegue pela história</span>
                 <div className="flex gap-3">
-                    <Button variant="ghost" onClick={() => handleNavigation('prev')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                    <Button aria-label="Anterior" variant="ghost" onClick={() => handleNavigation('prev')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
                         <Icon icon="ph:arrow-left-bold" width="18" />
                     </Button>
-                    <Button variant="ghost" onClick={() => handleNavigation('next')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
+                    <Button aria-label="Próximo" variant="ghost" onClick={() => handleNavigation('next')} disabled={isTransitioning} className="text-white hover:bg-white/10 hover:text-[#FFD700] rounded-full h-11 w-11 p-0 border border-white/10 transition-all active:scale-95 disabled:opacity-50">
                         <Icon icon="ph:arrow-right-bold" width="18" />
                     </Button>
                 </div>
