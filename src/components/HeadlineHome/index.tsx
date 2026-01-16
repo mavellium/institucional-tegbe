@@ -15,10 +15,18 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
   const [wordIndex, setWordIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const h1Ref = useRef<HTMLHeadingElement>(null);
 
   // Otimização: Carregar animações após hidratação
   useEffect(() => {
     setIsVisible(true);
+    
+    // Marcar o h1 como LCP element para otimização
+    if (h1Ref.current) {
+      // Forçar renderização imediata
+      h1Ref.current.style.opacity = '1';
+      h1Ref.current.style.transform = 'translateY(0)';
+    }
   }, []);
 
   useEffect(() => {
@@ -40,6 +48,8 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
     <section 
       ref={sectionRef}
       className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#050505] pt-[80px] pb-[40px]"
+      // Prevenir layout shift forçando dimensions
+      style={{ contain: 'paint layout' }}
     >
       
       {/* --- 1. BACKGROUND REFINADO (A Essência, mas High-End) --- */}
@@ -59,13 +69,13 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
       {/* --- 2. CONTEÚDO (Layout Original Preservado) --- */}
       <div className="container relative z-10 px-4 md:px-6 flex flex-col items-center text-center">
 
-        {/* BADGE (Mais elegante, bordas finas) - Renderização condicional com CSS */}
+        {/* BADGE - VISÍVEL IMEDIATAMENTE COM ANIMAÇÃO NÃO-BLOQUEANTE */}
         {content.badge?.visivel && (
           <div 
-            className="mb-8 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-lg opacity-0 animate-fadeIn"
+            className="mb-8 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-lg"
             style={{ 
-              animationDelay: '100ms',
-              animationFillMode: 'forwards'
+              opacity: 0,
+              animation: 'fadeIn 0.5s ease-out 0.1s forwards'
             }}
           >
             <Icon icon={badgeIcon} className="w-3.5 h-3.5" style={{ color: primaryColor }} />
@@ -79,7 +89,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
         <div className="max-w-5xl mx-auto mb-10">
             
             {/* Linha 1: "Sua operação guiada por..." + Palavra Animada */}
-            <h2 className="flex flex-col sm:flex-row justify-center items-center text-xl sm:text-2xl md:text-3xl font-medium text-gray-400 mb-4 tracking-tight opacity-0 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
+            <h2 className="flex flex-col sm:flex-row justify-center items-center text-xl sm:text-2xl md:text-3xl font-medium text-gray-400 mb-4 tracking-tight">
               {content.titulo?.chamada}
               
               {content.titulo?.palavrasAnimadas?.length > 0 && isVisible && (
@@ -95,7 +105,6 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
                           stiffness: 120, 
                           damping: 20, 
                           mass: 0.8,
-                          // Desabilitar durante SSR
                           delay: isVisible ? 0 : 1000
                         }}
                         className="font-bold tracking-tight block whitespace-nowrap"
@@ -108,33 +117,39 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
               )}
             </h2>
 
-            {/* Linha 2: Título Principal (Mais pesado e imponente) */}
+            {/* Linha 2: Título Principal - VISÍVEL IMEDIATAMENTE (LCP CRÍTICO) */}
             <h1
-                className={`text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-extrabold tracking-tighter text-white leading-[1] mt-2 drop-shadow-2xl opacity-0 animate-fadeInUp ${content.configuracoes?.efeitos?.brilhoTitulo}`}
-                style={{ 
-                  animationDelay: '300ms',
-                  animationFillMode: 'forwards'
+                ref={h1Ref}
+                className={`text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-extrabold tracking-tighter text-white leading-[1] mt-2 drop-shadow-2xl ${content.configuracoes?.efeitos?.brilhoTitulo}`}
+                style={{
+                  // Visível imediatamente para LCP
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                  // Garantir que não tenha animações que atrasem a renderização
+                  animation: 'none',
+                  // Forçar composição por GPU
+                  willChange: 'transform'
                 }}
                 dangerouslySetInnerHTML={{ __html: content.titulo?.tituloPrincipal }}
             />
         </div>
 
-        {/* SUBTÍTULO (Melhor leitura) - RENDERIZADO IMEDIATAMENTE */}
+        {/* SUBTÍTULO - VISÍVEL IMEDIATAMENTE */}
         <div
-          className="max-w-3xl mx-auto text-lg sm:text-xl text-gray-400 font-light leading-relaxed mb-12 opacity-0 animate-fadeIn"
-          style={{ 
-            animationDelay: '400ms',
-            animationFillMode: 'forwards'
+          className="max-w-3xl mx-auto text-lg sm:text-xl text-gray-400 font-light leading-relaxed mb-12"
+          style={{
+            opacity: 1,
+            animation: 'fadeIn 0.6s ease-out 0.2s backwards'
           }}
           dangerouslySetInnerHTML={{ __html: content.subtitulo }}
         />
 
-        {/* BOTÕES (Design mais limpo e interativo) */}
+        {/* BOTÕES */}
         <div
-          className="flex flex-col sm:flex-row items-center gap-5 opacity-0 animate-fadeInUp"
-          style={{ 
-            animationDelay: '500ms',
-            animationFillMode: 'forwards'
+          className="flex flex-col sm:flex-row items-center gap-5"
+          style={{
+            opacity: 0,
+            animation: 'fadeIn 0.6s ease-out 0.3s forwards'
           }}
         >
           {content.botao?.visivel && (
@@ -166,17 +181,12 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
 
       </div>
 
-      {/* Adicionar estas animações CSS globais no seu arquivo CSS principal ou usar Tailwind */}
+      {/* Adicionar estas animações CSS globais no seu arquivo CSS principal */}
       <style jsx global>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes fadeInUp {
           from { 
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(10px);
           }
           to { 
             opacity: 1;
@@ -184,20 +194,19 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
           }
         }
         
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
+        /* Garantir que o LCP element (h1) não tenha animação inicial */
+        .headline-h1 {
+          opacity: 1 !important;
+          transform: none !important;
+          animation: none !important;
         }
         
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out;
-        }
-        
-        /* Garantir que o LCP (subtítulo) seja renderizado imediatamente */
-        @media (prefers-reduced-motion: no-preference) {
-          .animate-fadeIn,
-          .animate-fadeInUp {
-            animation-fill-mode: both;
-          }
+        /* Otimização para prevenir layout shift */
+        .headline-container {
+          min-height: calc(100vh - 120px);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
       `}</style>
     </section>
