@@ -3,6 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
+
+import WebVitals from "./web-vitals";
+
+
 const GTM_ID = "GTM-5W7HPPVZ";
 
 const geistSans = Geist({
@@ -87,8 +91,6 @@ export const metadata: Metadata = {
   category: "Consultoria de Negócios",
 };
 
-export { reportWebVitals } from "./web-vitals";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -143,6 +145,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
       >
+        <WebVitals />
         {/* Injeção do Schema Markup */}
         <Script
           id="json-ld"

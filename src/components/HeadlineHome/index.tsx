@@ -75,12 +75,16 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
                     <AnimatePresence mode="popLayout">
                         <motion.span
                         key={wordIndex}
-                        initial={{ y: "120%", opacity: 0, filter: "blur(5px)" }}
-                        animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
-                        exit={{ y: "-120%", opacity: 0, filter: "blur(5px)" }}
+                        initial={{ y: "120%", opacity: 0 }}
+                        animate={{ y: "0%", opacity: 1 }}
+                        exit={{ y: "-120%", opacity: 0 }}
                         transition={{ type: "spring", stiffness: 120, damping: 20, mass: 0.8 }}
                         className="font-bold tracking-tight block whitespace-nowrap"
-                        style={{ color: primaryColor }}
+                        style={{ 
+                          color: primaryColor,
+                          // Usando estilo inline para controlar o blur
+                          filter: `blur(0px)`
+                        }}
                         >
                         {content.titulo.palavrasAnimadas[wordIndex].texto}
                         </motion.span>
@@ -91,8 +95,8 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
 
             {/* Linha 2: Título Principal (Mais pesado e imponente) */}
             <motion.h1
-                initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                 className={`text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] font-extrabold tracking-tighter text-white leading-[1] mt-2 drop-shadow-2xl ${content.configuracoes?.efeitos?.brilhoTitulo}`}
                 dangerouslySetInnerHTML={{ __html: content.titulo?.tituloPrincipal }}
