@@ -1,17 +1,20 @@
 "use client";
 
-import { onLCP, type Metric } from "web-vitals";
 import { useEffect } from "react";
 
-export default function WebVitals() {
+export default function LCPObserver() {
   useEffect(() => {
-    onLCP((metric) => {
-      console.log("LCP:", metric.value);
-
-      if ("attribution" in metric) {
-        console.log("Elemento:", (metric as any).attribution?.element);
+    const po = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        console.log("LCP Entry:", entry);
+        // Type assertion to access 'element' property
+        console.log("Elemento:", (entry as PerformanceEntry & { element?: Element }).element); // aqui deve aparecer
       }
     });
+
+    po.observe({ type: "largest-contentful-paint", buffered: true });
+
+    return () => po.disconnect();
   }, []);
 
   return null;
