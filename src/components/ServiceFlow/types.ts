@@ -43,7 +43,14 @@ export interface HeaderContent {
   gradientTitle?: string;
 }
 
+export interface CTAContent {
+  text: string;
+  url: string;
+  description: string;
+}
+
 export interface VariantContent {
   header: HeaderContent;
   services: Service[];
+  cta: CTAContent;
 }

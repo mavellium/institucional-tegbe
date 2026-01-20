@@ -15,8 +15,14 @@ export interface TestimonialItem {
   name: string;
   description: string;
   result: string;
-  metric?: string | null; // Aceita null ou string vinda da API
+  metric?: string | null;
   tags: string[];
+}
+
+export interface CTAContent {
+  text: string;
+  url: string;
+  description?: string;
 }
 
 export interface SectionContent {
@@ -29,11 +35,12 @@ export interface SectionContent {
     part2: string;
   };
   testimonials: TestimonialItem[];
+  cta?: CTAContent;
 }
 
 interface CompanysProps {
   variant?: CompanysVariant;
-  data: SectionContent; // Dados agora são obrigatórios via prop
+  data: SectionContent;
 }
 
 // --- INTERFACES DE TEMA (VISUAL) ---
@@ -80,6 +87,13 @@ interface EcommerceTheme {
       shadow: string;
     };
   };
+  cta: {
+    background: string;
+    textColor: string;
+    shadow: string;
+    hoverShadow: string;
+    pulseColor: string;
+  };
 }
 
 interface MarketingTheme {
@@ -122,6 +136,13 @@ interface MarketingTheme {
       inactive: string;
       shadow: string;
     };
+  };
+  cta: {
+    background: string;
+    textColor: string;
+    shadow: string;
+    hoverShadow: string;
+    pulseColor: string;
   };
 }
 
@@ -169,6 +190,13 @@ const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
         inactive: "bg-gray-700",
         shadow: "shadow-[0_0_10px_#FFCC00]"
       }
+    },
+    cta: {
+      background: "bg-white",
+      textColor: "text-black",
+      shadow: "shadow-lg",
+      hoverShadow: "hover:shadow-5xl hover:shadow-[0_0_25px_rgba(234,179,8,0.55)]",
+      pulseColor: "bg-yellow-500"
     }
   },
   marketing: {
@@ -211,6 +239,13 @@ const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
         inactive: "bg-gray-800",
         shadow: "shadow-[0_0_8px_#E31B63]"
       }
+    },
+    cta: {
+      background: "bg-black",
+      textColor: "text-white",
+      shadow: "shadow-lg",
+      hoverShadow: "hover:shadow-2xl",
+      pulseColor: "bg-rose-500"
     }
   }
 };
@@ -219,11 +254,19 @@ const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
 const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
 
   const theme = themeConfig.ecommerce as EcommerceTheme;
+  
+  // CTA dinâmico com fallback
+  const ctaData = content.cta || {
+    text: "Quero Estruturar e Escalar Meu Negócio",
+    url: "https://api.whatsapp.com/send?phone=5514991779502",
+    description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+  };
 
   const getCardWidth = () => {
     if (containerWidth < 640) return containerWidth - 48;
@@ -246,6 +289,25 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  useEffect(() => {
+    // Animação de entrada do CTA
+    if (ctaRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('animate-fade-in-up');
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      
+      observer.observe(ctaRef.current);
+      return () => observer.disconnect();
+    }
   }, []);
 
   const cardWidth = getCardWidth();
@@ -449,25 +511,34 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
            </div>
         </div>
       </div>
-      {/* CTA */}
-      <div className="reveal-text flex flex-col items-center mt-12">
-        <a
-          aria-label="Entre em contato pelo WhatsApp"
-          href="https://api.whatsapp.com/send?phone=5514991779502"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`
-                      group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-                      hover:scale-105 bg-white text-black shadow-lg hover:shadow-5xl hover:shadow-[0_0_25px_rgba(234,179,8,0.55)]
-                    `}
-        >
-          <span>Quero Estruturar e Escalar Meu Negócio</span>
-          <Icon
-            icon="lucide:arrow-right"
-            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-          />
-        </a>
-      </div>
+
+      {/* CTA Dinâmico */}
+      {ctaData && (
+        <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
+          <a
+            aria-label="Entre em contato pelo WhatsApp"
+            href={ctaData.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`
+              group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+              hover:scale-105 ${theme.cta.background} ${theme.cta.textColor} ${theme.cta.shadow} ${theme.cta.hoverShadow}
+            `}
+          >
+            <span>{ctaData.text}</span>
+            <Icon
+              icon="lucide:arrow-right"
+              className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </a>
+          {ctaData.description && (
+            <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>
+              {ctaData.description}
+            </p>
+          )}
+        </div>
+      )}
     </section>
   );
 };
@@ -476,11 +547,19 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
 const CompanysMarketing = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
 
   const theme = themeConfig.marketing as MarketingTheme;
+  
+  // CTA dinâmico com fallback
+  const ctaData = content.cta || {
+    text: "Quero Estruturar e Escalar Meu Negócio",
+    url: "https://api.whatsapp.com/send?phone=5514991779502",
+    description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+  };
 
   const getCardWidth = () => {
     if (containerWidth < 640) return containerWidth - 48;
@@ -503,6 +582,25 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  useEffect(() => {
+    // Animação de entrada do CTA
+    if (ctaRef.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('animate-fade-in-up');
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      
+      observer.observe(ctaRef.current);
+      return () => observer.disconnect();
+    }
   }, []);
 
   const cardWidth = getCardWidth();
@@ -657,7 +755,6 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
                             <p className="text-3xl font-bold text-white leading-tight tracking-tight">
                                 {item.result}
                             </p>
-                            {/* Renderiza metric apenas se existir e não for string vazia */}
                             {item.metric && item.metric !== "" && (
                               <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
                                   <ArrowUpRight className={`w-3 h-3 ${theme.card.metricIcon}`} />
@@ -713,25 +810,34 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
            </div>
         </div>
       </div>
-      {/* CTA */}
-      <div className="reveal-text flex flex-col items-center mt-12">
-        <a
-          aria-label="Entre em contato pelo WhatsApp"
-          href="https://api.whatsapp.com/send?phone=5514991779502"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`
-                      group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-                      hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
-                    `}
-        >
-          <span>Quero Estruturar e Escalar Meu Negócio</span>
-          <Icon
-            icon="lucide:arrow-right"
-            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-          />
-        </a>
-      </div>
+
+      {/* CTA Dinâmico */}
+      {ctaData && (
+        <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
+          <a
+            aria-label="Entre em contato pelo WhatsApp"
+            href={ctaData.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`
+              group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+              hover:scale-105 ${theme.cta.background} ${theme.cta.textColor} ${theme.cta.shadow} ${theme.cta.hoverShadow}
+            `}
+          >
+            <span>{ctaData.text}</span>
+            <Icon
+              icon="lucide:arrow-right"
+              className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </a>
+          {ctaData.description && (
+            <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>
+              {ctaData.description}
+            </p>
+          )}
+        </div>
+      )}
     </section>
   );
 };

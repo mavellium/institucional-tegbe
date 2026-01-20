@@ -24,12 +24,22 @@ interface ApiResponse {
   type: string;    // Tag (se houver no dashboard)
   subtype: string; // Título Principal
   values: ItemPlataforma[];
+  cta?: {
+    text: string;
+    url: string;
+    description?: string;
+  };
 }
 
 export default function Plataforms() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [activeStep, setActiveStep] = useState<ItemPlataforma | null>(null);
   const [loading, setLoading] = useState(true);
+  const [ctaData, setCtaData] = useState({
+    text: "Quero Estruturar e Escalar Meu Negócio",
+    url: "https://api.whatsapp.com/send?phone=5514991779502",
+    description: "Integração completa de plataformas para escalar seus resultados."
+  });
 
   // Referências para animações
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -39,6 +49,7 @@ export default function Plataforms() {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const descriptionRef = useRef<HTMLParagraphElement>(null)
   const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
+  const ctaRef = useRef<HTMLDivElement>(null)
 
   // --- FETCH DINÂMICO ---
   useEffect(() => {
@@ -47,12 +58,54 @@ export default function Plataforms() {
         const response = await fetch('/api-tegbe/tegbe-institucional/json/plataformas');
         const result: ApiResponse = await response.json();
         
-        if (result.values && result.values.length > 0) {
+        if (result) {
           setData(result);
-          setActiveStep(result.values[0]);
+          
+          // Define o primeiro item como ativo
+          if (result.values && result.values.length > 0) {
+            setActiveStep(result.values[0]);
+          }
+          
+          // Define os dados do CTA (da API ou fallback)
+          if (result.cta) {
+            setCtaData({
+              text: result.cta.text,
+              url: result.cta.url,
+              description: result.cta.description || "Integração completa de plataformas para escalar seus resultados."
+            });
+          }
         }
       } catch (error) {
         console.error("Mavellium Engine - Erro ao carregar plataformas:", error);
+        // Fallback para dados estáticos em caso de erro
+        const fallbackData: ApiResponse = {
+          id: "fallback-plataformas",
+          type: "Plataformas",
+          subtype: "Plataformas que utilizamos para escalar seu negócio",
+          values: [
+            {
+              id: 1,
+              title: "Meta Ads",
+              subtitle: "Gestão de Tráfego Pago",
+              description: "Criamos e gerenciamos campanhas no Facebook e Instagram para alcançar seu público-alvo.",
+              image: "/images/meta-ads.png"
+            },
+            {
+              id: 2,
+              title: "Google Ads",
+              subtitle: "Publicidade no Google",
+              description: "Anúncios no Google Search, Display e YouTube para capturar intenção de compra.",
+              image: "/images/google-ads.png"
+            }
+          ],
+          cta: {
+            text: "Quero Estruturar e Escalar Meu Negócio",
+            url: "https://api.whatsapp.com/send?phone=5514991779502",
+            description: "Integração completa de plataformas para escalar seus resultados."
+          }
+        };
+        setData(fallbackData);
+        setActiveStep(fallbackData.values[0]);
       } finally {
         setLoading(false);
       }
@@ -64,28 +117,68 @@ export default function Plataforms() {
   useGSAP(() => {
     if (loading || !data || !sectionRef.current) return;
 
-    gsap.set([leftColumnRef.current, rightColumnRef.current], { opacity: 0, y: 50 });
+    // Reset para animações limpas
+    gsap.set([leftColumnRef.current, rightColumnRef.current, ctaRef.current], { 
+      opacity: 0, 
+      y: 50 
+    });
 
+    // Animação da coluna esquerda
     gsap.to(leftColumnRef.current, {
-      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+      opacity: 1, 
+      y: 0, 
+      duration: 0.8, 
+      ease: "power2.out",
+      scrollTrigger: { 
+        trigger: sectionRef.current, 
+        start: "top 75%" 
+      }
     });
 
+    // Animação da coluna direita
     gsap.to(rightColumnRef.current, {
-      opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: "power2.out",
-      scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
+      opacity: 1, 
+      y: 0, 
+      duration: 0.8, 
+      delay: 0.2, 
+      ease: "power2.out",
+      scrollTrigger: { 
+        trigger: sectionRef.current, 
+        start: "top 75%" 
+      }
     });
 
+    // Animação dos botões
     stepButtonsRef.current.forEach((button, index) => {
       if (!button) return;
       gsap.fromTo(button, 
         { opacity: 0, x: -30 },
         { 
-          opacity: 1, x: 0, duration: 0.6, delay: 0.1 * index,
-          scrollTrigger: { trigger: leftColumnRef.current, start: "top 80%" }
+          opacity: 1, 
+          x: 0, 
+          duration: 0.6, 
+          delay: 0.1 * index,
+          scrollTrigger: { 
+            trigger: leftColumnRef.current, 
+            start: "top 80%" 
+          }
         }
       );
     });
+
+    // Animação do CTA
+    gsap.to(ctaRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      delay: 0.4,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 60%"
+      }
+    });
+
   }, { dependencies: [loading, data], scope: sectionRef });
 
   const handleStepChange = (step: ItemPlataforma) => {
@@ -95,27 +188,68 @@ export default function Plataforms() {
     const nextIndex = data.values.findIndex(s => s.id === step.id);
 
     gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
-      opacity: 0, y: 20, duration: 0.3, ease: "power2.in",
+      opacity: 0, 
+      y: 20, 
+      duration: 0.3, 
+      ease: "power2.in",
       onComplete: () => {
         if (stepButtonsRef.current[prevIndex]) {
-            gsap.to(stepButtonsRef.current[prevIndex], { scale: 1, duration: 0.3 });
+            gsap.to(stepButtonsRef.current[prevIndex], { 
+              scale: 1, 
+              duration: 0.3 
+            });
         }
         setActiveStep(step);
         if (stepButtonsRef.current[nextIndex]) {
-            gsap.to(stepButtonsRef.current[nextIndex], { scale: 1.02, duration: 0.4, ease: "back.out(1.7)" });
+            gsap.to(stepButtonsRef.current[nextIndex], { 
+              scale: 1.02, 
+              duration: 0.4, 
+              ease: "back.out(1.7)" 
+            });
         }
         setTimeout(() => {
-          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { opacity: 0, y: -20 });
+          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { 
+            opacity: 0, 
+            y: -20 
+          });
           const tl = gsap.timeline();
-          tl.to(imageRef.current, { opacity: 1, y: 0, duration: 0.5 });
-          tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
-          tl.to(descriptionRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2");
+          tl.to(imageRef.current, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.5 
+          });
+          tl.to(titleRef.current, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.4 
+          }, "-=0.3");
+          tl.to(descriptionRef.current, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.4 
+          }, "-=0.2");
         }, 50);
       }
     });
   }
 
-  if (loading || !data || !activeStep) return null;
+  // Loading State
+  if (loading) {
+    return (
+      <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4] min-h-[500px] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </section>
+    );
+  }
+
+  // Error State
+  if (!data || !activeStep) {
+    return (
+      <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4] p-8">
+        <p className="text-center text-gray-600">Erro ao carregar os dados das plataformas. Por favor, tente novamente.</p>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
@@ -175,25 +309,32 @@ export default function Plataforms() {
           </p>
         </div>
       </div>
-      {/* CTA */}
-            <div className="reveal-text flex flex-col items-center mt-12">
-              <a
-                aria-label="Entre em contato pelo WhatsApp"
-                href="https://api.whatsapp.com/send?phone=5514991779502"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`
-                            group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-                            hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
-                          `}
-              >
-                <span>Quero Estruturar e Escalar Meu Negócio</span>
-                <Icon
-                  icon="lucide:arrow-right"
-                  className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </a>
-            </div>
+
+      {/* CTA Dinâmico */}
+      <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
+        <a
+          aria-label="Entre em contato pelo WhatsApp"
+          href={ctaData.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`
+            group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+            hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
+          `}
+        >
+          <span>{ctaData.text}</span>
+          <Icon
+            icon="lucide:arrow-right"
+            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </a>
+        {ctaData.description && (
+          <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-blue-500"></span>
+            {ctaData.description}
+          </p>
+        )}
+      </div>
     </section>
   )
 }

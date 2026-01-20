@@ -28,7 +28,6 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
     const loadApiContent = async () => {
       try {
         setLoading(true);
-        // Usando o proxy configurado para evitar o NetworkError
         const response = await fetch('/api-tegbe/tegbe-institucional/cards');
         const allVariants = await response.json();
 
@@ -51,7 +50,10 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
     if (loading || !content || !containerRef.current) return;
 
     // Reset para garantir a entrada limpa
-    gsap.set([".section-title", ".service-card"], { opacity: 0, y: 30 });
+    gsap.set([".section-title", ".service-card", ".cta-element"], { 
+      opacity: 0, 
+      y: 30 
+    });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -73,8 +75,13 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
       duration: 0.8,
       stagger: 0.15,
       ease: "power3.out",
-      clearProps: "all",
-    }, "-=0.5");
+    }, "-=0.5")
+    .to(".cta-element", {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: "power3.out",
+    }, "-=0.3");
 
   }, { dependencies: [loading, content], scope: containerRef });
 
@@ -91,6 +98,13 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
       </div>
     );
   }
+
+  // CTA padrão caso não exista na API
+  const ctaData = content.cta || {
+    text: "Quero Estruturar e Escalar Meu Negócio",
+    url: "https://api.whatsapp.com/send?phone=5514991779502",
+    description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+  };
 
   return (
     <section 
@@ -117,13 +131,11 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
           variant={variant} 
         />
 
-        {/* Grid de Serviços dinâmico vindo da API */}
         {/* Grid de Serviços dinâmico com suporte a WIDE */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {content.services.map((service, index) => (
             <div 
               key={service.id || index}
-              // Aqui está a mágica: se wide for true, ocupa as 2 colunas no desktop
               className={`${service.wide ? "md:col-span-2" : "col-span-1"} service-card`}
             >
               <ServiceCard 
@@ -134,12 +146,13 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
             </div>
           ))}
         </div>
-      </div>
-      {/* CTA */}
-          <div className="reveal-text flex flex-col items-center mt-12">
+
+        {/* CTA Dinâmico */}
+        {ctaData && (
+          <div className="cta-element reveal-text flex flex-col items-center mt-12">
             <a
               aria-label="Entre em contato pelo WhatsApp"
-              href="https://api.whatsapp.com/send?phone=5514991779502"
+              href={ctaData.url}
               target="_blank"
               rel="noopener noreferrer"
               className={`
@@ -147,7 +160,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
                 hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
               `}
             >
-              <span>Quero Estruturar e Escalar Meu Negócio</span>
+              <span>{ctaData.text}</span>
               <Icon
                 icon="lucide:arrow-right"
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
@@ -155,9 +168,11 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
             </a>
             <p className={`mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2`}>
               <span className={`w-1.5 h-1.5 rounded-full animate-pulse`}></span>
-              Anúncios, operação e dados trabalhando juntos para vender mais.
+              {ctaData.description}
             </p>
           </div>
+        )}
+      </div>
     </section>
   );
 }

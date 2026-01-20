@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
+import { PreloadResources } from './preload-resources';
+
 
 import WebVitals from "./web-vitals";
 
@@ -142,6 +144,9 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" className="scroll-smooth">
+      <head>
+        <PreloadResources />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
       >
