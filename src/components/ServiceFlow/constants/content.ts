@@ -38,7 +38,12 @@ export const CONTENT: Record<string, VariantContent> = {
         wide: true,
         visualType: "medal"
       }
-    ]
+    ],
+    cta: {
+      text: "Quero Estruturar e Escalar Meu Negócio",
+      url: "https://api.whatsapp.com/send?phone=5514991779502",
+      description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+    }
   },
   marketing: {
     header: {
@@ -78,7 +83,12 @@ export const CONTENT: Record<string, VariantContent> = {
         wide: true,
         visualType: "scale"
       }
-    ]
+    ],
+    cta: {
+      text: "Quero Potencializar Minhas Vendas",
+      url: "https://api.whatsapp.com/send?phone=5514991779502",
+      description: "Estratégias de marketing que realmente funcionam."
+    }
   },
   sobre: {
     header: {
@@ -118,6 +128,11 @@ export const CONTENT: Record<string, VariantContent> = {
         wide: true,
         visualType: "dashboard"
       }
-    ]
+    ],
+    cta: {
+      text: "Fale Conosco",
+      url: "https://api.whatsapp.com/send?phone=5514991779502",
+      description: "Vamos conversar sobre o seu projeto."
+    }
   }
 };
