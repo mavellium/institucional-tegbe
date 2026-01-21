@@ -131,7 +131,7 @@ export default function NewsCarousel() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* HEADER: ALINHADO COM O GRID DA PÁGINA */}
-        <div className="flex flex-col sm:flex-row justify-between items-end mb-20 gap-8 border-b border-white/5 pb-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start mb-20 gap-8 border-b border-white/5 pb-12">
           <div className="text-left">
             <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-yellow-400/20 bg-yellow-400/5 shadow-[0_0_15px_rgba(250,204,21,0.1)]">
                 <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" aria-hidden="true" />

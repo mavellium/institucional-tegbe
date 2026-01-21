@@ -78,7 +78,7 @@ export default function AuthoritySectionFinal() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* HEADER (Mantido) */}
-        <div className="mb-24 flex flex-col md:flex-row items-end justify-between gap-10">
+        <div className="mb-24 flex flex-col md:flex-row items-start justify-between gap-10">
             <div className="max-w-3xl">
                 <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} className="flex items-center gap-3 mb-6">
                     <div className="h-px w-8 bg-yellow-400"></div>
