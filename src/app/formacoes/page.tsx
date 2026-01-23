@@ -14,6 +14,7 @@ import Preco from "@/components/Preco";
 import Faq from "@/components/Faq";
 import Localizacao2 from "@/components/Localizacao2";
 import { fetchComponentData } from "@/lib/api";
+import Logos from "@/components/Logos";
 
 // 1. Wrapper para dados de FORMS (.../form/slug)
 async function getFormData(slug: string) {
@@ -132,12 +133,14 @@ export default async function CursosPage() {
             <HeadlineCurso />
             <PorqueAprender />
             <Video2 variant="cursos" />
+            <Logos variant="cursos" />
             <Cursos />
             <CasesCarousel data={testimonialsData} />
             <GaleriaFotos data={galleryData} />
-            <Localizacao2 />
 
             <Expertise variant="cursos" />
+
+            <Localizacao2 />
 
             <ComparacaoConcorrentes data={comparisonData} />
 

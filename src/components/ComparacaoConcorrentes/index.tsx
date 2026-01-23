@@ -2,6 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 // --- TIPAGEM DOS DADOS ---
 export interface ComparisonFeature {
@@ -21,6 +22,14 @@ export interface ComparisonData {
     us: string;
   };
   features: ComparisonFeature[];
+  // Novos campos para o botão dinâmico
+  cta?: {
+    text: string;
+    url?: string;
+    variant?: 'default' | 'outline' | 'gradient' | 'ghost';
+    icon?: string;
+    target?: '_self' | '_blank';
+  };
 }
 
 interface ComparisonTableProps {
@@ -30,6 +39,73 @@ interface ComparisonTableProps {
 export default function ComparacaoConcorrentes({ data }: ComparisonTableProps) {
   // Segurança: Se não houver dados ou se a estrutura estiver errada (sem features), não renderiza
   if (!data || !data.features) return null;
+
+  // Configurações padrão para o CTA
+  const ctaConfig = data.cta || {
+    text: "Escolher TegPro",
+    url: "#",
+    variant: "default",
+    target: "_self"
+  };
+
+  // Classes de variante para o botão
+  const buttonVariants = {
+    default: "bg-[#FFD700] hover:bg-[#E5C100] text-black shadow-lg",
+    outline: "bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700]/10",
+    gradient: "bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#E5C100] hover:to-[#FF8C00] text-black",
+    ghost: "bg-transparent text-[#FFD700] hover:bg-[#FFD700]/10"
+  };
+
+  // Função para renderizar o botão
+  const renderButton = () => {
+    const buttonClasses = `
+      w-full py-3 rounded-lg font-bold text-sm uppercase tracking-wide transition-colors 
+      flex items-center justify-center gap-2
+      ${buttonVariants[ctaConfig.variant || 'default']}
+    `;
+
+    const buttonContent = (
+      <>
+        {ctaConfig.icon && <Icon icon={ctaConfig.icon} className="w-5 h-5" />}
+        {ctaConfig.text}
+      </>
+    );
+
+    // Se tiver URL, renderiza como Link
+    if (ctaConfig.url) {
+      if (ctaConfig.url.startsWith('/')) {
+        // URL interna (Next.js Link)
+        return (
+          <Link 
+            href={ctaConfig.url} 
+            target={ctaConfig.target || '_self'}
+            className={buttonClasses}
+          >
+            {buttonContent}
+          </Link>
+        );
+      } else {
+        // URL externa (tag a normal)
+        return (
+          <a 
+            href={ctaConfig.url} 
+            target={ctaConfig.target || '_self'}
+            rel={ctaConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
+            className={buttonClasses}
+          >
+            {buttonContent}
+          </a>
+        );
+      }
+    }
+
+    // Se não tiver URL, renderiza como button
+    return (
+      <button className={buttonClasses}>
+        {buttonContent}
+      </button>
+    );
+  };
 
   return (
     <section className="py-24 bg-[#020202] relative overflow-hidden font-sans">
@@ -117,10 +193,9 @@ export default function ComparacaoConcorrentes({ data }: ComparisonTableProps) {
                     </div>
                 ))}
                 
+                {/* BOTÃO DINÂMICO */}
                 <div className="mt-4 pt-4">
-                    <button className="w-full py-3 rounded-lg bg-[#FFD700] hover:bg-[#E5C100] text-black font-bold text-sm uppercase tracking-wide transition-colors shadow-lg">
-                        Escolher TegPro
-                    </button>
+                  {renderButton()}
                 </div>
             </motion.div>
 

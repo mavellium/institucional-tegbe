@@ -11,7 +11,7 @@ export interface ClientCase {
   id: string;
   type: CaseType;
   clientName: string;
-  clientRole: string; // Ex: "Aluno - E-commerce"
+  clientRole: string;
   description: string;
   src?: string; 
   poster?: string;
@@ -21,7 +21,16 @@ export interface ClientCase {
   };
 }
 
-// Interface que espelha o JSON da API
+// Interface para os stats do footer
+export interface FooterStat {
+  id?: string;
+  value: string;
+  label: string;
+  icon?: string;
+  color?: string;
+}
+
+// Interface principal
 export interface TestimonialsData {
   titulo: string;
   subtitulo: string;
@@ -29,6 +38,7 @@ export interface TestimonialsData {
   textColor: string;
   backgroundColor: string;
   testimonials: ClientCase[];
+  footerStats?: FooterStat[];
 }
 
 interface CasesCarouselProps {
@@ -36,7 +46,6 @@ interface CasesCarouselProps {
 }
 
 // --- CARDS (DARK MODE & GOLD) ---
-
 const VideoCard = ({ data }: { data: ClientCase }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -71,18 +80,15 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         />
       ) : (
         <div className="w-full h-full bg-[#0A0A0A] flex items-center justify-center border border-white/5">
-           {/* Placeholder elegante para manter o padrão visual Mavellium */}
            <div className="w-12 h-12 rounded-full border border-[#FFD700]/20 animate-pulse" />
         </div>
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
       
-      {/* Play Icon */}
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#FFD700]/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 border border-[#FFD700]/30 ${isPlaying ? 'opacity-0 scale-150' : 'opacity-100 scale-100'}`}>
          <Icon icon="ph:play-fill" className="text-[#FFD700] w-6 h-6 ml-1" />
       </div>
 
-      {/* Info */}
       <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
          {data.stats && data.stats.value && (
            <div className="mb-4 inline-flex flex-col border-l-2 border-[#FFD700] pl-3 bg-black/20 backdrop-blur-sm pr-4 py-1 rounded-r-lg">
@@ -109,17 +115,16 @@ const ImageCard = ({ data }: { data: ClientCase }) => (
   <div className="relative w-[350px] md:w-[400px] h-[500px] flex-shrink-0 overflow-hidden rounded-[2rem] group bg-[#0A0A0A] border border-white/10 hover:border-[#FFD700]/30 transition-all">
       <div className="absolute inset-0 h-[65%] overflow-hidden">
         {data.src ? (
-  <img 
-    src={data.src} 
-    alt={data.clientName} 
-    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-  />
-) : (
-  <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
-    {/* Placeholder opcional para manter o visual Mavellium mesmo sem imagem */}
-    <span className="text-white/20 text-xs">Premium Content</span>
-  </div>
-)}
+          <img 
+            src={data.src} 
+            alt={data.clientName} 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
+        ) : (
+          <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
+            <span className="text-white/20 text-xs">Premium Content</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0A0A] opacity-100" />
       </div>
 
@@ -178,16 +183,13 @@ const TextCard = ({ data }: { data: ClientCase }) => (
   </div>
 );
 
-
 // --- COMPONENTE PRINCIPAL (CARROSSEL) ---
 export default function CasesCarousel({ data }: CasesCarouselProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
-  // Recalcular largura do carrossel quando os dados mudarem
   useEffect(() => {
     if (carouselRef.current) {
-      // Pequeno timeout para garantir que o DOM renderizou
       setTimeout(() => {
           if(carouselRef.current) {
              setWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
@@ -198,16 +200,25 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
 
   if (!data) return null;
 
+  // Dados padrão para footer stats
+  const defaultFooterStats: FooterStat[] = [
+    { id: '1', value: "+1.2k", label: "Alunos Formados", color: "#FFFFFF" },
+    { id: '2', value: "R$ 45M+", label: "Gerados (Alunos)", color: "#FFD700" },
+    { id: '3', value: "4.9/5", label: "Avaliação Média", color: "#FFFFFF" }
+  ];
+
+  const footerStats = data.footerStats && data.footerStats.length > 0 
+    ? data.footerStats 
+    : defaultFooterStats;
+
   return (
     <section className="py-24 w-full bg-[#020202] relative overflow-hidden">
       
-      {/* Background Ambience */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFD700]/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
@@ -217,7 +228,6 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
               </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.05]">
-               {/* Lógica simples para quebrar o título ou destacar, se quiser customizar mais pode usar o campo 'subtitulo' */}
                Resultados <br/>
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">
                  {data.subtitulo || "Comprovados"}
@@ -230,7 +240,6 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
           </div>
         </div>
 
-        {/* DRAGGABLE CAROUSEL */}
         <motion.div 
             ref={carouselRef} 
             className="cursor-grab active:cursor-grabbing overflow-hidden"
@@ -251,21 +260,30 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
             </motion.div>
         </motion.div>
 
-        {/* FOOTER STATS (Opcional, baseado no showStats) */}
         {data.showStats && (
             <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/5 pt-10">
-            <div className="text-center">
-                <p className="text-3xl font-bold text-white">+1.2k</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Alunos Formados</p>
-            </div>
-            <div className="text-center">
-                <p className="text-3xl font-bold text-[#FFD700]">R$ 45M+</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Gerados (Alunos)</p>
-            </div>
-            <div className="text-center">
-                <p className="text-3xl font-bold text-white">4.9/5</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Avaliação Média</p>
-            </div>
+              {footerStats.map((stat, index) => (
+                <div key={stat.id || `stat-${index}`} className="text-center">
+                  {stat.icon && (
+                    <div className="flex justify-center mb-2">
+                      <Icon 
+                        icon={stat.icon} 
+                        className="w-6 h-6 mb-1" 
+                        style={{ color: stat.color || '#FFD700' }}
+                      />
+                    </div>
+                  )}
+                  <p 
+                    className="text-3xl font-bold mb-1"
+                    style={{ color: stat.color || '#FFFFFF' }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
         )}
 
