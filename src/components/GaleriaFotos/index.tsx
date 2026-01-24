@@ -189,7 +189,7 @@ export default function GaleriaFotos({
         )}
 
         {/* MASONRY GRID - SEMPRE RENDERIZA SE HOUVER IMAGENS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 p-30 gap-4 md:gap-6 min-h-[800px] overflow-hidden mask-gradient-b">
+        <div className="grid grid-cols-2 md:grid-cols-3 py-30 gap-4 md:gap-6 min-h-[800px] overflow-hidden mask-gradient-b">
             
             {/* COLUNA 1 */}
             <motion.div style={{ y: y1 }} className="flex flex-col gap-4 md:gap-6">
