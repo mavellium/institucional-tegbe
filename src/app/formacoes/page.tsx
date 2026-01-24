@@ -55,21 +55,23 @@ async function getSafeData(slug: string) {
 }
 
 export default async function CursosPage() {
-    // 4. Fetch Paralelo
+    // 4. Fetch Paralelo - ADICIONADO logosResponse
     const [
         whyLearnResponse,
         testimonialsResponse,
         galleryResponse,
         expertiseResponse,
         comparisonResponse,
-        faqResponse // Dados do FAQ
+        faqResponse, // Dados do FAQ
+        logosResponse // Dados dos logos para cursos
     ] = await Promise.all([
         getSafeData('porque-aprender'),
         getSafeData('alunos'),
         getFormData('gallery'),
         getSafeData('expertise-curso'),
         getJsonData('concorrentes'),
-        getJsonData('faq-curso')
+        getJsonData('faq-curso'),
+        getJsonData('logos-curso') // NOVO: Endpoint para logos de cursos
     ]);
 
     // 5. Extração
@@ -81,6 +83,7 @@ export default async function CursosPage() {
     // Para getJsonData, pegamos a resposta direta (pois o JSON não tem wrapper "data")
     const comparisonData = comparisonResponse || null;
     const faqData = faqResponse || null;
+    const logosData = logosResponse || null;
 
     return (
         <>
@@ -133,7 +136,13 @@ export default async function CursosPage() {
             <HeadlineCurso />
             <PorqueAprender />
             <Video2 variant="cursos" />
-            <Logos variant="cursos" />
+            
+            {/* Componente Logos com dados do endpoint logos-curso */}
+            <Logos 
+                variant="cursos" 
+                data={logosData} 
+            />
+            
             <Cursos />
             <CasesCarousel data={testimonialsData} />
             <GaleriaFotos data={galleryData} />
@@ -150,3 +159,19 @@ export default async function CursosPage() {
         </>
     );
 }
+
+// data={[
+//     {
+//       id: "1",
+//       alt: "Evento Tegbe",
+//       image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop",
+//       span: "row-span-2"
+//     },
+//     {
+//       id: "2",
+//       alt: "Workshop",
+//       image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w-800&auto=format&fit=crop",
+//       span: "row-span-1"
+//     },
+//     // Adicione mais itens...
+//   ]}

@@ -48,7 +48,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
   return (
     <section 
       ref={sectionRef}
-      className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#050505] pt-[80px] pb-[40px]"
+      className="relative w-full min-h-screen flex flex-col justify-center items-center overflow-hidden bg-[#050505]  pb-[40px]"
       style={{ contain: 'paint layout' }}
     >
       

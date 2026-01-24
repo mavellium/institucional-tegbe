@@ -19,7 +19,7 @@ interface AnnouncementBarProps {
   showButton?: boolean;
   
   // Estilos
-  variant?: "default" | "gradient" | "dark" | "warning" | "success" | "info";
+  variant?: "default" | "warning";
   backgroundColor?: string;
   textColor?: string;
   position?: "top" | "bottom" | "sticky-top" | "sticky-bottom";
@@ -44,8 +44,8 @@ export default function AnnouncementBar({
   showIcon = true,
   
   // Estilos
-  variant = "gradient",
-  backgroundColor = "warning",
+  variant = "warning",
+  backgroundColor,
   textColor,
   position = "top",
   fullWidth = true,
@@ -87,11 +87,7 @@ export default function AnnouncementBar({
   // Mapeamento de variantes para classes
   const variantClasses = {
     default: "bg-white text-gray-800 border-b border-gray-200",
-    gradient: "bg-gradient-to-r from-blue-600 to-purple-700 text-white",
-    dark: "bg-gray-900 text-white border-b border-gray-800",
     warning: "bg-yellow-500 text-gray-900 border-b border-yellow-600",
-    success: "bg-green-600 text-white border-b border-green-700",
-    info: "bg-blue-500 text-white border-b border-blue-600"
   };
   
   // Mapeamento de posições
@@ -106,11 +102,7 @@ export default function AnnouncementBar({
   const getButtonVariant = () => {
     switch(variant) {
       case "default": return "secondary";
-      case "gradient": return "default";
-      case "dark": return "default";
       case "warning": return "default";
-      case "success": return "default";
-      case "info": return "default";
       default: return "default";
     }
   };
@@ -147,7 +139,7 @@ export default function AnnouncementBar({
         )}
         
         {/* Texto */}
-        <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+        <div className="flex flex-wrap items-center gap-2 text-start text-sm font-medium">
           <span>{text}</span>
           
           {/* Link opcional */}
@@ -155,7 +147,7 @@ export default function AnnouncementBar({
             <a 
               href={linkUrl}
               className={`
-                font-bold underline underline-offset-2 hover:opacity-80 transition-opacity
+                font-bold w-full sm:w-auto underline underline-offset-2 hover:opacity-80 transition-opacity
                 ${variant === "warning" ? "text-gray-900" : "text-white"}
               `}
             >

@@ -68,7 +68,7 @@ html {
 body {
     width: 100vw;
     overflow-x: hidden;
-    background-color: #F4F4F4;
+    background-color: #050505;
     color: var(--color-dark-100);
     font-family: var(--font-bold);
 }
