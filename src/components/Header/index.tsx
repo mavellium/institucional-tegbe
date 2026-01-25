@@ -21,6 +21,23 @@ export interface HeaderData {
     name: string;
     href: string;
   }>;
+  announcementBar?: {
+    styles: {
+      variant: "default" | "warning";
+      position: string;
+      className: string;
+      fullWidth: boolean;
+      customTextColor: string | null;
+      customBackgroundColor: string | null;
+    };
+    content: {
+      icon: string;
+      text: string;
+      linkUrl: string;
+      linkText: string;
+      showIcon: boolean;
+    };
+  };
 }
 
 interface HeaderProps {
@@ -291,7 +308,20 @@ export function Header({ variant = 'default' }: HeaderProps) {
       <div className="h-20"></div>
       
       {/* Announcement Bar NÃO fixo */}
-      <AnnouncementBar />
+      {data.announcementBar && (
+        <AnnouncementBar 
+          text={data.announcementBar.content.text}
+          linkText={data.announcementBar.content.linkText}
+          linkUrl={data.announcementBar.content.linkUrl}
+          icon={data.announcementBar.content.icon}
+          showIcon={data.announcementBar.content.showIcon}
+          variant={data.announcementBar.styles.variant}
+          fullWidth={data.announcementBar.styles.fullWidth}
+          backgroundColor={data.announcementBar.styles.customBackgroundColor ?? undefined}
+          textColor={data.announcementBar.styles.customTextColor ?? undefined}
+          className={data.announcementBar.styles.className}
+        />
+      )}
     </>
   )
 }
