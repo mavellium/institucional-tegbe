@@ -214,20 +214,27 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
   const marquee1 = [...data.logos.row1, ...data.logos.row1, ...data.logos.row1, ...data.logos.row1];
   const marquee2 = [...data.logos.row2, ...data.logos.row2, ...data.logos.row2, ...data.logos.row2];
 
-  const LogoItem = ({ logo }: { logo: LogoItemData }) => (
-    <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-125">
-      <div className="h-16 md:h-20 w-44 md:w-52 flex items-center justify-center p-2">
-        <Image 
+  const LogoItem = ({ logo }: { logo: LogoItemData }) => {
+    // Se src for vazio, não renderiza nada
+    if (!logo.src || logo.src.trim() === "") {
+      return null;
+    }
+
+    return (
+      <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-125">
+        <div className="h-16 md:h-20 w-44 md:w-52 flex items-center justify-center p-2">
+          <Image 
             src={logo.src} 
             alt={logo.alt} 
             width={logo.width * 1.5} 
             height={logo.height * 1.5} 
             className="w-full h-full object-contain"
             unoptimized
-        />
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <section ref={sectionRef} className={`relative py-24 px-6 ${theme.background} overflow-hidden`}>
