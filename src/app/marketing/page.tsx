@@ -127,7 +127,7 @@ export default async function MarketingPage() {
             <ServiceFlow variant="marketing" />
 
             {/* Seção Deep Dive / Services */}
-            <ExploreDetails features={servicesData} />
+            <ExploreDetails />
 
             {/* Seção Logos / Social Proof */}
             <Empresas variant="marketing" data={empresasData} />
