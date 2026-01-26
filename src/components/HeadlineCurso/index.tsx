@@ -136,7 +136,7 @@ export default function HeroSplit({
   );
 
   return (
-    <section className="relative w-full h-screen min-h-[700px] flex items-center justify-center bg-[#020202] overflow-hidden font-sans pt-[80px]">
+    <section className="relative w-full h-screen min-h-[500px] flex items-center justify-center bg-[#020202] overflow-hidden font-sans">
       
       {/* Atmosphere */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-0"></div>
@@ -148,7 +148,7 @@ export default function HeroSplit({
       {/* Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#222_1px,transparent_1px),linear-gradient(to_bottom,#222_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
 
-      <div className="container relative z-10 w-full px-4 md:px-6 h-full flex items-center">
+      <div className="container relative z-10 w-full px-4 md:px-6 h-full- flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full">
 
           {/* LEFT CONTENT */}

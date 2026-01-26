@@ -86,7 +86,7 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
       
       <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#FFD700]/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 border border-[#FFD700]/30 ${isPlaying ? 'opacity-0 scale-150' : 'opacity-100 scale-100'}`}>
-         <Icon icon="ph:play-fill" className="text-[#FFD700] w-6 h-6 ml-1" />
+         <Icon icon="ph:play-fill" className="text-[#FFD700] w-6 h-6" />
       </div>
 
       <div className="absolute bottom-0 left-0 w-full p-8 text-white z-10">
@@ -219,7 +219,7 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-center text-center md:items-start mb-12 gap-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700] animate-pulse"></span>

@@ -128,7 +128,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
 
           {/* --- COLUNA 3: Expertise Dinâmica --- */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h1 className="font-bold text-base text-white">{content.columnTitle}</h1>
+            <h1 className="font-bold text-base  text-white">{content.columnTitle}</h1>
             <nav className="flex flex-col space-y-3">
               {content.links.map((text: string) => (
                 <FooterLink key={text} text={text} theme={theme} />
@@ -139,7 +139,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
           {/* --- COLUNA 4: Contato --- */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
             <h1 className="font-bold text-base text-white">Fale Conosco</h1>
-            <div className="flex flex-col items-center sm:items-start space-y-4">
+            <div className="flex flex-col sm:items-start text-start space-y-4">
 
               {/* E-mail */}
               <a href={`mailto:${content.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
@@ -164,7 +164,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
               <a
                 href="#"
                 target="_blank"
-                className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group text-center sm:text-left"
+                className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group text-left"
               >
                 <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 mt-0.5 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
                   <Icon icon="solar:map-point-linear" />
