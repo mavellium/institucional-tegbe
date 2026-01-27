@@ -11,17 +11,29 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface refinada para bater com o JSON da API
+// --- INTERFACES ---
+export interface ServiceHeader {
+  title: string;
+  subtitle: string;
+}
+
 export interface ServiceFeature {
   id: string;
   title: string;
   description: string;
   image: string;
   icon: string;
-  subtitle?: string;
+  badge?: string;
+  color?: string;
+}
+
+export interface ApiResponse {
+  header: ServiceHeader;
+  services: ServiceFeature[];
 }
 
 const ExploreDetails = () => {
+  const [header, setHeader] = useState<ServiceHeader | null>(null);
   const [features, setFeatures] = useState<ServiceFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFeature, setActiveFeature] = useState(0); 
@@ -31,8 +43,6 @@ const ExploreDetails = () => {
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const buttonsContainerRef = useRef<HTMLDivElement>(null);
-  const mobileTextContainerRef = useRef<HTMLDivElement>(null);
   const desktopImageContainerRef = useRef<HTMLDivElement>(null);
   const mobileImageContainerRef = useRef<HTMLDivElement>(null);
   const previousActiveFeatureRef = useRef<number>(-1);
@@ -42,10 +52,10 @@ const ExploreDetails = () => {
     const fetchServices = async () => {
       try {
         const response = await fetch("https://tegbe-dashboard.vercel.app/api/tegbe-institucional/services-marketing");
-        const data = await response.json();
+        const data: ApiResponse = await response.json();
         
-        // Mapeia o array 'services' da API para o estado 'features'
         if (data.services && data.services.length > 0) {
+          setHeader(data.header);
           setFeatures(data.services);
           setCurrentImage(data.services[0].image);
         }
@@ -90,7 +100,6 @@ const ExploreDetails = () => {
     }
   }, [activeFeature, features]);
 
-  // Inicialização do primeiro item
   useEffect(() => {
     if (features.length > 0) {
       const timer = setTimeout(() => {
@@ -105,7 +114,6 @@ const ExploreDetails = () => {
 
     setIsTransitioning(true);
     
-    // Reset anterior
     if (activeFeature !== -1 && !force) {
       gsap.to(buttonsRef.current[activeFeature], { backgroundColor: "transparent", borderColor: "rgba(255,255,255,0.05)", duration: 0.3 });
       gsap.to(descriptionsRef.current[activeFeature], { height: 0, opacity: 0, marginTop: 0, duration: 0.3 });
@@ -113,7 +121,6 @@ const ExploreDetails = () => {
 
     setActiveFeature(index);
 
-    // Ativar novo
     gsap.to(buttonsRef.current[index], {
       backgroundColor: "rgba(227, 27, 99, 0.1)", 
       borderColor: "#E31B63", 
@@ -132,22 +139,32 @@ const ExploreDetails = () => {
   if (loading) return <div className="py-24 text-center text-white">Carregando inteligência...</div>;
   if (features.length === 0) return null;
 
+  // Lógica para destacar a última palavra do título da API
+  const titleWords = header?.title.split(" ") || [];
+  const lastWord = titleWords.pop();
+  const firstPart = titleWords.join(" ");
+
   return (
     <section ref={sectionRef} className="py-24 bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
       <div className="mx-auto relative max-w-[1400px] z-10">
         <div className="mb-12 md:mb-16">
-            <h2 className="text-sm font-bold text-[#E31B63] uppercase tracking-widest mb-3">Deep Dive</h2>
+            <h2 className="text-sm font-bold text-[#E31B63] uppercase tracking-widest mb-3">
+              {header?.subtitle}
+            </h2>
             <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-              A anatomia da <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E31B63] to-[#FF0F43]">Escala.</span>
+              {firstPart}{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E31B63] to-[#FF0F43]">
+                {lastWord}.
+              </span>
             </h1>
         </div>
 
         {/* DESKTOP */}
         <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
           <div className="col-span-4 sticky top-24">
-            <div ref={buttonsContainerRef} className="flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3">
               {features.map((feature, index) => (
                 <button
                   key={feature.id}
@@ -175,7 +192,7 @@ const ExploreDetails = () => {
             <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] aspect-video">
               <div ref={desktopImageContainerRef} className="w-full h-full relative">
                 {currentImage && (
-                    <Image src={currentImage} alt="Dashboard" fill className="object-cover" unoptimized />
+                    <Image src={currentImage} alt="Feature Display" fill className="object-cover" unoptimized />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60"></div>
               </div>
@@ -183,19 +200,19 @@ const ExploreDetails = () => {
           </div>
         </div>
 
-        {/* MOBILE (Simplificado para o exemplo) */}
+        {/* MOBILE */}
         <div className="lg:hidden bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden">
            <div ref={mobileImageContainerRef} className="aspect-video relative">
-              {currentImage && <Image src={currentImage} alt="Mobile" fill className="object-cover" unoptimized />}
+              {currentImage && <Image src={currentImage} alt="Mobile View" fill className="object-cover" unoptimized />}
            </div>
            <div className="p-6 text-center">
               <h3 className="text-xl font-bold text-white mb-2">{features[activeFeature].title}</h3>
               <p className="text-gray-400 text-sm">{features[activeFeature].description}</p>
               <div className="flex justify-center gap-4 mt-6">
-                 <Button variant="outline" size="icon" onClick={() => handleFeatureChange((activeFeature - 1 + features.length) % features.length)}>
+                 <Button variant="outline" size="icon" className="border-white/10 text-white" onClick={() => handleFeatureChange((activeFeature - 1 + features.length) % features.length)}>
                     <Icon icon="lucide:arrow-left" />
                  </Button>
-                 <Button variant="outline" size="icon" onClick={() => handleFeatureChange((activeFeature + 1) % features.length)}>
+                 <Button variant="outline" size="icon" className="border-white/10 text-white" onClick={() => handleFeatureChange((activeFeature + 1) % features.length)}>
                     <Icon icon="lucide:arrow-right" />
                  </Button>
               </div>
