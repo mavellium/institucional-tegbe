@@ -305,7 +305,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
       </header>
       
       {/* Espaço reservado para o Header fixo */}
-      <div className="h-20"></div>
+      <div className="h-20 bg-black"></div>
       
       {/* Announcement Bar NÃO fixo */}
       {data.announcementBar && (

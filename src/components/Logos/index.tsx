@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 
 // Interface mantida conforme seu padrão
 export interface LogosApiData {
@@ -18,49 +17,65 @@ export interface LogosApiData {
 interface LogosProps {
   data?: LogosApiData[];
   variant?: 'default' | 'cursos';
-  title?: string;
-  subtitle?: string;
-  showBadge?: boolean;
-  badgeText?: string;
-  badgeIcon?: string;
 }
 
 export default function Logos({ 
   data, 
-  variant = 'default',
-  showBadge = false,
-  badgeText = "Parcerias Oficiais",
-  badgeIcon = "ph:handshake-fill"
+  variant = 'default'
 }: LogosProps) {
   const [apiLogos, setApiLogos] = useState<LogosApiData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // --- FETCH DOS DADOS DO ENDPOINT ---
   useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/form/logos-ecommerce');
-        const result = await response.json();
+        setLoading(true);
+        setError(null);
         
-        if (result.values) {
+        // Endpoint específico para cursos se for a variante cursos
+        const endpoint = variant === 'cursos' 
+          ? '/api-tegbe/tegbe-institucional/form/logos-curso'
+          : '/api-tegbe/tegbe-institucional/form/logos-ecommerce';
+        
+        console.log(`📡 Buscando logos de: ${endpoint}`);
+        
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('📦 Resposta da API:', result);
+        
+        // Verificação segura: result.values deve existir E ser um array
+        if (result && result.values && Array.isArray(result.values)) {
           const formattedLogos: LogosApiData[] = result.values.map((item: any) => ({
             id: item.id,
             src: item.image,
-            alt: item.name || "Logo Ecommerce",
-            width: 150,
-            height: 100
+            alt: item.name || (variant === 'cursos' ? "Logo Curso" : "Logo Ecommerce"),
+            width: variant === 'cursos' ? 120 : 150,
+            height: variant === 'cursos' ? 80 : 100,
+            url: item.url || item.website
           }));
           setApiLogos(formattedLogos);
+        } else {
+          console.warn('⚠️ Formato inesperado ou dados vazios:', result);
+          setApiLogos([]);
         }
       } catch (error) {
-        console.error("Erro ao carregar logos da API:", error);
+        console.error(`❌ Erro ao carregar logos da API (${variant}):`, error);
+        setError(`Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+        setApiLogos([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLogos();
-  }, []);
+  }, [variant]);
 
   // Define quais logos usar (Prioridade para a prop 'data', depois API)
   const logos = (data && data.length > 0) ? data : apiLogos;
@@ -97,9 +112,26 @@ export default function Logos({
 
   const config = variantConfig[variant];
 
-  // Se ainda estiver carregando ou não houver logos, não renderiza para não quebrar o layout
-  if (loading && !data) return null;
-  if (logos.length === 0) return null;
+  // Se ainda estiver carregando, mostra um loader simples
+  if (loading && !data) {
+    return (
+      <div className={`${config.sectionPadding} ${config.bgColor} flex justify-center items-center`}>
+        <div className="text-gray-500">Carregando...</div>
+      </div>
+    );
+  }
+
+  // Se houver erro, logamos mas não mostramos nada
+  if (error && !data) {
+    console.warn(`Erro no componente Logos (${variant}):`, error);
+    return null;
+  }
+
+  // Se não houver logos, não renderiza
+  if (logos.length === 0) {
+    console.log(`ℹ️ Nenhum logo disponível para ${variant}`);
+    return null;
+  }
 
   // Multiplicação para garantir fluidez
   const marqueeLogos = [...logos, ...logos, ...logos, ...logos, ...logos, ...logos];
@@ -112,7 +144,6 @@ export default function Logos({
 
   return (
     <section className={`${config.sectionPadding} ${config.bgColor} overflow-hidden relative`}>
-
       {/* Container da animação */}
       <div className="relative">
         {/* --- MÁSCARA DE FADE --- */}
@@ -149,39 +180,6 @@ export default function Logos({
             ))}
           </motion.div>
         </div>
-
-        {/* Segunda linha (da direita para esquerda) - apenas para cursos */}
-        {variant === 'cursos' && (
-          <div className="flex w-full mt-8 md:mt-12">
-            <motion.div
-              className="flex items-center"
-              initial={{ x: "-50%" }}
-              animate={{ x: 0 }} 
-              transition={{
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: config.animationDuration,
-                ease: "linear",
-              }}
-            >
-              {[...marqueeLogos].reverse().map((logo, index) => (
-                <div 
-                  key={`second-${logo.id}-${index}`}
-                  className="flex-shrink-0 px-8 md:px-16 group cursor-pointer"
-                  onClick={() => handleLogoClick(logo)}
-                >
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={logo.width || 120}
-                    height={logo.height || 80}
-                    className={`w-auto ${config.logoHeight} object-contain ${config.logoFilter} ${config.logoOpacity} hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-105`}
-                  />
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        )}
       </div>
     </section>
   );
