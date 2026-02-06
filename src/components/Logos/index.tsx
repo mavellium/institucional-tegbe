@@ -52,14 +52,16 @@ export default function Logos({
         
         // Verificação segura: result.values deve existir E ser um array
         if (result && result.values && Array.isArray(result.values)) {
-          const formattedLogos: LogosApiData[] = result.values.map((item: any) => ({
-            id: item.id,
-            src: item.image,
-            alt: item.name || (variant === 'cursos' ? "Logo Curso" : "Logo Ecommerce"),
-            width: variant === 'cursos' ? 120 : 150,
-            height: variant === 'cursos' ? 80 : 100,
-            url: item.url || item.website
-          }));
+          const formattedLogos: LogosApiData[] = result.values
+            .filter((item: any) => item.image && item.image.trim() !== '') // Filtra itens com imagem vazia
+            .map((item: any) => ({
+              id: item.id,
+              src: item.image,
+              alt: item.name || (variant === 'cursos' ? "Logo Curso" : "Logo Ecommerce"),
+              width: variant === 'cursos' ? 120 : 150,
+              height: variant === 'cursos' ? 80 : 100,
+              url: item.url || item.website
+            }));
           setApiLogos(formattedLogos);
         } else {
           console.warn('⚠️ Formato inesperado ou dados vazios:', result);
@@ -79,6 +81,14 @@ export default function Logos({
 
   // Define quais logos usar (Prioridade para a prop 'data', depois API)
   const logos = (data && data.length > 0) ? data : apiLogos;
+  
+  // Filtra logos para garantir que tenham src e alt válidos
+  const validLogos = logos.filter(logo => 
+    logo.src && 
+    logo.src.trim() !== '' && 
+    logo.alt && 
+    logo.alt.trim() !== ''
+  );
 
   // Configurações por variante
   const variantConfig = {
@@ -127,14 +137,16 @@ export default function Logos({
     return null;
   }
 
-  // Se não houver logos, não renderiza
-  if (logos.length === 0) {
-    console.log(`ℹ️ Nenhum logo disponível para ${variant}`);
+  // Se não houver logos válidos, não renderiza
+  if (validLogos.length === 0) {
+    console.log(`ℹ️ Nenhum logo válido disponível para ${variant}`);
+    console.log('Logos brutos:', logos);
+    console.log('Logos válidos:', validLogos);
     return null;
   }
 
   // Multiplicação para garantir fluidez
-  const marqueeLogos = [...logos, ...logos, ...logos, ...logos, ...logos, ...logos];
+  const marqueeLogos = [...validLogos, ...validLogos, ...validLogos, ...validLogos, ...validLogos, ...validLogos];
 
   const handleLogoClick = (logo: LogosApiData) => {
     if (logo.url) {
@@ -175,6 +187,11 @@ export default function Logos({
                   width={logo.width || (variant === 'cursos' ? 120 : 150)}
                   height={logo.height || (variant === 'cursos' ? 80 : 100)}
                   className={`w-auto ${config.logoHeight} object-contain ${config.logoFilter} ${config.logoOpacity} hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-105`}
+                  onError={(e) => {
+                    // Fallback em caso de erro no carregamento da imagem
+                    console.warn(`Erro ao carregar imagem: ${logo.src}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </div>
             ))}

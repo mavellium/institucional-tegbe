@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Icon } from "@iconify/react"
 import AnnouncementBar from "../AnnouncementBar"
 
-// --- TIPAGEM ---
+// --- TIPAGEM ATUALIZADA ---
 export interface HeaderData {
   general: {
     logo: string;
@@ -22,6 +22,7 @@ export interface HeaderData {
     href: string;
   }>;
   announcementBar?: {
+    enabled: boolean; // NOVO: Controla ativação/desativação
     styles: {
       variant: "default" | "warning";
       position: string;
@@ -36,6 +37,10 @@ export interface HeaderData {
       linkUrl: string;
       linkText: string;
       showIcon: boolean;
+    };
+    behavior?: {
+      autoClose?: number;
+      persistent?: boolean;
     };
   };
 }
@@ -59,6 +64,23 @@ export function Header({ variant = 'default' }: HeaderProps) {
       try {
         const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header')
         const result = await response.json()
+        
+        // Validação para garantir estrutura correta
+        if (result.announcementBar) {
+          // Garante que 'enabled' existe (default para true se não definido)
+          if (result.announcementBar.enabled === undefined) {
+            result.announcementBar.enabled = true;
+          }
+          
+          // Garante que 'behavior' existe
+          if (!result.announcementBar.behavior) {
+            result.announcementBar.behavior = {
+              autoClose: 0,
+              persistent: false
+            };
+          }
+        }
+        
         setData(result)
       } catch (error) {
         console.error("Erro ao carregar dados do Header:", error)
@@ -307,8 +329,8 @@ export function Header({ variant = 'default' }: HeaderProps) {
       {/* Espaço reservado para o Header fixo */}
       <div className="h-20 bg-black"></div>
       
-      {/* Announcement Bar NÃO fixo */}
-      {data.announcementBar && (
+      {/* Announcement Bar - APENAS SE ESTIVER HABILITADO */}
+      {data.announcementBar?.enabled && (
         <AnnouncementBar 
           text={data.announcementBar.content.text}
           linkText={data.announcementBar.content.linkText}
@@ -320,6 +342,8 @@ export function Header({ variant = 'default' }: HeaderProps) {
           backgroundColor={data.announcementBar.styles.customBackgroundColor ?? undefined}
           textColor={data.announcementBar.styles.customTextColor ?? undefined}
           className={data.announcementBar.styles.className}
+          autoClose={data.announcementBar.behavior?.autoClose ?? 0}
+          persistent={data.announcementBar.behavior?.persistent ?? false}
         />
       )}
     </>
