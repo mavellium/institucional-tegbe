@@ -212,18 +212,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
             {/* AÇÕES (CTA FIXO COM CORES DAS VARIANTES) */}
             <div className="flex items-center gap-3 sm:gap-6">
-              <Link
-                href="/consultor-oficial"
-                className="hidden md:block opacity-60 hover:opacity-100 transition-all hover:scale-110"
-                aria-label="Ver badge de consultor oficial"
-              >
-                <Image
-                  src={data.general.consultantBadge}
-                  alt="Badge de Consultor Oficial Tegbe"
-                  width={36}
-                  height={36}
-                  className={`w-8 h-8 lg:w-9 lg:h-9`} />
-              </Link>
+              
 
               <a
                 href={data.general.ctaLink}

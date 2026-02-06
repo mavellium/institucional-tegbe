@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import LogosMKTInvert from "@/components/Logos/LogosMKTInvert";
 import LogosMKT from "@/components/Logos/LogosMKT";
 import Image from "next/image";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -20,6 +21,14 @@ export interface LogoItemData {
   src: string;
   width: number;
   height: number;
+}
+
+export interface CTAData {
+  text: string;
+  link: string;
+  style?: "default" | "outline" | "ghost";
+  showIcon?: boolean;
+  icon?: string;
 }
 
 export interface EmpresasDataMarketing {
@@ -34,6 +43,7 @@ export interface EmpresasDataMarketing {
   title: string;
   footer: string;
   layout: string;
+  cta?: CTAData;
 }
 
 export interface EmpresasDataSobre {
@@ -53,6 +63,7 @@ export interface EmpresasDataSobre {
     linkText: string;
   };
   layout: string;
+  cta?: CTAData;
 }
 
 // Union Type para props
@@ -92,6 +103,13 @@ interface MarketingTheme {
     label: string;
     show: string;
   };
+  cta: {
+    primary: string;
+    hover: string;
+    text: string;
+    outline: string;
+    ghost: string;
+  };
 }
 
 interface SobreTheme {
@@ -121,9 +139,16 @@ interface SobreTheme {
   stats: {
     value: string; 
   };
+  cta: {
+    primary: string;
+    hover: string;
+    text: string;
+    outline: string;
+    ghost: string;
+  };
 }
 
-// --- CONFIGURAÇÃO DE TEMA (SOBRE AGORA EM AMARELO) ---
+// --- CONFIGURAÇÃO DE TEMA (COM CTA) ---
 const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
   marketing: {
     background: "bg-[#020202] border-t border-white/5",
@@ -152,6 +177,13 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
       value: "+R$50M",
       label: "Gerenciados em Ads",
       show: "hidden md:flex"
+    },
+    cta: {
+      primary: "bg-gradient-to-r from-[#FF0F43] to-[#E31B63] hover:from-[#FF1A4D] hover:to-[#F02B6D]",
+      hover: "hover:shadow-[0_0_30px_rgba(227,27,99,0.3)]",
+      text: "text-white",
+      outline: "border border-[#E31B63] text-[#E31B63] hover:bg-[#E31B63]/10",
+      ghost: "text-[#E31B63] hover:bg-[#E31B63]/10"
     }
   },
   sobre: {
@@ -159,12 +191,11 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
     text: {
       primary: "text-[#1d1d1f]",
       secondary: "text-gray-500",
-      // GRADIENTE AMARELO MAVELLIUM
       gradient: "from-[#FFCC00] to-[#C59D1F]"
     },
     badge: {
       background: "bg-white border border-gray-200 shadow-sm",
-      icon: "text-[#FFCC00]", // Ícone amarelo
+      icon: "text-[#FFCC00]",
       text: "text-gray-500"
     },
     card: {
@@ -175,18 +206,25 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
     lighting: {
       noise: false,
       topRight: "bg-gradient-to-b from-gray-200/50 to-transparent",
-      bottomLeft: "bg-yellow-50/50", // Luz de fundo amarela sutil
-      statGlow: "bg-[#FFCC00]/20", // Brilho amarelo no card de stats
+      bottomLeft: "bg-yellow-50/50",
+      statGlow: "bg-[#FFCC00]/20",
       spotlight: "bg-transparent"
     },
     stats: {
       value: "+40M", 
+    },
+    cta: {
+      primary: "bg-[#FFCC00] hover:bg-[#FFDB15]",
+      hover: "hover:shadow-[0_0_30px_rgba(255,204,0,0.3)]",
+      text: "text-black",
+      outline: "border border-[#FFCC00] text-[#FFCC00] hover:bg-[#FFCC00]/10",
+      ghost: "text-[#FFCC00] hover:bg-[#FFCC00]/10"
     }
   }
 };
 
 // --- COMPONENTE PARA MARKETING ---
-const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
+const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasDataMarketing; variant?: EmpresasVariant }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
 
@@ -209,13 +247,21 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
       { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
       "-=0.4"
     );
+
+    // Animação para o CTA
+    if (data.cta) {
+      tl.fromTo(".cta-button", 
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        "-=0.2"
+      );
+    }
   }, { scope: sectionRef });
 
   const marquee1 = [...data.logos.row1, ...data.logos.row1, ...data.logos.row1, ...data.logos.row1];
   const marquee2 = [...data.logos.row2, ...data.logos.row2, ...data.logos.row2, ...data.logos.row2];
 
   const LogoItem = ({ logo }: { logo: LogoItemData }) => {
-    // Se src for vazio, não renderiza nada
     if (!logo.src || logo.src.trim() === "") {
       return null;
     }
@@ -234,6 +280,18 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
         </div>
       </div>
     );
+  };
+
+  // Função para obter classes do CTA baseado no estilo
+  const getCTAStyle = (style: string = "default") => {
+    switch(style) {
+      case "outline":
+        return `${theme.cta.outline} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 ${theme.cta.hover}`;
+      case "ghost":
+        return `${theme.cta.ghost} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300`;
+      default:
+        return `${theme.cta.primary} ${theme.cta.text} px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-all duration-300 ${theme.cta.hover} transform hover:scale-105 active:scale-95`;
+    }
   };
 
   return (
@@ -277,9 +335,25 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
             </div>
           </div>
         </div>
+        
+        {/* BOTÃO CTA - ABAIXO DO CONTEÚDO */}
+        {data.cta && (
+          <div className="reveal-trust cta-button flex justify-center mt-12">
+            <Link
+              href={data.cta.link}
+              className={`inline-flex items-center gap-2 ${getCTAStyle(data.cta.style)}`}
+            >
+              {data.cta.showIcon && data.cta.icon && (
+                <Icon icon={data.cta.icon} className="w-5 h-5" />
+              )}
+              {data.cta.text}
+            </Link>
+          </div>
+        )}
+        
         <div className="reveal-trust mt-6 flex justify-center opacity-60">
           <p className="text-xs text-gray-500 uppercase tracking-widest flex items-center gap-2">
-            <span className={`w-1.5 h-1.5 rounded-full bg-[#E31B63] animate-pulse`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${variant === 'marketing' ? 'bg-[#E31B63]' : 'bg-[#FFCC00]'} animate-pulse`}></span>
             {data.footer}
           </p>
         </div>
@@ -288,7 +362,7 @@ const EmpresasMarketing = ({ data }: { data: EmpresasDataMarketing }) => {
   );
 };
 
-// --- COMPONENTE PARA SOBRE (TOTALMENTE AMARELO) ---
+// --- COMPONENTE PARA SOBRE ---
 const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.sobre as SobreTheme;
@@ -305,7 +379,28 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
     tl.fromTo(".reveal-head", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" });
     tl.fromTo(".logo-card", { y: 60, autoAlpha: 0, scale: 0.98 }, { y: 0, autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, "-=0.4");
     tl.fromTo(".stat-box", { x: -30, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, "-=0.6");
+    
+    // Animação para o CTA
+    if (data.cta) {
+      tl.fromTo(".cta-button", 
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        "-=0.2"
+      );
+    }
   }, { scope: sectionRef });
+
+  // Função para obter classes do CTA baseado no estilo
+  const getCTAStyle = (style: string = "default") => {
+    switch(style) {
+      case "outline":
+        return `${theme.cta.outline} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 ${theme.cta.hover}`;
+      case "ghost":
+        return `${theme.cta.ghost} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300`;
+      default:
+        return `${theme.cta.primary} ${theme.cta.text} px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-all duration-300 ${theme.cta.hover} transform hover:scale-105 active:scale-95`;
+    }
+  };
 
   return (
     <section ref={sectionRef} className={`py-24 w-full flex flex-col items-center ${theme.background} px-6 relative overflow-hidden`}>
@@ -366,6 +461,21 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
             </div>
           </div>
         </div>
+
+        {/* BOTÃO CTA - ABAIXO DO CONTEÚDO */}
+        {data.cta && (
+          <div className="reveal-head cta-button flex justify-center mt-12">
+            <Link
+              href={data.cta.link}
+              className={`inline-flex items-center gap-2 ${getCTAStyle(data.cta.style)}`}
+            >
+              {data.cta.showIcon && data.cta.icon && (
+                <Icon icon={data.cta.icon} className="w-5 h-5" />
+              )}
+              {data.cta.text}
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
