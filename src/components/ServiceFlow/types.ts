@@ -49,8 +49,26 @@ export interface CTAContent {
   description: string;
 }
 
+// Interface específica para o conteúdo do Flywheel
+export interface FlywheelContent {
+  title: string;
+  description: string;
+  subtitle?: string;
+  benefits: string[];
+  phases: Array<{
+    title: string;
+    color: string;
+  }>;
+  colors?: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+}
+
 export interface VariantContent {
   header: HeaderContent;
   services: Service[];
   cta: CTAContent;
+  flywheel?: FlywheelContent; // Opcional, com tipo específico
 }
