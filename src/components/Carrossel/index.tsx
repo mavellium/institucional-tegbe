@@ -52,7 +52,15 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(0.5);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [videoClicked, setVideoClicked] = useState(false);
+  const [isHoveringVolume, setIsHoveringVolume] = useState(false);
   const playButtonRef = useRef<HTMLDivElement>(null);
+  const volumeContainerRef = useRef<HTMLDivElement>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Detecta se é mobile/tablet
   useEffect(() => {
@@ -69,50 +77,174 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
     };
   }, []);
 
-  // Comportamento para desktop (hover)
-  const handleHover = (play: boolean) => {
-    if (videoRef.current && !isMobile) {
-      if (play) {
-        videoRef.current.play();
-        setIsPlaying(true);
+  // Configura volume inicial
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume;
+      videoRef.current.muted = true; // Inicia mudo
+    }
+  }, []);
+
+  // Atualiza volume quando estado muda
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume;
+      setIsMuted(volume === 0);
+    }
+  }, [volume]);
+
+  // Alternar mute/unmute
+  const handleToggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (volume === 0) {
+        // Se volume está zero, definir para 50% ao desmutar
+        setVolume(0.5);
+        videoRef.current.volume = 0.5;
+        videoRef.current.muted = false;
       } else {
-        videoRef.current.pause();
-        setIsPlaying(false);
+        videoRef.current.muted = !videoRef.current.muted;
+        setIsMuted(videoRef.current.muted);
       }
     }
   };
 
-  // Comportamento para mobile/tablet (click)
-  const handleVideoPlay = () => {
-    if (videoRef.current && isMobile) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-        setHasUserInteracted(true);
-      }
+  // Ajustar volume
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+      videoRef.current.muted = newVolume === 0;
+      setIsMuted(newVolume === 0);
     }
   };
 
-  // Comportamento para clicar no card (mobile)
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Se clicou no botão de play, não faz nada (já foi tratado)
+  // Alternar play/pause ao clicar no vídeo
+  const handleVideoClick = (e: React.MouseEvent) => {
+    // Não faz nada se clicou no botão de volume
+    if (volumeContainerRef.current && volumeContainerRef.current.contains(e.target as Node)) {
+      return;
+    }
+    
+    // Não faz nada se clicou no botão de play
     if (playButtonRef.current && playButtonRef.current.contains(e.target as Node)) {
       return;
     }
     
-    // Se é mobile, toca/pausa o vídeo ao clicar no card
-    if (isMobile) {
-      handleVideoPlay();
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+        setShowInfo(true);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+        setHasUserInteracted(true);
+        setShowInfo(false);
+      }
+      setVideoClicked(true);
+      setTimeout(() => setVideoClicked(false), 300);
     }
   };
 
   // Comportamento para clicar no botão de play
   const handlePlayButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Impede que o clique se propague para o card
-    handleVideoPlay();
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+        setShowInfo(true);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+        setHasUserInteracted(true);
+        setShowInfo(false);
+      }
+      setVideoClicked(true);
+      setTimeout(() => setVideoClicked(false), 300);
+    }
+  };
+
+  // Mostrar slider de volume
+  const handleVolumeMouseEnter = () => {
+    if (!isMobile) {
+      setIsHoveringVolume(true);
+      setShowVolumeSlider(true);
+    }
+  };
+
+  // Esconder slider de volume apenas quando mouse sair completamente
+  const handleVolumeMouseLeave = () => {
+    if (!isMobile) {
+      setIsHoveringVolume(false);
+      // Espera um pouco para garantir que o mouse não esteja mais sobre o slider
+      setTimeout(() => {
+        if (!isHoveringVolume) {
+          setShowVolumeSlider(false);
+        }
+      }, 300);
+    }
+  };
+
+  // Manter slider visível enquanto mouse estiver sobre
+  const handleSliderMouseEnter = () => {
+    setIsHoveringVolume(true);
+  };
+
+  const handleSliderMouseLeave = () => {
+    setIsHoveringVolume(false);
+    setTimeout(() => {
+      if (!isHoveringVolume) {
+        setShowVolumeSlider(false);
+      }
+    }, 300);
+  };
+
+  // Alternar slider de volume no mobile
+  const handleVolumeButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMobile) {
+      setShowVolumeSlider(!showVolumeSlider);
+    }
+  };
+
+  // Fechar slider de volume ao clicar fora (mobile)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isMobile && 
+          volumeContainerRef.current && 
+          !volumeContainerRef.current.contains(e.target as Node)) {
+        setShowVolumeSlider(false);
+      }
+    };
+
+    if (isMobile) {
+      document.addEventListener('click', handleClickOutside);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [isMobile]);
+
+  // Mostrar info quando vídeo termina
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    setShowInfo(true);
+  };
+
+  // Mostrar info quando vídeo pausa
+  const handleVideoPause = () => {
+    setIsPlaying(false);
+    setShowInfo(true);
+  };
+
+  // Mostrar info quando vídeo play
+  const handleVideoPlayEvent = () => {
+    setIsPlaying(true);
+    setShowInfo(false);
   };
 
   // Pausa vídeo quando sai da tela
@@ -121,6 +253,7 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
       if (videoRef.current && document.hidden) {
         videoRef.current.pause();
         setIsPlaying(false);
+        setShowInfo(true);
       }
     };
 
@@ -132,48 +265,106 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
 
   return (
     <div 
+      ref={videoContainerRef}
       className="relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] group cursor-pointer border border-white/5 hover:border-[#FFD700]/30 transition-all duration-300"
-      onMouseEnter={() => !isMobile && handleHover(true)}
-      onMouseLeave={() => !isMobile && handleHover(false)}
-      onClick={handleCardClick}
+      onClick={handleVideoClick}
     >
       {data.src ? (
         <video 
           ref={videoRef}
           src={data.src}
           poster={data.poster}
-          muted
           playsInline
           loop
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${videoClicked ? 'scale-[1.02]' : 'scale-100'} transition-transform duration-300`}
           preload={isMobile ? "none" : "metadata"}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={handleVideoEnded}
+          onPause={handleVideoPause}
+          onPlay={handleVideoPlayEvent}
         />
       ) : (
         <div className="w-full h-full bg-[#0A0A0A] flex items-center justify-center border border-white/5">
            <div className="w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full border border-[#FFD700]/20 animate-pulse" />
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
       
-      {/* Botão de play */}
-      {(isMobile || !isPlaying) && (
+      {/* Overlay que escurece o vídeo quando info está visível */}
+      <div 
+        className={`absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent transition-opacity duration-300 ${
+          showInfo ? 'opacity-80' : 'opacity-0'
+        }`} 
+      />
+
+      {/* Container do volume */}
+      <div 
+        ref={volumeContainerRef}
+        className={`absolute top-2 xs:top-3 sm:top-4 right-2 xs:right-3 sm:right-4 z-20 flex items-center gap-2 transition-all duration-300 ${
+          isPlaying || showVolumeSlider ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onMouseEnter={handleVolumeMouseEnter}
+        onMouseLeave={handleVolumeMouseLeave}
+      >
+        {/* Slider de volume - visível quando showVolumeSlider é true */}
+        {(showVolumeSlider || isMobile) && (
+          <div 
+            className="bg-black/70 backdrop-blur-md rounded-full px-3 py-2 border border-white/20 flex items-center gap-2"
+            onMouseEnter={handleSliderMouseEnter}
+            onMouseLeave={handleSliderMouseLeave}
+          >
+            <Icon 
+              icon="ph:speaker-none-fill" 
+              className="text-white w-3 h-3 xs:w-4 xs:h-4 flex-shrink-0" 
+            />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={volume}
+              onChange={handleVolumeChange}
+              className="w-16 xs:w-20 sm:w-24 h-1 bg-white/20 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <Icon 
+              icon="ph:speaker-high-fill" 
+              className="text-white w-3 h-3 xs:w-4 xs:h-4 flex-shrink-0" 
+            />
+          </div>
+        )}
+
+        {/* Botão de volume compacto */}
         <div 
-          ref={playButtonRef}
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 bg-[#FFD700]/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 border border-[#FFD700]/30 ${isMobile && isPlaying ? 'opacity-0' : 'opacity-100'} ${isMobile ? 'cursor-pointer active:scale-95' : ''}`}
-          onClick={handlePlayButtonClick}
-          style={{ pointerEvents: 'auto' }} // Garante que recebe cliques
+          className="w-8 h-8 xs:w-9 xs:h-9 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:border-[#FFD700]/50 transition-all cursor-pointer"
+          onClick={isMobile ? handleVolumeButtonClick : handleToggleMute}
+          onMouseEnter={() => !isMobile && setShowVolumeSlider(true)}
         >
           <Icon 
-            icon={isPlaying ? "ph:pause-fill" : "ph:play-fill"} 
-            className="text-[#FFD700] w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6" 
+            icon={
+              volume === 0 || isMuted ? "ph:speaker-none-fill" : 
+              volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"
+            } 
+            className="text-white w-3 h-3 xs:w-4 xs:h-4" 
           />
         </div>
-      )}
+      </div>
+
+      {/* Botão de play central - SEMPRE clicável */}
+      <div 
+        ref={playButtonRef}
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 bg-[#FFD700]/20 backdrop-blur-md rounded-full flex items-center justify-center transition-all duration-300 border border-[#FFD700]/30 cursor-pointer z-20 ${
+          isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+        onClick={handlePlayButtonClick}
+      >
+        <Icon 
+          icon="ph:play-fill" 
+          className="text-[#FFD700] w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6" 
+        />
+      </div>
 
       {/* Indicador de touch para mobile */}
       {isMobile && !hasUserInteracted && (
-        <div className="absolute top-2 xs:top-3 sm:top-4 right-2 xs:right-3 sm:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 xs:px-3 xs:py-1 border border-white/10">
+        <div className="absolute top-2 xs:top-3 sm:top-4 left-2 xs:left-3 sm:left-4 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 xs:px-3 xs:py-1 border border-white/10 z-10">
           <span className="text-[10px] xs:text-xs text-white/80 flex items-center gap-1">
             <Icon icon="ph:hand-tap" className="w-2 h-2 xs:w-3 xs:h-3" />
             <span className="hidden xs:inline">Toque para play</span>
@@ -182,7 +373,12 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 w-full p-4 xs:p-5 sm:p-6 md:p-8 text-white z-10">
+      {/* Informações (mostra/oculta com transição) */}
+      <div 
+        className={`absolute bottom-0 left-0 w-full p-4 xs:p-5 sm:p-6 md:p-8 text-white z-10 transition-all duration-300 ${
+          showInfo ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+      >
          {data.stats && data.stats.value && (
            <div className="mb-2 xs:mb-3 sm:mb-4 inline-flex flex-col border-l-2 border-[#FFD700] pl-2 xs:pl-3 bg-black/20 backdrop-blur-sm pr-3 xs:pr-4 py-1 rounded-r-lg">
              <span className="text-lg xs:text-xl sm:text-2xl font-bold tracking-tight text-[#FFD700]">{data.stats.value}</span>
@@ -200,9 +396,34 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
             </div>
          </div>
       </div>
+
+      {/* Indicador de volume atual (quando info está oculta) */}
+      {isPlaying && !showInfo && !showVolumeSlider && (
+        <div className="absolute bottom-3 xs:bottom-4 right-3 xs:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10 z-10">
+          <span className="text-[10px] xs:text-xs text-white/80 flex items-center gap-1">
+            <Icon 
+              icon={
+                volume === 0 || isMuted ? "ph:speaker-none-fill" : 
+                volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"
+              } 
+              className="w-2 h-2 xs:w-3 xs:h-3" 
+            />
+            <span className="hidden xs:inline">
+              {volume === 0 || isMuted ? 'Mudo' : `${Math.round(volume * 100)}%`}
+            </span>
+          </span>
+        </div>
+      )}
+
+      {/* Indicador de clique (feedback visual) */}
+      {videoClicked && (
+        <div className="absolute inset-0 border-2 border-[#FFD700]/50 rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] pointer-events-none animate-ping z-10" />
+      )}
     </div>
   );
 };
+
+// ... (ImageCard e TextCard permanecem os mesmos)
 
 const ImageCard = ({ data }: { data: ClientCase }) => (
   <div className="relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] group bg-[#0A0A0A] border border-white/10 hover:border-[#FFD700]/30 transition-all">
