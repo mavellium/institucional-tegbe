@@ -22,14 +22,14 @@ interface ExtendedService extends Service {
   flywheel?: boolean;
 }
 
-// Dados de fallback para cada variante
+// Dados de fallback para cada variante - AJUSTADO para os novos types
 const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
   home: {
     header: {
-      preTitle: "Nossos Serviços",
       title: "Soluções Completas",
-      subtitle: "Oferecemos serviços especializados para impulsionar seu negócio digital",
-      gradientTitle: "Para seu Negócio"
+      badge: "Nossos Serviços",
+      highlighted: "Para seu Negócio",
+      description: "Oferecemos serviços especializados para impulsionar seu negócio digital"
     },
     services: [
       {
@@ -81,9 +81,7 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
   },
   marketing: {
     header: {
-      preTitle: "Marketing Inteligente",
       title: "Acelere seu",
-      subtitle: "Transforme desconhecidos em promotores da sua marca com uma estratégia de inbound marketing que realmente funciona.",
       badge: "Marketing Inteligente",
       highlighted: "Crescimento",
       description: "Transforme desconhecidos em promotores da sua marca com uma estratégia de inbound marketing que realmente funciona."
@@ -92,15 +90,7 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
     cta: {
       text: "Começar Agora",
       url: "https://api.whatsapp.com/send?phone=5514991779502",
-      description: "Marketing que realmente converte",
-      primary: {
-        text: "Começar Agora",
-        url: "https://api.whatsapp.com/send?phone=5514991779502"
-      },
-      secondary: {
-        text: "Ver Demo",
-        url: "#demo"
-      }
+      description: "Marketing que realmente converte"
     },
     stats: [
       { value: '3x', label: 'Mais Leads' },
@@ -110,10 +100,10 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
   },
   sobre: {
     header: {
-      preTitle: "Nossa História",
       title: "Quem Somos",
-      subtitle: "Uma equipe apaixonada por transformar ideias em resultados digitais extraordinários",
-      gradientTitle: "Conheça a Tegbe"
+      badge: "Nossa História",
+      highlighted: "Conheça a Tegbe",
+      description: "Uma equipe apaixonada por transformar ideias em resultados digitais extraordinários"
     },
     services: [
       {
@@ -165,10 +155,10 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
   },
   ecommerce: {
     header: {
-      preTitle: "E-commerce",
       title: "Lojas que Vendem",
-      subtitle: "Soluções completas para e-commerce com foco em conversão e experiência do cliente",
-      gradientTitle: "Soluções Completas"
+      badge: "E-commerce",
+      highlighted: "Soluções Completas",
+      description: "Soluções completas para e-commerce com foco em conversão e experiência do cliente"
     },
     services: [
       {
@@ -251,22 +241,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
     
     const services: ExtendedService[] = [...content.services];
     
-    if (content.flywheel) {
-      const flywheelCard: ExtendedService = {
-        step: "flywheel",
-        id: "flywheel",
-        title: content.flywheel.title || "Marketing Flywheel",
-        description: content.flywheel.description || "Sistema de crescimento contínuo que transforma clientes satisfeitos em promotores da marca.",
-        icon: "mdi:cog-sync",
-        color: "gradient",
-        wide: true,
-        visualType: "flywheel",
-        flywheel: true
-      };
-      
-      return [...services, flywheelCard];
-    }
-    
+    // Note: flywheel está sendo removido conforme solicitado
     return services;
   };
 
@@ -290,11 +265,6 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
       { opacity: 0, y: 30 },
       { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" },
       "-=0.5"
-    )
-    .fromTo(".flywheel-card",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1.2, ease: "back.out(1.7)" },
-      "-=0.2"
     )
     .fromTo(".cta-element",
       { opacity: 0, y: 30 },
@@ -429,7 +399,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
               {/* Stats */}
               {stats && stats.length > 0 && (
                 <div className="flex gap-8">
-                  {stats.map((stat: any, i: number) => (
+                  {stats.map((stat, i) => (
                     <motion.div 
                       key={i}
                       className="text-center"
@@ -452,24 +422,14 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
                 transition={{ delay: 0.6 }}
               >
                 <a
-                  href={ctaData.primary?.url || ctaData.url}
+                  href={ctaData.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-pink-500/25 transition-all hover:shadow-pink-500/40 hover:scale-105"
                 >
-                  {ctaData.primary?.text || ctaData.text || "Começar Agora"}
+                  {ctaData.text || "Começar Agora"}
                   <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                 </a>
-                
-                {/* Botão secundário - somente se existir */}
-                {ctaData.secondary && (
-                  <a
-                    href={ctaData.secondary.url}
-                    className="border border-white/10 text-white hover:bg-white/5 px-8 py-6 text-lg rounded-xl backdrop-blur-sm transition-all hover:scale-105"
-                  >
-                    {ctaData.secondary.text}
-                  </a>
-                )}
               </motion.div>
             </motion.div>
 
@@ -506,11 +466,11 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <img 
-                    src={content.flywheel?.image || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_6987b81fe4e58f9164f5b3b2/1ed16332d_image.png"}
-                    alt="Flywheel de Crescimento"
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_6987b81fe4e58f9164f5b3b2/1ed16332d_image.png"
+                    alt="Marketing Inteligente"
                     className="w-full max-w-lg mx-auto drop-shadow-2xl"
                     onError={(e) => {
-                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%230a0a0a'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='%23ec4899' font-family='Arial' font-size='20'%3EFlywheel Marketing%3C/text%3E%3C/svg%3E";
+                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%230a0a0a'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='%23ec4899' font-family='Arial' font-size='20'%3EMarketing Inteligente%3C/text%3E%3C/svg%3E";
                     }}
                   />
                 </motion.div>
@@ -551,111 +511,6 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
   const ctaData = content.cta || FALLBACK_CONTENT[variant].cta;
   const enhancedServices = getEnhancedServices();
 
-  const renderFlywheelCard = () => {
-    if (!content.flywheel) return null;
-
-    const flywheel = content.flywheel;
-    const phases = flywheel.phases || [];
-    const benefits = flywheel.benefits || [];
-    const colors = flywheel.colors || {
-      primary: "#3B82F6",
-      secondary: "#8B5CF6",
-      accent: "#EC4899"
-    };
-
-    return (
-      <div className="relative overflow-hidden rounded-2xl mt-5 border border-gray-200/20 bg-gradient-to-br from-gray to-red p-8 backdrop-blur-sm transition-all duration-500 hover:border-rose-500/30 hover:shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 via-pink-300/7 to-gray-500/5 animate-gradient-x" />
-        
-        <div className="relative flex justify-center items-center gap-4 mb-6">
-          <div>
-            <h3 className="text-2xl flex font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent">
-              {flywheel.title}
-            </h3>
-            <p className="text-sm text-white-600 mt-1">
-              {flywheel.subtitle || "Sistema de Crescimento Contínuo"}
-            </p>
-          </div>
-        </div>
-
-        <p className="relative text-center text-gray-400 mb-8 text-lg leading-relaxed">
-          {flywheel.description}
-        </p>
-
-        <div className="relative flex items-center justify-center py-8">
-          <div className="relative h-64 w-64">
-            <div 
-              className="absolute inset-0 rounded-full border-4 animate-spin-slow"
-              style={{ borderColor: `${colors.primary}30` }}
-            />
-            
-            <div 
-              className="absolute inset-8 rounded-full border-4 animate-spin-reverse-slow"
-              style={{ borderColor: `${colors.secondary}30` }}
-            />
-            
-            <div 
-              className="absolute inset-16 rounded-full border-4 animate-spin-slow"
-              style={{ borderColor: `${colors.accent}30` }}
-            />
-            
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="flex flex-col items-center">
-                <div 
-                  className="h-3 w-3 rounded-full mb-12 animate-pulse"
-                  style={{ backgroundColor: colors.primary }}
-                />
-                <div 
-                  className="h-3 w-3 rounded-full mb-12 animate-pulse delay-300"
-                  style={{ backgroundColor: colors.secondary }}
-                />
-                <div 
-                  className="h-3 w-3 rounded-full animate-pulse delay-700"
-                  style={{ backgroundColor: colors.accent }}
-                />
-              </div>
-            </div>
-            
-            {phases.map((phase: any, index: number) => {
-              const positions = [
-                { top: "0%", left: "50%", transform: "translate(-50%, -50%)" },
-                { bottom: "0%", left: "50%", transform: "translate(-50%, 50%)" },
-                { top: "50%", right: "0%", transform: "translate(50%, -50%)" },
-                { top: "50%", left: "0%", transform: "translate(-50%, -50%)" },
-              ];
-              
-              return (
-                <div
-                  key={index}
-                  className="absolute"
-                  style={positions[index] || positions[0]}
-                >
-                  <span 
-                    className="text-xs font-bold"
-                    style={{ color: phase.color || "#3B82F6" }}
-                  >
-                    {phase.title || `Fase ${index + 1}`}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {benefits.length > 0 && (
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            {benefits.map((benefit: string, idx: number) => (
-              <div key={idx} className="flex items-center gap-2 p-3 rounded-lg border border-pink-700/10 hover:border-rose-500/30 transition-all duration-400 bg-black/70 backdrop-blur-sm">
-                <Icon icon="mdi:check-circle" className="h-5 w-5 text-green-500" />
-                <span className="text-sm font-medium text-gray-300">{benefit}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <section 
       ref={containerRef} 
@@ -689,20 +544,13 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
           {enhancedServices.map((service, index) => (
             <div 
               key={service.id || index}
-              className={`
-                ${service.wide ? "md:col-span-2" : "col-span-1"}
-                ${service.flywheel ? "flywheel-card" : "service-card"}
-              `}
+              className={`service-card ${service.wide ? "md:col-span-2" : "col-span-1"}`}
             >
-              {service.flywheel ? (
-                renderFlywheelCard()
-              ) : (
-                <ServiceCard 
-                  service={service}
-                  theme={theme}
-                  variant={variant}
-                />
-              )}
+              <ServiceCard 
+                service={service}
+                theme={theme}
+                variant={variant}
+              />
             </div>
           ))}
         </div>
@@ -741,27 +589,9 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
           50% { background-position: 100% 50%; }
         }
         
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes spin-reverse-slow {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        
         .animate-gradient-x {
           background-size: 200% 200%;
           animation: gradient-x 15s ease infinite;
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        
-        .animate-spin-reverse-slow {
-          animation: spin-reverse-slow 15s linear infinite;
         }
       `}</style>
     </section>

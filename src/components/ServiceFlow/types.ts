@@ -37,10 +37,7 @@ export interface Service {
 }
 
 export interface HeaderContent {
-  preTitle: string;
   title: string;
-  subtitle: string;
-  gradientTitle?: string;
   // Novos campos para marketing
   badge?: string;
   highlighted?: string;
@@ -51,34 +48,6 @@ export interface CTAContent {
   text: string;
   url: string;
   description: string;
-  // Novos campos para marketing
-  primary?: {
-    text: string;
-    url: string;
-  };
-  secondary?: {
-    text: string;
-    url: string;
-  };
-}
-
-// Interface específica para o conteúdo do Flywheel
-export interface FlywheelContent {
-  title: string;
-  description: string;
-  subtitle?: string;
-  benefits?: string[];
-  phases?: Array<{
-    title: string;
-    color: string;
-  }>;
-  colors?: {
-    primary: string;
-    secondary: string;
-    accent: string;
-  };
-  // Novo campo para imagem
-  image?: string;
 }
 
 // Interface para estatísticas de marketing
@@ -91,14 +60,6 @@ export interface VariantContent {
   header: HeaderContent;
   services: Service[];
   cta: CTAContent;
-  flywheel?: FlywheelContent; // Opcional, com tipo específico
   // Novo campo para estatísticas (usado em marketing)
   stats?: StatItem[];
-}
-
-// Interface para feature items do bottom bar (marketing)
-export interface FeatureItem {
-  icon: string;
-  title: string;
-  desc: string;
 }
