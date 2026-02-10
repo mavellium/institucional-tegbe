@@ -29,7 +29,9 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
       title: "Soluções Completas",
       badge: "Nossos Serviços",
       highlighted: "Para seu Negócio",
-      description: "Oferecemos serviços especializados para impulsionar seu negócio digital"
+      description: "Oferecemos serviços especializados para impulsionar seu negócio digital",
+      preTitle: "",
+      subtitle: ""
     },
     services: [
       {
@@ -84,7 +86,9 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
       title: "Acelere seu",
       badge: "Marketing Inteligente",
       highlighted: "Crescimento",
-      description: "Transforme desconhecidos em promotores da sua marca com uma estratégia de inbound marketing que realmente funciona."
+      description: "Transforme desconhecidos em promotores da sua marca com uma estratégia de inbound marketing que realmente funciona.",
+      preTitle: "",
+      subtitle: ""
     },
     services: [],
     cta: {
@@ -103,7 +107,9 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
       title: "Quem Somos",
       badge: "Nossa História",
       highlighted: "Conheça a Tegbe",
-      description: "Uma equipe apaixonada por transformar ideias em resultados digitais extraordinários"
+      description: "Uma equipe apaixonada por transformar ideias em resultados digitais extraordinários",
+      preTitle: "",
+      subtitle: ""
     },
     services: [
       {
@@ -158,7 +164,9 @@ const FALLBACK_CONTENT: Record<ServiceFlowVariant, VariantContent> = {
       title: "Lojas que Vendem",
       badge: "E-commerce",
       highlighted: "Soluções Completas",
-      description: "Soluções completas para e-commerce com foco em conversão e experiência do cliente"
+      description: "Soluções completas para e-commerce com foco em conversão e experiência do cliente",
+      preTitle: "",
+      subtitle: ""
     },
     services: [
       {
@@ -414,24 +422,38 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
                 </div>
               )}
 
-              {/* CTA Buttons */}
-              <motion.div 
-                className="flex flex-wrap gap-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
+              {/* CTA Section */}
+            <motion.div 
+              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              {/* CTA Button */}
+              <a
+                href={ctaData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-pink-500/25 transition-all hover:shadow-pink-500/40 hover:scale-105"
               >
-                <a
-                  href={ctaData.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-pink-500/25 transition-all hover:shadow-pink-500/40 hover:scale-105"
+                {ctaData.text || "Começar Agora"}
+                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+              
+              {/* CTA Description */}
+              {ctaData.description && (
+                <motion.p 
+                  className="text-gray-400 text-sm font-medium tracking-wider uppercase flex items-center gap-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
                 >
-                  {ctaData.text || "Começar Agora"}
-                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </a>
-              </motion.div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 animate-pulse"></span>
+                  {ctaData.description}
+                </motion.p>
+              )}
             </motion.div>
+          </motion.div>
 
             {/* Right Content - Image */}
             <motion.div 

@@ -176,7 +176,7 @@ const Showcase = () => {
                         >
                             <Icon 
                                 icon={isPlaying ? "mdi:pause" : "mdi:play"} 
-                                className={`w-8 h-8 transition-colors ${isPlaying ? 'text-white' : 'text-[#E31B63] ml-1'}`} 
+                                className={`w-8 h-8 transition-colors ${isPlaying ? 'text-white' : 'text-[#E31B63]'}`} 
                             />
                         </button>
                     </div>

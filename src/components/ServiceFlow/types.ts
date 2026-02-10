@@ -37,7 +37,10 @@ export interface Service {
 }
 
 export interface HeaderContent {
+  preTitle: string;
   title: string;
+  subtitle: string;
+  gradientTitle?: string;
   // Novos campos para marketing
   badge?: string;
   highlighted?: string;
@@ -62,4 +65,11 @@ export interface VariantContent {
   cta: CTAContent;
   // Novo campo para estatísticas (usado em marketing)
   stats?: StatItem[];
+}
+
+// Interface para feature items do bottom bar (marketing)
+export interface FeatureItem {
+  icon: string;
+  title: string;
+  desc: string;
 }
