@@ -53,7 +53,7 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [showInfo, setShowInfo] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(true); // Começa mutado por padrão
   const [volume, setVolume] = useState(0.5);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [videoClicked, setVideoClicked] = useState(false);
@@ -71,31 +71,29 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
+  // Inicializa o vídeo com áudio mutado por padrão (requisito dos navegadores)
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume;
-      videoRef.current.muted = true;
+      videoRef.current.muted = true; // Começa mutado
+      setIsMuted(true);
     }
   }, []);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume;
-      setIsMuted(volume === 0);
+      // Não atualiza automaticamente o estado de mute quando o volume muda
+      // O mute só é controlado explicitamente pelo usuário
     }
   }, [volume]);
 
   const handleToggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
-      if (volume === 0) {
-        setVolume(0.5);
-        videoRef.current.volume = 0.5;
-        videoRef.current.muted = false;
-      } else {
-        videoRef.current.muted = !videoRef.current.muted;
-        setIsMuted(videoRef.current.muted);
-      }
+      const newMutedState = !videoRef.current.muted;
+      videoRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
     }
   };
 
@@ -104,8 +102,15 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
     setVolume(newVolume);
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
-      videoRef.current.muted = newVolume === 0;
-      setIsMuted(newVolume === 0);
+      // Se o usuário ajustar o volume para 0, mude para muted
+      if (newVolume === 0) {
+        videoRef.current.muted = true;
+        setIsMuted(true);
+      } else if (videoRef.current.muted) {
+        // Se estiver muted e o usuário aumentar o volume, desmute
+        videoRef.current.muted = false;
+        setIsMuted(false);
+      }
     }
   };
 
@@ -120,6 +125,11 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         setIsPlaying(false);
         setShowInfo(true);
       } else {
+        // Ao dar play, desmuta o áudio
+        if (videoRef.current.muted) {
+          videoRef.current.muted = false;
+          setIsMuted(false);
+        }
         videoRef.current.play();
         setIsPlaying(true);
         setHasUserInteracted(true);
@@ -138,6 +148,11 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         setIsPlaying(false);
         setShowInfo(true);
       } else {
+        // Ao dar play, desmuta o áudio
+        if (videoRef.current.muted) {
+          videoRef.current.muted = false;
+          setIsMuted(false);
+        }
         videoRef.current.play();
         setIsPlaying(true);
         setHasUserInteracted(true);
@@ -266,7 +281,7 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
           onClick={isMobile ? handleVolumeButtonClick : handleToggleMute}
           onMouseEnter={() => !isMobile && setShowVolumeSlider(true)}
         >
-          <Icon icon={volume === 0 || isMuted ? "ph:speaker-none-fill" : volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"} className="text-white w-3 h-3 xs:w-4 xs:h-4" />
+          <Icon icon={videoRef.current?.muted ? "ph:speaker-none-fill" : volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"} className="text-white w-3 h-3 xs:w-4 xs:h-4" />
         </div>
       </div>
       <div 
@@ -306,8 +321,8 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
       {isPlaying && !showInfo && !showVolumeSlider && (
         <div className="absolute bottom-3 xs:bottom-4 right-3 xs:right-4 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10 z-10">
           <span className="text-[10px] xs:text-xs text-white/80 flex items-center gap-1">
-            <Icon icon={volume === 0 || isMuted ? "ph:speaker-none-fill" : volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"} className="w-2 h-2 xs:w-3 xs:h-3" />
-            <span className="hidden xs:inline">{volume === 0 || isMuted ? 'Mudo' : `${Math.round(volume * 100)}%`}</span>
+            <Icon icon={videoRef.current?.muted ? "ph:speaker-none-fill" : volume < 0.5 ? "ph:speaker-low-fill" : "ph:speaker-high-fill"} className="w-2 h-2 xs:w-3 xs:h-3" />
+            <span className="hidden xs:inline">{videoRef.current?.muted ? 'Mudo' : `${Math.round(volume * 100)}%`}</span>
           </span>
         </div>
       )}
