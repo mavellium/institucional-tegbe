@@ -40,7 +40,7 @@ const ShowcaseVideo = ({
     const volumeContainerRef = useRef<HTMLDivElement>(null);
     
     const [mounted, setMounted] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false); // Começa como false
     const [isMobile, setIsMobile] = useState(false);
     const [apiData, setApiData] = useState<APIResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -50,6 +50,7 @@ const ShowcaseVideo = ({
     const [volume, setVolume] = useState(0.1);
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
     const [hasUserInteracted, setHasUserInteracted] = useState(false);
+    const [isInViewport, setIsInViewport] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -78,31 +79,88 @@ const ShowcaseVideo = ({
         return apiData[variant] || apiData.sobre;
     }, [apiData, variant]);
 
-    // Efeito para inicializar o volume do vídeo
+    // Observer para detectar quando o componente está na viewport
     useEffect(() => {
-        if (videoRef.current && config) {
-            videoRef.current.volume = volume;
+        if (!containerRef.current || !videoRef.current) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setIsInViewport(true);
+                        // Inicia o vídeo quando entra na viewport
+                        startVideoPlayback();
+                    } else {
+                        setIsInViewport(false);
+                        // Pausa o vídeo quando sai da viewport
+                        if (videoRef.current) {
+                            videoRef.current.pause();
+                            setIsPlaying(false);
+                        }
+                    }
+                });
+            },
+            {
+                threshold: 0.5, // 50% do componente visível
+                rootMargin: '50px' // Margem para detectar um pouco antes
+            }
+        );
+
+        observer.observe(containerRef.current);
+
+        return () => {
+            if (containerRef.current) {
+                observer.unobserve(containerRef.current);
+            }
+        };
+    }, [config, variant]);
+
+    // Função para iniciar a reprodução do vídeo
+    const startVideoPlayback = () => {
+        if (!videoRef.current || !config) return;
+
+        // Configura o volume
+        videoRef.current.volume = volume;
+        
+        // Para cursos: tenta iniciar com áudio ativo
+        if (variant === "cursos") {
+            videoRef.current.muted = false;
             
-            // Para cursos: começa com som ativo
-            if (variant === "cursos") {
-                videoRef.current.muted = false;
-                // Tenta dar play com som imediatamente
-                const playPromise = videoRef.current.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log("Autoplay com som bloqueado, aguardando interação do usuário");
+            // Tenta dar play com áudio
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        setIsPlaying(true);
+                        setIsMuted(false);
+                    })
+                    .catch(error => {
+                        console.log("Autoplay bloqueado, tentando com muted...");
                         // Se falhar, tenta com muted
                         videoRef.current!.muted = true;
-                        videoRef.current!.play();
-                        setIsMuted(true);
+                        videoRef.current!.play()
+                            .then(() => {
+                                setIsPlaying(true);
+                                setIsMuted(true);
+                            })
+                            .catch(error2 => {
+                                console.log("Autoplay completamente bloqueado");
+                            });
                     });
-                }
-            } else {
-                // Outras variantes: começa muted
-                videoRef.current.muted = true;
             }
+        } else {
+            // Outras variantes: começa muted
+            videoRef.current.muted = true;
+            videoRef.current.play()
+                .then(() => {
+                    setIsPlaying(true);
+                    setIsMuted(true);
+                })
+                .catch(error => {
+                    console.log("Autoplay bloqueado para variante", variant);
+                });
         }
-    }, [config, variant]);
+    };
 
     // Efeito para atualizar volume quando mudar
     useEffect(() => {
@@ -191,6 +249,27 @@ const ShowcaseVideo = ({
             return () => document.removeEventListener('click', handleClickOutside);
         }
     }, [isMobile]);
+
+    // Efeito para pausar vídeo quando a página não estiver visível
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (videoRef.current) {
+                if (document.hidden) {
+                    videoRef.current.pause();
+                    setIsPlaying(false);
+                } else if (isInViewport) {
+                    // Se a página voltar a ficar visível e o componente estiver na viewport
+                    videoRef.current.play();
+                    setIsPlaying(true);
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [isInViewport]);
 
     useGSAP(() => {
         if (!mounted || !containerRef.current || !videoWrapperRef.current || loading || !config) return;
@@ -291,10 +370,8 @@ const ShowcaseVideo = ({
                     ref={videoRef}
                     src={config.content.videoSrc} 
                     className="w-full h-full object-cover" 
-                    autoPlay 
                     loop 
                     playsInline
-                    muted={variant === "cursos" ? false : true}
                     style={{ opacity: 1 }}
                 />
 
@@ -402,13 +479,13 @@ const ShowcaseVideo = ({
                     </div>
                 )}
 
-                {/* Aviso sobre interação necessária para som (apenas se ainda não interagiu) */}
-                {variant === "cursos" && !hasUserInteracted && isMuted && (
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500/20 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-500/30">
-                        <span className="text-[10px] md:text-xs text-yellow-300 flex items-center gap-2">
-                            <Icon icon="ph:speaker-simple-slash" className="w-3 h-3" />
-                            Clique para ativar o som
-                        </span>
+                {/* Indicador de quando o vídeo está carregando/aguardando viewport */}
+                {!isPlaying && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+                            <p className="text-white/80 text-sm">Vídeo iniciará quando estiver visível...</p>
+                        </div>
                     </div>
                 )}
             </div>
