@@ -42,7 +42,7 @@ export function HeadlineEcommerce({ content, theme }: HeadlineEcommerceProps) {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center bg-[#050505] overflow-hidden  md:pb-12">
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-[#050505] overflow-hidden  pt-30 pb-20 ">
       
       {/* --- 1. AMBIENCE & LIGHTING (Cinematografia) --- */}
       {/* O "Spotlight" Dourado vindo de cima */}

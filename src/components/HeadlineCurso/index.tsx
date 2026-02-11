@@ -136,7 +136,7 @@ export default function HeroSplit({
   );
 
   return (
-    <section className="relative w-full h-screen min-h-[500px] flex items-center justify-center bg-[#020202] overflow-hidden font-sans">
+    <section className="relative w-full h-screen min-h-[500px] flex items-center justify-center bg-[#020202] overflow-hidden font-sans pt-40 pb-20">
       
       {/* Atmosphere */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-0"></div>

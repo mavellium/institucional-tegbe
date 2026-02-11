@@ -42,7 +42,7 @@ export function HeadlineMarketing({ content, theme }: HeadlineMarketingProps) {
   }, []);
 
   return (
-    <section className="relative w-full min-h-[95vh] flex items-center justify-center bg-[#020202] overflow-hidden pb-10">
+    <section className="relative w-full min-h-[95vh] flex items-center justify-center bg-[#020202] overflow-hidden pt-30 pb-20">
       
       {/* --- 1. AMBIENCE (Cinematic) --- */}
       {/* Luz volumétrica de fundo */}

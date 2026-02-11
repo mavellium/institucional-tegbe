@@ -315,8 +315,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
         )}
       </header>
       
-      {/* Espaço reservado para o Header fixo */}
-      <div className="h-20 bg-black"></div>
+      
       
       {/* Announcement Bar - APENAS SE ESTIVER HABILITADO */}
       {data.announcementBar?.enabled && (
@@ -330,7 +329,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
           fullWidth={data.announcementBar.styles.fullWidth}
           backgroundColor={data.announcementBar.styles.customBackgroundColor ?? undefined}
           textColor={data.announcementBar.styles.customTextColor ?? undefined}
-          className={data.announcementBar.styles.className}
+          className={`${data.announcementBar.styles.className || "top-20"} ${data.announcementBar.styles.position === "fixed" ? "fixed" : "absolute"}`}
           autoClose={data.announcementBar.behavior?.autoClose ?? 0}
           persistent={data.announcementBar.behavior?.persistent ?? false}
         />

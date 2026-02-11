@@ -98,7 +98,7 @@ export function SociosCrescimento({
   }
 
   return (
-    <section className={`relative w-full py-10 flex flex-col justify-center items-center overflow-hidden ${THEME.background} selection:bg-[#FFD700]/30`}>
+    <section className={`relative w-full pt-35 pb-20 flex flex-col justify-center items-center overflow-hidden ${THEME.background} selection:bg-[#FFD700]/30`}>
       
       {/* FX sutil */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
