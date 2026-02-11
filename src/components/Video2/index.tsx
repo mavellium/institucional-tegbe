@@ -478,16 +478,6 @@ const ShowcaseVideo = ({
                         </span>
                     </div>
                 )}
-
-                {/* Indicador de quando o vídeo está carregando/aguardando viewport */}
-                {!isPlaying && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="w-12 h-12 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-white/80 text-sm">Vídeo iniciará quando estiver visível...</p>
-                        </div>
-                    </div>
-                )}
             </div>
         </section>
     );
