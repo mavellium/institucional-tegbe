@@ -34,36 +34,9 @@ const themeConfig = {
   sobre: { primary: "#0071E3", selection: "selection:bg-blue-500/30", badge: { border: "border-blue-500/10", bg: "bg-blue-900/5" }, spotlight: "bg-blue-900/20", button: { glow: "from-blue-600 to-blue-400", bg: "bg-[#0071E3]", hover: "hover:bg-[#1a81eb]", border: "border-blue-500/20", text: "text-white" }, text: { highlight: "border-b border-blue-500/50", shadow: "drop-shadow-[0_0_15px_rgba(0,113,227,0.4)]" } }
 };
 
-// Dados fallback para LCP (otimização Core Web Vitals)
-const fallbackContent: JsonVariantData = {
-  titulo: {
-    chamada: "",
-    separador: "|",
-    tituloPrincipal: "Unimos Tecnologia, Marketing e Educação",
-    palavrasAnimadas: []
-  },
-  subtitulo: "Criamos máquinas de vendas escaláveis e inteligentes.",
-  badge: { cor: "#FFCC00", icone: "lucide:star", texto: "Destaque", visivel: false },
-  botao: { link: "#", icone: "lucide:arrow-right", texto: "Saiba mais", estilo: "primary", visivel: false },
-  agenda: { mes: "Janeiro", texto: "Agenda aberta", status: "Disponível", visivel: false, corStatus: "#10B981" },
-  configuracoes: {
-    efeitos: { grid: true, spotlight: true, brilhoTitulo: "medium", sombraInferior: true },
-    corFundo: "#020202",
-    corDestaque: "#FFCC00",
-    intervaloAnimacao: 3000
-  }
-};
-
-const fallbackData: HeadlineJsonData = {
-  home: fallbackContent,
-  sobre: fallbackContent,
-  ecommerce: fallbackContent,
-  marketing: fallbackContent,
-  defaultTheme: 'home'
-};
-
 export function Headline({ variant }: { variant?: HeadlineVariant }) {
   const [data, setData] = useState<HeadlineJsonData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // --- ENGINE 3D MAVELLIUM ---
   const x = useMotionValue(0);
@@ -85,24 +58,55 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
       try {
         const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline');
         const result = await response.json();
-        if (result) setData(result);
+        setData(result);
       } catch (error) {
         console.error("Mavellium Engine - Error:", error);
+        // Em caso de erro, mantém data = null para exibir loading infinito?
+        // Melhor: talvez definir um estado de erro e exibir algo, mas por enquanto só loga.
+      } finally {
+        setLoading(false);
       }
     };
     fetchHeadline();
   }, []);
 
-  // SEM SPINNER - sempre renderiza com fallback ou dados reais
-  const activeVariant = (variant || data?.defaultTheme || 'home') as HeadlineVariant;
-  const activeData = data || fallbackData;
-  const content = activeData[activeVariant] || fallbackContent;
+  // --- LOADING ---
+  if (loading) {
+    return (
+      <div className="relative w-full h-screen flex flex-col items-center justify-center bg-[#020202] overflow-hidden">
+        {/* Background sutil igual ao do headline */}
+        <div className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 bg-yellow-500/20" />
+        <div className="relative z-10 flex flex-col items-center gap-6">
+          <div className="w-12 h-12 border-3 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin" />
+          <span className="text-sm text-gray-400 font-medium tracking-wider uppercase animate-pulse">
+            Carregando experiência...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Se após o loading ainda não houver dados, podemos mostrar uma mensagem de erro ou fallback mínimo.
+  // O usuário pediu para remover o fallback, então caso não haja dados, também exibimos loading?
+  // Vamos assumir que a API sempre retorna algo, mas por segurança:
+  if (!data) {
+    return (
+      <div className="relative w-full h-screen flex flex-col items-center justify-center bg-[#020202]">
+        <p className="text-gray-500">Não foi possível carregar o conteúdo.</p>
+      </div>
+    );
+  }
+
+  const activeVariant = (variant || data.defaultTheme || 'home') as HeadlineVariant;
+  const content = data[activeVariant];
   const theme = themeConfig[activeVariant] || themeConfig.home;
 
+  // Renderização condicional dos layouts especializados
   if (activeVariant === 'ecommerce') return <HeadlineEcommerce content={content} theme={theme} />;
   if (activeVariant === 'marketing') return <HeadlineMarketing content={content} theme={theme} />;
   if (activeVariant === 'home') return <HeadlineHome content={content} theme={theme} />;
 
+  // Fallback genérico para 'sobre' ou outras variantes
   return (
     <section 
       onMouseMove={handleMouseMove}
@@ -110,53 +114,47 @@ export function Headline({ variant }: { variant?: HeadlineVariant }) {
       className="relative w-full h-screen flex flex-col justify-center items-center bg-[#020202] text-center px-4 overflow-hidden"
       style={{ perspective: "1500px" }}
     >
-      {/* Background Glow */}
       <div className={`absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-10 pointer-events-none ${theme.spotlight}`} />
 
       <div className="flex flex-col items-start text-left w-full max-w-7xl mx-auto px-4 z-10">
-        
         <motion.h1 
-            initial={false}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col gap-1 mb-4"
-            style={{ transformStyle: "preserve-3d" }}
+          initial={false}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex flex-col gap-1 mb-4"
+          style={{ transformStyle: "preserve-3d" }}
         >
-            {/* Chamada */}
-            {content.titulo?.chamada && (
-              <span className="text-xs md:text-sm font-bold text-yellow-500/80 tracking-[0.2em] uppercase mb-2">
-                  {content.titulo.chamada}
-              </span>
-            )}
-            
-            {/* Título Principal */}
-            <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[clamp(2rem,5.5vw,4.5rem)] font-black text-white leading-[0.9] tracking-tighter uppercase max-w-[12ch] md:max-w-[15ch]"
-                  style={{ transform: "translateZ(50px)" }}>
-                {content.titulo?.tituloPrincipal}
+          {content.titulo?.chamada && (
+            <span className="text-xs md:text-sm font-bold text-yellow-500/80 tracking-[0.2em] uppercase mb-2">
+              {content.titulo.chamada}
             </span>
+          )}
+          
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-[clamp(2rem,5.5vw,4.5rem)] font-black text-white leading-[0.9] tracking-tighter uppercase max-w-[12ch] md:max-w-[15ch]"
+                style={{ transform: "translateZ(50px)" }}>
+            {content.titulo?.tituloPrincipal}
+          </span>
 
-            {/* Palavra de Destaque */}
-            {content.titulo?.palavrasAnimadas?.[0] && (
-                <span 
-                    className="text-4xl md:text-6xl lg:text-[clamp(2.5rem,6vw,5rem)] font-black italic leading-[0.8] drop-shadow-2xl"
-                    style={{ 
-                        color: content.titulo.palavrasAnimadas[0].cor,
-                        transform: "translateZ(80px)"
-                    }}
-                >
-                    {content.titulo.palavrasAnimadas[0].texto}
-                </span>
-            )}
+          {content.titulo?.palavrasAnimadas?.[0] && (
+            <span 
+              className="text-4xl md:text-6xl lg:text-[clamp(2.5rem,6vw,5rem)] font-black italic leading-[0.8] drop-shadow-2xl"
+              style={{ 
+                color: content.titulo.palavrasAnimadas[0].cor,
+                transform: "translateZ(80px)"
+              }}
+            >
+              {content.titulo.palavrasAnimadas[0].texto}
+            </span>
+          )}
         </motion.h1>
 
-        {/* Subtítulo */}
         <motion.p 
-            initial={false}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
-            style={{ transform: "translateZ(30px)" }}
+          initial={false}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-gray-400 text-sm md:text-base lg:text-lg font-light max-w-md md:max-w-lg leading-relaxed mb-8"
+          style={{ transform: "translateZ(30px)" }}
         >
-            {content.subtitulo}
+          {content.subtitulo}
         </motion.p>
       </div>
     </section>
