@@ -46,14 +46,33 @@ interface CasesCarouselProps {
   data: TestimonialsData | null;
 }
 
+// --- PROPS ADICIONAIS PARA OS CARDS ---
+interface VideoCardProps {
+  data: ClientCase;
+  isActive: boolean;
+  isDimmed: boolean;
+  onPlay: (id: string) => void;
+  onPause: (id: string) => void;
+}
+
+interface ImageCardProps {
+  data: ClientCase;
+  isDimmed: boolean;
+}
+
+interface TextCardProps {
+  data: ClientCase;
+  isDimmed: boolean;
+}
+
 // --- CARDS ---
-const VideoCard = ({ data }: { data: ClientCase }) => {
+const VideoCard = ({ data, isActive, isDimmed, onPlay, onPause }: VideoCardProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [showInfo, setShowInfo] = useState(true);
-  const [isMuted, setIsMuted] = useState(true); // Começa mutado por padrão
+  const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [videoClicked, setVideoClicked] = useState(false);
@@ -61,6 +80,24 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   const playButtonRef = useRef<HTMLDivElement>(null);
   const volumeContainerRef = useRef<HTMLDivElement>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  // Efeito para pausar quando desativado
+  useEffect(() => {
+    if (!isActive && isPlaying && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+      setShowInfo(true);
+    }
+  }, [isActive]);
+
+  // Notifica o pai quando o estado de play muda
+  useEffect(() => {
+    if (isPlaying) {
+      onPlay(data.id);
+    } else {
+      onPause(data.id);
+    }
+  }, [isPlaying, data.id, onPlay, onPause]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -71,11 +108,10 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  // Inicializa o vídeo com áudio mutado por padrão (requisito dos navegadores)
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume;
-      videoRef.current.muted = true; // Começa mutado
+      videoRef.current.muted = true;
       setIsMuted(true);
     }
   }, []);
@@ -83,8 +119,6 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume;
-      // Não atualiza automaticamente o estado de mute quando o volume muda
-      // O mute só é controlado explicitamente pelo usuário
     }
   }, [volume]);
 
@@ -102,12 +136,10 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
     setVolume(newVolume);
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
-      // Se o usuário ajustar o volume para 0, mude para muted
       if (newVolume === 0) {
         videoRef.current.muted = true;
         setIsMuted(true);
       } else if (videoRef.current.muted) {
-        // Se estiver muted e o usuário aumentar o volume, desmute
         videoRef.current.muted = false;
         setIsMuted(false);
       }
@@ -125,7 +157,6 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         setIsPlaying(false);
         setShowInfo(true);
       } else {
-        // Ao dar play, desmuta o áudio
         if (videoRef.current.muted) {
           videoRef.current.muted = false;
           setIsMuted(false);
@@ -148,7 +179,6 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
         setIsPlaying(false);
         setShowInfo(true);
       } else {
-        // Ao dar play, desmuta o áudio
         if (videoRef.current.muted) {
           videoRef.current.muted = false;
           setIsMuted(false);
@@ -232,7 +262,14 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   return (
     <div 
       ref={videoContainerRef}
-      className="relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] group cursor-pointer border border-white/5 hover:border-[#FFD700]/30 transition-all duration-300"
+      className={`
+        relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] 
+        h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] 
+        flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] 
+        group cursor-pointer border border-white/5 hover:border-[#FFD700]/30 
+        transition-all duration-300
+        ${isDimmed ? 'opacity-40 brightness-50 grayscale-[30%]' : ''}
+      `}
       onClick={handleVideoClick}
     >
       {data.src ? (
@@ -331,73 +368,89 @@ const VideoCard = ({ data }: { data: ClientCase }) => {
   );
 };
 
-const ImageCard = ({ data }: { data: ClientCase }) => (
-  <div className="relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] group bg-[#0A0A0A] border border-white/10 hover:border-[#FFD700]/30 transition-all">
-      <div className="absolute inset-0 h-[65%] overflow-hidden">
-        {data.src ? (
-          <img src={data.src} alt={data.clientName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-        ) : (
-          <div className="w-full h-full bg-neutral-900 flex items-center justify-center"><span className="text-white/20 text-xs">Premium Content</span></div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0A0A] opacity-100" />
-      </div>
-      <div className="absolute bottom-0 left-0 w-full h-[40%] bg-[#0A0A0A] p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col justify-between rounded-t-2xl sm:rounded-t-[1.5rem] lg:rounded-t-[2rem] border-t border-white/5">
-         <div>
-            {data.stats && data.stats.value && (
-                <div className="absolute -top-6 xs:-top-7 sm:-top-8 md:-top-9 lg:-top-10 right-3 xs:right-4 sm:right-6 md:right-8 bg-[#FFD700] text-black px-2 py-1 xs:px-3 xs:py-1 sm:px-3 sm:py-2 rounded-lg xs:rounded-xl shadow-[0_0_20px_rgba(255,215,0,0.2)]">
-                    <p className="text-sm xs:text-base sm:text-lg font-bold">{data.stats.value}</p>
-                    <p className="text-[7px] xs:text-[8px] sm:text-[9px] uppercase font-bold opacity-70">{data.stats.label}</p>
-                </div>
-            )}
-            <Icon icon="ph:quotes-fill" className="text-gray-700 w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 mb-1 xs:mb-2" />
-            <p className="text-xs xs:text-sm text-gray-300 leading-relaxed line-clamp-3">{data.description}</p>
-         </div>
-         <div className="pt-3 xs:pt-4 border-t border-white/5 mt-1 xs:mt-2 flex items-center gap-2 xs:gap-3">
-             <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-white/5 flex items-center justify-center text-[10px] xs:text-xs font-bold text-gray-500">{data.clientName.charAt(0)}</div>
-             <div>
-                <p className="text-xs xs:text-sm font-bold text-white">{data.clientName}</p>
-                <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-wider">{data.clientRole}</p>
-             </div>
-         </div>
-      </div>
+const ImageCard = ({ data, isDimmed }: ImageCardProps) => (
+  <div 
+    className={`
+      relative w-[280px] xs:w-[300px] sm:w-[320px] md:w-[350px] lg:w-[400px] 
+      h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] 
+      flex-shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] 
+      group bg-[#0A0A0A] border border-white/10 hover:border-[#FFD700]/30 
+      transition-all duration-300
+      ${isDimmed ? 'opacity-40 brightness-50 grayscale-[30%]' : ''}
+    `}
+  >
+    <div className="absolute inset-0 h-[65%] overflow-hidden">
+      {data.src ? (
+        <img src={data.src} alt={data.clientName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+      ) : (
+        <div className="w-full h-full bg-neutral-900 flex items-center justify-center"><span className="text-white/20 text-xs">Premium Content</span></div>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0A0A] opacity-100" />
+    </div>
+    <div className="absolute bottom-0 left-0 w-full h-[40%] bg-[#0A0A0A] p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col justify-between rounded-t-2xl sm:rounded-t-[1.5rem] lg:rounded-t-[2rem] border-t border-white/5">
+       <div>
+          {data.stats && data.stats.value && (
+              <div className="absolute -top-6 xs:-top-7 sm:-top-8 md:-top-9 lg:-top-10 right-3 xs:right-4 sm:right-6 md:right-8 bg-[#FFD700] text-black px-2 py-1 xs:px-3 xs:py-1 sm:px-3 sm:py-2 rounded-lg xs:rounded-xl shadow-[0_0_20px_rgba(255,215,0,0.2)]">
+                  <p className="text-sm xs:text-base sm:text-lg font-bold">{data.stats.value}</p>
+                  <p className="text-[7px] xs:text-[8px] sm:text-[9px] uppercase font-bold opacity-70">{data.stats.label}</p>
+              </div>
+          )}
+          <Icon icon="ph:quotes-fill" className="text-gray-700 w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 mb-1 xs:mb-2" />
+          <p className="text-xs xs:text-sm text-gray-300 leading-relaxed line-clamp-3">{data.description}</p>
+       </div>
+       <div className="pt-3 xs:pt-4 border-t border-white/5 mt-1 xs:mt-2 flex items-center gap-2 xs:gap-3">
+           <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-white/5 flex items-center justify-center text-[10px] xs:text-xs font-bold text-gray-500">{data.clientName.charAt(0)}</div>
+           <div>
+              <p className="text-xs xs:text-sm font-bold text-white">{data.clientName}</p>
+              <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-wider">{data.clientRole}</p>
+           </div>
+       </div>
+    </div>
   </div>
 );
 
-const TextCard = ({ data }: { data: ClientCase }) => (
-  <div className="relative w-[240px] xs:w-[260px] sm:w-[280px] md:w-[300px] lg:w-[350px] h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex-shrink-0 bg-[#0A0A0A] rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] border border-white/10 p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col justify-between group hover:border-[#FFD700]/30 hover:bg-[#0f0f0f] transition-all duration-300">
-      <div>
-         <div className="mb-4 xs:mb-5 sm:mb-6 md:mb-8 w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700]">
-            <Icon icon="ph:chat-teardrop-text-bold" className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-         </div>
-         {data.stats && data.stats.value && (
-            <div className="mb-3 xs:mb-4 sm:mb-5 md:mb-6">
-                <span className="text-xl xs:text-2xl sm:text-3xl font-bold text-white block">{data.stats.value}</span>
-                <span className="text-[10px] xs:text-xs text-gray-500 uppercase tracking-wider">{data.stats.label}</span>
-            </div>
-         )}
-         <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed font-light italic">"{data.description}"</p>
-      </div>
-      <div className="flex items-center gap-2 xs:gap-3 mt-4 xs:mt-5 sm:mt-6 md:mt-8 pt-3 xs:pt-4 sm:pt-5 md:pt-6 border-t border-white/5">
-         <div className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#1a1a1a] to-[#222] border border-white/10 flex items-center justify-center text-[10px] xs:text-xs font-bold text-gray-400">{data.clientName.charAt(0)}</div>
-         <div>
-            <p className="text-xs xs:text-sm font-bold text-white">{data.clientName}</p>
-            <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-wider">{data.clientRole}</p>
-         </div>
-      </div>
+const TextCard = ({ data, isDimmed }: TextCardProps) => (
+  <div 
+    className={`
+      relative w-[240px] xs:w-[260px] sm:w-[280px] md:w-[300px] lg:w-[350px] 
+      h-[380px] xs:h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] 
+      flex-shrink-0 bg-[#0A0A0A] rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2rem] 
+      border border-white/10 p-4 xs:p-5 sm:p-6 md:p-8 flex flex-col justify-between 
+      group hover:border-[#FFD700]/30 hover:bg-[#0f0f0f] transition-all duration-300
+      ${isDimmed ? 'opacity-40 brightness-50 grayscale-[30%]' : ''}
+    `}
+  >
+    <div>
+       <div className="mb-4 xs:mb-5 sm:mb-6 md:mb-8 w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700]">
+          <Icon icon="ph:chat-teardrop-text-bold" className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
+       </div>
+       {data.stats && data.stats.value && (
+          <div className="mb-3 xs:mb-4 sm:mb-5 md:mb-6">
+              <span className="text-xl xs:text-2xl sm:text-3xl font-bold text-white block">{data.stats.value}</span>
+              <span className="text-[10px] xs:text-xs text-gray-500 uppercase tracking-wider">{data.stats.label}</span>
+          </div>
+       )}
+       <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed font-light italic">"{data.description}"</p>
+    </div>
+    <div className="flex items-center gap-2 xs:gap-3 mt-4 xs:mt-5 sm:mt-6 md:mt-8 pt-3 xs:pt-4 sm:pt-5 md:pt-6 border-t border-white/5">
+       <div className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#1a1a1a] to-[#222] border border-white/10 flex items-center justify-center text-[10px] xs:text-xs font-bold text-gray-400">{data.clientName.charAt(0)}</div>
+       <div>
+          <p className="text-xs xs:text-sm font-bold text-white">{data.clientName}</p>
+          <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-wider">{data.clientRole}</p>
+       </div>
+    </div>
   </div>
 );
 
 // --- COMPONENTE PRINCIPAL (CARROSSEL) ---
 export default function CasesCarousel({ data }: CasesCarouselProps) {
-  // CRUCIAL: Separar as referências
-  // wrapperRef = A "janela" visível que corta o conteúdo (overflow-hidden)
   const wrapperRef = useRef<HTMLDivElement>(null);
-  // trackRef = O "trilho" que contém todos os cards e que é arrastado
   const trackRef = useRef<HTMLDivElement>(null);
   
   const [width, setWidth] = useState(0);
   const [visibleCards, setVisibleCards] = useState(5);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -414,35 +467,34 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
     else setVisibleCards(5);
   }, []);
 
-  // --- LÓGICA DE CORREÇÃO DO ARRASTO ---
+  // Atualiza limites de arrasto
   useEffect(() => {
     const updateWidth = () => {
-      // Verifica se ambos os elementos existem
       if (trackRef.current && wrapperRef.current) {
-        // scrollWidth do trilho: Largura total de todos os cards somados
         const trackWidth = trackRef.current.scrollWidth;
-        // offsetWidth do wrapper: Largura da janela visível na tela
         const wrapperWidth = wrapperRef.current.offsetWidth;
-        
-        // A diferença é o quanto podemos arrastar para a esquerda
         const newWidth = trackWidth - wrapperWidth;
-        
-        // Se o trilho for maior que a janela, define o limite. Senão, 0.
         setWidth(newWidth > 0 ? newWidth : 0);
       }
     };
 
-    // Delay curto para garantir que o React renderizou os novos cards no DOM
     const timer = setTimeout(updateWidth, 100);
-    
-    // Recalcula se a janela for redimensionada
     window.addEventListener('resize', updateWidth);
-    
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', updateWidth);
     };
-  }, [visibleCards, data, isMobile]); // Executa sempre que visibleCards muda
+  }, [visibleCards, data, isMobile]);
+
+  const handlePlayVideo = (id: string) => {
+    setActiveVideoId(id);
+  };
+
+  const handlePauseVideo = (id: string) => {
+    if (activeVideoId === id) {
+      setActiveVideoId(null);
+    }
+  };
 
   if (!data) return null;
 
@@ -496,22 +548,38 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
                 drag="x" 
                 dragConstraints={{ right: 0, left: -width }} 
                 dragElastic={0.1}
-                className="flex gap-3 xs:gap-4 sm:gap-5 md:gap-6 w-max" // w-max garante que o container cresça
+                className="flex gap-3 xs:gap-4 sm:gap-5 md:gap-6 w-max"
             >
-                {data.testimonials.slice(0, visibleCards).map((item) => (
+                {data.testimonials.slice(0, visibleCards).map((item) => {
+                  const isDimmed = activeVideoId !== null && activeVideoId !== item.id;
+                  
+                  return (
                     <motion.div 
                         key={item.id} 
                         className="relative flex-shrink-0"
-                        layout // Anima a reorganização
+                        layout
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.4 }}
                     >
-                        {item.type === 'video' && <VideoCard data={item} />}
-                        {item.type === 'image' && <ImageCard data={item} />}
-                        {item.type === 'text' && <TextCard data={item} />}
+                        {item.type === 'video' && (
+                          <VideoCard 
+                            data={item} 
+                            isActive={activeVideoId === item.id}
+                            isDimmed={isDimmed}
+                            onPlay={handlePlayVideo}
+                            onPause={handlePauseVideo}
+                          />
+                        )}
+                        {item.type === 'image' && (
+                          <ImageCard data={item} isDimmed={isDimmed} />
+                        )}
+                        {item.type === 'text' && (
+                          <TextCard data={item} isDimmed={isDimmed} />
+                        )}
                     </motion.div>
-                ))}
+                  );
+                })}
             </motion.div>
         </motion.div>
 
