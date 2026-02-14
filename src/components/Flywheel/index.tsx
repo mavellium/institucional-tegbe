@@ -41,7 +41,7 @@ export default function Flywheel({
         {/* Outer Ring - COR MAIS FRACA (Opacidade reduzida) */}
         <g className="animate-spin-slow-left">
           <circle cx="250" cy="250" r="200" fill="none" stroke="url(#gradOuter)" strokeWidth="45" strokeLinecap="round" strokeOpacity="0.2" />
-          <text fill="white" fillOpacity="0.5" fontSize="12" fontWeight="800" letterSpacing="0.15em">
+          <text fill="white" fillOpacity="0.5" fontSize="14" fontWeight="800" letterSpacing="0.15em">
             {outerItems.map((item, i) => (
               <textPath key={i} href="#pathOuter" startOffset={`${12.5 + (i * 25)}%`} textAnchor="middle">{item}</textPath>
             ))}
@@ -51,7 +51,7 @@ export default function Flywheel({
         {/* Inner Ring - COR MÉDIA (Opacidade intermediária) */}
         <g className="animate-spin-slow-right">
           <circle cx="250" cy="250" r="135" fill="none" stroke="url(#gradInner)" strokeWidth="55" strokeLinecap="round" strokeOpacity="0.4" />
-          <text fill="white" fillOpacity="0.8" fontSize="14" fontWeight="900">
+          <text fill="white" fillOpacity="0.8" fontSize="24" fontWeight="900">
             {innerItems.map((item, i) => (
               <textPath key={i} href="#pathInner" startOffset={`${16.6 + (i * 33.3)}%`} textAnchor="middle">{item}</textPath>
             ))}
