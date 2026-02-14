@@ -1,18 +1,18 @@
 import videoConfig from "@/json/Video2/sobreConfig.json";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import Schema from "@/components/Schema";
-import { ChamadaAcao } from "@/components/ChamadaAcao";
-import { Empresas } from "@/components/Empresas";
-import Historia from "@/components/ExploreDetails/Historia";
-import Sobre from "@/components/Sobre";
-import AnosMercado from "@/components/Expertise/AnosMercado";
-import Metricas from "@/components/Resultados/Metricas";
-import { SociosCrescimento } from "@/components/SociosCrescimento";
-import Video2 from "@/components/Video2";
-import Localizacao from "@/components/Localizacao";
+import { Header } from "@/components/Section/Header";
+import { Footer } from "@/components/Section/Footer";
+import Schema from "@/components/Section/Schema";
+import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
+import { Empresas } from "@/components/Section/Empresas";
+import Historia from "@/components/Section/ExploreDetails/Historia";
+import Sobre from "@/components/Section/Sobre";
+import AnosMercado from "@/components/Section/Expertise/AnosMercado";
+import Metricas from "@/components/Section/Resultados/Metricas";
+import { SociosCrescimento } from "@/components/Section/SociosCrescimento";
+import Video2 from "@/components/Section/Video2";
+import Localizacao from "@/components/Section/Localizacao";
 import { fetchComponentData } from "@/lib/api";
-import ServiceFlow from "@/components/ServiceFlow";
+import ServiceFlow from "@/components/Section/ServiceFlow";
 
 // 1. Wrapper para dados de Forms (Estrutura plana: { values: [] })
 // Usado para Historia, Metricas, Localizacao

@@ -1,21 +1,21 @@
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Section/Header";
 import expertiseConfig from "@/json/Expertise/marketingConfig.json";
-import Video from "@/components/Video";
-import Schema from "@/components/Schema";
-import { ChamadaAcao } from "@/components/ChamadaAcao";
+import Video from "@/components/Section/Video";
+import Schema from "@/components/Section/Schema";
+import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
 
-import AgenciasFalham from "@/components/AgenciasFalham";
-import ExploreDetails from "@/components/ExploreDetails";
-import Expertise from "@/components/Expertise";
-import { Companys } from "@/components/Companys";
-import { Empresas } from "@/components/Empresas";
-import { Footer } from "@/components/Footer";
-import { Headline } from "@/components/Headline";
-import { SectionImage } from "@/components/SectionImage";
-import NaoEParaVoce from "@/components/NaoEParaVoce";
-import { Equipe } from "@/components/Equipe";
+import AgenciasFalham from "@/components/Section/AgenciasFalham";
+import ExploreDetails from "@/components/Section/ExploreDetails";
+import Expertise from "@/components/Section/Expertise";
+import { Companys } from "@/components/Section/Companys";
+import { Empresas } from "@/components/Section/Empresas";
+import { Footer } from "@/components/Section/Footer";
+import { Headline } from "@/components/Section/Headline";
+import { SectionImage } from "@/components/Section/SectionImage";
+import NaoEParaVoce from "@/components/Section/NaoEParaVoce";
+import { Equipe } from "@/components/Section/Equipe";
 import { fetchComponentData } from "@/lib/api";
-import ServiceFlow from "@/components/ServiceFlow";
+import ServiceFlow from "@/components/Section/ServiceFlow";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {

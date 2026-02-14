@@ -1,20 +1,20 @@
 import videoConfig from "@/json/Video2/cursoConfig.json";
-import { Header } from "@/components/Header";
-import Schema from "@/components/Schema";
-import { Footer } from "@/components/Footer";
-import Expertise from "@/components/Expertise";
-import HeadlineCurso from "@/components/HeadlineCurso";
-import PorqueAprender from "@/components/PorqueAprender";
-import Video2 from "@/components/Video2";
-import Cursos from "@/components/Cursos";
-import CasesCarousel from "@/components/Carrossel";
-import GaleriaFotos from "@/components/GaleriaFotos";
-import ComparacaoConcorrentes from "@/components/ComparacaoConcorrentes";
-import Preco from "@/components/Preco";
-import Faq from "@/components/Faq";
-import Localizacao2 from "@/components/Localizacao2";
+import { Header } from "@/components/Section/Header";
+import Schema from "@/components/Section/Schema";
+import { Footer } from "@/components/Section/Footer";
+import Expertise from "@/components/Section/Expertise";
+import HeadlineCurso from "@/components/Section/HeadlineCurso";
+import PorqueAprender from "@/components/Section/PorqueAprender";
+import Video2 from "@/components/Section/Video2";
+import Cursos from "@/components/Section/Cursos";
+import CasesCarousel from "@/components/Section/Carrossel";
+import GaleriaFotos from "@/components/Section/GaleriaFotos";
+import ComparacaoConcorrentes from "@/components/Section/ComparacaoConcorrentes";
+import Preco from "@/components/Section/Preco";
+import Faq from "@/components/Section/Faq";
+import Localizacao2 from "@/components/Section/Localizacao2";
 import { fetchComponentData } from "@/lib/api";
-import Logos from "@/components/Logos";
+import Logos from "@/components/Section/Logos";
 
 // 1. Wrapper para dados de FORMS (.../form/slug)
 async function getFormData(slug: string) {

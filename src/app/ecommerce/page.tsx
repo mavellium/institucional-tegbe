@@ -1,19 +1,19 @@
-import { Header } from "@/components/Header";
-import SellMore from "@/components/SellMore";
-import Logos from "@/components/Logos";
-import { Companys } from "@/components/Companys";
-import { Footer } from "@/components/Footer";
-import Schema from "@/components/Schema";
-import { Equipe } from "@/components/Equipe";
-import { ChamadaAcao } from "@/components/ChamadaAcao";
-import Animacao from "@/components/Animacao";
-import { Headline } from "@/components/Headline";
-import { SectionImage } from "@/components/SectionImage";
+import { Header } from "@/components/Section/Header";
+import SellMore from "@/components/Section/SellMore";
+import Logos from "@/components/Section/Logos";
+import { Companys } from "@/components/Section/Companys";
+import { Footer } from "@/components/Section/Footer";
+import Schema from "@/components/Section/Schema";
+import { Equipe } from "@/components/Section/Equipe";
+import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
+import Animacao from "@/components/Section/Animacao";
+import { Headline } from "@/components/Section/Headline";
+import { SectionImage } from "@/components/Section/SectionImage";
 import { fetchComponentData } from "@/lib/api";
-import Plataforms from "@/components/Solucoes/Plataforms";
-import Passos from "@/components/Passos";
-import ServiceFlow from "@/components/ServiceFlow";
-import CertifiedSection from "@/components/ServiceFlow/CertifiedSection";
+import Plataforms from "@/components/Section/Solucoes/Plataforms";
+import Passos from "@/components/Section/Passos";
+import ServiceFlow from "@/components/Section/ServiceFlow";
+import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
 
 async function getSafeData(slug: string) {
     try {

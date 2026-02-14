@@ -1,21 +1,18 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import Schema from "@/components/Schema";
-import { Headline } from "@/components/Headline";
-import Dores from "@/components/Dores";
-import ComoFazemos from "@/components/ComoFazemos";
-import Solucoes from "@/components/Solucoes";
-import Metricas from "@/components/Metricas";
-import RedirectEcommerce from "@/components/RedirectEcommerce";
-import RedirectMarketing from "@/components/RedirectMarketing";
-import RedirectTegpro from "@/components/RedirectTegpro";
-import Resultados from "@/components/Resultados";
-import RedirectSobre from "@/components/RedirectSobre";
-import FaqHome from "@/components/FaqHome";
-import UltimaChamadaAcao from "@/components/UltimaChamadaAcao";
-
-// --- REMOVEMOS O GETSAFEDATA E O FETCHCOMPONENTDATA DAQUI ---
-// Não queremos que a Home dependa de um slug que pode dar 404 e derrubar o site.
+import { Header } from "@/components/Section/Header";
+import { Footer } from "@/components/Section/Footer";
+import Schema from "@/components/Section/Schema";
+import Dores from "@/components/Section/Dores";
+import ComoFazemos from "@/components/Section/ComoFazemos";
+import Solucoes from "@/components/Section/Solucoes";
+import Metricas from "@/components/Section/Metricas";
+import RedirectEcommerce from "@/components/Section/RedirectEcommerce";
+import RedirectMarketing from "@/components/Section/RedirectMarketing";
+import RedirectTegpro from "@/components/Section/RedirectTegpro";
+import Resultados from "@/components/Section/Resultados";
+import RedirectSobre from "@/components/Section/RedirectSobre";
+import FaqHome from "@/components/Section/FaqHome";
+import UltimaChamadaAcao from "@/components/Section/UltimaChamadaAcao";
+import Headline from "@/components/Wrapper/Headline";
 
 export default async function Home() {
   return (
@@ -82,11 +79,7 @@ export default async function Home() {
       
       <Header />
       
-      <main>
-        {/* ESTRATÉGIA MAVELLIUM:
-          Cada componente abaixo agora deve ter seu próprio useEffect e fetch interno.
-          Isso evita que um erro de API em um componente quebre a página toda.
-        */}
+      <main> 
         <Headline /> 
         <Dores />
         <ComoFazemos />
