@@ -1,25 +1,22 @@
 import { Header } from "@/components/Section/Header";
-import SellMore from "@/components/Section/SellMore";
 import Logos from "@/components/Section/Logos";
 import { Companys } from "@/components/Section/Companys";
 import { Footer } from "@/components/Section/Footer";
 import Schema from "@/components/Section/Schema";
 import { Equipe } from "@/components/Section/Equipe";
 import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
-import Animacao from "@/components/Section/Animacao";
-import { Headline } from "@/components/Section/Headline";
 import { SectionImage } from "@/components/Section/SectionImage";
 import { fetchComponentData } from "@/lib/api";
 import Plataforms from "@/components/Section/Solucoes/Plataforms";
 import Passos from "@/components/Section/Passos";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
+import HeadlineWrapper from "@/components/Wrapper/Headline";
 
 async function getSafeData(slug: string) {
     try {
         const res = await fetchComponentData(slug);
 
-        // Verificação baseada em existência, evitando o erro de propriedade 'status'
         if (!res || !res.data) {
             console.warn(`[Tegbe Build] Dados não encontrados para: ${slug}`);
             return { data: null };
@@ -108,15 +105,9 @@ export default async function EcommercePage() {
             />
 
             <Header />
-
-            {headlineData && <Headline variant="ecommerce" />}
-
-            {/* <SellMore /> */}
+            <HeadlineWrapper variant="ecommerce" />
             <ServiceFlow variant="home" />
-
             <Passos />
-
-            {/* <Animacao /> */}
             <Plataforms />
             <Logos />
             <CertifiedSection />
