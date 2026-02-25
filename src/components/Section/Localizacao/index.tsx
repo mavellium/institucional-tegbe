@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -144,7 +145,7 @@ const Localizacao = ({ data }: LocalizacaoProps) => {
             </div>
             
             {/* Link Google Maps */}
-            <a 
+            <Link 
                 href="https://maps.app.goo.gl/seu-link-aqui" 
                 target="_blank"
                 rel="noreferrer"
@@ -152,7 +153,7 @@ const Localizacao = ({ data }: LocalizacaoProps) => {
             >
                 <span>Ver no Google Maps</span>
                 <Icon icon="ph:arrow-right" className="group-hover:translate-x-1 transition-transform" />
-            </a>
+            </Link>
         </div>
 
         {/* --- LADO DIREITO: IMAGEM (CARD FLUTUANTE) --- */}

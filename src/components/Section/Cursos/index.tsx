@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion, useInView, Variants } from "framer-motion";
+import Link from "next/link";
 
 // --- INTERFACES ---
 interface Module {
@@ -162,14 +163,14 @@ export default function CourseModules({
 
         {/* CTA FINAL */}
         <div className="flex justify-center mt-24">
-           <a 
+           <Link 
              href={data.cta.link} 
              className="group relative px-10 py-4 rounded-full text-black font-black text-sm tracking-widest transition-all hover:scale-105 active:scale-95 uppercase flex items-center gap-3 shadow-xl"
              style={{ background: `linear-gradient(to bottom, ${accent}, ${data.theme.secondaryColor})` }}
            >
                 {data.cta.text}
                 <Icon icon="ph:arrow-right-bold" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-           </a>
+           </Link>
         </div>
       </div>
     </section>

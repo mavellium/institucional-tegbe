@@ -214,7 +214,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
             <div className="flex items-center gap-3 sm:gap-6">
               
 
-              <a
+              <Link
                 href={data.general.ctaLink}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -226,7 +226,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
                   <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
                   <span className="relative z-20 uppercase">{data.general.ctaText}</span>
                 </button>
-              </a>
+              </Link>
 
               {/* BOTÃO MENU MOBILE COM ARIA-LABEL CORRETO */}
               <Button
@@ -287,14 +287,14 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
                 <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
                   <div className="h-[1px] w-12 bg-white/20" aria-hidden="true" />
-                  <a
+                  <Link
                     href={data.general.ctaLink}
                     className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 shadow-2xl shadow-white/5 focus:outline-none focus:ring-2 focus:ring-white/30 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
                     onClick={() => setMenuOpen(false)}
                     aria-label={data.general.ctaText}
                   >
                     {data.general.ctaText}
-                  </a>
+                  </Link>
                   <Link
                     href="/consultor-oficial"
                     onClick={() => setMenuOpen(false)}

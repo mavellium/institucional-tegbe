@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -153,7 +154,7 @@ export default function AboutElite({ endpoint = "https://tegbe-dashboard.vercel.
               />
 
               <div className="pt-2">
-                <a href={data.content.cta.link} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-6">
+                <Link href={data.content.cta.link} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-6">
                   <button className="bg-[#1d1d1f] text-white h-14 px-8 rounded-full font-bold text-sm uppercase tracking-wider transition-all duration-300 group-hover:bg-[#0071E3] group-hover:scale-105 shadow-xl flex items-center gap-3">
                     {data.content.cta.text}
                     <Icon icon="ph:arrow-right-bold" className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -163,7 +164,7 @@ export default function AboutElite({ endpoint = "https://tegbe-dashboard.vercel.
                     <span className="text-sm font-bold text-[#1d1d1f] tracking-tighter">{data.content.socialProof.value}</span>
                     <span className="text-[10px] text-gray-400 uppercase font-medium">{data.content.socialProof.label}</span>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

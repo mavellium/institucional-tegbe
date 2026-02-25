@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
+import Link from 'next/link'
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -312,7 +313,7 @@ export default function Plataforms() {
 
       {/* CTA Dinâmico */}
       <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-        <a
+        <Link
           aria-label="Entre em contato pelo WhatsApp"
           href={ctaData.url}
           target="_blank"
@@ -327,7 +328,7 @@ export default function Plataforms() {
             icon="lucide:arrow-right"
             className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
           />
-        </a>
+        </Link>
         {ctaData.description && (
           <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-blue-500"></span>

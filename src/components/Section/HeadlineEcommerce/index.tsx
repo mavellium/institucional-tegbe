@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "../../ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface HeadlineEcommerceProps {
   content: any;
@@ -105,7 +106,7 @@ export function HeadlineEcommerce({ content, theme }: HeadlineEcommerceProps) {
             className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 md:gap-4 mt-2"
           >
             {content.botao?.visivel && (
-                <a href={content.botao.link} target="_blank" className="group relative w-full sm:w-auto">
+                <Link href={content.botao.link} target="_blank" className="group relative w-full sm:w-auto">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FFCC00] to-yellow-600 rounded-lg opacity-40 blur transition duration-200 group-hover:opacity-70"></div>
                     <Button
                     aria-label={content.botao.texto}
@@ -114,7 +115,7 @@ export function HeadlineEcommerce({ content, theme }: HeadlineEcommerceProps) {
                         <div className="absolute inset-0 bg-[#FFCC00] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
                         <Icon icon="solar:arrow-right-up-bold" className="w-4 h-4 md:w-5 md:h-5 text-[#FFCC00]" />
                     </Button>
-                </a>
+                </Link>
             )}
             
             {/* Elemento de Confiança Sutil */}

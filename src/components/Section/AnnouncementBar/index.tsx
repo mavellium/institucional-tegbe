@@ -1,5 +1,6 @@
 "use client";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 import { useState } from "react";
 
 // Tipagem para o componente
@@ -144,7 +145,7 @@ export default function AnnouncementBar({
           
           {/* Link opcional */}
           {linkText && linkUrl && (
-            <a 
+            <Link 
               href={linkUrl}
               className={`
                 font-bold w-full sm:w-auto underline underline-offset-2 hover:opacity-80 transition-opacity
@@ -152,7 +153,7 @@ export default function AnnouncementBar({
               `}
             >
               {linkText}
-            </a>
+            </Link>
           )}
         </div>
       </div>

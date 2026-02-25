@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface HeadlineHomeProps {
   content: any;
@@ -150,7 +151,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
           }}
         >
           {content.botao?.visivel && (
-            <a href={content.botao.link} target="_blank" className="group relative">
+            <Link href={content.botao.link} target="_blank" className="group relative">
               {/* Glow sutil atrás do botão */}
               <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full opacity-0 group-hover:opacity-50 blur-md transition duration-500"></div>
               
@@ -161,7 +162,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
                 {content.botao.texto}
                 <Icon icon={content.botao.icone || "solar:arrow-right-up-linear"} className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
-            </a>
+            </Link>
           )}
           
           {/* Agenda / Prova Social secundária */}

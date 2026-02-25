@@ -15,6 +15,7 @@ import ServiceCard from './ServiceCard';
 import { Icon } from '@iconify/react';
 import { Sparkles, Zap, TrendingUp, ArrowRight } from 'lucide-react';
 import Flywheel from "../../ui/Flywheel";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -332,13 +333,13 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
               </div>
 
               <div className="pt-8">
-                <a 
+                <Link 
                   href={ctaData.url} 
                   className="inline-flex items-center gap-3 bg-gradient-to-r from-[#FF0F43] to-[#E31B63] text-white px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:shadow-[0_0_40px_rgba(227,27,99,0.3)] transition-all hover:scale-105"
                 >
                   {ctaData.text}
                   <ArrowRight className="w-5 h-5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -410,7 +411,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
 
         {ctaData && (
           <div className="cta-element reveal-text flex flex-col items-center mt-12">
-            <a
+            <Link
               aria-label="Entre em contato pelo WhatsApp"
               href={ctaData.url}
               target="_blank"
@@ -425,7 +426,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
                 icon="lucide:arrow-right"
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
               />
-            </a>
+            </Link>
             {ctaData.description && (
               <p className={`mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2`}>
                 <span className={`w-1.5 h-1.5 rounded-full animate-pulse`}></span>

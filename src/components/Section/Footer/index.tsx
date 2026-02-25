@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 
 import footerConfig from "@/json/Footer/config.json";
+import Link from "next/link";
 
 export type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
 
@@ -35,11 +36,11 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
 
   // Seleciona o tema e conteúdo baseado na variante, com fallback para 'ecommerce'
   const theme = useMemo(() => footerConfig.variants[variant] || footerConfig.variants.ecommerce, [variant]);
-  
+
   // Como o TypeScript não sabe que o JSON tem chaves dinâmicas, fazemos um cast seguro
   const content = useMemo(() => {
-      const selectedContent = (footerConfig.content as any)[variant];
-      return selectedContent || footerConfig.content.ecommerce;
+    const selectedContent = (footerConfig.content as any)[variant];
+    return selectedContent || footerConfig.content.ecommerce;
   }, [variant]);
 
   return (
@@ -51,7 +52,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
       <div className="w-full max-w-7xl relative z-10">
 
         {/* --- BARRA DE AUTORIDADE (BADGE) --- */}
-        <a aria-label="verificação" href="#">
+        <Link aria-label="verificação" href="#">
           <div className={`flex flex-col md:flex-row justify-between items-center bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 mb-16 gap-6 relative overflow-hidden group hover:border-opacity-50 transition-colors ${theme.borderHover}`}>
 
             {/* Glow Animado no Hover */}
@@ -87,7 +88,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
               </div>
             </div>
           </div>
-        </a>
+        </Link>
 
         <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-center sm:text-start">
 
@@ -115,13 +116,13 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             <h1 className="font-bold text-base text-white">Navegação</h1>
             <nav className="flex flex-col space-y-3">
               {footerConfig.navigation.map((item) => (
-                <a 
-                  key={item.name} 
-                  href={item.href} 
+                <Link
+                  key={item.name}
+                  href={item.href}
                   className={`text-sm text-gray-500 hover:translate-x-1 transition-all duration-200 ${theme.hoverText}`}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -142,15 +143,15 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             <div className="flex flex-col sm:items-start text-start space-y-4">
 
               {/* E-mail */}
-              <a href={`mailto:${content.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
+              <Link href={`mailto:${content.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
                 <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
                   <Icon icon="solar:letter-linear" />
                 </div>
                 <span className={`group-hover:underline underline-offset-4 ${theme.decoration}`}>{content.email}</span>
-              </a>
+              </Link>
 
               {/* WhatsApp */}
-              <a
+              <Link
                 href={footerConfig.general.whatsappLink}
                 target="_blank"
                 className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
@@ -158,10 +159,10 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
                   <Icon icon="solar:phone-calling-linear" />
                 </div>
                 <span className={`group-hover:underline underline-offset-4 ${theme.decoration}`}>{footerConfig.general.phone}</span>
-              </a>
+              </Link>
 
               {/* Endereço */}
-              <a
+              <Link
                 href="#"
                 target="_blank"
                 className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group text-left"
@@ -172,7 +173,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
                 <span className={`group-hover:underline underline-offset-4 ${theme.decoration} whitespace-pre-line`}>
                   {footerConfig.general.address}
                 </span>
-              </a>
+              </Link>
 
             </div>
           </div>
@@ -188,23 +189,23 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             <p>CNPJ: {footerConfig.general.cnpj}</p>
           </div>
 
-          <a 
-  href="https://mavellium.com.br" 
-  target="_blank" 
-  rel="noopener noreferrer"
-  className={`flex items-center gap-3 order-1 md:order-2 bg-[#0A0A0A] px-5 py-2.5 rounded-full border border-white/5 transition-all cursor-pointer group shadow-lg ${theme.borderHover}`}
->
-  <span className="text-gray-500 font-medium group-hover:text-gray-300 transition-colors text-[10px] uppercase tracking-wider">
-    Powered by
-  </span>
-  <Image
-    src={footerConfig.general.poweredByLogo}
-    alt="Mavellium"
-    width={80}
-    height={25}
-    className="opacity-60 group-hover:opacity-100 transition-opacity brightness-0 invert"
-  />
-</a>
+          <Link
+            href="https://mavellium.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center gap-3 order-1 md:order-2 bg-[#0A0A0A] px-5 py-2.5 rounded-full border border-white/5 transition-all cursor-pointer group shadow-lg ${theme.borderHover}`}
+          >
+            <span className="text-gray-500 font-medium group-hover:text-gray-300 transition-colors text-[10px] uppercase tracking-wider">
+              Powered by
+            </span>
+            <Image
+              src={footerConfig.general.poweredByLogo}
+              alt="Mavellium"
+              width={80}
+              height={25}
+              className="opacity-60 group-hover:opacity-100 transition-opacity brightness-0 invert"
+            />
+          </Link>
         </div>
       </div>
     </footer>
@@ -213,7 +214,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
 
 function SocialLink({ icon, href, theme }: { icon: string, href: string, theme: any }) {
   return (
-    <a
+    <Link
       aria-label={icon}
       href={href}
       target="_blank"
@@ -221,15 +222,15 @@ function SocialLink({ icon, href, theme }: { icon: string, href: string, theme: 
       className={`group p-2.5 rounded-full bg-white/5 hover:-translate-y-1 transition-all duration-300 border border-white/5 ${theme.bgHover} ${theme.iconHoverText}`}
     >
       <Icon icon={icon} className="size-5 text-gray-400 group-hover:text-inherit transition-colors" />
-    </a>
+    </Link>
   )
 }
 
 function FooterLink({ text, theme }: { text: string, theme: any }) {
   return (
-    <a aria-label={text} href="#" className={`text-sm text-gray-500 transition-colors flex items-center gap-2 group ${theme.hoverText}`}>
+    <Link aria-label={text} href="#" className={`text-sm text-gray-500 transition-colors flex items-center gap-2 group ${theme.hoverText}`}>
       <span className={`w-1 h-1 rounded-full bg-gray-700 transition-colors ${theme.bgHover}`}></span>
       {text}
-    </a>
+    </Link>
   )
 }

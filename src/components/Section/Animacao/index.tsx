@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -593,7 +594,7 @@ export default function SalesEngineVisual() {
 
         {/* BOTÃO CTA */}
         <div className="mt-24">
-          <a 
+          <Link 
             aria-label={componentData.cta.text}
             href={componentData.cta.link}
             target="_blank"
@@ -606,7 +607,7 @@ export default function SalesEngineVisual() {
               {componentData.cta.text}
               <Icon icon="lucide:arrow-right" />
             </button>
-          </a>
+          </Link>
         </div>
 
       </div>

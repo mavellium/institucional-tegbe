@@ -12,6 +12,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
+import Link from "next/link";
 
 // --- INTERFACES ---
 interface Location {
@@ -140,7 +141,7 @@ export default function LocationsSection({
                         </div>
                     </div>
                     
-                    <a 
+                    <Link 
                         href={activeLoc.mapLink} 
                         target="_blank" 
                         rel="noopener noreferrer"
@@ -148,7 +149,7 @@ export default function LocationsSection({
                     >
                         Abrir no Google Maps
                         <Icon icon="ph:arrow-up-right" className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    </a>
+                    </Link>
                 </div>
             </div>
 
@@ -203,13 +204,13 @@ export default function LocationsSection({
 
         {/* CALL TO ACTION */}
         <div className="mt-20 text-center">
-            <a 
+            <Link 
                 href={data.cta.link}
                 className="inline-flex items-center gap-6 px-12 py-6 rounded-full bg-white text-black font-bold uppercase text-[10px] tracking-[0.2em] hover:scale-105 hover:bg-gray-100 transition-all active:scale-95 shadow-2xl shadow-white/5"
             >
                 {data.cta.text}
                 <Icon icon="ph:calendar-check-fill" className="w-4 h-4" />
-            </a>
+            </Link>
         </div>
       </div>
 

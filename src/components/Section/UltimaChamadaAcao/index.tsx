@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 // --- INTERFACES DINÂMICAS ---
 interface FinalCtaData {
@@ -83,7 +84,7 @@ export default function FinalCtaSection() {
         {/* --- BOTÃO COM INVERSÃO DE COR (HOVER DOURADO) --- */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-6">
             
-            <a href={calls_to_action.primary.href} className="group relative">
+            <Link href={calls_to_action.primary.href} className="group relative">
               {/* Sombra de contorno que brilha no hover */}
               <div 
                   className="absolute -inset-1 rounded-full opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700"
@@ -115,10 +116,10 @@ export default function FinalCtaSection() {
                     />
                 </div>
               </button>
-            </a>
+            </Link>
 
             {/* Link Secundário (Mantido Original) */}
-            <a 
+            <Link 
                 href={calls_to_action.secondary.href} 
                 className="group flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-black uppercase tracking-widest transition-colors"
             >
@@ -128,7 +129,7 @@ export default function FinalCtaSection() {
                     className="group-hover:translate-x-1 transition-transform" 
                     style={{ color: theme.gold_start }}
                 />
-            </a>
+            </Link>
         </div>
       </div>
     </section>

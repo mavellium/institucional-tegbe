@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button"; 
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import Link from "next/link";
 
 // --- INTERFACES ---
 interface HeroData {
@@ -179,7 +180,7 @@ export default function HeroSplit({
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 flex justify-center w-full items-center sm:w-auto">
-              <a href={data.content.cta.primary.url} className="group relative">
+              <Link href={data.content.cta.primary.url} className="group relative">
                 <div 
                     className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"
                     style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
@@ -195,7 +196,7 @@ export default function HeroSplit({
                   {data.content.cta.primary.text}
                   <Icon icon="lucide:arrow-right" className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
-              </a>
+              </Link>
               
               <Button variant="ghost" className="h-14 px-8 rounded-full text-gray-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all font-bold">
                 {data.content.cta.secondary.text}

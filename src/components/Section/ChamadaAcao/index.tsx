@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -161,7 +162,7 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
   };
 
   const ButtonCTA = () => (
-    <a
+    <Link
       aria-label={data.button.text.toLowerCase()}
       href={getLink()}
       target="_blank"
@@ -187,7 +188,7 @@ export function ChamadaAcao({ variant = 'ecommerce', data }: FinalCTAProps) {
           ${variant === 'ecommerce' ? 'w-4 h-4 group-hover:translate-x-1 transition-transform' : ''}
         `}
       />
-    </a>
+    </Link>
   );
 
   const GlowEffect = () => (

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
+import Link from "next/link";
 
 export interface ExpertiseData {
   theme: { 
@@ -149,7 +150,7 @@ export default function Expertise({
 
         {/* CTA BUTTON - ELITE PERFORMANCE */}
         <div className="mt-12 flex justify-center">
-          <a href={cta.link} className="group relative">
+          <Link href={cta.link} className="group relative">
             <div 
               className="absolute -inset-1 rounded-full opacity-40 blur-md group-hover:opacity-70 transition duration-500"
               style={{ background: `linear-gradient(to right, ${theme.accentColor}, ${theme.secondaryColor})` }}
@@ -169,7 +170,7 @@ export default function Expertise({
                 style={{ color: theme.buttonIconColor }}
               />
             </button>
-          </a>
+          </Link>
         </div>
 
       </div>

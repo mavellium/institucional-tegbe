@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -159,7 +160,7 @@ export default function CertifiedSection() {
           </div>
 
           <div className="pt-4">
-            <a
+            <Link
               aria-label={content.cta.text}
               href={content.cta.link} 
               className="group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all hover:pr-14"
@@ -171,7 +172,7 @@ export default function CertifiedSection() {
                 width="24"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

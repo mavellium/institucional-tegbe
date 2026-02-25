@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate, PanInfo } from 'framer-motion';
 import { ChevronLeft, ChevronRight, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { Icon } from '@iconify/react';
+import Link from 'next/link';
 
 // --- TIPAGEM ---
 export type CompanysVariant = 'ecommerce' | 'marketing';
@@ -515,7 +516,7 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
       {/* CTA Dinâmico */}
       {ctaData && (
         <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-          <a
+          <Link
             aria-label="Entre em contato pelo WhatsApp"
             href={ctaData.url}
             target="_blank"
@@ -530,7 +531,7 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
               icon="lucide:arrow-right"
               className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
             />
-          </a>
+          </Link>
           {ctaData.description && (
             <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>
@@ -814,7 +815,7 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
       {/* CTA Dinâmico */}
       {ctaData && (
         <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-          <a
+          <Link
             aria-label="Entre em contato pelo WhatsApp"
             href={ctaData.url}
             target="_blank"
@@ -829,7 +830,7 @@ const CompanysMarketing = ({ content }: { content: SectionContent }) => {
               icon="lucide:arrow-right"
               className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
             />
-          </a>
+          </Link>
           {ctaData.description && (
             <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>

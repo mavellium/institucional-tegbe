@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -241,7 +242,7 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
 
           {/* CTA */}
           <div className="reveal-text">
-            <a
+            <Link
               aria-label={data.cta.text}
               href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
               target="_blank"
@@ -257,7 +258,7 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
                 icon={data.cta.icon || "lucide:arrow-right"}
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-x-1"
               />
-            </a>
+            </Link>
             <p className={`mt-4 text-[11px] ${theme.ctaSubtitle} font-medium tracking-widest uppercase`}>
               {ctaSubtitleText}
             </p>
@@ -346,7 +347,7 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
 
           {/* CTA */}
           <div className="reveal-text flex flex-col items-center">
-            <a
+            <Link
               aria-label={data.cta.text}
               href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
               target="_blank"
@@ -362,7 +363,7 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
                 icon={data.cta.icon || "lucide:arrow-right"}
                 className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
               />
-            </a>
+            </Link>
             <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>
               <span className={`w-1.5 h-1.5 rounded-full ${theme.ctaSubtitle.dot} animate-pulse`}></span>
               {ctaSubtitleText}

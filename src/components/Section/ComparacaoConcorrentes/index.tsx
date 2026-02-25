@@ -87,14 +87,14 @@ export default function ComparacaoConcorrentes({ data }: ComparisonTableProps) {
       } else {
         // URL externa (tag a normal)
         return (
-          <a 
+          <Link 
             href={ctaConfig.url} 
             target={ctaConfig.target || '_self'}
             rel={ctaConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
             className={buttonClasses}
           >
             {buttonContent}
-          </a>
+          </Link>
         );
       }
     }

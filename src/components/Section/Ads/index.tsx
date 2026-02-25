@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 
 // Dados simplificados
 const adsConfig = {
@@ -65,7 +66,7 @@ export function Ads() {
 
       {/* --- BOTÃO CTA --- */}
       <div className="relative z-20">
-        <a
+        <Link
           aria-label={botao.texto}
           href={botao.link}
           target="_blank"
@@ -80,7 +81,7 @@ export function Ads() {
             <Icon icon={botao.icone} className="size-6" />
             {botao.texto}
           </Button>
-        </a>
+        </Link>
       </div>
 
     </section>
