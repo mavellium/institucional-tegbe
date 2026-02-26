@@ -1,8 +1,5 @@
-import { Header } from "@/components/Section/Header";
-import Video from "@/components/Section/Video";
 import Schema from "@/components/Section/Schema";
 import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
-
 import AgenciasFalham from "@/components/Section/AgenciasFalham";
 import ExploreDetails from "@/components/Section/ExploreDetails";
 import Expertise from "@/components/Section/Expertise";
@@ -15,6 +12,8 @@ import { Equipe } from "@/components/Section/Equipe";
 import { fetchComponentData } from "@/lib/api";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import Headline from "@/components/Wrapper/Headline";
+import Navbar from "@/components/web/navbar";
+import Video from "@/components/Wrapper/Video";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
@@ -116,32 +115,19 @@ export default async function MarketingPage() {
                     },
                 }}
             />
-
-            <Header variant="marketing" />
+            <Navbar variant="marketing" />
             <Headline variant="marketing" />
             <AgenciasFalham />
-            <Video />
+            <Video slug="video-marketing" />
             <ServiceFlow variant="marketing" />
-
-            {/* Seção Deep Dive / Services */}
             <ExploreDetails />
-
-            {/* Seção Logos / Social Proof */}
             <Empresas variant="marketing" data={empresasData} />
-
             <NaoEParaVoce />
             <Expertise />
             <SectionImage variant="marketing" apiData={data} />
-
-            {/* Seção Why Tegbe (Dados vindos de /json/equipe) */}
             <Equipe variant="marketing" data={equipeData} />
-
-            {/* Seção Depoimentos / Track Record */}
             <Companys variant="marketing" data={companysData} />
-
-            {/* Seção Final CTA */}
             <ChamadaAcao variant="marketing" data={ctaData} />
-
             <Footer variant="marketing" />
         </>
     );
