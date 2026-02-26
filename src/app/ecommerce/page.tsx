@@ -12,7 +12,7 @@ import Passos from "@/components/Section/Passos";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
 import HeadlineWrapper from "@/components/Wrapper/Headline";
-import Video2 from "@/components/Section/Video2";
+import Video, { Variant } from "@/components/Wrapper/Video";
 
 async function getSafeData(slug: string) {
     try {
@@ -107,9 +107,10 @@ export default async function EcommercePage() {
 
             <Header />
             <HeadlineWrapper variant="ecommerce" />
-            
+
             <ServiceFlow variant="home" />
-            {/* <Video2 /> */}
+            <Video variant={Variant.Animation} slug={"video-marketing"} />
+
             <Passos />
             <Plataforms />
             <Logos />
