@@ -109,7 +109,7 @@ export default async function EcommercePage() {
             <HeadlineWrapper variant="ecommerce" />
             
             <ServiceFlow variant="home" />
-            <Video2 />
+            {/* <Video2 /> */}
             <Passos />
             <Plataforms />
             <Logos />
