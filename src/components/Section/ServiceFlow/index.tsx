@@ -16,6 +16,7 @@ import { Icon } from '@iconify/react';
 import { Sparkles, Zap, TrendingUp, ArrowRight } from 'lucide-react';
 import Flywheel from "../../ui/Flywheel";
 import Link from "next/link";
+import AnimationVideoView from "../AnimationVideoView";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -284,7 +285,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
   }, { dependencies: [loading, content, variant], scope: containerRef });
 
   if (variant === 'ecommerce') {
-    return <CertifiedSection />;
+    return ;
   }
   
   if (variant === 'marketing') {
@@ -369,7 +370,7 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
   return (
     <section
       ref={containerRef}
-      className={`relative py-24 px-6 overflow-hidden ${theme.background}`}
+      className={`relative py-24 overflow-hidden ${theme.background}`}
     >
       {useFallback && (
         <div className="absolute top-4 left-4 right-4 z-50">
@@ -435,6 +436,9 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
             )}
           </div>
         )}
+      </div>
+      <div className="w-full rounded-lg h-auto bg-white">
+      <AnimationVideoView badge={"hiiii"} title={"oiiii"} videoSrc={"https://youtu.be/d0pA3Nw8yso?si=SUrm9xFoi4mn7JtY"} />
       </div>
 
       <style jsx global>{`

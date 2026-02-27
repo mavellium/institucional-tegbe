@@ -109,7 +109,7 @@ export default async function EcommercePage() {
             <HeadlineWrapper variant="ecommerce" />
 
             <ServiceFlow variant="home" />
-            <Video variant={Variant.Animation} slug={"video-marketing"} />
+            {/* <Video variant={Variant.Animation} slug={"video-marketing"} /> */}
 
             <Passos />
             <Plataforms />
