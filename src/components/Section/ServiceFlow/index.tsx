@@ -257,8 +257,11 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
 
   // 4. Animação GSAP sincronizada com o Loading
   useGSAP(() => {
-    if (loading || !content || !containerRef.current || variant === 'marketing') return;
+  if (loading || !content || !containerRef.current || variant === 'marketing') {
+    return;
+  }
 
+  const ctx = gsap.context(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
@@ -267,25 +270,38 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
       },
     });
 
-    tl.fromTo(".section-title",
+    tl.fromTo(
+      ".section-title",
       { opacity: 0, y: 30 },
       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
     )
-      .fromTo(".service-card",
+      .fromTo(
+        ".service-card",
         { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: "power3.out",
+        },
         "-=0.5"
       )
-      .fromTo(".cta-element",
+      .fromTo(
+        ".cta-element",
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
         "-=0.3"
       );
+  }, containerRef);
 
-  }, { dependencies: [loading, content, variant], scope: containerRef });
+  return () => {
+    ctx.revert(); // 🔥 ESSENCIAL
+  };
+}, [loading, content, variant]);
 
   if (variant === 'ecommerce') {
-    return ;
+    return null;
   }
   
   if (variant === 'marketing') {
@@ -438,7 +454,6 @@ export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
         )}
       </div>
       <div className="w-full rounded-lg h-auto bg-white">
-      <AnimationVideoView badge={"hiiii"} title={"oiiii"} videoSrc={"https://youtu.be/d0pA3Nw8yso?si=SUrm9xFoi4mn7JtY"} />
       </div>
 
       <style jsx global>{`

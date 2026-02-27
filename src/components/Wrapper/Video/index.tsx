@@ -1,41 +1,52 @@
 import AnimationVideoView from "@/components/Section/AnimationVideoView";
-import { HeroVideoView } from "../../Section/HeroVideoView";
-
-export enum Variant {
-    Static = "static",
-    Animation = "animation",
-}
+import { VideoSection } from "@/enums/video";
 
 interface Props {
-    variant?: Variant;
     slug: string;
+    section?: VideoSection;
+    theme: object
 }
 
-export default async function HeroVideoWrapper({ variant, slug }: Props) {
+export default async function HeroVideoWrapper({ slug, section,theme }: Props) {
     const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/${slug}`;
+
+    console.log("ENV TEST:", API_URL);
 
     try {
         const response = await fetch(API_URL);
-
-        if (!response.ok) throw new Error(`Erro ao carregar dados do slug: ${slug}`);
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar dados do slug: ${slug}`);
+        }
 
         const data = await response.json();
-        if (variant === Variant.Static)
-            return <HeroVideoView
-                videoSrc={data.metadata.assets.video_url}
-                line1={data.content.headline.line_1}
-                line2={data.content.headline.line_2}
-                subline={data.content.headline.subline}
-            />;
-        if (variant === Variant.Animation)
-            return <AnimationVideoView
-                badge={data.content.badge}
-                title={data.content.title}
-                videoSrc={data.metadata.assets.video_url}
-                startMuted={data.metadata.assets.start_muted}
-            />;
+
+        // 🔒 REGRA FIXA PARA ESSE JSON
+        const sectionKey: VideoSection =
+            section ??
+            data.defaultSection ??
+            VideoSection.Cursos;
+
+        const sectionData = data[sectionKey];
+
+        if (!sectionData?.content) return null;
+
+        return (
+            <AnimationVideoView
+                badge={sectionData.content.badge}
+                title={sectionData.content.title}
+                videoSrc={
+                    sectionData.content.videoSrc ||
+                    data.metadata.assets.video_url
+                }
+                startMuted={false}
+                variant="sobre"
+                theme={theme}
+            />
+        );
     } catch (error) {
-        console.error(`Fetch Error [${slug}]:`, error);
+        console.error(`Fetch Error [${slug}]:`, {
+            message: error instanceof Error ? error.message : error,
+        });
         return null;
     }
 }
