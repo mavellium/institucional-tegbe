@@ -1,97 +1,97 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ServiceFlowProps, VariantContent, Service, ServiceFlowVariant } from './types';
+import { ServiceFlowProps } from './types';
 import { THEMES } from './constants/themes';
-import ServiceHeader from './ServiceHeader';
-import ServiceCard from './ServiceCard';
-import { Icon } from '@iconify/react';
-import { Sparkles, ArrowRight } from 'lucide-react';
-import Flywheel from "../../ui/Flywheel";
-import Link from "next/link";
 import { useServiceFlowContent } from "./hooks/useServiceFlowContent";
 import { DefaultVariant } from "./variants/DefaultVariant";
 import { MarketingVariant } from "./variants/MarketingVariant";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
   const { content, loading, error, useFallback } = useServiceFlowContent(variant);
-  const containerRef = useRef(null);
-  const theme = THEMES[variant as ServiceFlowVariant];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const theme = THEMES[variant];
 
-  // Animação GSAP (apenas para variantes que não são 'marketing')
   useGSAP(() => {
     if (loading || !content || variant === 'marketing' || !containerRef.current) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 85%",
-        toggleActions: "play none none reverse",
-      },
+    const container = containerRef.current;
+
+    // Função para criar animações após tudo carregado
+    const createAnimations = () => {
+      // Mata qualquer ScrollTrigger anterior dentro do container
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.trigger && container.contains(st.trigger)) {
+          st.kill();
+        }
+      });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      tl.fromTo(".section-title",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+      )
+        .fromTo(".service-card",
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" },
+          "-=0.5"
+        )
+        .fromTo(".cta-element",
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+          "-=0.3"
+        );
+    };
+
+    // Aguarda imagens carregarem
+    const images = container.querySelectorAll('img');
+    const imagePromises = Array.from(images).map(img =>
+      img.complete ? Promise.resolve() : new Promise(resolve => { img.onload = resolve; img.onerror = resolve; })
+    );
+
+    Promise.all(imagePromises).then(() => {
+      ScrollTrigger.refresh();
+      createAnimations();
     });
 
-    tl.fromTo(".section-title",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-    )
-      .fromTo(".service-card",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" },
-        "-=0.5"
-      )
-      .fromTo(".cta-element",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
-        "-=0.3"
-      );
-
-    // Cleanup do ScrollTrigger
     return () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
+      // Limpeza completa de todos os triggers deste container
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.trigger && container.contains(st.trigger)) {
+          st.kill();
+        }
+      });
     };
   }, { dependencies: [loading, content, variant], scope: containerRef });
 
-  // Error state (opcional, você pode mostrar algo mais amigável)
+  // Renderização condicional...
   if (error && !content) {
-    return (
-      <div className={` flex items-center justify-center ${theme.background}`}>
-        <div className="text-center text-red-400">
-          <p>Erro ao carregar os dados. Tente novamente mais tarde.</p>
-        </div>
-      </div>
-    );
+    return <div className={`flex items-center justify-center ${theme.background}`}>Erro ao carregar.</div>;
   }
 
-  // Fallback warning (exibido apenas se estiver usando fallback)
-  const showFallbackWarning = useFallback && !!content;
-
-  // Renderização condicional por variante
   const renderVariant = () => {
-    if (!content) return null; // não deveria acontecer
-
+    if (!content) return null;
     switch (variant) {
       case 'marketing':
         return <MarketingVariant content={content} />;
-      case 'ecommerce':
-        // Se não houver layout específico, usa o DefaultVariant ou um componente próprio
-        // return <EcommerceVariant content={content} />;
-        return <DefaultVariant content={content} theme={theme} variant={variant} showFallbackWarning={showFallbackWarning} />;
       default:
-        return <DefaultVariant content={content} theme={theme} variant={variant} showFallbackWarning={showFallbackWarning} />;
+        return <DefaultVariant content={content} theme={theme} variant={variant} showFallbackWarning={useFallback} />;
     }
   };
 
   return (
-    <div ref={containerRef}>
-      {renderVariant()}
-      
-    </div>
+  <div ref={containerRef}>
+    {renderVariant()}
+  </div>
   );
 }

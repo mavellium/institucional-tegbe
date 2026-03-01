@@ -56,55 +56,84 @@ export const AnimationVideoView = ({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // 🎬 GSAP
+  // 🎬 GSAP – Animação de expansão do vídeo ao scroll
   useGSAP(() => {
-        if (!containerRef.current || !videoWrapperRef.current) return;
+    if (!containerRef.current || !videoWrapperRef.current) return;
 
-        // Limpa instâncias anteriores para evitar cálculos duplicados no resize
-        ScrollTrigger.getAll().filter(st => st.trigger === containerRef.current).forEach(st => st.kill());
+    // Mata apenas os ScrollTriggers antigos deste container
+    ScrollTrigger.getAll()
+      .filter(st => st.trigger === containerRef.current)
+      .forEach(st => st.kill());
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top+=245% top", 
-                end: "+=0%", 
-                pin: true, 
-                scrub: 1,
-                markers: true,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-            }
-        });
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",         // começa quando o topo da seção encosta no topo da viewport
+        end: "bottom top",        // termina quando o fundo da seção atinge o topo da viewport
+        pin: true,                // fixa a seção durante a animação
+        scrub: 1,                 // liga o progresso ao scroll
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      },
+    });
 
-        // Header desaparece um pouco mais rápido para foco no vídeo
-        tl.to(".section-header", { 
-            y: -80, 
-            autoAlpha: 0, 
-            duration: 0.3, 
-            ease: "power2.inOut" 
-        }, 0);
+    // Header desaparece suavemente
+    tl.to(".section-header", {
+      y: -80,
+      autoAlpha: 0,
+      duration: 0.3,
+      ease: "power2.inOut",
+    }, 0);
 
-        tl.fromTo(videoWrapperRef.current, 
-            {
-                width: isMobile ? "90%" : "60%", 
-                height: "55vh", 
-                top: "35%", 
-                borderRadius: "32px",
-                xPercent: -50,
-            },
-            {
-                width: "100.1%",
-                height: "100.1%",
-                top: "0%", 
-                xPercent: -50, 
-                borderRadius: "0px",
-                boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
-                duration: 1,
-                ease: "none"
-            }, 0 
-        );
+    // Expansão do vídeo
+    tl.fromTo(
+      videoWrapperRef.current,
+      {
+        width: isMobile ? "90%" : "60%",
+        height: "55vh",
+        top: "35%",
+        borderRadius: "32px",
+        xPercent: -50,
+        boxShadow:
+          backgroundColor === "#FFFFFF"
+            ? "0 25px 50px -12px rgba(0, 0, 0, 0.2)"
+            : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+      },
+      {
+        width: "100.1%",
+        height: "100.1%",
+        top: "0%",
+        xPercent: -50,
+        borderRadius: "0px",
+        boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+        duration: 1,
+        ease: "none",
+      },
+      0
+    );
 
-    }, { scope: containerRef, dependencies: [isMobile, theme] })
+    // Pequeno atraso para garantir refresh após criação
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+
+    // Cleanup específico (já é feito automaticamente pelo useGSAP, mas por segurança)
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, { scope: containerRef, dependencies: [isMobile, backgroundColor] });
+
+  // 🔄 Força refresh no resize e no load da página
+  useEffect(() => {
+    const handleRefresh = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", handleRefresh);
+    window.addEventListener("load", handleRefresh);
+    return () => {
+      window.removeEventListener("resize", handleRefresh);
+      window.removeEventListener("load", handleRefresh);
+    };
+  }, []);
 
   return (
     <section
