@@ -109,20 +109,20 @@ export default async function EcommercePage() {
             <Header />
             <HeadlineWrapper variant="ecommerce" />
 
-            {/* <ServiceFlow variant="home" /> */}
+            <ServiceFlow variant="home" />
             <Video
-    slug="video-sections"
-    section={VideoSection.Ecommerce}
-    theme={{
-      backgroundColor: "#FFFFFF",
-      textColor: "#020202",
-      accentColor: "#FFD700",
-      badgeBg: "rgba(255,215,0,0.1)",
-      badgeBorder: "rgba(255,215,0,0.3)",
-      badgeText: "#B8860B",
-    }}
-    
-/>
+                slug="video-sections"
+                section={VideoSection.Ecommerce}
+                theme={{
+                    backgroundColor: "#FFFFFF",
+                    textColor: "#020202",
+                    accentColor: "#FFD700",
+                    badgeBg: "rgba(255,215,0,0.1)",
+                    badgeBorder: "rgba(255,215,0,0.3)",
+                    badgeText: "#B8860B",
+                }}
+
+            />
             <Passos />
             <Plataforms />
             <Logos />

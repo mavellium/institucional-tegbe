@@ -8,4 +8,5 @@ export enum VideoSection {
     Sobre = "sobre",
     Cursos = "cursos",
     Ecommerce = "ecommerce",
+    Marketing = "marketing",
 }
