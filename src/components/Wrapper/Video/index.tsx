@@ -1,6 +1,7 @@
 import AnimationVideoView from "@/components/Section/AnimationVideoView";
 import { HeroVideoView } from "@/components/Section/HeroVideoView"; // Ajuste o path conforme sua pasta
 import { VideoSection } from "@/enums/video";
+import { div } from "framer-motion/client";
 
 interface Props {
     slug: string;
@@ -10,7 +11,7 @@ interface Props {
     viewVariant?: 'animation' | 'hero';
 }
 
-export default async function HeroVideoWrapper({ slug, section, theme, viewVariant }: Props) {
+export default async function AnimationVideoWrapper({ slug, section, theme, viewVariant }: Props) {
     const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/${slug}`;
 
     try {
@@ -60,6 +61,7 @@ export default async function HeroVideoWrapper({ slug, section, theme, viewVaria
 
         // --- RETORNO PADRÃO (AnimationVideoView) ---
         return (
+            <div className="relative w-full justify-center items-center h-full">
             <AnimationVideoView
                 badge={content.badge || "Tegbe Performance"}
                 title={content.title || "Venda mais com nossas soluções digitais"}
@@ -68,6 +70,7 @@ export default async function HeroVideoWrapper({ slug, section, theme, viewVaria
                 variant="sobre"
                 theme={theme}
             />
+            </div>
         );
 
     } catch (error) {

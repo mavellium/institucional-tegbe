@@ -58,50 +58,53 @@ export const AnimationVideoView = ({
 
   // 🎬 GSAP
   useGSAP(() => {
-    if (!containerRef.current || !videoWrapperRef.current) return;
+        if (!containerRef.current || !videoWrapperRef.current) return;
 
-    ScrollTrigger.getAll()
-      .filter((st) => st.trigger === containerRef.current)
-      .forEach((st) => st.kill());
+        // Limpa instâncias anteriores para evitar cálculos duplicados no resize
+        ScrollTrigger.getAll().filter(st => st.trigger === containerRef.current).forEach(st => st.kill());
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "+=150%",
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1,
-      },
-    });
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top+=245% top", 
+                end: "+=0%", 
+                pin: true, 
+                scrub: 1,
+                markers: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+            }
+        });
 
-    tl.to(".section-header", {
-      y: -80,
-      autoAlpha: 0,
-      duration: 0.3,
-      ease: "power2.inOut",
-    });
+        // Header desaparece um pouco mais rápido para foco no vídeo
+        tl.to(".section-header", { 
+            y: -80, 
+            autoAlpha: 0, 
+            duration: 0.3, 
+            ease: "power2.inOut" 
+        }, 0);
 
-    tl.fromTo(
-      videoWrapperRef.current,
-      {
-        width: isMobile ? "90%" : "60%",
-        height: "55vh",
-        top: "35%",
-        borderRadius: "32px",
-        xPercent: -50,
-      },
-      {
-        width: "100%",
-        height: "100%",
-        top: "0%",
-        borderRadius: "0px",
-        xPercent: -50,
-        ease: "none",
-      },
-      0
-    );
-  }, { dependencies: [isMobile] });
+        tl.fromTo(videoWrapperRef.current, 
+            {
+                width: isMobile ? "90%" : "60%", 
+                height: "55vh", 
+                top: "35%", 
+                borderRadius: "32px",
+                xPercent: -50,
+            },
+            {
+                width: "100.1%",
+                height: "100.1%",
+                top: "0%", 
+                xPercent: -50, 
+                borderRadius: "0px",
+                boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+                duration: 1,
+                ease: "none"
+            }, 0 
+        );
+
+    }, { scope: containerRef, dependencies: [isMobile, theme] })
 
   return (
     <section
@@ -138,7 +141,7 @@ export const AnimationVideoView = ({
       {/* VIDEO */}
       <div
         ref={videoWrapperRef}
-        className="absolute left-1/2 top-[35%] -translate-x-1/2 overflow-hidden bg-black z-20"
+        className="absolute left-[50%] top-[35%] overflow-hidden bg-black z-20"
         style={{
           width: isMobile ? "90%" : "60%",
           height: "55vh",

@@ -13,7 +13,7 @@ import { fetchComponentData } from "@/lib/api";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import Headline from "@/components/Wrapper/Headline";
 import Navbar from "@/components/web/navbar";
-import Video from "@/components/Wrapper/Video";
+import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
@@ -119,17 +119,18 @@ export default async function MarketingPage() {
             <Navbar variant="marketing" />
             <Headline variant="marketing" />
             <AgenciasFalham />
-            <Video
+            <Video2
                 slug="video-marketing"
                 section={VideoSection.Marketing}
                 theme={{
-                    backgroundColor: "#FFFFFF",
-                    textColor: "#020202",
-                    accentColor: "#FFD700",
-                    badgeBg: "rgba(255,215,0,0.1)",
-                    badgeBorder: "rgba(255,215,0,0.3)",
-                    badgeText: "#B8860B",
-                }} />
+                    accentColor: "#f9265e",
+                    gradientFrom: "#ff0400",
+                    gradientTo: "#f9396f",
+                    videoOpacity: 0.8,
+                    startMuted: false,
+                }}
+
+            />
             <ServiceFlow variant="marketing" />
             <ExploreDetails />
             <Empresas variant="marketing" data={empresasData} />
