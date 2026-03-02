@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 // --- INTERFACES PARA O SCHEMA MAVELLIUM ---
 interface Stat {
@@ -151,7 +152,7 @@ export default function SobreRefinedSection() {
                 transition={{ duration: 1 }}
                 className="lg:col-span-6 relative aspect-[4/5] lg:aspect-square rounded-[3rem] overflow-hidden bg-gray-100 group shadow-sm"
             >
-                <img 
+                <Image 
                     src={content.image_bg}
                     alt="Mavellium Engine"
                     className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:scale-105 transition-transform duration-[2s] ease-out"

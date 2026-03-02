@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, animate, PanInfo, useInView, useSpring, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { Icon } from '@iconify/react';
+import Image from 'next/image';
 
 // --- INTERFACES DINÂMICAS ---
 export interface SuccessCase {
@@ -200,7 +201,7 @@ export default function NewsCarousel() {
                       <div className="flex items-center justify-between mb-10">
                           <div className="flex items-center gap-5">
                               <div className="w-14 h-14 rounded-2xl bg-zinc-900 overflow-hidden border border-white/5 relative group-hover:border-yellow-400/50 transition-colors shadow-2xl">
-                                  <img
+                                  <Image
                                     src={item.logo || "/equipe.png"}
                                     alt={`Logo da empresa ${item.name}`}
                                     className="w-full h-full object-cover grayscale brightness-125 group-hover:grayscale-0 transition-all duration-700"

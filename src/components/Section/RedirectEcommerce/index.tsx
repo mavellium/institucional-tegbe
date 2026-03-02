@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 interface BentoCard {
   id: string;
@@ -124,7 +125,7 @@ export default function EcommerceBentoFixed() {
                             </div>
                             
                             <div className="relative h-72 md:h-auto md:w-1/2 overflow-hidden bg-gray-50">
-                                <img
+                                <Image
                                     src={card.image!}
                                     alt={card.title}
                                     className="absolute inset-0 w-full h-full object-cover opacity-95 group-hover:scale-110 transition-transform duration-1000 ease-out"

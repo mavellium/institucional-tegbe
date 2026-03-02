@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 // --- TIPAGEM ---
 export type CaseType = 'video' | 'image' | 'text';
@@ -381,7 +382,7 @@ const ImageCard = ({ data, isDimmed }: ImageCardProps) => (
   >
     <div className="absolute inset-0 h-[65%] overflow-hidden">
       {data.src ? (
-        <img src={data.src} alt={data.clientName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+        <Image src={data.src} alt={data.clientName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
       ) : (
         <div className="w-full h-full bg-neutral-900 flex items-center justify-center"><span className="text-white/20 text-xs">Premium Content</span></div>
       )}
