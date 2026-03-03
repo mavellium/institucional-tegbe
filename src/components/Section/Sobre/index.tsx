@@ -64,7 +64,7 @@ const FALLBACK_DATA: AuthorityData = {
     }
 };
 
-const TegbeAuthoritySection = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/autoridade" }) => {
+const TegbeAuthoritySection = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/sobre" }) => {
     const sectionRef = useRef<HTMLElement>(null);
     const [data, setData] = useState<AuthorityData>(FALLBACK_DATA);
     const [mounted, setMounted] = useState(false);

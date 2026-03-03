@@ -9,7 +9,7 @@ interface Props {
 export default async function HeadlineWrapper({ variant }: Props) {
   const response = await fetch(
     "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline",
-    { cache: "force-cache" }
+    { cache: "no-store" }
   );
 
   const data = await response.json();
