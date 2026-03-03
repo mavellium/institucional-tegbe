@@ -152,7 +152,9 @@ export default function SobreRefinedSection() {
                 transition={{ duration: 1 }}
                 className="lg:col-span-6 relative aspect-[4/5] lg:aspect-square rounded-[3rem] overflow-hidden bg-gray-100 group shadow-sm"
             >
-                <Image 
+                <Image
+                    width={500}
+                    height={500}
                     src={content.image_bg}
                     alt="Mavellium Engine"
                     className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:scale-105 transition-transform duration-[2s] ease-out"

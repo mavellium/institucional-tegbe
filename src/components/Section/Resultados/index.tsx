@@ -202,6 +202,8 @@ export default function NewsCarousel() {
                           <div className="flex items-center gap-5">
                               <div className="w-14 h-14 rounded-2xl bg-zinc-900 overflow-hidden border border-white/5 relative group-hover:border-yellow-400/50 transition-colors shadow-2xl">
                                   <Image
+                                  width={500}
+                                  height={400}
                                     src={item.logo || "/equipe.png"}
                                     alt={`Logo da empresa ${item.name}`}
                                     className="w-full h-full object-cover grayscale brightness-125 group-hover:grayscale-0 transition-all duration-700"

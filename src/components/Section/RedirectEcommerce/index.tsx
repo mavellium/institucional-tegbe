@@ -126,6 +126,8 @@ export default function EcommerceBentoFixed() {
                             
                             <div className="relative h-72 md:h-auto md:w-1/2 overflow-hidden bg-gray-50">
                                 <Image
+                                    width={500}
+                                    height={400}
                                     src={card.image!}
                                     alt={card.title}
                                     className="absolute inset-0 w-full h-full object-cover opacity-95 group-hover:scale-110 transition-transform duration-1000 ease-out"
