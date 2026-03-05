@@ -49,46 +49,10 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
       {/* Background Decorativo Dinâmico */}
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] pointer-events-none opacity-40 ${theme.glowAmbient}`} />
 
-      <div className="w-full max-w-7xl relative z-10">
+      <div className="w-full max-w-7xl py-20 relative z-10">
 
         {/* --- BARRA DE AUTORIDADE (BADGE) --- */}
-        <Link aria-label="verificação" href="#">
-          <div className={`flex flex-col md:flex-row justify-between items-center bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 mb-16 gap-6 relative overflow-hidden group hover:border-opacity-50 transition-colors ${theme.borderHover}`}>
-
-            {/* Glow Animado no Hover */}
-            <div className={`absolute inset-0 bg-gradient-to-r ${theme.glowGradient} translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000`} />
-
-            <div className="flex items-center gap-4 relative z-10">
-              <div className="bg-white p-2 rounded-lg h-14 w-20 flex items-center justify-center shadow-lg">
-                <Image
-                  src={content.badgeImage}
-                  alt={content.badgeTitle}
-                  width={80}
-                  height={50}
-                  className="w-auto h-full object-contain"
-                />
-              </div>
-              <div>
-                <h1 className={`font-bold text-lg leading-none text-white transition-colors ${theme.hoverText}`}>
-                  {content.badgeTitle}
-                </h1>
-                <p className="text-gray-400 text-sm mt-1">{content.badgeDesc}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 relative z-10">
-              <div className="flex flex-col items-center">
-                <span className={`font-bold text-xl ${theme.primary}`}>{content.stats1.val}</span>
-                <span className="text-[10px] text-gray-500 uppercase">{content.stats1.label}</span>
-              </div>
-              <div className="w-px h-10 bg-white/10"></div>
-              <div className="flex flex-col items-center">
-                <span className={`font-bold text-xl ${theme.primary}`}>{content.stats2.val}</span>
-                <span className="text-[10px] text-gray-500 uppercase">{content.stats2.label}</span>
-              </div>
-            </div>
-          </div>
-        </Link>
+        
 
         <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-center sm:text-start">
 

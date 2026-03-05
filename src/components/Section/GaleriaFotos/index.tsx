@@ -196,7 +196,7 @@ export default function GaleriaFotos({
             <motion.div style={{ y: y1 }} className="flex flex-col gap-4 md:gap-6">
                 {col1.map((img) => (
                     <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[400px]' : 'h-[250px]'}`}>
-                        <Image src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                        <Image width={400} height={250} src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                             <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
@@ -208,7 +208,7 @@ export default function GaleriaFotos({
             <motion.div style={{ y: y2 }} className="flex flex-col gap-4 md:gap-6 pt-12 md:pt-24">
                 {col2.map((img) => (
                     <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-2' ? 'h-[450px]' : 'h-[300px]'}`}>
-                        <Image src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                        <Image width={400} height={300} src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                              <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
@@ -220,7 +220,7 @@ export default function GaleriaFotos({
             <motion.div style={{ y: y3 }} className="hidden md:flex flex-col gap-4 md:gap-6">
                 {col3.map((img) => (
                     <div key={img.id} className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === 'row-span-3' ? 'h-[500px]' : 'h-[350px]'}`}>
-                        <Image src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                        <Image width={400} height={350} src={img.image} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                              <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
                         </div>
