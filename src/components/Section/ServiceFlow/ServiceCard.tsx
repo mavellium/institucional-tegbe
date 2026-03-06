@@ -24,7 +24,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
       {/* Número de Fundo - Mantido sutil */}
       <span className={`
         absolute right-6 top-6 text-6xl font-black select-none pointer-events-none transition-colors duration-500
-        ${variant === 'home' ? 'text-gray-100 group-hover:text-gray-200' : ''}
+        ${variant === 'ecommerce' ? 'text-gray-100 group-hover:text-gray-200' : ''}
         ${variant === 'marketing' ? 'text-white/5 group-hover:text-white/10 text-7xl' : ''}
         ${variant === 'sobre' ? 'hidden' : ''}
       `}>
@@ -39,7 +39,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
             className={`
               w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm
               transition-all duration-500 group-hover:scale-110
-              ${variant === 'home' ? 'bg-gray-50 border border-gray-100' : ''}
+              ${variant === 'ecommerce' ? 'bg-gray-50 border border-gray-100' : ''}
               ${variant === 'marketing' ? 'bg-white/5 border border-white/10' : ''}
               ${variant === 'sobre' ? `${theme.badge.background}` : ''}
             `}
@@ -54,7 +54,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
 
           <p className={`
             leading-relaxed text-base mb-6
-            ${variant === 'home' ? 'text-gray-600 font-medium' : ''}
+            ${variant === 'ecommerce' ? 'text-gray-600 font-medium' : ''}
             ${variant === 'marketing' ? 'text-gray-400 font-light border-l-2 border-white/10 pl-4' : ''}
             ${variant === 'sobre' ? 'text-gray-500 font-medium' : ''}
           `}>
@@ -66,7 +66,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
         <div className={`
           relative rounded-xl border overflow-hidden mt-auto
           transition-colors duration-500
-          ${variant === 'home' ? 'h-32 bg-gray-50/50 border-gray-100' : ''}
+          ${variant === 'ecommerce' ? 'h-32 bg-gray-50/50 border-gray-100' : ''}
           ${variant === 'marketing' ? 'h-32 bg-black/40 border-white/5' : ''}
           ${variant === 'sobre' ? `${service.wide ? 'mt-0 md:absolute md:right-0 md:top-0 md:w-1/2 md:h-full md:rounded-none' : 'h-[140px]'} bg-[#F5F5F7] border-gray-100` : ''}
         `}>

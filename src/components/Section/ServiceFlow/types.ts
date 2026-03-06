@@ -1,4 +1,4 @@
-export type ServiceFlowVariant = 'home' | 'ecommerce' | 'marketing' | 'sobre';
+export type ServiceFlowVariant = 'ecommerce' | 'marketing' | 'sobre';
 
 export interface ServiceFlowProps {
   variant?: ServiceFlowVariant;

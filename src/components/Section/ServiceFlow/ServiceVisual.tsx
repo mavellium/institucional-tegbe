@@ -9,9 +9,14 @@ interface ServiceVisualProps {
 }
 
 export default function ServiceVisual({ service, variant }: ServiceVisualProps) {
-  // Renderizações específicas por variante
-  if (variant === 'home') {
-    // Gráficos para a home, baseados no visualType do serviço
+  // Log para depuração – ajuda a identificar se a variante está sendo reconhecida
+  console.log(`🎨 ServiceVisual: variant="${variant}", visualType="${service.visualType}", wide=${service.wide}`);
+
+  // Variantes que compartilham os mesmos visuais da antiga 'home'
+  const useHomeVisuals = ['home', 'ecommerce', 'marketing'].includes(variant);
+
+  if (useHomeVisuals) {
+    // Gráficos da home (agora também usados por ecommerce e marketing)
     switch (service.visualType) {
       case 'traffic':
         return (
@@ -142,7 +147,6 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
                 <span className="text-[6px] text-purple-300">+28%</span>
               </div>
             </div>
-            
           </div>
         );
 
@@ -150,23 +154,17 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
         return (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative w-full h-full flex items-center justify-center">
-              {/* Card simulando um anúncio */}
               <div className="w-24 h-28 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 overflow-hidden shadow-xl group-hover:scale-105 transition-transform duration-500">
-                {/* Imagem do anúncio (placeholder colorido) */}
                 <div className="h-10 bg-gradient-to-br from-blue-400 to-purple-500"></div>
-                {/* Texto do anúncio */}
                 <div className="p-2">
                   <div className="h-1 w-12 bg-black/40 rounded mb-1"></div>
                   <div className="h-1 w-8 bg-black/40 rounded"></div>
                 </div>
-                {/* Ícone de play/engajamento */}
                 <div className="absolute bottom-1 right-1 flex items-center gap-1">
                   <Icon icon="mdi:heart-outline" className="w-3 h-3 text-red-300" />
                   <span className="text-[6px] text-black">2.4k</span>
                 </div>
               </div>
-
-              {/* Mini gráfico de barras ao lado */}
               <div className="ml-2 flex flex-col gap-1">
                 <div className="flex items-center gap-1">
                   <span className="text-[6px] text-gray-300">CTR</span>
@@ -197,9 +195,7 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
       case 'ads-creation':
         return (
           <div className="absolute inset-0 flex items-center justify-center">
-            {/* Simulação de criativos de anúncio */}
             <div className="flex gap-1">
-              {/* Card 1 - Imagem + Texto */}
               <div className="w-12 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg overflow-hidden shadow-lg flex flex-col">
                 <div className="h-6 bg-blue-300 m-1 rounded-sm"></div>
                 <div className="h-2 bg-gray-400 mx-1 rounded-full w-8"></div>
@@ -208,7 +204,6 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
                   COMPRAR
                 </div>
               </div>
-              {/* Card 2 - Variação */}
               <div className="w-12 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg overflow-hidden shadow-lg flex flex-col">
                 <div className="h-6 bg-orange-300 m-1 rounded-sm"></div>
                 <div className="h-2 bg-gray-400 mx-1 rounded-full w-8"></div>
@@ -222,7 +217,6 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
         );
 
       default:
-        // Fallback: se for wide (ex: medalha/ranking) ou gráfico genérico
         if (service.wide) {
           return (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -235,7 +229,6 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
             </div>
           );
         } else {
-          // Gráfico de linhas genérico
           return (
             <div className="absolute inset-0 flex items-center justify-center p-4">
               <svg viewBox="0 0 100 50" className="w-full h-full text-gray-400 group-hover:text-blue-400 transition-colors">
@@ -254,7 +247,6 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
         }
     }
   }
-
 
   if (variant === 'sobre') {
     switch (service.visualType) {
@@ -308,5 +300,10 @@ export default function ServiceVisual({ service, variant }: ServiceVisualProps) 
     }
   }
 
-  return null;
+  // Fallback para variantes não reconhecidas – ajuda a identificar erros
+  return (
+    <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs bg-gray-50/50">
+      Visual não disponível para variante: "{variant}"
+    </div>
+  );
 }

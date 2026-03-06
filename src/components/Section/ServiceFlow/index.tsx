@@ -10,7 +10,7 @@ import { useServiceFlowContent } from "./hooks/useServiceFlowContent";
 import { DefaultVariant } from "./variants/DefaultVariant";
 import { MarketingVariant } from "./variants/MarketingVariant";
 
-export default function ServiceFlow({ variant = 'home' }: ServiceFlowProps) {
+export default function ServiceFlow({ variant = 'ecommerce' }: ServiceFlowProps) {
   const { content, loading, error, useFallback } = useServiceFlowContent(variant);
   const containerRef = useRef<HTMLDivElement>(null);
   const theme = THEMES[variant];
