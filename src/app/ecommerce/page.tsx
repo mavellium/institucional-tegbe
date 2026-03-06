@@ -108,7 +108,7 @@ export default async function EcommercePage() {
 
             <Header />
             <HeadlineWrapper variant="ecommerce" />
-
+            <Logos />
             <ServiceFlow variant="home" />
             <Video
                 slug="video-sections"
@@ -123,9 +123,10 @@ export default async function EcommercePage() {
                 }}
 
             />
+            <Logos />
             <Passos />
             <Plataforms />
-            <Logos />
+            
             <CertifiedSection />
             <SectionImage variant="ecommerce" apiData={data} />
 

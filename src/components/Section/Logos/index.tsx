@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -18,13 +18,15 @@ interface LogosProps {
   variant?: 'default' | 'cursos';
 }
 
-export default function Logos({ 
-  data, 
-  variant = 'default'
-}: LogosProps) {
+export default function Logos({ data, variant = 'default' }: LogosProps) {
   const [apiLogos, setApiLogos] = useState<LogosApiData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [setWidth, setSetWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [marqueeLogos, setMarqueeLogos] = useState<LogosApiData[]>([]);
+
+  const singleSetRef = useRef<HTMLDivElement>(null);
 
   // --- FETCH DOS DADOS DO ENDPOINT ---
   useEffect(() => {
@@ -32,138 +34,35 @@ export default function Logos({
       try {
         setLoading(true);
         setError(null);
-        
-        // Endpoint específico para cursos se for a variante cursos
-        const endpoint = variant === 'cursos' 
-          ? '/api-tegbe/tegbe-institucional/form/logos-curso'
-          : '/api-tegbe/tegbe-institucional/form/logos-ecommerce';
-        
+
+        const endpoint =
+          variant === 'cursos'
+            ? '/api-tegbe/tegbe-institucional/form/logos-curso'
+            : '/api-tegbe/tegbe-institucional/form/logos-ecommerce';
+
         console.log(`📡 [${variant}] Buscando logos de: ${endpoint}`);
-        
+
         const response = await fetch(endpoint);
-        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        console.log(`📦 [${variant}] Resposta completa da API:`, JSON.stringify(result, null, 2));
-        
-        // PARA VARIANTE CURSOS - estrutura específica
+        console.log(`📦 [${variant}] Resposta completa:`, result);
+
+        let extractedLogos: LogosApiData[] = [];
+
         if (variant === 'cursos') {
-          console.log(`🔍 [${variant}] Processando estrutura específica de cursos...`);
-          
-          // Verifica se temos a estrutura aninhada: result.values.values
-          if (result && result.values && result.values.values && Array.isArray(result.values.values)) {
-            console.log(`✅ [${variant}] Encontrado array de logos em result.values.values`);
-            
-            const formattedLogos: LogosApiData[] = result.values.values
-              .filter((item: any) => item.image && item.image.trim() !== '')
-              .map((item: any, index: number) => ({
-                id: item.id || `curso-logo-${index}`,
-                src: item.image,
-                alt: item.name || "Logo Curso Parceiro",
-                width: 150,
-                height: 100,
-                url: item.url || item.website || '#'
-              }));
-            
-            console.log(`🎉 [${variant}] Logos processadas:`, formattedLogos);
-            setApiLogos(formattedLogos);
-          } 
-          // Verifica se temos a estrutura direta: result.values (array)
-          else if (result && result.values && Array.isArray(result.values)) {
-            console.log(`✅ [${variant}] Encontrado array de logos em result.values`);
-            
-            const formattedLogos: LogosApiData[] = result.values
-              .filter((item: any) => item.image && item.image.trim() !== '')
-              .map((item: any, index: number) => ({
-                id: item.id || `curso-logo-${index}`,
-                src: item.image,
-                alt: item.name || "Logo Curso",
-                width: 150,
-                height: 100,
-                url: item.url || item.website || '#'
-              }));
-            
-            setApiLogos(formattedLogos);
-          }
-          // Tenta encontrar logos em qualquer lugar da estrutura
-          else if (result && result.values) {
-            console.log(`🔍 [${variant}] Explorando estrutura completa em busca de logos...`);
-            
-            // Função recursiva para buscar arrays de logos
-            const findLogosInObject = (obj: any): any[] => {
-              if (!obj) return [];
-              
-              if (Array.isArray(obj)) {
-                // Verifica se este array tem itens com campo 'image'
-                const logos = obj.filter(item => item && item.image && typeof item.image === 'string');
-                if (logos.length > 0) {
-                  console.log(`🔍 [${variant}] Encontrado array de logos com ${logos.length} itens`);
-                  return logos;
-                }
-                return [];
-              }
-              
-              if (typeof obj === 'object') {
-                for (const key in obj) {
-                  const result = findLogosInObject(obj[key]);
-                  if (result.length > 0) return result;
-                }
-              }
-              
-              return [];
-            };
-            
-            const foundLogos = findLogosInObject(result);
-            if (foundLogos.length > 0) {
-              const formattedLogos: LogosApiData[] = foundLogos
-                .map((item: any, index: number) => ({
-                  id: item.id || `found-logo-${index}`,
-                  src: item.image,
-                  alt: item.name || item.title || `Logo ${index + 1}`,
-                  width: 150,
-                  height: 100,
-                  url: item.url || item.website || item.link || '#'
-                }));
-              
-              console.log(`✅ [${variant}] Logos encontradas na estrutura:`, formattedLogos);
-              setApiLogos(formattedLogos);
-            } else {
-              console.warn(`⚠️ [${variant}] Nenhuma logo encontrada na estrutura`);
-              setApiLogos([]);
-            }
-          } else {
-            console.warn(`⚠️ [${variant}] Formato inesperado para cursos`);
-            setApiLogos([]);
-          }
-        } 
-        // PARA VARIANTE DEFAULT (ecommerce) - estrutura original
-        else {
-          console.log(`🔍 [${variant}] Processando estrutura padrão...`);
-          
-          if (result && result.values && Array.isArray(result.values)) {
-            const formattedLogos: LogosApiData[] = result.values
-              .filter((item: any) => item.image && item.image.trim() !== '')
-              .map((item: any) => ({
-                id: item.id,
-                src: item.image,
-                alt: item.name || "Logo Ecommerce",
-                width: 150,
-                height: 100,
-                url: item.url || item.website
-              }));
-            
-            setApiLogos(formattedLogos);
-          } else {
-            console.warn(`⚠️ [${variant}] Formato inesperado ou dados vazios`);
-            setApiLogos([]);
-          }
+          extractedLogos = extractCursosLogos(result);
+        } else {
+          extractedLogos = extractEcommerceLogos(result);
         }
+
+        console.log(`🎉 [${variant}] Logos extraídas:`, extractedLogos);
+        setApiLogos(extractedLogos);
       } catch (error) {
         console.error(`❌ [${variant}] Erro ao carregar logos:`, error);
-        setError(`Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+        setError(error instanceof Error ? error.message : 'Erro desconhecido');
         setApiLogos([]);
       } finally {
         setLoading(false);
@@ -173,30 +72,179 @@ export default function Logos({
     fetchLogos();
   }, [variant]);
 
-  // Define quais logos usar (Prioridade para a prop 'data', depois API)
-  const logos = (data && data.length > 0) ? data : apiLogos;
-  
-  // Filtra logos para garantir que tenham src e alt válidos
-  const validLogos = logos.filter(logo => 
-    logo && 
-    logo.src && 
-    typeof logo.src === 'string' && 
-    logo.src.trim() !== '' && 
-    logo.alt && 
-    typeof logo.alt === 'string' && 
-    logo.alt.trim() !== ''
-  );
+  // Função auxiliar para extrair logos de cursos
+  const extractCursosLogos = (result: any): LogosApiData[] => {
+    // Tenta encontrar em result.values.values
+    if (result?.values?.values && Array.isArray(result.values.values)) {
+      return result.values.values
+        .filter((item: any) => item?.image)
+        .map((item: any, index: number) => ({
+          id: item.id || `curso-logo-${index}`,
+          src: item.image,
+          alt: item.name || "Logo Curso Parceiro",
+          width: 150,
+          height: 100,
+          url: item.url || item.website || '#',
+        }));
+    }
+    // Tenta result.values (array)
+    if (result?.values && Array.isArray(result.values)) {
+      return result.values
+        .filter((item: any) => item?.image)
+        .map((item: any, index: number) => ({
+          id: item.id || `curso-logo-${index}`,
+          src: item.image,
+          alt: item.name || "Logo Curso",
+          width: 150,
+          height: 100,
+          url: item.url || item.website || '#',
+        }));
+    }
+    // Busca recursiva (fallback)
+    const found = findLogosInObject(result);
+    if (found.length > 0) {
+      return found.map((item: any, index: number) => ({
+        id: item.id || `found-logo-${index}`,
+        src: item.image,
+        alt: item.name || item.title || `Logo ${index + 1}`,
+        width: 150,
+        height: 100,
+        url: item.url || item.website || item.link || '#',
+      }));
+    }
+    return [];
+  };
 
-  // DEBUG: Logs detalhados
+  // Função auxiliar para extrair logos de ecommerce (agora mais robusta)
+  const extractEcommerceLogos = (result: any): LogosApiData[] => {
+    // Possíveis locais onde o array de logos pode estar
+    const possibleArrays = [
+      result?.values,           // estrutura antiga
+      result?.data,             // estrutura comum em APIs
+      result,                   // array direto
+    ];
+
+    for (const arr of possibleArrays) {
+      if (Array.isArray(arr) && arr.length > 0) {
+        // Verifica se os itens têm a propriedade 'image'
+        const logos = arr.filter((item: any) => item?.image);
+        if (logos.length > 0) {
+          return logos.map((item: any) => ({
+            id: item.id,
+            src: item.image,
+            alt: item.name || "Logo Ecommerce",
+            width: 150,
+            height: 100,
+            url: item.url || item.website || '#',
+          }));
+        }
+      }
+    }
+
+    // Se não encontrou, tenta busca recursiva
+    const found = findLogosInObject(result);
+    if (found.length > 0) {
+      return found.map((item: any, index: number) => ({
+        id: item.id || `ecommerce-logo-${index}`,
+        src: item.image,
+        alt: item.name || item.title || `Logo ${index + 1}`,
+        width: 150,
+        height: 100,
+        url: item.url || item.website || item.link || '#',
+      }));
+    }
+
+    return [];
+  };
+
+  // Busca recursiva por qualquer objeto que tenha a propriedade 'image'
+  const findLogosInObject = (obj: any): any[] => {
+    if (!obj) return [];
+    if (Array.isArray(obj)) {
+      // Verifica se este array tem itens com campo 'image'
+      const logos = obj.filter(item => item && item.image && typeof item.image === 'string');
+      if (logos.length > 0) return logos;
+      // Procura dentro de cada item do array
+      for (const item of obj) {
+        const result = findLogosInObject(item);
+        if (result.length > 0) return result;
+      }
+      return [];
+    }
+    if (typeof obj === 'object') {
+      for (const key in obj) {
+        const result = findLogosInObject(obj[key]);
+        if (result.length > 0) return result;
+      }
+    }
+    return [];
+  };
+
+  // Define quais logos usar (prioridade para a prop 'data')
+  const logos = (data && data.length > 0) ? data : apiLogos;
+
+  // 🔹 MEMORIZA validLogos PARA EVITAR RECRIAÇÃO DESNECESSÁRIA
+  const validLogos = useMemo(() => {
+    return logos.filter(
+      (logo) =>
+        logo &&
+        logo.src &&
+        typeof logo.src === 'string' &&
+        logo.src.trim() !== '' &&
+        logo.alt &&
+        typeof logo.alt === 'string' &&
+        logo.alt.trim() !== ''
+    );
+  }, [logos]);
+
+  // Log para debug
   useEffect(() => {
-    console.log(`📊 [${variant}] Status:`, {
+    console.log(`📊 [${variant}] Status final:`, {
       loading,
       error,
       totalLogos: logos.length,
       validLogos: validLogos.length,
-      logosData: logos
     });
   }, [variant, loading, error, logos, validLogos]);
+
+  // Atualiza a largura da viewport e configura listener de resize
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    handleResize(); // valor inicial
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Mede a largura do conjunto original (apenas quando validLogos muda)
+  useEffect(() => {
+    if (validLogos.length === 0) return;
+
+    // Pequeno atraso para garantir que o DOM esteja pronto
+    const timeout = setTimeout(() => {
+      if (singleSetRef.current) {
+        const width = singleSetRef.current.scrollWidth;
+        setSetWidth(width);
+        console.log(`📏 Largura do conjunto original: ${width}px`);
+      }
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [validLogos]);
+
+  // Calcula as duplicações necessárias sempre que setWidth, viewportWidth ou validLogos mudarem
+  useEffect(() => {
+    if (setWidth === 0 || viewportWidth === 0 || validLogos.length === 0) return;
+
+    // Queremos que a largura total seja pelo menos 2x a viewport para garantir fluidez
+    const minTotalWidth = viewportWidth * 2;
+    const copiesNeeded = Math.ceil(minTotalWidth / setWidth) + 1; // +1 para segurança
+    const finalCopies = Math.min(copiesNeeded, 20); // Limite razoável
+
+    console.log(`🔄 Necessárias ${finalCopies} cópias (setWidth=${setWidth}, viewport=${viewportWidth})`);
+
+    const newMarqueeLogos = Array(finalCopies).fill(validLogos).flat();
+    setMarqueeLogos(newMarqueeLogos);
+  }, [setWidth, viewportWidth, validLogos]);
 
   // Configurações por variante
   const variantConfig = {
@@ -208,7 +256,7 @@ export default function Logos({
       logoOpacity: "opacity-60",
       logoFilter: "grayscale",
       sectionPadding: "py-24",
-      animationDuration: 30,
+      speed: 880, // pixels por segundo (ajustável)
     },
     cursos: {
       bgColor: "bg-black",
@@ -218,13 +266,17 @@ export default function Logos({
       logoOpacity: "opacity-70",
       logoFilter: "grayscale",
       sectionPadding: "py-24",
-      animationDuration: 30,
-    }
+      speed: 40, // mais lento para cursos
+    },
   };
 
   const config = variantConfig[variant];
 
-  // Se ainda estiver carregando, mostra um loader simples
+  // Calcula a duração da animação com base na largura total e velocidade desejada
+  const totalWidth = setWidth * (marqueeLogos.length / validLogos.length); // largura total do marquee
+  const duration = totalWidth / config.speed; // tempo para percorrer uma largura completa
+
+  // Estados de carregamento e erro
   if (loading && !data) {
     return (
       <div className={`${config.sectionPadding} ${config.bgColor} flex justify-center items-center`}>
@@ -233,9 +285,7 @@ export default function Logos({
     );
   }
 
-  // Se houver erro, mostra mensagem
   if (error && !data) {
-    console.warn(`Erro no componente Logos (${variant}):`, error);
     return (
       <div className={`${config.sectionPadding} ${config.bgColor} flex justify-center items-center`}>
         <div className="text-red-500 text-sm">Erro ao carregar logos</div>
@@ -243,30 +293,16 @@ export default function Logos({
     );
   }
 
-  // Se não houver logos válidas, mostra debug detalhado
   if (validLogos.length === 0) {
-    console.log(`⚠️ [${variant}] Nenhuma logo válida encontrada`);
-    console.log(`📝 [${variant}] Dados recebidos:`, {
-      apiLogos,
-      logos,
-      validLogos
-    });
-    
-    // Para debug, você pode mostrar um fallback
     return (
       <div className={`${config.sectionPadding} ${config.bgColor} flex justify-center items-center`}>
-        <div className="text-center">
-          <div className="text-gray-500 mb-2">Nenhuma logo encontrada</div>
-          <div className="text-xs text-gray-400">
-            Variante: {variant} | API Logos: {apiLogos.length} | Total itens: {logos.length}
-          </div>
+        <div className="text-center text-gray-400">
+          <p>Nenhuma logo disponível no momento.</p>
+          <p className="text-xs mt-2">Variante: {variant}</p>
         </div>
       </div>
     );
   }
-
-  // Multiplicação para garantir fluidez
-  const marqueeLogos = [...validLogos, ...validLogos, ...validLogos, ...validLogos, ...validLogos, ...validLogos];
 
   const handleLogoClick = (logo: LogosApiData) => {
     if (logo.url && logo.url !== '#') {
@@ -276,49 +312,68 @@ export default function Logos({
 
   return (
     <section className={`${config.sectionPadding} ${config.bgColor} overflow-hidden relative`}>
-      
-      {/* Container da animação */}
       <div className="relative">
-        {/* --- MÁSCARA DE FADE --- */}
+        {/* Máscaras de fade nas laterais */}
         <div className={`absolute inset-y-0 left-0 w-32 bg-gradient-to-r ${config.gradientFrom} to-transparent z-10 pointer-events-none`} />
         <div className={`absolute inset-y-0 right-0 w-32 bg-gradient-to-l ${config.gradientFrom} to-transparent z-10 pointer-events-none`} />
 
-        {/* Linha de logos */}
-        <div className="flex w-full">
-          <motion.div
-            className="flex items-center"
-            initial={{ x: 0 }}
-            animate={{ x: "-50%" }} 
-            transition={{
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: config.animationDuration,
-              ease: "linear",
-            }}
+        {/* Container da animação */}
+        <div className="overflow-hidden">
+          {/* Conjunto invisível para medição (apenas uma cópia) */}
+          <div
+            ref={singleSetRef}
+            className="flex items-center invisible absolute"
+            aria-hidden="true"
           >
-            {marqueeLogos.map((logo, index) => (
-              <div 
-                key={`logo-${logo.id}-${index}`}
-                className="flex-shrink-0 px-8 md:px-16 group cursor-pointer"
-                onClick={() => handleLogoClick(logo)}
-              >
+            {validLogos.map((logo, index) => (
+              <div key={`measure-${logo.id}-${index}`} className="flex-shrink-0 px-8 md:px-16">
                 <Image
                   src={logo.src}
                   alt={logo.alt}
                   width={logo.width || 150}
                   height={logo.height || 100}
-                  className={`w-auto ${config.logoHeight} object-contain ${config.logoFilter} ${config.logoOpacity} hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-105`}
-                  onError={(e) => {
-                    console.warn(`Erro ao carregar imagem: ${logo.src}`);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                  onLoad={() => {
-                    console.log(`✅ Imagem carregada: ${logo.alt}`);
-                  }}
+                  className={`w-auto ${config.logoHeight} object-contain`}
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 />
               </div>
             ))}
-          </motion.div>
+          </div>
+
+          {/* Marquee animado */}
+          {marqueeLogos.length > 0 && (
+            <motion.div
+              className="flex items-center"
+              style={{ width: 'max-content' }}
+              initial={{ x: 0 }}
+              animate={{ x: -setWidth }} // move exatamente a largura de uma cópia
+              transition={{
+                repeat: Infinity,
+                repeatType: 'loop',
+                duration: duration,
+                ease: 'linear',
+              }}
+            >
+              {marqueeLogos.map((logo, index) => (
+                <div
+                  key={`logo-${logo.id}-${index}`}
+                  className="flex-shrink-0 px-8 md:px-16 group cursor-pointer"
+                  onClick={() => handleLogoClick(logo)}
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={logo.width || 150}
+                    height={logo.height || 100}
+                    className={`w-auto ${config.logoHeight} object-contain ${config.logoFilter} ${config.logoOpacity} hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-105`}
+                    onError={(e) => {
+                      console.warn(`Erro ao carregar imagem: ${logo.src}`);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </div>
     </section>
