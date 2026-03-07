@@ -152,7 +152,6 @@ export default function MethodSectionPremium() {
 
                 {/* Formulário injetado */}
                 <div
-                  className="p-6"
                   dangerouslySetInnerHTML={{ __html: data.cta.form_html }}
                 />
               </motion.div>
