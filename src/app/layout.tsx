@@ -132,7 +132,7 @@ export default function RootLayout({
       "closes": "18:00"
     },
     "sameAs": [
-      "https://www.instagram.com/tegbecoomerce",
+      "https://www.instagram.com/agenciategbe",
       "https://www.linkedin.com/company/tegbe"
     ],
     "priceRange": "$$$",

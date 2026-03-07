@@ -1,76 +1,91 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-
-import footerConfig from "@/json/Footer/config.json";
 import Link from "next/link";
 
 export type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
 
 interface FooterProps {
   variant?: FooterVariant;
+  // Opcional: permitir passar os dados via props para evitar loading states no client
+  initialData?: any; 
 }
 
-function useSmoothScroll() {
+export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
+  const [footerConfig, setFooterConfig] = useState<any>(initialData);
+  const [loading, setLoading] = useState(!initialData);
+
+  // 1. Otimização de Busca (Client-side fallback)
   useEffect(() => {
-    const links = document.querySelectorAll('a[href^="#"]');
-    const handleClick = (e: Event) => {
-      e.preventDefault();
-      const target = (e.currentTarget as HTMLAnchorElement).getAttribute("href");
-      if (!target) return;
-      const element = document.querySelector(target);
-      if (!element) return;
-      element.scrollIntoView({ behavior: "smooth" });
+    if (!initialData) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/footer`)
+        .then((res) => res.json())
+        .then((data) => {
+          setFooterConfig(data);
+          setLoading(false);
+        })
+        .catch((err) => console.error("Erro ao carregar footer:", err));
+    }
+  }, [initialData]);
+
+  // 2. Smooth Scroll Otimizado (Event delegation)
+  useEffect(() => {
+    const handleScroll = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a[href^="#"]');
+      
+      if (anchor) {
+        e.preventDefault();
+        const id = anchor.getAttribute("href");
+        if (id && id !== "#") {
+          document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     };
-    links.forEach((link) => link.addEventListener("click", handleClick));
-    return () => {
-      links.forEach((link) => link.removeEventListener("click", handleClick));
-    };
+
+    document.addEventListener("click", handleScroll);
+    return () => document.removeEventListener("click", handleScroll);
   }, []);
-}
 
-export function Footer({ variant = 'ecommerce' }: FooterProps) {
-  useSmoothScroll();
+  // 3. Memoização de Estilos e Conteúdo
+  const theme = useMemo(() => {
+    if (!footerConfig) return null;
+    return footerConfig.variants[variant] || footerConfig.variants.ecommerce;
+  }, [footerConfig, variant]);
 
-  // Seleciona o tema e conteúdo baseado na variante, com fallback para 'ecommerce'
-  const theme = useMemo(() => footerConfig.variants[variant] || footerConfig.variants.ecommerce, [variant]);
-
-  // Como o TypeScript não sabe que o JSON tem chaves dinâmicas, fazemos um cast seguro
   const content = useMemo(() => {
-    const selectedContent = (footerConfig.content as any)[variant];
-    return selectedContent || footerConfig.content.ecommerce;
-  }, [variant]);
+    if (!footerConfig) return null;
+    return footerConfig.content[variant] || footerConfig.content.ecommerce;
+  }, [footerConfig, variant]);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (loading || !footerConfig || !theme || !content) {
+    return <div className="w-full h-20 bg-[#020202]" />; // Placeholder simples
+  }
 
   return (
     <footer className={`w-full flex flex-col justify-center items-center pt-20 pb-10 px-6 bg-[#020202] border-t ${theme.topBorder} relative overflow-hidden`}>
-
-      {/* Background Decorativo Dinâmico */}
+      
+      {/* Background Decorativo */}
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] pointer-events-none opacity-40 ${theme.glowAmbient}`} />
 
       <div className="w-full max-w-7xl py-20 relative z-10">
-
-        {/* --- BARRA DE AUTORIDADE (BADGE) --- */}
-        {/* (se houver badge, colocar aqui) */}
-
         <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-center sm:text-start">
 
-          {/* --- COLUNA 1: Marca --- */}
+          {/* COLUNA 1: Marca */}
           <div className="flex flex-col items-center sm:items-start space-y-6">
             <Image
               src={footerConfig.general.logo}
               alt="Tegbe"
               width={150}
               height={50}
-              className="w-32 sm:w-40 brightness-0 invert"
+              className="w-32 sm:w-40 brightness-0 invert object-contain"
+              priority={false}
             />
             <p className="text-sm text-gray-400 leading-relaxed max-w-[260px]">
               {content.desc}
@@ -82,11 +97,11 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             </div>
           </div>
 
-          {/* --- COLUNA 2: Navegação --- */}
+          {/* COLUNA 2: Navegação */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h1 className="font-bold text-base text-white">Navegação</h1>
+            <h2 className="font-bold text-base text-white">Navegação</h2>
             <nav className="flex flex-col space-y-3">
-              {footerConfig.navigation.map((item) => (
+              {footerConfig.navigation.map((item: any) => (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -98,9 +113,9 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             </nav>
           </div>
 
-          {/* --- COLUNA 3: Expertise Dinâmica --- */}
+          {/* COLUNA 3: Expertise */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h1 className="font-bold text-base text-white">{content.columnTitle}</h1>
+            <h2 className="font-bold text-base text-white">{content.columnTitle}</h2>
             <nav className="flex flex-col space-y-3">
               {content.links.map((text: string) => (
                 <FooterLink key={text} text={text} theme={theme} />
@@ -108,55 +123,23 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             </nav>
           </div>
 
-          {/* --- COLUNA 4: Contato --- */}
+          {/* COLUNA 4: Contato */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h1 className="font-bold text-base text-white">Fale Conosco</h1>
+            <h2 className="font-bold text-base text-white">Fale Conosco</h2>
             <div className="flex flex-col sm:items-start text-start space-y-4">
-
-              {/* E-mail */}
-              <Link href={`mailto:${content.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
-                <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
-                  <Icon icon="solar:letter-linear" />
-                </div>
-                <span className={`group-hover:underline underline-offset-4 ${theme.decoration}`}>{content.email}</span>
-              </Link>
-
-              {/* WhatsApp */}
-              <Link
-                href={footerConfig.general.whatsappLink}
-                target="_blank"
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
-                <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
-                  <Icon icon="solar:phone-calling-linear" />
-                </div>
-                <span className={`group-hover:underline underline-offset-4 ${theme.decoration}`}>{footerConfig.general.phone}</span>
-              </Link>
-
-              {/* Endereço */}
-              <Link
-                href="#"
-                target="_blank"
-                className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group text-left"
-              >
-                <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 mt-0.5 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
-                  <Icon icon="solar:map-point-linear" />
-                </div>
-                <span className={`group-hover:underline underline-offset-4 ${theme.decoration} whitespace-pre-line`}>
-                  {footerConfig.general.address}
-                </span>
-              </Link>
-
+              <ContactItem theme={theme} icon="solar:letter-linear" text={content.email} href={`mailto:${content.email}`} />
+              <ContactItem theme={theme} icon="solar:phone-calling-linear" text={footerConfig.general.phone} href={footerConfig.general.whatsappLink} />
+              <ContactItem theme={theme} icon="solar:map-point-linear" text={footerConfig.general.address} href="#" isAddress />
             </div>
           </div>
-
         </div>
 
-        {/* --- BOTTOM BAR --- */}
         <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-12" />
 
+        {/* Rodapé Legal */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-600">
           <div className="text-center md:text-left order-2 md:order-1 flex flex-col gap-1">
-            <p>© {new Date().getFullYear()} Tegbe. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} Tegbe. Venda mais conosco.</p>
             <p>CNPJ: {footerConfig.general.cnpj}</p>
           </div>
 
@@ -164,13 +147,13 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
             href="https://mavellium.com.br"
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-3 order-1 md:order-2 bg-[#0A0A0A] px-5 py-2.5 rounded-full border border-white/5 transition-all cursor-pointer group shadow-lg ${theme.borderHover}`}
+            className={`flex items-center gap-3 order-1 md:order-2 bg-[#0A0A0A] px-5 py-2.5 rounded-full border border-white/5 transition-all group shadow-lg ${theme.borderHover}`}
           >
             <span className="text-gray-500 font-medium group-hover:text-gray-300 transition-colors text-[10px] uppercase tracking-wider">
               Powered by
             </span>
             <Image
-              src={footerConfig.general.poweredByLogo}
+              src='/mavellium-logo-footer.svg'
               alt="Mavellium"
               width={80}
               height={25}
@@ -180,7 +163,6 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
         </div>
       </div>
 
-      {/* Botão Voltar ao Topo */}
       <button
         onClick={scrollToTop}
         className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-gradient-to-r from-[#FFCC00] to-[#a18208] text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group"
@@ -192,10 +174,10 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
   );
 }
 
-function SocialLink({ icon, href, theme }: { icon: string, href: string, theme: any }) {
+// Subcomponentes para melhor organização e performance
+function SocialLink({ icon, href, theme }: any) {
   return (
     <Link
-      aria-label={icon}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -203,14 +185,27 @@ function SocialLink({ icon, href, theme }: { icon: string, href: string, theme: 
     >
       <Icon icon={icon} className="size-5 text-gray-400 group-hover:text-inherit transition-colors" />
     </Link>
-  )
+  );
 }
 
-function FooterLink({ text, theme }: { text: string, theme: any }) {
+function ContactItem({ theme, icon, text, href, isAddress }: any) {
   return (
-    <Link aria-label={text} href="#" className={`text-sm text-gray-500 transition-colors flex items-center gap-2 group ${theme.hoverText}`}>
-      <span className={`w-1 h-1 rounded-full bg-gray-700 transition-colors ${theme.bgHover}`}></span>
+    <Link href={href} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 text-sm text-gray-400 hover:text-white transition-colors group">
+      <div className={`p-2 rounded-full bg-white/5 flex-shrink-0 transition-colors ${theme.iconBg} ${theme.iconHoverBg} ${theme.iconHoverText}`}>
+        <Icon icon={icon} />
+      </div>
+      <span className={`group-hover:underline underline-offset-4 ${theme.decoration} ${isAddress ? 'whitespace-pre-line' : ''}`}>
+        {text}
+      </span>
+    </Link>
+  );
+}
+
+function FooterLink({ text, theme }: any) {
+  return (
+    <Link href="#" className={`text-sm text-gray-500 transition-colors flex items-center gap-2 group ${theme.hoverText}`}>
+      <span className={`w-1.5 h-1.5 rounded-full bg-gray-700 transition-colors ${theme.bgHover}`}></span>
       {text}
     </Link>
-  )
+  );
 }
