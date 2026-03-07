@@ -10,7 +10,7 @@ interface FlywheelProps {
 }
 
 export default function Flywheel({
-  centerText = "VENDER MAIS",
+  centerText = "CRESCIMENTO",
   outerItems = ["DESCONHECIDOS", "PROSPECTS", "CLIENTES", "PROMOTORES"],
   innerItems = ["ATRAIR", "ENVOLVER", "ENCANTAR"]
 }: FlywheelProps) {
@@ -91,7 +91,7 @@ export default function Flywheel({
                   fill="#FF0F43" fillOpacity="0.1" stroke="#FF0F43" strokeOpacity="0.4" strokeWidth="1"
                 />
                 <path id={id} d={getLabelPath(250, 250, 212.5, start + 5, end - 5, true)} fill="none" />
-                <text fill="white" fillOpacity="0.7" fontSize="10" fontWeight="800" letterSpacing="0.05em">
+                <text fill="white" fillOpacity="0.7" fontSize="12" fontWeight="800" letterSpacing="0.05em">
                   <textPath href={`#${id}`} startOffset="50%" textAnchor="middle" dominantBaseline="middle">
                     {item}
                   </textPath>
