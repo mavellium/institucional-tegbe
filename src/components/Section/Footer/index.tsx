@@ -13,6 +13,14 @@ interface FooterProps {
   initialData?: any; 
 }
 
+// Mapa de gradientes para cada variante (botão voltar ao topo)
+const buttonGradientMap: Record<FooterVariant, string> = {
+  ecommerce: 'from-[#FFCC00] to-[#a18208]',
+  marketing: 'from-[#d9415f] to-[#9e2e44]', // vermelho marketing
+  sobre: 'from-[#4A90E2] to-[#1E3A8A]',
+  cursos: 'from-[#10B981] to-[#065F46]',
+};
+
 export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
   const [footerConfig, setFooterConfig] = useState<any>(initialData);
   const [loading, setLoading] = useState(!initialData);
@@ -67,6 +75,9 @@ export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
   if (loading || !footerConfig || !theme || !content) {
     return <div className="w-full h-20 bg-[#020202]" />; // Placeholder simples
   }
+
+  // Gradiente do botão baseado na variant
+  const buttonGradient = buttonGradientMap[variant] || buttonGradientMap.ecommerce;
 
   return (
     <footer className={`w-full flex flex-col justify-center items-center pt-20 pb-10 px-6 bg-[#020202] border-t ${theme.topBorder} relative overflow-hidden`}>
@@ -163,9 +174,10 @@ export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
         </div>
       </div>
 
+      {/* Botão Voltar ao Topo com gradiente dinâmico */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-gradient-to-r from-[#FFCC00] to-[#a18208] text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group"
+        className={`fixed bottom-8 right-8 z-50 p-3 rounded-full bg-gradient-to-r ${buttonGradient} text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group`}
         aria-label="Voltar ao topo"
       >
         <Icon icon="solar:arrow-up-linear" className="w-5 h-5" />
