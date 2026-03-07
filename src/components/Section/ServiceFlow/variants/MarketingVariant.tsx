@@ -1,6 +1,6 @@
 import { Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import Flywheel from '../../../ui/Flywheel';
+import Flywheel from '../../../ui/flywheel';
 import { VariantContent } from '../types';
 
 interface MarketingVariantProps {
