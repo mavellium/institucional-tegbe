@@ -43,6 +43,13 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
     return selectedContent || footerConfig.content.ecommerce;
   }, [variant]);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <footer className={`w-full flex flex-col justify-center items-center pt-20 pb-10 px-6 bg-[#020202] border-t ${theme.topBorder} relative overflow-hidden`}>
 
@@ -52,7 +59,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
       <div className="w-full max-w-7xl py-20 relative z-10">
 
         {/* --- BARRA DE AUTORIDADE (BADGE) --- */}
-        
+        {/* (se houver badge, colocar aqui) */}
 
         <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-center sm:text-start">
 
@@ -93,7 +100,7 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
 
           {/* --- COLUNA 3: Expertise Dinâmica --- */}
           <div className="flex flex-col items-center sm:items-start space-y-5">
-            <h1 className="font-bold text-base  text-white">{content.columnTitle}</h1>
+            <h1 className="font-bold text-base text-white">{content.columnTitle}</h1>
             <nav className="flex flex-col space-y-3">
               {content.links.map((text: string) => (
                 <FooterLink key={text} text={text} theme={theme} />
@@ -172,6 +179,15 @@ export function Footer({ variant = 'ecommerce' }: FooterProps) {
           </Link>
         </div>
       </div>
+
+      {/* Botão Voltar ao Topo */}
+      <button
+        onClick={scrollToTop}
+        className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-gradient-to-r from-[#FFCC00] to-[#a18208] text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group"
+        aria-label="Voltar ao topo"
+      >
+        <Icon icon="solar:arrow-up-linear" className="w-5 h-5" />
+      </button>
     </footer>
   );
 }

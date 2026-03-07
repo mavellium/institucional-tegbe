@@ -1,15 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "@iconify/react";
-import { motion } from "framer-motion";
 import LogosMKTInvert from "@/components/Section/Logos/LogosMKTInvert";
 import LogosMKT from "@/components/Section/Logos/LogosMKT";
-import Image from "next/image";
 import Link from "next/link";
+import Logos from "../Logos"; // Importa o componente Logos
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -21,6 +20,7 @@ export interface LogoItemData {
   src: string;
   width: number;
   height: number;
+  url?: string; // opcional, para links
 }
 
 export interface CTAData {
@@ -31,15 +31,13 @@ export interface CTAData {
   icon?: string;
 }
 
+// Interface para marketing – aceita tanto o formato antigo (row1/row2) quanto o novo (array único)
 export interface EmpresasDataMarketing {
   badge: {
     icon: string;
     text: string;
   };
-  logos: {
-    row1: LogoItemData[];
-    row2: LogoItemData[];
-  };
+  logos: LogoItemData[] | { row1: LogoItemData[]; row2: LogoItemData[] };
   title: string;
   footer: string;
   layout: string;
@@ -137,7 +135,7 @@ interface SobreTheme {
     spotlight: string;
   };
   stats: {
-    value: string; 
+    value: string;
   };
   cta: {
     primary: string;
@@ -200,7 +198,7 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
     },
     card: {
       statBackground: "bg-[#1d1d1f]",
-      logoBackground: "bg-white border border-white shadow-[0_20px_40px_rgba(0,0,0,0.04)]",
+      logoBackground: "bg-white border border-white shadow-[0_20_40px_rgba(0,0,0,0.04)]",
       fade: "from-white"
     },
     lighting: {
@@ -211,7 +209,7 @@ const themeConfig: Record<EmpresasVariant, MarketingTheme | SobreTheme> = {
       spotlight: "bg-transparent"
     },
     stats: {
-      value: "+40M", 
+      value: "+40M",
     },
     cta: {
       primary: "bg-[#FFCC00] hover:bg-[#FFDB15]",
@@ -228,6 +226,27 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
 
+  // Prepara as logos para o componente Logos
+  const logosForComponent = useMemo(() => {
+    let allLogos: LogoItemData[] = [];
+    if (Array.isArray(data.logos)) {
+      allLogos = data.logos;
+    } else if (data.logos && typeof data.logos === 'object') {
+      const oldLogos = data.logos as { row1?: LogoItemData[]; row2?: LogoItemData[] };
+      allLogos = [...(oldLogos.row1 || []), ...(oldLogos.row2 || [])];
+    }
+
+    // Mapeia para o formato LogosApiData (com id, src, alt, width, height, url opcional)
+    return allLogos.map((logo, index) => ({
+      id: `empresas-logo-${index}`,
+      src: logo.src,
+      alt: logo.alt,
+      width: logo.width || 150,
+      height: logo.height || 100,
+      url: logo.url, // se disponível
+    }));
+  }, [data.logos]);
+
   useGSAP(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -237,20 +256,14 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
       }
     });
 
-    tl.fromTo(".reveal-trust", 
+    tl.fromTo(".reveal-trust",
       { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }
     );
 
-    tl.fromTo(".trust-card", 
-      { y: 50, opacity: 0, scale: 0.95 },
-      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
-      "-=0.4"
-    );
-
     // Animação para o CTA
     if (data.cta) {
-      tl.fromTo(".cta-button", 
+      tl.fromTo(".cta-button",
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
         "-=0.2"
@@ -258,33 +271,9 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
     }
   }, { scope: sectionRef });
 
-  const marquee1 = [...data.logos.row1, ...data.logos.row1, ...data.logos.row1, ...data.logos.row1];
-  const marquee2 = [...data.logos.row2, ...data.logos.row2, ...data.logos.row2, ...data.logos.row2];
-
-  const LogoItem = ({ logo }: { logo: LogoItemData }) => {
-    if (!logo.src || logo.src.trim() === "") {
-      return null;
-    }
-
-    return (
-      <div className="relative group/logo cursor-pointer grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 hover:scale-125">
-        <div className="h-16 md:h-20 w-44 md:w-52 flex items-center justify-center p-2">
-          <Image 
-            src={logo.src} 
-            alt={logo.alt} 
-            width={logo.width * 1.5} 
-            height={logo.height * 1.5} 
-            className="w-full h-full object-contain"
-            unoptimized
-          />
-        </div>
-      </div>
-    );
-  };
-
   // Função para obter classes do CTA baseado no estilo
   const getCTAStyle = (style: string = "default") => {
-    switch(style) {
+    switch (style) {
       case "outline":
         return `${theme.cta.outline} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 ${theme.cta.hover}`;
       case "ghost":
@@ -318,24 +307,10 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
             <span className="text-sm text-gray-400 uppercase tracking-widest mt-1">{theme.stats.label}</span>
           </div>
         </div>
-        <div className={`trust-card w-full rounded-[2rem] border ${theme.card.border} ${theme.card.background} overflow-hidden relative group`}>
-          <div className={`absolute inset-0 border-2 border-transparent rounded-[2rem] transition-colors duration-500 pointer-events-none z-20 ${theme.card.hover}`} />
-          <div className={`absolute inset-y-0 left-0 w-32 bg-gradient-to-r ${theme.lighting.fade} to-transparent z-10 pointer-events-none`} />
-          <div className={`absolute inset-y-0 right-0 w-32 bg-gradient-to-l ${theme.lighting.fade} to-transparent z-10 pointer-events-none`} />
-          <div className="py-12 flex flex-col gap-10">
-            <div className="flex w-full overflow-hidden">
-              <motion.div className="flex items-center gap-16 md:gap-24" initial={{ x: 0 }} animate={{ x: "-50%" }} transition={{ repeat: Infinity, ease: "linear", duration: 40 }}>
-                {marquee1.map((logo, i) => <LogoItem key={`row1-${i}`} logo={logo} />)}
-              </motion.div>
-            </div>
-            <div className="flex w-full overflow-hidden">
-              <motion.div className="flex items-center gap-16 md:gap-24" initial={{ x: "-50%" }} animate={{ x: 0 }} transition={{ repeat: Infinity, ease: "linear", duration: 45 }}>
-                {marquee2.map((logo, i) => <LogoItem key={`row2-${i}`} logo={logo} />)}
-              </motion.div>
-            </div>
-          </div>
-        </div>
-        
+
+        {/* Logos vindas da API, usando o componente Logos com a variante marketing */}
+        <Logos data={logosForComponent} variant="marketing" />
+
         {/* BOTÃO CTA - ABAIXO DO CONTEÚDO */}
         {data.cta && (
           <div className="reveal-trust cta-button flex justify-center mt-12">
@@ -350,7 +325,7 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
             </Link>
           </div>
         )}
-        
+
         <div className="reveal-trust mt-6 flex justify-center opacity-60">
           <p className="text-xs text-gray-500 uppercase tracking-widest flex items-center gap-2">
             <span className={`w-1.5 h-1.5 rounded-full ${variant === 'marketing' ? 'bg-[#E31B63]' : 'bg-[#FFCC00]'} animate-pulse`}></span>
@@ -362,7 +337,7 @@ const EmpresasMarketing = ({ data, variant = 'marketing' }: { data: EmpresasData
   );
 };
 
-// --- COMPONENTE PARA SOBRE ---
+// --- COMPONENTE PARA SOBRE (não foi alterado) ---
 const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.sobre as SobreTheme;
@@ -379,10 +354,10 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
     tl.fromTo(".reveal-head", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" });
     tl.fromTo(".logo-card", { y: 60, autoAlpha: 0, scale: 0.98 }, { y: 0, autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, "-=0.4");
     tl.fromTo(".stat-box", { x: -30, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, "-=0.6");
-    
+
     // Animação para o CTA
     if (data.cta) {
-      tl.fromTo(".cta-button", 
+      tl.fromTo(".cta-button",
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
         "-=0.2"
@@ -390,9 +365,8 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
     }
   }, { scope: sectionRef });
 
-  // Função para obter classes do CTA baseado no estilo
   const getCTAStyle = (style: string = "default") => {
-    switch(style) {
+    switch (style) {
       case "outline":
         return `${theme.cta.outline} px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 ${theme.cta.hover}`;
       case "ghost":
@@ -417,7 +391,7 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
               </span>
             </div>
             <h2 className="reveal-head text-4xl md:text-5xl lg:text-6xl font-bold text-[#1d1d1f] tracking-tight leading-[1.05]"
-                dangerouslySetInnerHTML={{ __html: data.title }}
+              dangerouslySetInnerHTML={{ __html: data.title }}
             />
           </div>
           <div className="reveal-head hidden md:block max-w-xs text-right pb-2">
@@ -457,7 +431,7 @@ const EmpresasSobre = ({ data }: { data: EmpresasDataSobre }) => {
             </div>
             <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity cursor-pointer group/link">
               <span className="text-xs font-bold text-[#1d1d1f]">{data.footer.linkText}</span>
-              <Icon icon="ph:arrow-right" className="w-3 h-3 group-hover/link:translate-x-1 transition-transform"/>
+              <Icon icon="ph:arrow-right" className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>

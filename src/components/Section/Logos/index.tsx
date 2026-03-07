@@ -15,7 +15,7 @@ export interface LogosApiData {
 
 interface LogosProps {
   data?: LogosApiData[];
-  variant?: 'default' | 'cursos';
+  variant?: 'default' | 'cursos' | 'marketing';
 }
 
 export default function Logos({ data, variant = 'default' }: LogosProps) {
@@ -28,17 +28,28 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
 
   const singleSetRef = useRef<HTMLDivElement>(null);
 
-  // --- FETCH DOS DADOS DO ENDPOINT ---
+  // --- FETCH DOS DADOS DO ENDPOINT (apenas se não receber data via props) ---
   useEffect(() => {
+    // Se recebeu data diretamente, não faz fetch
+    if (data && data.length > 0) {
+      setApiLogos([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchLogos = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const endpoint =
-          variant === 'cursos'
-            ? '/api-tegbe/tegbe-institucional/form/logos-curso'
-            : '/api-tegbe/tegbe-institucional/form/logos-ecommerce';
+        let endpoint = '';
+        if (variant === 'cursos') {
+          endpoint = '/api-tegbe/tegbe-institucional/form/logos-curso';
+        } else if (variant === 'marketing') {
+          endpoint = '/api-tegbe/tegbe-institucional/form/logos-marketing'; // Ajuste conforme necessário
+        } else {
+          endpoint = '/api-tegbe/tegbe-institucional/form/logos-ecommerce';
+        }
 
         console.log(`📡 [${variant}] Buscando logos de: ${endpoint}`);
 
@@ -52,8 +63,9 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
 
         let extractedLogos: LogosApiData[] = [];
 
-        if (variant === 'cursos') {
-          extractedLogos = extractCursosLogos(result);
+        if (variant === 'cursos' || variant === 'marketing') {
+          // Para cursos e marketing, a estrutura pode ser similar (valores dentro de values)
+          extractedLogos = extractLogosFromValues(result);
         } else {
           extractedLogos = extractEcommerceLogos(result);
         }
@@ -70,18 +82,18 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
     };
 
     fetchLogos();
-  }, [variant]);
+  }, [variant, data]);
 
-  // Função auxiliar para extrair logos de cursos
-  const extractCursosLogos = (result: any): LogosApiData[] => {
+  // Função auxiliar para extrair logos de estruturas comuns (cursos/marketing)
+  const extractLogosFromValues = (result: any): LogosApiData[] => {
     // Tenta encontrar em result.values.values
     if (result?.values?.values && Array.isArray(result.values.values)) {
       return result.values.values
         .filter((item: any) => item?.image)
         .map((item: any, index: number) => ({
-          id: item.id || `curso-logo-${index}`,
+          id: item.id || `logo-${index}`,
           src: item.image,
-          alt: item.name || "Logo Curso Parceiro",
+          alt: item.name || "Logo",
           width: 150,
           height: 100,
           url: item.url || item.website || '#',
@@ -92,9 +104,9 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
       return result.values
         .filter((item: any) => item?.image)
         .map((item: any, index: number) => ({
-          id: item.id || `curso-logo-${index}`,
+          id: item.id || `logo-${index}`,
           src: item.image,
-          alt: item.name || "Logo Curso",
+          alt: item.name || "Logo",
           width: 150,
           height: 100,
           url: item.url || item.website || '#',
@@ -115,18 +127,16 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
     return [];
   };
 
-  // Função auxiliar para extrair logos de ecommerce (agora mais robusta)
+  // Função auxiliar para extrair logos de ecommerce (estrutura antiga)
   const extractEcommerceLogos = (result: any): LogosApiData[] => {
-    // Possíveis locais onde o array de logos pode estar
     const possibleArrays = [
-      result?.values,           // estrutura antiga
-      result?.data,             // estrutura comum em APIs
-      result,                   // array direto
+      result?.values,
+      result?.data,
+      result,
     ];
 
     for (const arr of possibleArrays) {
       if (Array.isArray(arr) && arr.length > 0) {
-        // Verifica se os itens têm a propriedade 'image'
         const logos = arr.filter((item: any) => item?.image);
         if (logos.length > 0) {
           return logos.map((item: any) => ({
@@ -141,7 +151,6 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
       }
     }
 
-    // Se não encontrou, tenta busca recursiva
     const found = findLogosInObject(result);
     if (found.length > 0) {
       return found.map((item: any, index: number) => ({
@@ -161,10 +170,8 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
   const findLogosInObject = (obj: any): any[] => {
     if (!obj) return [];
     if (Array.isArray(obj)) {
-      // Verifica se este array tem itens com campo 'image'
       const logos = obj.filter(item => item && item.image && typeof item.image === 'string');
       if (logos.length > 0) return logos;
-      // Procura dentro de cada item do array
       for (const item of obj) {
         const result = findLogosInObject(item);
         if (result.length > 0) return result;
@@ -183,7 +190,7 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
   // Define quais logos usar (prioridade para a prop 'data')
   const logos = (data && data.length > 0) ? data : apiLogos;
 
-  // 🔹 MEMORIZA validLogos PARA EVITAR RECRIAÇÃO DESNECESSÁRIA
+  // Memoriza logos válidas
   const validLogos = useMemo(() => {
     return logos.filter(
       (logo) =>
@@ -207,19 +214,18 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
     });
   }, [variant, loading, error, logos, validLogos]);
 
-  // Atualiza a largura da viewport e configura listener de resize
+  // Atualiza a largura da viewport
   useEffect(() => {
     const handleResize = () => setViewportWidth(window.innerWidth);
-    handleResize(); // valor inicial
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Mede a largura do conjunto original (apenas quando validLogos muda)
+  // Mede a largura do conjunto original
   useEffect(() => {
     if (validLogos.length === 0) return;
 
-    // Pequeno atraso para garantir que o DOM esteja pronto
     const timeout = setTimeout(() => {
       if (singleSetRef.current) {
         const width = singleSetRef.current.scrollWidth;
@@ -231,14 +237,13 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
     return () => clearTimeout(timeout);
   }, [validLogos]);
 
-  // Calcula as duplicações necessárias sempre que setWidth, viewportWidth ou validLogos mudarem
+  // Calcula as duplicações necessárias
   useEffect(() => {
     if (setWidth === 0 || viewportWidth === 0 || validLogos.length === 0) return;
 
-    // Queremos que a largura total seja pelo menos 2x a viewport para garantir fluidez
     const minTotalWidth = viewportWidth * 2;
-    const copiesNeeded = Math.ceil(minTotalWidth / setWidth) + 1; // +1 para segurança
-    const finalCopies = Math.min(copiesNeeded, 20); // Limite razoável
+    const copiesNeeded = Math.ceil(minTotalWidth / setWidth) + 1;
+    const finalCopies = Math.min(copiesNeeded, 20);
 
     console.log(`🔄 Necessárias ${finalCopies} cópias (setWidth=${setWidth}, viewport=${viewportWidth})`);
 
@@ -256,7 +261,7 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
       logoOpacity: "opacity-60",
       logoFilter: "grayscale",
       sectionPadding: "py-24",
-      speed: 880, // pixels por segundo (ajustável)
+      speed: 880,
     },
     cursos: {
       bgColor: "bg-black",
@@ -266,15 +271,25 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
       logoOpacity: "opacity-70",
       logoFilter: "grayscale",
       sectionPadding: "py-24",
-      speed: 40, // mais lento para cursos
+      speed: 200,
+    },
+    marketing: {
+      bgColor: "bg-transparent",
+      gradientFrom: "from-black",
+      gradientTo: "to-transparent",
+      logoHeight: "h-14 md:h-24",
+      logoOpacity: "opacity-70",
+      logoFilter: "grayscale",
+      sectionPadding: "py-24",
+      speed: 200,
     },
   };
 
   const config = variantConfig[variant];
 
-  // Calcula a duração da animação com base na largura total e velocidade desejada
-  const totalWidth = setWidth * (marqueeLogos.length / validLogos.length); // largura total do marquee
-  const duration = totalWidth / config.speed; // tempo para percorrer uma largura completa
+  // Calcula a duração da animação
+  const totalWidth = setWidth * (marqueeLogos.length / validLogos.length);
+  const duration = totalWidth / config.speed;
 
   // Estados de carregamento e erro
   if (loading && !data) {
@@ -319,7 +334,7 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
 
         {/* Container da animação */}
         <div className="overflow-hidden">
-          {/* Conjunto invisível para medição (apenas uma cópia) */}
+          {/* Conjunto invisível para medição */}
           <div
             ref={singleSetRef}
             className="flex items-center invisible absolute"
@@ -345,7 +360,7 @@ export default function Logos({ data, variant = 'default' }: LogosProps) {
               className="flex items-center"
               style={{ width: 'max-content' }}
               initial={{ x: 0 }}
-              animate={{ x: -setWidth }} // move exatamente a largura de uma cópia
+              animate={{ x: -setWidth }}
               transition={{
                 repeat: Infinity,
                 repeatType: 'loop',
