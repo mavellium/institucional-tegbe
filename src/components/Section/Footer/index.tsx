@@ -17,8 +17,8 @@ interface FooterProps {
 const buttonGradientMap: Record<FooterVariant, string> = {
   ecommerce: 'from-[#FFCC00] to-[#a18208]',
   marketing: 'from-[#d9415f] to-[#9e2e44]', // vermelho marketing
-  sobre: 'from-[#4A90E2] to-[#1E3A8A]',
-  cursos: 'from-[#10B981] to-[#065F46]',
+  sobre: 'from-[#FFCC00] to-[#a18208]',
+  cursos: 'from-[#FFCC00] to-[#a18208]',
 };
 
 export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
