@@ -336,8 +336,9 @@ const WhyTegbeEcommerce = ({ data }: { data: WhyTegbeData }) => {
   );
 };
 
-// --- COMPONENTE PARA MARKETING (opcionalmente pode ser modificado, mantido como está) ---
+// --- COMPONENTE PARA MARKETING (MODIFICADO PARA INCLUIR MODAL) ---
 const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const theme = themeConfig.marketing as MarketingTheme;
 
@@ -357,84 +358,149 @@ const WhyTegbeMarketing = ({ data }: { data: WhyTegbeData }) => {
     });
   }, { scope: sectionRef });
 
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (data.cta.use_form) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+  };
+
   return (
-    <section
-      ref={sectionRef}
-      className={`py-24 w-full flex flex-col justify-center items-center ${theme.background} px-6 relative ${theme.border} overflow-hidden`}
-    >
-      {theme.lighting.noise && (
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-      )}
+    <>
+      <section
+        ref={sectionRef}
+        className={`py-24 w-full flex flex-col justify-center items-center ${theme.background} px-6 relative ${theme.border} overflow-hidden`}
+      >
+        {theme.lighting.noise && (
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+        )}
 
-      <div className={`absolute top-0 right-0 w-[500px] h-[500px] ${theme.lighting.topRight} rounded-full blur-[120px] pointer-events-none`} />
-      <div className={`absolute bottom-0 left-0 w-[400px] h-[400px] ${theme.lighting.bottomLeft} rounded-full blur-[100px] pointer-events-none`} />
+        <div className={`absolute top-0 right-0 w-[500px] h-[500px] ${theme.lighting.topRight} rounded-full blur-[120px] pointer-events-none`} />
+        <div className={`absolute bottom-0 left-0 w-[400px] h-[400px] ${theme.lighting.bottomLeft} rounded-full blur-[100px] pointer-events-none`} />
 
-      <div className="container max-w-5xl relative z-10">
-        <div className="flex flex-col items-center text-center w-full">
+        <div className="container max-w-5xl relative z-10">
+          <div className="flex flex-col items-center text-center w-full">
 
-          {/* Badge */}
-          <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1.5 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
-            <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.badge.dot.outer} opacity-75`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${theme.badge.dot.inner}`}></span>
-            </span>
-            <span className={`text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
-              {data.badge.text}
-            </span>
-          </div>
+            {/* Badge */}
+            <div className={`reveal-text mb-6 flex items-center gap-2 px-3 py-1.5 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
+              <span className="relative flex h-2 w-2">
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.badge.dot.outer} opacity-75`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${theme.badge.dot.inner}`}></span>
+              </span>
+              <span className={`text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase ${theme.badge.text}`}>
+                {data.badge.text}
+              </span>
+            </div>
 
-          {/* Title */}
-          <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
-            {data.title.part1}
-            <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
-                {data.title.part2}
-            </span> 
-            {data.title.gradient || data.title.highlight}
-          </h1>
+            {/* Title */}
+            <h1 className="reveal-text font-bold text-3xl sm:text-5xl md:text-6xl mb-6 leading-tight tracking-tight text-white max-w-4xl">
+              {data.title.part1}
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
+                  {data.title.part2}
+              </span> 
+              {data.title.gradient || data.title.highlight}
+            </h1>
 
-          {/* Subtitle */}
-          <div className="reveal-text max-w-3xl space-y-5 mb-10">
-            <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
-              {data.subtitle.text}
-              {data.subtitle.strong1 && (
-                  <strong className="text-white font-medium">{data.subtitle.strong1}</strong>
+            {/* Subtitle */}
+            <div className="reveal-text max-w-3xl space-y-5 mb-10">
+              <p className="text-lg md:text-xl text-gray-400 font-light leading-relaxed">
+                {data.subtitle.text}
+                {data.subtitle.strong1 && (
+                    <strong className="text-white font-medium">{data.subtitle.strong1}</strong>
+                )}
+                {data.subtitle.strong2 && (
+                     <> {data.subtitle.strong2}</>
+                )}
+                {data.subtitle.highlight && (
+                    <strong className="text-white border-b border-[#E31B63]">{data.subtitle.highlight}</strong>
+                )}
+              </p>
+            </div>
+
+            {/* CTA */}
+            <div className="reveal-text flex flex-col items-center">
+              {data.cta.use_form ? (
+                <button
+                  onClick={handleCtaClick}
+                  className={`
+                    group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                    ${theme.cta.background} ${theme.cta.text}
+                    ${theme.cta.hover.background} ${theme.cta.hover.text} hover:scale-105 ${theme.cta.hover.shadow} cursor-pointer
+                  `}
+                >
+                  <span>{data.cta.text}</span>
+                  <Icon
+                    icon={data.cta.icon || "lucide:arrow-right"}
+                    className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </button>
+              ) : (
+                <Link
+                  aria-label={data.cta.text}
+                  href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`
+                    group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                    ${theme.cta.background} ${theme.cta.text}
+                    ${theme.cta.hover.background} ${theme.cta.hover.text} hover:scale-105 ${theme.cta.hover.shadow}
+                  `}
+                >
+                  <span>{data.cta.text}</span>
+                  <Icon
+                    icon={data.cta.icon || "lucide:arrow-right"}
+                    className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
               )}
-              {data.subtitle.strong2 && (
-                   <> {data.subtitle.strong2}</>
-              )}
-              {data.subtitle.highlight && (
-                  <strong className="text-white border-b border-[#E31B63]">{data.subtitle.highlight}</strong>
-              )}
-            </p>
-          </div>
-
-          {/* CTA */}
-          <div className="reveal-text flex flex-col items-center">
-            <Link
-              aria-label={data.cta.text}
-              href={data.cta.href || "https://api.whatsapp.com/send?phone=5514991779502"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`
-                group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-                ${theme.cta.background} ${theme.cta.text}
-                ${theme.cta.hover.background} ${theme.cta.hover.text} hover:scale-105 ${theme.cta.hover.shadow}
-              `}
-            >
-              <span>{data.cta.text}</span>
-              <Icon
-                icon={data.cta.icon || "lucide:arrow-right"}
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-            <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${theme.ctaSubtitle.dot} animate-pulse`}></span>
-              {ctaSubtitleText}
-            </p>
+              <p className={`mt-4 text-[10px] ${theme.ctaSubtitle.text} font-medium tracking-widest uppercase flex items-center gap-2`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${theme.ctaSubtitle.dot} animate-pulse`}></span>
+                {ctaSubtitleText}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Modal com formulário - renderizado no body via portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="p-6">
+                  {data.cta.form_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: data.cta.form_html }} />
+                  ) : (
+                    <p className="text-gray-500">Formulário não disponível.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 };
 

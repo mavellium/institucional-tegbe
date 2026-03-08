@@ -63,7 +63,7 @@ export default function Plataforms() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/json/plataformas');
+        const response = await fetch('/api-tegbe/tegbe-institucional/plataformas');
         const result: ApiResponse = await response.json();
         
         console.log('Resposta da API (plataformas):', result); // Log para depuração

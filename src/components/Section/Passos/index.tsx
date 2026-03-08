@@ -62,7 +62,7 @@ export default function Steps() {
   useEffect(() => {
     const loadSteps = async () => {
       try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/json/passos');
+        const response = await fetch('/api-tegbe/tegbe-institucional/passos');
         const result: ApiResponse = await response.json();
 
         if (result) {

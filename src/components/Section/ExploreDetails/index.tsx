@@ -7,6 +7,8 @@ import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -28,7 +30,7 @@ export interface ServiceFeature {
   color?: string;
 }
 
-// NOVO: Interface para o CTA
+// Interface do CTA com suporte a modal
 export interface ServiceCTA {
   enabled: boolean;
   text: string;
@@ -37,12 +39,14 @@ export interface ServiceCTA {
   showIcon?: boolean;
   icon?: string;
   position?: "below-content" | "below-image";
+  use_form?: boolean;   // Indica se deve abrir modal
+  form_html?: string;   // HTML do formulário (quando use_form = true)
 }
 
 export interface ApiResponse {
   header: ServiceHeader;
   services: ServiceFeature[];
-  cta?: ServiceCTA; // NOVO: CTA configurável
+  cta?: ServiceCTA;
 }
 
 // Função para obter classes do botão baseado no estilo
@@ -62,18 +66,19 @@ const getButtonClasses = (style: string = "default") => {
 const ExploreDetails = () => {
   const [header, setHeader] = useState<ServiceHeader | null>(null);
   const [features, setFeatures] = useState<ServiceFeature[]>([]);
-  const [ctaData, setCtaData] = useState<ServiceCTA | null>(null); // NOVO: Estado para CTA
+  const [ctaData, setCtaData] = useState<ServiceCTA | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeFeature, setActiveFeature] = useState(0); 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
   
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const desktopImageContainerRef = useRef<HTMLDivElement>(null);
   const mobileImageContainerRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null); // NOVO: Ref para animação do CTA
+  const ctaRef = useRef<HTMLDivElement>(null);
   const previousActiveFeatureRef = useRef<number>(-1);
 
   // --- INTEGRAÇÃO COM A API ---
@@ -88,7 +93,7 @@ const ExploreDetails = () => {
           setFeatures(data.services);
           setCurrentImage(data.services[0].image);
           
-          // NOVO: Configurar CTA se existir e estiver habilitado
+          // Configurar CTA se existir e estiver habilitado
           if (data.cta && data.cta.enabled !== false) {
             setCtaData(data.cta);
           }
@@ -201,6 +206,13 @@ const ExploreDetails = () => {
     });
   };
 
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (ctaData?.use_form) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+  };
+
   if (loading) return <div className="py-24 text-center text-white">Carregando inteligência...</div>;
   if (features.length === 0) return null;
 
@@ -213,74 +225,185 @@ const ExploreDetails = () => {
   const ctaPosition = ctaData?.position || "below-content";
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+    <>
+      <section ref={sectionRef} className="py-24 bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
-      <div className="mx-auto relative max-w-[1400px] z-10">
-        <div className="mb-12 md:mb-16">
-          <h2 className="text-sm font-bold text-[#E31B63] uppercase tracking-widest mb-3">
-            {header?.subtitle}
-          </h2>
-          <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-            {firstPart}{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E31B63] to-[#FF0F43]">
-              {lastWord}.
-            </span>
-          </h1>
-        </div>
+        <div className="mx-auto relative max-w-[1400px] z-10">
+          <div className="mb-12 md:mb-16">
+            <h2 className="text-sm font-bold text-[#E31B63] uppercase tracking-widest mb-3">
+              {header?.subtitle}
+            </h2>
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
+              {firstPart}{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E31B63] to-[#FF0F43]">
+                {lastWord}.
+              </span>
+            </h1>
+          </div>
 
-        {/* DESKTOP */}
-        <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
-          <div className="col-span-4 sticky top-24">
-            <div className="flex flex-col space-y-3">
-              {features.map((feature, index) => (
-                <button
-                  key={feature.id}
-                  ref={(el) => { buttonsRef.current[index] = el }}
-                  onClick={() => handleFeatureChange(index)}
-                  className="feature-button group w-full text-left p-6 rounded-2xl border border-white/5 bg-white/5 transition-all hover:bg-white/10 hover:border-white/10"
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-lg flex items-center gap-3 text-white">
-                      <Icon 
-                        icon={feature.icon || "lucide:layers"} 
-                        className="w-6 h-6 text-[#E31B63] group-hover:scale-110 transition-transform" 
-                      />
-                      {feature.title}
-                    </h3>
-                  </div>
-                  <div 
-                    ref={(el) => { descriptionsRef.current[index] = el }} 
-                    className="overflow-hidden h-0 opacity-0"
+          {/* DESKTOP */}
+          <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
+            <div className="col-span-4 sticky top-24">
+              <div className="flex flex-col space-y-3">
+                {features.map((feature, index) => (
+                  <button
+                    key={feature.id}
+                    ref={(el) => { buttonsRef.current[index] = el }}
+                    onClick={() => handleFeatureChange(index)}
+                    className="feature-button group w-full text-left p-6 rounded-2xl border border-white/5 bg-white/5 transition-all hover:bg-white/10 hover:border-white/10"
                   >
-                    <p className="text-sm text-gray-400 leading-relaxed font-light border-l border-[#E31B63]/30 pl-4 mt-2">
-                      {feature.description}
-                    </p>
-                  </div>
-                </button>
-              ))}
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-lg flex items-center gap-3 text-white">
+                        <Icon 
+                          icon={feature.icon || "lucide:layers"} 
+                          className="w-6 h-6 text-[#E31B63] group-hover:scale-110 transition-transform" 
+                        />
+                        {feature.title}
+                      </h3>
+                    </div>
+                    <div 
+                      ref={(el) => { descriptionsRef.current[index] = el }} 
+                      className="overflow-hidden h-0 opacity-0"
+                    >
+                      <p className="text-sm text-gray-400 leading-relaxed font-light border-l border-[#E31B63]/30 pl-4 mt-2">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="col-span-8">
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] aspect-video">
+                <div ref={desktopImageContainerRef} className="w-full h-full relative">
+                  {currentImage && (
+                    <Image 
+                      src={currentImage} 
+                      alt="Feature Display" 
+                      fill 
+                      className="object-cover" 
+                      unoptimized 
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60"></div>
+                </div>
+              </div>
+
+              {/* CTA ABAIXO DA IMAGEM (SE CONFIGURADO) */}
+              {ctaData && ctaPosition === "below-image" && (
+                <div ref={ctaRef} className="flex justify-center mt-8">
+                  {ctaData.use_form ? (
+                    <button
+                      onClick={handleCtaClick}
+                      className={getButtonClasses(ctaData.style) + " cursor-pointer"}
+                    >
+                      {ctaData.showIcon && ctaData.icon && (
+                        <Icon icon={ctaData.icon} className="w-5 h-5" />
+                      )}
+                      {ctaData.text}
+                    </button>
+                  ) : (
+                    <Link
+                      href={ctaData.link}
+                      className={getButtonClasses(ctaData.style)}
+                    >
+                      {ctaData.showIcon && ctaData.icon && (
+                        <Icon icon={ctaData.icon} className="w-5 h-5" />
+                      )}
+                      {ctaData.text}
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="col-span-8">
-            <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] aspect-video">
-              <div ref={desktopImageContainerRef} className="w-full h-full relative">
+          {/* MOBILE */}
+          <div className="lg:hidden">
+            <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden mb-6">
+              <div ref={mobileImageContainerRef} className="aspect-video relative">
                 {currentImage && (
                   <Image 
                     src={currentImage} 
-                    alt="Feature Display" 
+                    alt="Mobile View" 
                     fill 
                     className="object-cover" 
                     unoptimized 
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60"></div>
+              </div>
+              <div className="p-6 text-center">
+                <h3 className="text-xl font-bold text-white mb-2">
+                  {features[activeFeature]?.title}
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  {features[activeFeature]?.description}
+                </p>
+                <div className="flex justify-center gap-4 mt-6">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
+                    onClick={() => handleFeatureChange((activeFeature - 1 + features.length) % features.length)}
+                  >
+                    <Icon icon="lucide:arrow-left" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
+                    onClick={() => handleFeatureChange((activeFeature + 1) % features.length)}
+                  >
+                    <Icon icon="lucide:arrow-right" />
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* CTA ABAIXO DA IMAGEM (SE CONFIGURADO) */}
-            {ctaData && ctaPosition === "below-image" && (
-              <div ref={ctaRef} className="flex justify-center mt-8">
+            {/* CTA MOBILE */}
+            {ctaData && (
+              <div ref={ctaRef} className="flex justify-center">
+                {ctaData.use_form ? (
+                  <button
+                    onClick={handleCtaClick}
+                    className={getButtonClasses(ctaData.style) + " cursor-pointer"}
+                  >
+                    {ctaData.showIcon && ctaData.icon && (
+                      <Icon icon={ctaData.icon} className="w-5 h-5" />
+                    )}
+                    {ctaData.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={ctaData.link}
+                    className={getButtonClasses(ctaData.style)}
+                  >
+                    {ctaData.showIcon && ctaData.icon && (
+                      <Icon icon={ctaData.icon} className="w-5 h-5" />
+                    )}
+                    {ctaData.text}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* CTA ABAIXO DO CONTEÚDO (DESKTOP - SE CONFIGURADO) */}
+          {ctaData && ctaPosition === "below-content" && (
+            <div ref={ctaRef} className="hidden lg:flex justify-center mt-12">
+              {ctaData.use_form ? (
+                <button
+                  onClick={handleCtaClick}
+                  className={getButtonClasses(ctaData.style) + " cursor-pointer"}
+                >
+                  {ctaData.showIcon && ctaData.icon && (
+                    <Icon icon={ctaData.icon} className="w-5 h-5" />
+                  )}
+                  {ctaData.text}
+                </button>
+              ) : (
                 <Link
                   href={ctaData.link}
                   className={getButtonClasses(ctaData.style)}
@@ -290,85 +413,51 @@ const ExploreDetails = () => {
                   )}
                   {ctaData.text}
                 </Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* MOBILE */}
-        <div className="lg:hidden">
-          <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden mb-6">
-            <div ref={mobileImageContainerRef} className="aspect-video relative">
-              {currentImage && (
-                <Image 
-                  src={currentImage} 
-                  alt="Mobile View" 
-                  fill 
-                  className="object-cover" 
-                  unoptimized 
-                />
               )}
-            </div>
-            <div className="p-6 text-center">
-              <h3 className="text-xl font-bold text-white mb-2">
-                {features[activeFeature]?.title}
-              </h3>
-              <p className="text-gray-400 text-sm">
-                {features[activeFeature]?.description}
-              </p>
-              <div className="flex justify-center gap-4 mt-6">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
-                  onClick={() => handleFeatureChange((activeFeature - 1 + features.length) % features.length)}
-                >
-                  <Icon icon="lucide:arrow-left" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
-                  onClick={() => handleFeatureChange((activeFeature + 1) % features.length)}
-                >
-                  <Icon icon="lucide:arrow-right" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA MOBILE */}
-          {ctaData && (
-            <div ref={ctaRef} className="flex justify-center">
-              <Link
-                href={ctaData.link}
-                className={getButtonClasses(ctaData.style)}
-              >
-                {ctaData.showIcon && ctaData.icon && (
-                  <Icon icon={ctaData.icon} className="w-5 h-5" />
-                )}
-                {ctaData.text}
-              </Link>
             </div>
           )}
         </div>
+      </section>
 
-        {/* CTA ABAIXO DO CONTEÚDO (DESKTOP - SE CONFIGURADO) */}
-        {ctaData && ctaPosition === "below-content" && (
-          <div ref={ctaRef} className="hidden lg:flex justify-center mt-12">
-            <Link
-              href={ctaData.link}
-              className={getButtonClasses(ctaData.style)}
+      {/* Modal com formulário */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsModalOpen(false)}
             >
-              {ctaData.showIcon && ctaData.icon && (
-                <Icon icon={ctaData.icon} className="w-5 h-5" />
-              )}
-              {ctaData.text}
-            </Link>
-          </div>
-        )}
-      </div>
-    </section>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="p-6">
+                  {ctaData?.form_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
+                  ) : (
+                    <p className="text-gray-500">Formulário não disponível.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 };
 

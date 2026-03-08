@@ -47,7 +47,7 @@ export default function CertifiedSection() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/json/certificacao');
+        const response = await fetch('/api-tegbe/tegbe-institucional/certificacao');
         const result = await response.json();
         
         console.log('Resposta da API (certificação):', result); // Log para depuração
