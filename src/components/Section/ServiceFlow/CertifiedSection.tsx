@@ -7,12 +7,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Interface baseada no JSON da API
+// Interface baseada no JSON da API (agora com campos do modal)
 interface CertifiedData {
   badge: string;
   title: {
@@ -27,12 +29,15 @@ interface CertifiedData {
   cta: {
     text: string;
     link: string;
+    use_form?: boolean;   // Indica se deve abrir modal
+    form_html?: string;   // HTML do formulário (quando use_form = true)
   };
 }
 
 export default function CertifiedSection() {
   const [content, setContent] = useState<CertifiedData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
 
   const container = useRef(null);
   const imageRef = useRef(null);
@@ -45,6 +50,8 @@ export default function CertifiedSection() {
         const response = await fetch('/api-tegbe/tegbe-institucional/json/certificacao');
         const result = await response.json();
         
+        console.log('Resposta da API (certificação):', result); // Log para depuração
+
         // No seu JSON os dados estão em result.values
         if (result.values) {
           setContent(result.values);
@@ -91,91 +98,155 @@ export default function CertifiedSection() {
     }, "-=0.5");
   }, { dependencies: [loading, content], scope: container });
 
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (content?.cta?.use_form) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+    // Se não usar formulário, o link segue normalmente
+  };
+
   if (loading || !content) return null;
 
   return (
-    <section 
-      ref={container} 
-      className="relative px-4 sm:px-8 py-32 bg-[#F4F4F4] overflow-hidden"
-    >
-      {/* Background Decorativo */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-50">
-        <div className="absolute top-24 left-10 w-64 h-64 bg-yellow-400/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-24 right-10 w-64 h-64 bg-blue-400/10 blur-[120px] rounded-full" />
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-12 w-full max-w-7xl mx-auto items-center">
-        {/* LADO ESQUERDO - IMAGENS */}
-        <div 
-          ref={imageRef}
-          className="relative w-full lg:w-1/2 group"
-        >
-          <div className="relative z-10 w-full aspect-[4/5] max-w-[500px] mx-auto rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
-            <Image
-              src={content.images.consultant}
-              alt="Consultoria Certificada"
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          </div>
-
-          <div className="badge-float absolute -bottom-6 -right-6 md:right-0 z-20 w-32 h-32 md:w-44 md:h-44 bg-white p-4 rounded-full shadow-2xl flex items-center justify-center border-4 border-[#0071E3]">
-             <Image 
-                src={content.images.seal} 
-                width={120} 
-                height={120} 
-                alt="Selo Mercado Livre" 
-                className="animate-pulse-slow object-contain"
-             />
-          </div>
+    <>
+      <section 
+        ref={container} 
+        className="relative px-4 sm:px-8 py-32 bg-[#F4F4F4] overflow-hidden"
+      >
+        {/* Background Decorativo */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-50">
+          <div className="absolute top-24 left-10 w-64 h-64 bg-yellow-400/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-24 right-10 w-64 h-64 bg-blue-400/10 blur-[120px] rounded-full" />
         </div>
 
-        {/* LADO DIREITO - CONTEÚDO */}
-        <div 
-          ref={cardRef}
-          className="w-full lg:w-1/2 flex flex-col gap-8"
-        >
-          <div className="space-y-4">
-            <span className="inline-block px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
-              {content.badge}
-            </span>
-            <h2 className="text-4xl md:text-6xl font-extrabold text-black leading-[1.1] tracking-tight">
-              {content.title.main} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0071E3] to-[#00a2ff]">
-                {content.title.highlight}
+        <div className="flex flex-col lg:flex-row gap-12 w-full max-w-7xl mx-auto items-center">
+          {/* LADO ESQUERDO - IMAGENS */}
+          <div 
+            ref={imageRef}
+            className="relative w-full lg:w-1/2 group"
+          >
+            <div className="relative z-10 w-full aspect-[4/5] max-w-[500px] mx-auto rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+              <Image
+                src={content.images.consultant}
+                alt="Consultoria Certificada"
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            </div>
+
+            <div className="badge-float absolute -bottom-6 -right-6 md:right-0 z-20 w-32 h-32 md:w-44 md:h-44 bg-white p-4 rounded-full shadow-2xl flex items-center justify-center border-4 border-[#0071E3]">
+               <Image 
+                  src={content.images.seal} 
+                  width={120} 
+                  height={120} 
+                  alt="Selo Mercado Livre" 
+                  className="animate-pulse-slow object-contain"
+               />
+            </div>
+          </div>
+
+          {/* LADO DIREITO - CONTEÚDO */}
+          <div 
+            ref={cardRef}
+            className="w-full lg:w-1/2 flex flex-col gap-8"
+          >
+            <div className="space-y-4">
+              <span className="inline-block px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
+                {content.badge}
               </span>
-            </h2>
-          </div>
+              <h2 className="text-4xl md:text-6xl font-extrabold text-black leading-[1.1] tracking-tight">
+                {content.title.main} <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0071E3] to-[#00a2ff]">
+                  {content.title.highlight}
+                </span>
+              </h2>
+            </div>
 
-          <div className="space-y-6 max-w-lg">
-            {content.descriptions.map((text, idx) => (
-              <p 
-                key={idx} 
-                className={`${idx === 0 ? 'text-gray-600 text-xl' : 'text-gray-500 text-lg'} leading-relaxed`}
-                dangerouslySetInnerHTML={{ __html: text.replace(/\*(.*?)\*/g, '<strong>$1</strong>') }}
-              />
-            ))}
-          </div>
+            <div className="space-y-6 max-w-lg">
+              {content.descriptions.map((text, idx) => (
+                <p 
+                  key={idx} 
+                  className={`${idx === 0 ? 'text-gray-600 text-xl' : 'text-gray-500 text-lg'} leading-relaxed`}
+                  dangerouslySetInnerHTML={{ __html: text.replace(/\*(.*?)\*/g, '<strong>$1</strong>') }}
+                />
+              ))}
+            </div>
 
-          <div className="pt-4">
-            <Link
-              aria-label={content.cta.text}
-              href={content.cta.link} 
-              className="group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all hover:pr-14"
-            >
-              <span className="relative z-10">{content.cta.text}</span>
-              <Icon 
-                icon="mdi:arrow-right" 
-                className="absolute z-10 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300" 
-                width="24"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            </Link>
+            <div className="pt-4">
+              {content.cta?.use_form ? (
+                <button
+                  onClick={handleCtaClick}
+                  className="group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all hover:pr-14 cursor-pointer"
+                >
+                  <span className="relative z-10">{content.cta.text}</span>
+                  <Icon 
+                    icon="mdi:arrow-right" 
+                    className="absolute z-10 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300" 
+                    width="24"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                </button>
+              ) : (
+                <Link
+                  aria-label={content.cta.text}
+                  href={content.cta.link} 
+                  className="group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all hover:pr-14"
+                >
+                  <span className="relative z-10">{content.cta.text}</span>
+                  <Icon 
+                    icon="mdi:arrow-right" 
+                    className="absolute z-10 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300" 
+                    width="24"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Modal com formulário - renderizado no body via portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="p-6">
+                  {content.cta?.form_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: content.cta.form_html }} />
+                  ) : (
+                    <p className="text-gray-500">Formulário não disponível.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 }

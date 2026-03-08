@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate, PanInfo } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, PanInfo, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import { createPortal } from 'react-dom';
 
-// --- TIPAGEM ---
+// --- TIPAGEM (agora com campos para modal) ---
 export type CompanysVariant = 'ecommerce' | 'marketing';
 
-// Interface baseada no JSON da API
 export interface TestimonialItem {
   id: number;
   logo: string;
@@ -24,6 +24,8 @@ export interface CTAContent {
   text: string;
   url: string;
   description?: string;
+  use_form?: boolean;   // Indica se deve abrir modal
+  form_html?: string;   // HTML do formulário (quando use_form = true)
 }
 
 export interface SectionContent {
@@ -251,9 +253,10 @@ const themeConfig: Record<CompanysVariant, EcommerceTheme | MarketingTheme> = {
   }
 };
 
-// --- COMPONENTE PARA ECOMMERCE ---
+// --- COMPONENTE PARA ECOMMERCE (MODIFICADO PARA INCLUIR MODAL) ---
 const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -266,7 +269,9 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
   const ctaData = content.cta || {
     text: "Quero Estruturar e Escalar Meu Negócio",
     url: "https://api.whatsapp.com/send?phone=5514991779502",
-    description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+    description: "Anúncios, operação e dados trabalhando juntos para vender mais.",
+    use_form: false,
+    form_html: "",
   };
 
   const getCardWidth = () => {
@@ -360,191 +365,256 @@ const CompanysEcommerce = ({ content }: { content: SectionContent }) => {
     });
   };
 
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (ctaData.use_form) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+    // Se não usar formulário, o link segue normalmente
+  };
+
   return (
-    <section className={`py-20 sm:py-24 px-4 sm:px-6 md:px-8 ${theme.background} relative overflow-hidden ${theme.border}`}>
-      
-      <div className={`absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] ${theme.lighting.spotlight} rounded-full blur-[120px] pointer-events-none`} />
-
-      <div className="max-w-7xl mx-auto relative z-10">
+    <>
+      <section className={`py-20 sm:py-24 px-4 sm:px-6 md:px-8 ${theme.background} relative overflow-hidden ${theme.border}`}>
         
-        <div className="flex flex-col sm:flex-row justify-between items-end mb-12 sm:mb-16 gap-6">
-          <div className="text-center sm:text-left">
-            <div className={`inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
-                <Icon icon={content.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
-                <span className={`text-xs font-semibold tracking-wider uppercase ${theme.badge.text}`}>
-                    {content.badge.text}
+        <div className={`absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] ${theme.lighting.spotlight} rounded-full blur-[120px] pointer-events-none`} />
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          
+          <div className="flex flex-col sm:flex-row justify-between items-end mb-12 sm:mb-16 gap-6">
+            <div className="text-center sm:text-left">
+              <div className={`inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border ${theme.badge.border} ${theme.badge.background}`}>
+                  <Icon icon={content.badge.icon} className={`${theme.badge.icon} w-4 h-4`} />
+                  <span className={`text-xs font-semibold tracking-wider uppercase ${theme.badge.text}`}>
+                      {content.badge.text}
+                  </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
+                {content.title.part1} <br className="hidden sm:block" />
+                <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
+                  {content.title.part2}
                 </span>
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-              {content.title.part1} <br className="hidden sm:block" />
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${theme.text.gradient}`}>
-                {content.title.part2}
-              </span>
-            </h2>
-          </div>
 
-          <div className="hidden sm:flex gap-3">
-            <motion.button
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-            <motion.button
-              onClick={handleNext}
-              disabled={currentIndex >= maxIndex}
-              className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
-          </div>
-        </div>
-
-        <div className="relative" ref={containerRef}>
-          <div className="overflow-hidden px-2 py-4 -mx-2 -my-4">
-            <motion.div
-              className="flex"
-              style={{ x, gap: `${cardGap}px` }}
-              drag="x"
-              dragConstraints={{ left: -maxIndex * (cardWidth + cardGap), right: 0 }}
-              dragElastic={0.1}
-              onDragStart={() => setIsDragging(true)}
-              onDragEnd={handleDragEnd}
-            >
-              {content.testimonials.map((item, index) => {
-                const range = [
-                    -(index + 1) * (cardWidth + cardGap),
-                    -index * (cardWidth + cardGap),
-                    -(index - 1) * (cardWidth + cardGap)
-                ];
-                
-                const opacity = useTransform(x, range, [0.4, 1, 0.4]);
-                const scale = useTransform(x, range, [0.95, 1, 0.95]);
-
-                return (
-                  <motion.div
-                    key={item.id}
-                    className="flex-shrink-0 cursor-grab active:cursor-grabbing"
-                    style={{ width: cardWidth }}
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className={`h-full ${theme.card.background} border ${theme.card.border} hover:${theme.card.hoverBorder} rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-300 group shadow-2xl relative overflow-hidden`}>
-                      
-                      <div className={`absolute inset-0 ${theme.card.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
-
-                      <div>
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className={`w-14 h-14 rounded-full bg-gray-800 overflow-hidden border border-white/10 group-hover:${theme.card.hoverBorder} transition-colors`}>
-                                <motion.img
-                                  src={item.logo || "/placeholder-logo.png"}
-                                  alt={item.name}
-                                  className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div>
-                                <h1 className={`text-lg sm:text-xl font-bold ${theme.text.primary} group-hover:text-[#FFCC00] transition-colors`}>
-                                    {item.name}
-                                </h1>
-                                <p className={`text-xs ${theme.text.secondary} uppercase tracking-wide font-medium`}>
-                                    {item.description}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <p className="text-2xl sm:text-3xl font-bold text-white leading-tight">
-                                {item.result}
-                            </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 mt-auto">
-                        {item.tags.map(tag => (
-                             <span key={tag} className="text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded-full bg-white/5 text-gray-400 border border-white/5">
-                                {tag}
-                             </span>
-                        ))}
-                      </div>
-
-                      <div className={`absolute top-6 right-6 ${theme.card.decorIcon.color} group-hover:${theme.card.decorIcon.hover} transition-colors`}>
-                        <TrendingUp className="w-8 h-8 opacity-50" />
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-
-          <div className="flex justify-center gap-2 mt-10">
-            {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+            <div className="hidden sm:flex gap-3">
               <motion.button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  animate(x, -index * (cardWidth + cardGap), {
-                    type: "spring",
-                    stiffness: 200,
-                    damping: 25
-                  });
-                }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? `w-8 ${theme.buttons.dot.active} ${theme.buttons.dot.shadow}` 
-                    : `w-2 ${theme.buttons.dot.inactive} hover:bg-gray-500`
-                }`}
-                whileTap={{ scale: 0.9 }}
-              />
-            ))}
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </motion.button>
+              <motion.button
+                onClick={handleNext}
+                disabled={currentIndex >= maxIndex}
+                className={`w-12 h-12 rounded-full border ${theme.buttons.prevNext.border} ${theme.buttons.prevNext.background} disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed flex items-center justify-center text-white transition-all duration-300 hover:${theme.buttons.prevNext.hover.background} hover:${theme.buttons.prevNext.hover.border} hover:${theme.buttons.prevNext.hover.text}`}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </motion.button>
+            </div>
           </div>
 
-           <div className="flex sm:hidden justify-center gap-4 mt-6">
-                <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
-                    <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
-                    <ChevronRight className="w-5 h-5" />
-                </button>
-           </div>
-        </div>
-      </div>
+          <div className="relative" ref={containerRef}>
+            <div className="overflow-hidden px-2 py-4 -mx-2 -my-4">
+              <motion.div
+                className="flex"
+                style={{ x, gap: `${cardGap}px` }}
+                drag="x"
+                dragConstraints={{ left: -maxIndex * (cardWidth + cardGap), right: 0 }}
+                dragElastic={0.1}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={handleDragEnd}
+              >
+                {content.testimonials.map((item, index) => {
+                  const range = [
+                      -(index + 1) * (cardWidth + cardGap),
+                      -index * (cardWidth + cardGap),
+                      -(index - 1) * (cardWidth + cardGap)
+                  ];
+                  
+                  const opacity = useTransform(x, range, [0.4, 1, 0.4]);
+                  const scale = useTransform(x, range, [0.95, 1, 0.95]);
 
-      {/* CTA Dinâmico */}
-      {ctaData && (
-        <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-          <Link
-            aria-label="Entre em contato pelo WhatsApp"
-            href={ctaData.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`
-              group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-              hover:scale-105 ${theme.cta.background} ${theme.cta.textColor} ${theme.cta.shadow} ${theme.cta.hoverShadow}
-            `}
-          >
-            <span>{ctaData.text}</span>
-            <Icon
-              icon="lucide:arrow-right"
-              className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
-          {ctaData.description && (
-            <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>
-              {ctaData.description}
-            </p>
-          )}
+                  return (
+                    <motion.div
+                      key={item.id}
+                      className="flex-shrink-0 cursor-grab active:cursor-grabbing"
+                      style={{ width: cardWidth }}
+                      whileHover={{ y: -8 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className={`h-full ${theme.card.background} border ${theme.card.border} hover:${theme.card.hoverBorder} rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-300 group shadow-2xl relative overflow-hidden`}>
+                        
+                        <div className={`absolute inset-0 ${theme.card.glow} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+                        <div>
+                          <div className="flex items-center gap-4 mb-6">
+                              <div className={`w-14 h-14 rounded-full bg-gray-800 overflow-hidden border border-white/10 group-hover:${theme.card.hoverBorder} transition-colors`}>
+                                  <motion.img
+                                    src={item.logo || "/placeholder-logo.png"}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                              </div>
+                              <div>
+                                  <h1 className={`text-lg sm:text-xl font-bold ${theme.text.primary} group-hover:text-[#FFCC00] transition-colors`}>
+                                      {item.name}
+                                  </h1>
+                                  <p className={`text-xs ${theme.text.secondary} uppercase tracking-wide font-medium`}>
+                                      {item.description}
+                                  </p>
+                              </div>
+                          </div>
+
+                          <div className="mb-6">
+                              <p className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                                  {item.result}
+                              </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mt-auto">
+                          {item.tags.map(tag => (
+                               <span key={tag} className="text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded-full bg-white/5 text-gray-400 border border-white/5">
+                                  {tag}
+                               </span>
+                          ))}
+                        </div>
+
+                        <div className={`absolute top-6 right-6 ${theme.card.decorIcon.color} group-hover:${theme.card.decorIcon.hover} transition-colors`}>
+                          <TrendingUp className="w-8 h-8 opacity-50" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
+
+            <div className="flex justify-center gap-2 mt-10">
+              {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+                <motion.button
+                  key={index}
+                  onClick={() => {
+                    setCurrentIndex(index);
+                    animate(x, -index * (cardWidth + cardGap), {
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 25
+                    });
+                  }}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentIndex 
+                      ? `w-8 ${theme.buttons.dot.active} ${theme.buttons.dot.shadow}` 
+                      : `w-2 ${theme.buttons.dot.inactive} hover:bg-gray-500`
+                  }`}
+                  whileTap={{ scale: 0.9 }}
+                />
+              ))}
+            </div>
+
+             <div className="flex sm:hidden justify-center gap-4 mt-6">
+                  <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                      <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button onClick={handleNext} disabled={currentIndex >= maxIndex} className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30">
+                      <ChevronRight className="w-5 h-5" />
+                  </button>
+             </div>
+          </div>
         </div>
+
+        {/* CTA Dinâmico */}
+        {ctaData && (
+          <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
+            {ctaData.use_form ? (
+              <button
+                onClick={handleCtaClick}
+                className={`
+                  group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                  hover:scale-105 ${theme.cta.background} ${theme.cta.textColor} ${theme.cta.shadow} ${theme.cta.hoverShadow} cursor-pointer
+                `}
+              >
+                <span>{ctaData.text}</span>
+                <Icon
+                  icon="lucide:arrow-right"
+                  className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </button>
+            ) : (
+              <Link
+                aria-label="Entre em contato pelo WhatsApp"
+                href={ctaData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`
+                  group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
+                  hover:scale-105 ${theme.cta.background} ${theme.cta.textColor} ${theme.cta.shadow} ${theme.cta.hoverShadow}
+                `}
+              >
+                <span>{ctaData.text}</span>
+                <Icon
+                  icon="lucide:arrow-right"
+                  className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
+            )}
+            {ctaData.description && (
+              <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
+                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${theme.cta.pulseColor}`}></span>
+                {ctaData.description}
+              </p>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Modal com formulário - renderizado no body via portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="p-6">
+                  {ctaData.form_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
+                  ) : (
+                    <p className="text-gray-500">Formulário não disponível.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
-    </section>
+    </>
   );
 };
 
-// --- COMPONENTE PARA MARKETING ---
+// --- COMPONENTE PARA MARKETING (inalterado) ---
 const CompanysMarketing = ({ content }: { content: SectionContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);

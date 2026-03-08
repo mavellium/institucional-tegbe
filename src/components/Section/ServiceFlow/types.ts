@@ -48,6 +48,8 @@ export interface HeaderContent {
 }
 
 export interface CTAContent {
+  use_form: any;
+  form_html: string;
   text: string;
   url: string;
   description: string;

@@ -7,6 +7,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -29,6 +31,8 @@ interface ApiResponse {
     text: string;
     url: string;
     description?: string;
+    use_form?: boolean;   // Indica se deve abrir modal
+    form_html?: string;   // HTML do formulário (quando use_form = true)
   };
 }
 
@@ -36,10 +40,13 @@ export default function Plataforms() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [activeStep, setActiveStep] = useState<ItemPlataforma | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
   const [ctaData, setCtaData] = useState({
     text: "Quero Estruturar e Escalar Meu Negócio",
     url: "https://api.whatsapp.com/send?phone=5514991779502",
-    description: "Integração completa de plataformas para escalar seus resultados."
+    description: "Integração completa de plataformas para escalar seus resultados.",
+    use_form: false,
+    form_html: "",
   });
 
   // Referências para animações
@@ -59,6 +66,8 @@ export default function Plataforms() {
         const response = await fetch('/api-tegbe/tegbe-institucional/json/plataformas');
         const result: ApiResponse = await response.json();
         
+        console.log('Resposta da API (plataformas):', result); // Log para depuração
+
         if (result) {
           setData(result);
           
@@ -72,7 +81,9 @@ export default function Plataforms() {
             setCtaData({
               text: result.cta.text,
               url: result.cta.url,
-              description: result.cta.description || "Integração completa de plataformas para escalar seus resultados."
+              description: result.cta.description || "Integração completa de plataformas para escalar seus resultados.",
+              use_form: result.cta.use_form || false,
+              form_html: result.cta.form_html || "",
             });
           }
         }
@@ -102,7 +113,9 @@ export default function Plataforms() {
           cta: {
             text: "Quero Estruturar e Escalar Meu Negócio",
             url: "https://api.whatsapp.com/send?phone=5514991779502",
-            description: "Integração completa de plataformas para escalar seus resultados."
+            description: "Integração completa de plataformas para escalar seus resultados.",
+            use_form: false,
+            form_html: "",
           }
         };
         setData(fallbackData);
@@ -234,6 +247,14 @@ export default function Plataforms() {
     });
   }
 
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (ctaData.use_form) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+    // Se não usar formulário, o link segue normalmente
+  };
+
   // Loading State
   if (loading) {
     return (
@@ -253,89 +274,140 @@ export default function Plataforms() {
   }
 
   return (
-    <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
-      <div className="flex flex-col lg:flex-row gap-12 items-center">
-        
-        {/* ESQUERDA – Conteúdo Dinâmico */}
-        <div ref={leftColumnRef} className="w-full lg:w-1/2">
-          {data.type && (
-            <p className="tracking-wide text-lg mb-2 text-blue-600 font-bold uppercase">
-              {data.type}
+    <>
+      <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
+        <div className="flex flex-col lg:flex-row gap-12 items-center">
+          
+          {/* ESQUERDA – Conteúdo Dinâmico */}
+          <div ref={leftColumnRef} className="w-full lg:w-1/2">
+            {data.type && (
+              <p className="tracking-wide text-lg mb-2 text-blue-600 font-bold uppercase">
+                {data.type}
+              </p>
+            )}
+
+            <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
+              {data.subtype}
+            </h1>
+
+            <div className="flex flex-col gap-4">
+              {data.values.map((step, index) => (
+                <button
+                  key={step.id}
+                  ref={(el) => { stepButtonsRef.current[index] = el }}
+                  onClick={() => handleStepChange(step)}
+                  className={`text-left p-5 rounded-xl border transition-all duration-300 transform
+                    ${activeStep.id === step.id
+                      ? 'bg-white border-blue-500 shadow-lg scale-[1.02]'
+                      : 'bg-transparent border-gray-200 hover:bg-white'
+                    }
+                  `}
+                >
+                  <h1 className="font-bold text-base text-black">{step.title}</h1>
+                  <p className="text-sm text-gray-600">{step.subtitle}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* DIREITA – Visual Dinâmico */}
+          <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
+            <div className="relative w-full max-w-[420px] h-[280px] md:h-[420px] mb-6">
+              <Image
+                ref={imageRef}
+                fill
+                src={activeStep.image}
+                className="object-contain"
+                alt={activeStep.title}
+                priority
+              />
+            </div>
+
+            <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black">
+              {activeStep.subtitle}
+            </h2>
+
+            <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed">
+              {activeStep.description}
+            </p>
+          </div>
+        </div>
+
+        {/* CTA Dinâmico */}
+        <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
+          {ctaData.use_form ? (
+            <button
+              onClick={handleCtaClick}
+              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl cursor-pointer"
+            >
+              <span>{ctaData.text}</span>
+              <Icon
+                icon="lucide:arrow-right"
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </button>
+          ) : (
+            <Link
+              aria-label="Entre em contato pelo WhatsApp"
+              href={ctaData.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl"
+            >
+              <span>{ctaData.text}</span>
+              <Icon
+                icon="lucide:arrow-right"
+                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          )}
+          {ctaData.description && (
+            <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-blue-500"></span>
+              {ctaData.description}
             </p>
           )}
+        </div>
+      </section>
 
-          <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
-            {data.subtype}
-          </h1>
-
-          <div className="flex flex-col gap-4">
-            {data.values.map((step, index) => (
-              <button
-                key={step.id}
-                ref={(el) => { stepButtonsRef.current[index] = el }}
-                onClick={() => handleStepChange(step)}
-                className={`text-left p-5 rounded-xl border transition-all duration-300 transform
-                  ${activeStep.id === step.id
-                    ? 'bg-white border-blue-500 shadow-lg scale-[1.02]'
-                    : 'bg-transparent border-gray-200 hover:bg-white'
-                  }
-                `}
+      {/* Modal com formulário - renderizado no body via portal */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
+                onClick={(e) => e.stopPropagation()}
               >
-                <h1 className="font-bold text-base text-black">{step.title}</h1>
-                <p className="text-sm text-gray-600">{step.subtitle}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* DIREITA – Visual Dinâmico */}
-        <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
-          <div className="relative w-full max-w-[420px] h-[280px] md:h-[420px] mb-6">
-            <Image
-              ref={imageRef}
-              fill
-              src={activeStep.image}
-              className="object-contain"
-              alt={activeStep.title}
-              priority
-            />
-          </div>
-
-          <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black">
-            {activeStep.subtitle}
-          </h2>
-
-          <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed">
-            {activeStep.description}
-          </p>
-        </div>
-      </div>
-
-      {/* CTA Dinâmico */}
-      <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-        <Link
-          aria-label="Entre em contato pelo WhatsApp"
-          href={ctaData.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`
-            group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300
-            hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl
-          `}
-        >
-          <span>{ctaData.text}</span>
-          <Icon
-            icon="lucide:arrow-right"
-            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-          />
-        </Link>
-        {ctaData.description && (
-          <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-blue-500"></span>
-            {ctaData.description}
-          </p>
-        )}
-      </div>
-    </section>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="p-6">
+                  {ctaData.form_html ? (
+                    <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
+                  ) : (
+                    <p className="text-gray-500">Formulário não disponível.</p>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   )
 }
