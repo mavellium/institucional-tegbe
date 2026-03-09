@@ -42,7 +42,9 @@ export const CONTENT: Record<string, VariantContent> = {
     cta: {
       text: "Quero Estruturar e Escalar Meu Negócio",
       url: "https://api.whatsapp.com/send?phone=5514991779502",
-      description: "Anúncios, operação e dados trabalhando juntos para vender mais."
+      description: "Anúncios, operação e dados trabalhando juntos para vender mais.",
+      use_form: undefined,
+      form_html: ''
     }
   },
   marketing: {
@@ -87,7 +89,9 @@ export const CONTENT: Record<string, VariantContent> = {
     cta: {
       text: "Quero Potencializar Minhas Vendas",
       url: "https://api.whatsapp.com/send?phone=5514991779502",
-      description: "Estratégias de marketing que realmente funcionam."
+      description: "Estratégias de marketing que realmente funcionam.",
+      use_form: undefined,
+      form_html: ''
     }
   },
   sobre: {
@@ -132,7 +136,9 @@ export const CONTENT: Record<string, VariantContent> = {
     cta: {
       text: "Fale Conosco",
       url: "https://api.whatsapp.com/send?phone=5514991779502",
-      description: "Vamos conversar sobre o seu projeto."
+      description: "Vamos conversar sobre o seu projeto.",
+      use_form: undefined,
+      form_html: ''
     }
   }
 };
