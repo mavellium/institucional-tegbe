@@ -22,7 +22,6 @@ interface Passos {
   image: string;
 }
 
-// Interface para o Schema completo da API (agora com campos do modal)
 interface ApiResponse {
   id: string;
   type: string;
@@ -32,8 +31,8 @@ interface ApiResponse {
     text: string;
     url: string;
     description?: string;
-    use_form?: boolean;    // Indica se deve abrir modal
-    form_html?: string;    // HTML do formulário (quando use_form = true)
+    use_form?: boolean;
+    form_html?: string;
   };
 }
 
@@ -41,7 +40,8 @@ export default function Steps() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [activeStep, setActiveStep] = useState<Passos | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [ctaData, setCtaData] = useState({
     text: "Quero Estruturar e Escalar Meu Negócio",
     url: "https://api.whatsapp.com/send?phone=5514991779502",
@@ -53,7 +53,7 @@ export default function Steps() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const leftColumnRef = useRef<HTMLDivElement>(null)
   const rightColumnRef = useRef<HTMLDivElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
+  const imageContainerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const descriptionRef = useRef<HTMLParagraphElement>(null)
   const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
@@ -67,13 +67,9 @@ export default function Steps() {
 
         if (result) {
           setData(result);
-          
-          // Define o primeiro passo como ativo
           if (result.values && result.values.length > 0) {
             setActiveStep(result.values[0]);
           }
-          
-          // Define os dados do CTA (da API ou fallback)
           if (result.cta) {
             setCtaData({
               text: result.cta.text,
@@ -86,7 +82,6 @@ export default function Steps() {
         }
       } catch (error) {
         console.error("Erro ao carregar estágios Mavellium:", error);
-        // Fallback para dados estáticos em caso de erro
         const fallbackData: ApiResponse = {
           id: "fallback",
           type: "E-commerce",
@@ -131,19 +126,14 @@ export default function Steps() {
     loadSteps();
   }, []);
 
-  // console.log('ctaData:', ctaData);
-  // console.log('form_html length:', ctaData.form_html?.length);
-
   useGSAP(() => {
     if (loading || !data || !sectionRef.current) return;
 
-    // Reset para animações limpas
     gsap.set([leftColumnRef.current, rightColumnRef.current, ctaRef.current], { 
       opacity: 0, 
       y: 50 
     });
 
-    // Animação da coluna esquerda
     gsap.to(leftColumnRef.current, {
       opacity: 1, 
       y: 0, 
@@ -155,7 +145,6 @@ export default function Steps() {
       }
     });
 
-    // Animação da coluna direita
     gsap.to(rightColumnRef.current, {
       opacity: 1, 
       y: 0, 
@@ -168,7 +157,6 @@ export default function Steps() {
       }
     });
 
-    // Animação dos botões de passo
     stepButtonsRef.current.forEach((button, index) => {
       if (!button) return;
       gsap.fromTo(button,
@@ -186,7 +174,6 @@ export default function Steps() {
       );
     });
 
-    // Animação do CTA
     gsap.to(ctaRef.current, {
       opacity: 1,
       y: 0,
@@ -207,58 +194,73 @@ export default function Steps() {
     const prevIndex = data.values.findIndex(s => s.id === activeStep.id);
     const nextIndex = data.values.findIndex(s => s.id === step.id);
 
-    gsap.to([imageRef.current, titleRef.current, descriptionRef.current], {
-      opacity: 0, 
-      y: 20, 
-      duration: 0.3, 
-      ease: "power2.in",
+    // Animação de saída
+    const tl = gsap.timeline({
       onComplete: () => {
-        if (stepButtonsRef.current[prevIndex]) {
-          gsap.to(stepButtonsRef.current[prevIndex], { 
-            scale: 1, 
-            duration: 0.3 
-          });
-        }
         setActiveStep(step);
-        if (stepButtonsRef.current[nextIndex]) {
-          gsap.to(stepButtonsRef.current[nextIndex], { 
-            scale: 1.05, 
-            duration: 0.4, 
-            ease: "back.out(1.7)" 
-          });
-        }
-        setTimeout(() => {
-          gsap.set([imageRef.current, titleRef.current, descriptionRef.current], { 
-            opacity: 0, 
-            y: -20 
-          });
-          const tl = gsap.timeline();
-          tl.to(imageRef.current, { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.5 
-          });
-          tl.to(titleRef.current, { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.4 
-          }, "-=0.3");
-          tl.to(descriptionRef.current, { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.4 
-          }, "-=0.2");
-        }, 50);
+        setImageLoaded(false); // reset loaded state
       }
     });
-  }
+
+    tl.to([titleRef.current, descriptionRef.current], {
+      opacity: 0,
+      y: 20,
+      duration: 0.3,
+      ease: "power2.in"
+    });
+
+    // Animação do container de imagem
+    tl.to(imageContainerRef.current, {
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.3,
+      ease: "power2.in"
+    }, "<"); // começa junto com o texto
+
+    // Atualiza o botão ativo
+    if (stepButtonsRef.current[prevIndex]) {
+      gsap.to(stepButtonsRef.current[prevIndex], { 
+        scale: 1, 
+        duration: 0.3 
+      });
+    }
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    // Animação de entrada quando a imagem carregar
+    gsap.fromTo([imageContainerRef.current, titleRef.current, descriptionRef.current],
+      { opacity: 0, y: -20 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.out",
+        delay: 0.1 // pequeno delay para garantir que tudo está pronto
+      }
+    );
+  };
+
+  // Quando activeStep muda, automaticamente inicia o carregamento da imagem
+  useEffect(() => {
+    if (activeStep && imageContainerRef.current) {
+      // Se a imagem já estiver em cache, o onLoad pode não disparar, então forçamos um pequeno timeout
+      const timer = setTimeout(() => {
+        if (!imageLoaded) {
+          // Se após 300ms a imagem não carregou, talvez esteja em cache – forçamos a animação
+          handleImageLoad();
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [activeStep]);
 
   const handleCtaClick = (e: React.MouseEvent) => {
     if (ctaData.use_form) {
       e.preventDefault();
       setIsModalOpen(true);
     }
-    // Se não usar formulário, o link segue normalmente
   };
 
   if (loading) {
@@ -311,20 +313,24 @@ export default function Steps() {
 
           {/* Coluna Direita */}
           <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
-            <div className="relative w-full max-w-[500px] h-[300px] md:h-[400px] mb-6">
+            <div 
+              ref={imageContainerRef}
+              className="relative w-full max-w-[500px] h-[300px] md:h-[400px] mb-6"
+            >
               <Image
-                ref={imageRef}
-                fill
+                key={activeStep.id} // força re-render
                 src={activeStep.image}
+                fill
                 className="object-contain"
                 alt={activeStep.title}
                 priority
+                onLoad={handleImageLoad}
               />
             </div>
-            <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black">
+            <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black opacity-0">
               {activeStep.subtitle}
             </h2>
-            <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed">
+            <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed opacity-0">
               {activeStep.description}
             </p>
           </div>
@@ -408,4 +414,3 @@ export default function Steps() {
     </>
   )
 }
-
