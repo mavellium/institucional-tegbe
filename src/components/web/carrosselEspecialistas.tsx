@@ -46,9 +46,9 @@ const especialistas = [
 
 export function CarrosselEspecialistas() {
   return (
-    <section className="bg-[#050B10] py-24 overflow-hidden selection:bg-[#B38E5D]/30">
+    <section className="bg-[#0A0A0A] py-24 overflow-hidden selection:bg-[#B38E5D]/30">
       <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-16">
-        
+
         {/* Título Estilo G4 */}
         <div className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-serif text-white tracking-tight">
@@ -82,8 +82,8 @@ export function CarrosselEspecialistas() {
             {especialistas.map((esp, index) => (
               <SwiperSlide key={index}>
                 {/* h-full garante que todos os cards tenham a mesma altura */}
-                <div className="h-full pb-4"> 
-                  <CardEspecialista 
+                <div className="h-full pb-4">
+                  <CardEspecialista
                     nome={esp.nome}
                     sobrenome={esp.sobrenome}
                     cargo={esp.cargo}

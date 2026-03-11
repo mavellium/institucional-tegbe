@@ -12,7 +12,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socios`}) {
+export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socios` }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -35,12 +35,12 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
   useGSAP(() => {
     if (loading || !data) return;
     const tl = gsap.timeline({ scrollTrigger: { trigger: containerRef.current, start: "top 75%" } });
-    tl.from(".animate-up", { 
-      y: 30, 
-      autoAlpha: 0, 
-      stagger: 0.1, 
-      duration: 0.8, 
-      ease: "power3.out" 
+    tl.from(".animate-up", {
+      y: 30,
+      autoAlpha: 0,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: "power3.out"
     });
   }, { scope: containerRef, dependencies: [data, loading] });
 
@@ -54,7 +54,7 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
     <section ref={containerRef} className="bg-[#FAF9F6] py-20 lg:py-32 selection:bg-[#B38E5D]/20">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
-          
+
 
           <div className="lg:w-[60%] space-y-10">
             <header className="space-y-6">
@@ -66,7 +66,7 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
                 </span>
               </div>
 
-              <h2 
+              <h2
                 className="animate-up text-4xl lg:text-6xl font-serif text-[#0D1E2D] leading-[1.15] tracking-tight"
                 dangerouslySetInnerHTML={{ __html: data.header.title }}
               />
@@ -85,17 +85,17 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
             </header>
 
             <div className="animate-up pt-9 flex justify-center lg:justify-center w-full lg:max-w-[90%]">
-  <Button 
-    size="lg"
-    className="bg-[#0D1E2D] text-white hover:bg-[#B38E5D] rounded-sm px-10 py-8 uppercase tracking-[0.2em] text-[11px] font-bold group transition-all duration-500 border-none shadow-lg shadow-black/5"
-  >
-    Conhecer o Método
-    <Icon 
-      icon="ph:arrow-right" 
-      className="ml-2 size-5 group-hover:translate-x-2 transition-transform duration-300" 
-    />
-  </Button>
-</div>
+              <Button
+                size="lg"
+                className="bg-[#0D1E2D] text-white hover:bg-[#B38E5D] rounded-full px-10 py-8 uppercase tracking-[0.2em] text-[11px] font-bold group transition-all duration-500 border-none shadow-lg shadow-black/5"
+              >
+                Conhecer o Método
+                <Icon
+                  icon="ph:arrow-right"
+                  className="ml-2 size-5 group-hover:translate-x-2 transition-transform duration-300"
+                />
+              </Button>
+            </div>
           </div>
 
           <div className="lg:w-[40%] w-full flex justify-center lg:justify-end lg:sticky lg:top-32">

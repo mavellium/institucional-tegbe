@@ -30,15 +30,15 @@ export function OQueSomos() {
   }, { scope: containerRef });
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative bg-[#050B10] py-20 lg:py-28 overflow-hidden selection:bg-[#B38E5D]/30"
+    <section
+      ref={containerRef}
+      className="relative bg-[#0A0A0A] py-20 lg:py-28 overflow-hidden selection:bg-[#B38E5D]/30"
     >
       {/* 1. TEXTURA DE RUÍDO (Dá o aspecto de material nobre) */}
-      <div className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      <div className="absolute inset-0 opacity-[0.06] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      {/* 2. GRADIENTE DE PROFUNDIDADE (O Azul "G4" mais profundo) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,#0D1E2D_0%,#050B10_100%)] opacity-90" />
+      {/* 2. GRADIENTE DE PROFUNDIDADE (Preto fosco com leve variação) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,#1A1A1A_0%,#0A0A0A_100%)] opacity-90" />
 
       {/* 3. GRAFISMO TÉCNICO (Vazado em dourado com opacidade mínima) */}
       <div className="absolute left-[-10%] top-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-[0.04] pointer-events-none">
@@ -51,7 +51,7 @@ export function OQueSomos() {
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         <div className="space-y-10">
-          
+
           {/* Título: Off-White + Dourado Champagne */}
           <h2 className="animate-manifesto text-2xl md:text-4xl lg:text-5xl font-serif text-[#F2F2F2] leading-tight tracking-tight">
             Somos a nova ordem da <span className="text-[#C5A47E] italic font-light italic-glow">nação empreendedora</span>

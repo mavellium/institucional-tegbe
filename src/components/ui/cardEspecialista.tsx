@@ -11,10 +11,10 @@ interface EspecialistaProps {
 
 export function CardEspecialista({ nome, sobrenome, cargo, imagem }: EspecialistaProps) {
   return (
-    <div className="relative bg-[#0D1E2D] rounded-xl overflow-hidden aspect-[3/4.2] group border border-white/5 shadow-2xl transition-all duration-500 hover:border-[#C5A47E]/30 h-full">
-      
+    <div className="relative bg-[#000]/90 rounded-xl overflow-hidden aspect-[3/4.2] group border border-white/5 shadow-2xl transition-all duration-500 hover:border-[#C5A47E]/30 h-full">
+
       {/* Imagem com fundo azul (Estilo G4) */}
-      <div className="relative h-[62%] w-full overflow-hidden bg-gradient-to-b from-[#152B3D] to-[#0D1E2D]">
+      <div className="relative h-[62%] w-full overflow-hidden bg-gradient-to-b from-[#1c1e21] to-[#3e464d]">
         <Image
           src={imagem}
           alt={`${nome} ${sobrenome}`}
