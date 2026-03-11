@@ -16,6 +16,7 @@ import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video";
 import Parceiro from "@/components/web/parceiro";
+import HeroCarousel from "@/components/Section/HeroCarousel";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
@@ -118,7 +119,7 @@ export default async function MarketingPage() {
                 }}
             />
             <Navbar variant="marketing" />
-            <Headline variant="marketing" />
+            <HeroCarousel />
             <AgenciasFalham />
             <Video2
                 slug="video-marketing"
@@ -139,7 +140,7 @@ export default async function MarketingPage() {
             <Expertise />
             <SectionImage variant="marketing" apiData={data} />
             <Equipe variant="marketing" data={equipeData} />
-            <Parceiro/>
+            <Parceiro />
             <ChamadaAcao variant="marketing" data={ctaData} />
             <Footer variant="marketing" />
         </>
