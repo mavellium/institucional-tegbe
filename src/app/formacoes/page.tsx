@@ -69,7 +69,7 @@ export default async function CursosPage() {
         getSafeData('alunos'),
         getFormData('gallery'),
         getSafeData('expertise-curso'),
-        getJsonData('concorrentes'),
+        getJsonData('comparison'),
         getJsonData('faq-curso'),
         getJsonData('logos-curso') // NOVO: Endpoint para logos de cursos
     ]);
