@@ -51,7 +51,7 @@ const FALLBACK_ABOUT: AboutEliteData = {
   }
 };
 
-export default function AboutElite({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/anos-mercado" }) {
+export default function AboutElite({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/anos-mercado`}) {
   const containerRef = useRef(null);
   const imageRef = useRef(null);
   const [data, setData] = useState<AboutEliteData>(FALLBACK_ABOUT);

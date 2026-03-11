@@ -1,7 +1,9 @@
-import Parceiro from "@/components/web/parceiro";
+import { OQueSomos } from "@/components/web/oQueSomos";
+
+
 
 export default async function DevPage() {
     return(
-        <Parceiro/>
+       <OQueSomos/>
     )
 }

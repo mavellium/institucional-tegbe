@@ -1,133 +1,89 @@
-import videoConfig from "@/json/Video2/sobreConfig.json";
 import { Header } from "@/components/Section/Header";
 import { Footer } from "@/components/Section/Footer";
 import Schema from "@/components/Section/Schema";
-import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
-import { Empresas } from "@/components/Section/Empresas";
-import Historia from "@/components/Section/ExploreDetails/Historia";
-import Sobre from "@/components/Section/Sobre";
-import AnosMercado from "@/components/Section/Expertise/AnosMercado";
-import Metricas from "@/components/Section/Resultados/Metricas";
-import { SociosCrescimento } from "@/components/Section/SociosCrescimento";
-import Video2 from "@/components/Section/Video2";
-import Localizacao from "@/components/Section/Localizacao";
 import { fetchComponentData } from "@/lib/api";
-import ServiceFlow from "@/components/Section/ServiceFlow";
+import { QuemSomos } from "@/components/web/quemSomos";
+import { OQueSomos } from "@/components/web/oQueSomos";
+import { MetaAlunos } from "@/components/web/metaAlunos";
+import Localizacao from "@/components/Section/Localizacao";
+import { CarrosselEspecialistas } from "@/components/web/carrosselEspecialistas";
+import { TrabalheConosco } from "@/components/web/trabalheConosco";
+import { ExplicarLogo } from "@/components/web/explicarLogo";
 
-// 1. Wrapper para dados de Forms (Estrutura plana: { values: [] })
-// Usado para Historia, Metricas, Localizacao
-async function getFormData(slug: string) {
+// 1. Centralização de Configurações
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const REVALIDATE_TIME = 3600; // Otimizado: 1 hora (60s é muito pouco para página 'sobre')
+
+// 2. Fetcher Único Otimizado (Evita repetição de código)
+async function getPageData(slug: string, isComponent = false) {
     try {
-        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/${slug}`, {
-            next: { revalidate: 60 }
+        if (isComponent) {
+            const res = await fetchComponentData(slug);
+            // Sanitização profunda para evitar erros de serialização (Client Components)
+            return JSON.parse(JSON.stringify(res?.data?.sobre || null));
+        }
+        
+        const res = await fetch(`${API_URL}/${slug}`, {
+            next: { revalidate: REVALIDATE_TIME }
         });
-        if (!res.ok) throw new Error('Falha no fetch');
-        return res.json();
-    } catch (error) {
-        console.warn(`[SobrePage] Erro ao carregar form ${slug}.`);
-        return { values: [] };
-    }
-}
-
-// 2. Wrapper para dados de Componentes (Estrutura aninhada: { data: { ... } })
-// Usado para Empresas, CTA, etc.
-async function getSafeData(slug: string) {
-    try {
-        const res = await fetchComponentData(slug);
-        return res;
-    } catch (error) {
-        console.warn(`[SobrePage] Erro ao carregar dados de ${slug}. Usando fallback.`);
-        return { data: null };
+        
+        if (!res.ok) return [];
+        const json = await res.json();
+        return JSON.parse(JSON.stringify(json?.values || []));
+    } catch (e) {
+        console.error(`[SobrePage] Erro em ${slug}:`, e);
+        return isComponent ? null : [];
     }
 }
 
 export default async function SobrePage() {
-    // 3. PERFORMANCE: 5 Requests em Paralelo
+    // 3. Execução em Paralelo (All-or-Nothing Treatment)
+    // Buscamos apenas o que é essencial para o carregamento inicial
     const [
-        historiaResponse,
-        empresasResponse,
-        ctaResponse, // Endpoint: call-to-action
-        metricasResponse,
-        localizacaoResponse
+        localizacaoData,
+        metricasData,
+        empresasData,
+        ctaData
     ] = await Promise.all([
-        getFormData('historia'),
-        getSafeData('empresas'),
-        getSafeData('call-to-action'),
-        getFormData('metricas'),
-        getFormData('localizacao')
+        getPageData('localizacao'),
+        getPageData('metricas'),
+        getPageData('empresas', true),
+        getPageData('call-to-action', true)
     ]);
-
-    // 4. Extração e Tratamento
-    const historiaData = historiaResponse?.values || [];
-    const metricasData = metricasResponse?.values || [];
-    const localizacaoData = localizacaoResponse?.values || [];
-
-    // Extraindo dados específicos da variante 'sobre'
-    // O fallback '|| null' protege o componente caso o endpoint falhe ou o nó não exista
-    const empresasData = empresasResponse?.data?.sobre || null;
-    const ctaData = ctaResponse?.data?.sobre || null;
 
     return (
         <>
             <Schema
                 data={{
                     "@context": "https://schema.org",
-                    "@type": "Service",
-                    name: "Sobre a Tegbe",
-                    description: "Conheça a Tegbe: agência de marketing digital e performance especializada em e-commerce, estratégia, dados e crescimento real de negócios.",
-                    provider: {
+                    "@type": "AboutPage",
+                    "mainEntity": {
                         "@type": "Organization",
-                        name: "Tegbe",
-                        description: "Agência de marketing digital e consultoria especializada em transformar presença online em resultados reais de vendas, especializada em e-commerce e performance digital.",
-                        url: "https://tegbe.com.br",
-                        logo: "https://tegbe.com.br/logo.png",
-                        contactPoint: [{
-                            "@type": "ContactPoint",
-                            contactType: "customer support",
-                            telephone: "+55 14 98828-1001",
-                            email: "contato@tegbe.com.br",
-                            availableLanguage: "Portuguese"
-                        }],
-                        address: {
+                        "name": "Tegbe",
+                        "url": "https://tegbe.com.br",
+                        "logo": "https://tegbe.com.br/logo.png",
+                        "description": "Agência de performance especializada em e-commerce e escala de resultados.",
+                        "address": {
                             "@type": "PostalAddress",
-                            streetAddress: "R. Santos Dumont, 133, Ferrarópolis",
-                            addressLocality: "Garça",
-                            addressRegion: "SP",
-                            postalCode: "17400-074",
-                            addressCountry: "BR"
-                        },
-                        sameAs: [
-                            "https://www.instagram.com/agenciategbe",
-                            "https://www.facebook.com/TegbeSolucoes",
-                            "https://www.linkedin.com/company/tegbe/"
-                        ]
-                    },
-                    areaServed: {
-                        "@type": "Place",
-                        address: {
-                            "@type": "PostalAddress",
-                            addressLocality: "Garça",
-                            addressRegion: "SP",
-                            addressCountry: "BR"
+                            "addressLocality": "Garça",
+                            "addressRegion": "SP",
+                            "addressCountry": "BR"
                         }
-                    },
+                    }
                 }}
             />
 
             <Header />
-
-            <SociosCrescimento variant="sobre" />
-            <Sobre />
-            <Video2 variant="sobre" />
-            <ServiceFlow variant="sobre" />
-            <Historia />
-            <Empresas variant="sobre" data={empresasData} />
-            <AnosMercado />
-            <Metricas />
-            <Localizacao data={localizacaoData} />
-            <ChamadaAcao variant="sobre" data={ctaData} />
-
-            <Footer variant="sobre" />
+            <main>
+                <ExplicarLogo/>
+                <QuemSomos /> 
+                <OQueSomos />
+                <MetaAlunos  />
+                <Localizacao data={localizacaoData} />
+                <CarrosselEspecialistas />
+                <TrabalheConosco/>
+            </main>
+            <Footer />
         </>
     );
 }
