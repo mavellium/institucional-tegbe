@@ -13,19 +13,19 @@ if (typeof window !== "undefined") {
 const valores = [
   {
     titulo: "Transformação",
-    icon: "ph: arrows-clockwise-bold",
+    icon: "ph:arrows-clockwise-bold",
     cor: "#B38E5D",
     texto: "Vivemos o Beta Contínuo. Acreditamos que negócios e pessoas podem evoluir sempre. Ajustamos rotas, refinamos processos e ampliamos visão até que haja clareza, eficiência e confiança. Transformar é crescer de dentro para fora, fortalecendo a operação e quem está por trás dela."
   },
   {
     titulo: "Excelência",
-    icon: "ph: crown-bold",
+    icon: "ph:crown-bold",
     cor: "#D4AF37",
     texto: "Excelência é escolher ser melhor todos os dias. É não se contentar com o suficiente quando sabemos que é possível fazer extraordinário. Levamos o nosso melhor para desenvolver o melhor do seu negócio e das suas pessoas. Refinamos, aprimoramos e elevamos padrões continuamente."
   },
   {
     titulo: "Growth",
-    icon: "ph: chart-line-up-bold",
+    icon: "ph:chart-line-up-bold",
     cor: "#C5A47E",
     texto: "Crescimento é a consequência natural da evolução constante. Quando o negócio ganha estrutura e as pessoas ganham clareza e competência, a escala deixa de ser um risco e passa a ser um movimento calculado. Construímos expansão sustentável e legado duradouro."
   }
@@ -36,7 +36,7 @@ export function ExplicarLogo() {
 
   useGSAP(() => {
     const cards = gsap.utils.toArray(".valor-card");
-    
+
     cards.forEach((card: any, i) => {
       gsap.from(card, {
         scrollTrigger: {
@@ -59,28 +59,23 @@ export function ExplicarLogo() {
         end: "bottom top",
         scrub: true
       },
-      y: 100,
-      rotate: 10
     });
   }, { scope: containerRef });
 
   return (
     <section ref={containerRef} className="relative bg-[#FAF9F6] py-24 lg:py-40 overflow-hidden">
-      
-      {/* LOGO DE FUNDO DESCONSTRUÍDA */}
-      <div className="bg-logo absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-        <div className="relative w-[800px] h-[800px]">
-            {/* Parte 1 - Esquerda */}
-            <div className="absolute left-0 top-1/4 w-1/3 h-1/2 border-[40px] border-[#0D1E2D] rounded-full" />
-            {/* Parte 2 - Centro */}
-            <div className="absolute left-1/3 top-0 w-1/3 h-1/2 border-[40px] border-[#B38E5D] rounded-full translate-y-10" />
-            {/* Parte 3 - Direita */}
-            <div className="absolute right-0 top-1/4 w-1/3 h-1/2 border-[40px] border-[#0D1E2D] rounded-full" />
-        </div>
+
+      {/* LOGO DE FUNDO - AGORA USANDO IMAGEM */}
+      <div className="bg-logo absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none select-none">
+        <img
+          src="/logo-tegbe-fundo.png"
+          alt="Tegbe Logo Fundo"
+          className="w-[800px] h-[800px] object-contain"
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        
+
         <header className="text-center mb-24 space-y-4">
           <span className="text-[10px] font-bold tracking-[0.4em] text-[#B38E5D] uppercase">O DNA da Tegbe</span>
           <h2 className="text-4xl lg:text-6xl font-serif text-[#0D1E2D]">Nossos Pilares</h2>
@@ -88,11 +83,11 @@ export function ExplicarLogo() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {valores.map((item, i) => (
-            <div 
-              key={i} 
-              className="valor-card group space-y-8 p-10 bg-white/50 backdrop-blur-sm border border-black/[0.03] rounded-2xl hover:bg-white hover:shadow-2xl transition-all duration-500"
+            <div
+              key={i}
+              className="valor-card group space-y-8 p-10 bg-white/50 border-yellow-500 backdrop-blur-sm border border-black/[0.03] rounded-2xl hover:bg-white hover:shadow-2xl transition-all duration-500"
             >
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110"
                 style={{ backgroundColor: `${item.cor}15`, color: item.cor }}
               >
@@ -115,9 +110,9 @@ export function ExplicarLogo() {
 
         {/* Footer da seção com frase de impacto */}
         <div className="mt-24 text-center">
-            <p className="text-[#0D1E2D] font-serif italic text-xl opacity-60">
-                "Não é apenas sobre vender, é sobre construir legados."
-            </p>
+          <p className="text-[#0D1E2D] font-serif italic text-xl opacity-60">
+            "Não é apenas sobre vender, é sobre construir legados."
+          </p>
         </div>
       </div>
     </section>
