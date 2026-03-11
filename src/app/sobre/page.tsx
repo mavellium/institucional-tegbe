@@ -9,6 +9,7 @@ import Localizacao from "@/components/Section/Localizacao";
 import { CarrosselEspecialistas } from "@/components/web/carrosselEspecialistas";
 import { TrabalheConosco } from "@/components/web/trabalheConosco";
 import { ExplicarLogo } from "@/components/web/explicarLogo";
+import Hero from "@/components/web/hero";
 
 // 1. Centralização de Configurações
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -75,7 +76,7 @@ export default async function SobrePage() {
 
             <Header />
             <main>
-                <ExplicarLogo/>
+                <Hero/>
                 <QuemSomos /> 
                 <OQueSomos />
                 <MetaAlunos  />
