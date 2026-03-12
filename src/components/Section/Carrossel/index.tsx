@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import Image from "next/image";
 
 // --- TIPAGEM ---
@@ -444,13 +444,16 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
 
   const [width, setWidth] = useState(0);
-  const [visibleCards, setVisibleCards] = useState(5);
+  const [loadedCount, setLoadedCount] = useState(5); // quantidade inicial de itens renderizados
   const [isMobile, setIsMobile] = useState(false);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-
-  // Estado para controlar a exibição do guia da mãozinha
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
 
+  // Motion value para monitorar a posição X do arrasto
+  const x = useMotionValue(0);
+
+  // Detectar mobile e definir quantidade inicial de itens
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -458,10 +461,18 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
 
-    // Mostra o guia visual após um pequeno delay ao carregar a página
+    // Define a quantidade inicial baseada no tamanho da tela
+    const setInitialCount = () => {
+      if (window.innerWidth < 640) setLoadedCount(3);
+      else if (window.innerWidth < 1024) setLoadedCount(4);
+      else setLoadedCount(5);
+    };
+    setInitialCount();
+
+    // Mostra o guia visual após um pequeno delay
     const timer = setTimeout(() => {
       setShowGuide(true);
-    }, 1500); // Aparece após 1.5s
+    }, 1500);
 
     return () => {
       window.removeEventListener('resize', checkIfMobile);
@@ -469,12 +480,7 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
     };
   }, []);
 
-  useEffect(() => {
-    if (window.innerWidth < 640) setVisibleCards(3);
-    else if (window.innerWidth < 1024) setVisibleCards(4);
-    else setVisibleCards(5);
-  }, []);
-
+  // Recalcula a largura total do track sempre que loadedCount mudar
   useEffect(() => {
     const updateWidth = () => {
       if (trackRef.current && wrapperRef.current) {
@@ -491,11 +497,11 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
       clearTimeout(timer);
       window.removeEventListener('resize', updateWidth);
     };
-  }, [visibleCards, data, isMobile]);
+  }, [loadedCount, isMobile, data]); // Adicionado loadedCount como dependência
 
   const handlePlayVideo = (id: string) => {
     setActiveVideoId(id);
-    setShowGuide(false); // Esconde o guia se der play no vídeo
+    setShowGuide(false);
   };
 
   const handlePauseVideo = (id: string) => {
@@ -504,9 +510,17 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
     }
   };
 
-  // Esconde o guia assim que o usuário começar a arrastar
   const handleDragStart = () => {
     setShowGuide(false);
+  };
+
+  // Função para carregar mais itens
+  const loadMore = () => {
+    if (!data) return;
+    const step = isMobile ? 2 : 3;
+    setLoadedCount(prev => Math.min(prev + step, data.testimonials.length));
+    // Libera o loading após um breve delay para garantir que a largura foi atualizada
+    setTimeout(() => setIsLoadingMore(false), 500);
   };
 
   if (!data) return null;
@@ -537,7 +551,7 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">{data.subtitulo || "Comprovados"}</span>
             </h2>
           </div>
-          {/* Instrução visual quicando - Sempre visível */}
+          {/* Instrução visual quicando */}
           <motion.div
             animate={isMobile ? { x: [0, -10, 0] } : {}}
             transition={{ repeat: Infinity, duration: 2 }}
@@ -552,7 +566,7 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
 
         {/* WRAPPER DO CARROSSEL */}
         <div className="relative group">
-          {/* GUIA VISUAL DA MÃOZINHA ( COACH MARK ) */}
+          {/* GUIA VISUAL DA MÃOZINHA (COACH MARK) */}
           <AnimatePresence>
             {showGuide && (
               <motion.div
@@ -577,7 +591,7 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
             )}
           </AnimatePresence>
 
-          {/* O TRACK DO CARROSSEL */}
+          {/* TRACK DO CARROSSEL */}
           <motion.div
             ref={wrapperRef}
             className="cursor-grab active:cursor-grabbing overflow-hidden"
@@ -588,15 +602,31 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
               drag="x"
               dragConstraints={{ right: 0, left: -width }}
               dragElastic={0.1}
-              // Animação Peek (Espiadinha) no carregamento - Sempre Ativa
+              style={{ x }} // vincula o motion value
+              // Animação Peek no carregamento
               initial={{ x: 60 }}
               whileInView={{ x: [60, -40, 0] }}
               viewport={{ once: true }}
               transition={{ duration: 1.4, ease: "easeInOut", delay: 1 }}
-              onDragStart={handleDragStart} // Interrompe as animações automáticas se o usuário interagir
+              onDragStart={handleDragStart}
+              onDragEnd={(event, info) => {
+                const currentX = x.get();
+                if (!trackRef.current || !wrapperRef.current) return;
+                if (isLoadingMore || loadedCount >= data.testimonials.length) return;
+
+                const trackWidth = trackRef.current.scrollWidth;
+                const wrapperWidth = wrapperRef.current.offsetWidth;
+                const maxDrag = -(trackWidth - wrapperWidth);
+                const threshold = 200; // pixels do fim para disparar o carregamento
+
+                if (currentX <= maxDrag + threshold) {
+                  setIsLoadingMore(true);
+                  loadMore();
+                }
+              }}
               className="flex gap-3 xs:gap-4 sm:gap-5 md:gap-6 w-max"
             >
-              {data.testimonials.slice(0, visibleCards).map((item) => {
+              {data.testimonials.slice(0, loadedCount).map((item) => {
                 const isDimmed = activeVideoId !== null && activeVideoId !== item.id;
 
                 return (
@@ -629,34 +659,6 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
             </motion.div>
           </motion.div>
         </div>
-
-        {visibleCards < data.testimonials.length && (
-          <div className="flex justify-center mt-6 xs:mt-8">
-            <button
-              onClick={() => setVisibleCards(prev => prev + (isMobile ? 2 : 3))}
-              className="px-4 py-2 xs:px-5 xs:py-2.5 sm:px-6 sm:py-3 bg-[#FFD700]/10 hover:bg-[#FFD700]/20 border border-[#FFD700]/30 rounded-full text-[#FFD700] text-xs xs:text-sm font-medium transition-all flex items-center gap-1 xs:gap-2"
-            >
-              <Icon icon="ph:plus" className="w-3 h-3 xs:w-4 xs:h-4" />
-              Carregar mais ({data.testimonials.length - visibleCards})
-            </button>
-          </div>
-        )}
-
-        {data.showStats && (
-          <div className="mt-10 xs:mt-12 sm:mt-14 md:mt-16 flex flex-wrap justify-center gap-4 xs:gap-5 sm:gap-6 md:gap-8 lg:gap-16 border-t border-white/5 pt-6 xs:pt-8 sm:pt-9 md:pt-10">
-            {footerStats.map((stat, index) => (
-              <div key={stat.id || `stat-${index}`} className="text-center min-w-[80px] xs:min-w-[90px] sm:min-w-[100px]">
-                {stat.icon && (
-                  <div className="flex justify-center mb-1 xs:mb-2">
-                    <Icon icon={stat.icon} className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 mb-1" style={{ color: stat.color || '#FFD700' }} />
-                  </div>
-                )}
-                <p className="text-xl xs:text-2xl sm:text-3xl font-bold mb-1" style={{ color: stat.color || '#FFFFFF' }}>{stat.value}</p>
-                <p className="text-[9px] xs:text-[10px] text-gray-500 uppercase tracking-widest">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );
