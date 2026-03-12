@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -16,8 +16,8 @@ interface CTAItem {
 }
 
 interface HeroData {
-  theme: { 
-    accentColor: string; 
+  theme: {
+    accentColor: string;
     secondaryColor: string;
     ctaTextColor: string;
     ctaIconColor: string;
@@ -27,9 +27,9 @@ interface HeroData {
   content: {
     headline: { prefix: string; highlight: string; };
     subheadline: { main: string; highlight: string; description: string; };
-    cta: { 
-      primary: CTAItem; 
-      secondary: CTAItem; 
+    cta: {
+      primary: CTAItem;
+      secondary: CTAItem;
     };
     socialProof: { count: string; label: string; };
     card: {
@@ -41,12 +41,12 @@ interface HeroData {
   };
 }
 
-export default function HeroSplit({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline", 
-  variant = "cursos" 
-}: { 
-  endpoint?: string, 
-  variant?: "marketing" | "cursos" | "home" | "ecommerce" 
+export default function HeroSplit({
+  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline",
+  variant = "cursos"
+}: {
+  endpoint?: string,
+  variant?: "marketing" | "cursos" | "home" | "ecommerce"
 }) {
   const [apiData, setApiData] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
@@ -72,9 +72,9 @@ export default function HeroSplit({
   // Mapeamento Dinâmico - INTEGRANDO OS ITENS DA API
   const data = useMemo<HeroData | null>(() => {
     if (!apiData || !apiData[variant]) return null;
-    
+
     const raw = apiData[variant];
-    
+
     return {
       theme: {
         accentColor: raw.configuracoes?.corDestaque || "#FFD700",
@@ -94,14 +94,14 @@ export default function HeroSplit({
           description: raw.content?.subheadline?.description || raw.subtitulo
         },
         cta: {
-          primary: { 
-            text: raw.content?.cta?.primary?.text || raw.botao?.texto, 
+          primary: {
+            text: raw.content?.cta?.primary?.text || raw.botao?.texto,
             url: raw.content?.cta?.primary?.url || raw.botao?.link,
             use_form: raw.content?.cta?.primary?.use_form || false,
             form_html: raw.content?.cta?.primary?.form_html || "",
           },
-          secondary: { 
-            text: raw.content?.cta?.secondary?.text || "Ver Conteúdo", 
+          secondary: {
+            text: raw.content?.cta?.secondary?.text || "Ver Conteúdo",
             url: raw.content?.cta?.secondary?.url || "#",
             use_form: raw.content?.cta?.secondary?.use_form || false,
             form_html: raw.content?.cta?.secondary?.form_html || "",
@@ -117,7 +117,7 @@ export default function HeroSplit({
             subtitle: raw.content?.card?.header?.subtitle || "Status: Ativo",
             tag: raw.content?.card?.header?.tag || "Sistema"
           },
-          items: raw.content?.card?.items || [], 
+          items: raw.content?.card?.items || [],
           footer: {
             label: raw.content?.card?.footer?.label || "PROGRESSO",
             value: raw.content?.card?.footer?.value || "75%"
@@ -154,21 +154,21 @@ export default function HeroSplit({
 
   if (!mounted || loading || !data) return (
     <div className="h-screen bg-[#020202] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-white/10 border-t-[#FFCC00] rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-white/10 border-t-[#FFCC00] rounded-full animate-spin" />
     </div>
   );
 
   return (
     <>
       <section className="relative w-full h-screen min-h-[500px] flex items-center justify-center bg-[#020202] overflow-hidden font-sans pt-40 pb-20">
-        
+
         {/* Atmosphere */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-0"></div>
-        <div 
+        <div
           className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full blur-[200px] opacity-[0.04] pointer-events-none transition-colors duration-1000"
           style={{ backgroundColor: data.theme.accentColor }}
         />
-        
+
         {/* Grid */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#222_1px,transparent_1px),linear-gradient(to_bottom,#222_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
 
@@ -176,15 +176,15 @@ export default function HeroSplit({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full">
 
             {/* LEFT CONTENT */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}
               className="flex flex-col items-start text-left"
             >
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white leading-[1.05] mb-6">
                 {data.content.headline.prefix}{" "}
-                <span 
+                <span
                   className="text-transparent bg-clip-text bg-gradient-to-r transition-all duration-1000"
-                  style={{ 
+                  style={{
                     backgroundImage: `linear-gradient(to right, ${data.theme.accentColor}, ${data.theme.secondaryColor})`,
                     filter: `drop-shadow(0 0 25px ${data.theme.accentColor}40)`
                   }}
@@ -209,16 +209,16 @@ export default function HeroSplit({
                     onClick={(e) => handleCtaClick(e, data.content.cta.primary)}
                     className="group relative cursor-pointer"
                   >
-                    <div 
-                        className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"
-                        style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
+                    <div
+                      className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"
+                      style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
                     />
-                    <div 
-                        className="relative h-14 px-10 rounded-full font-black text-sm lg:text-base tracking-widest transition-all border border-white/10 active:scale-[0.98] flex items-center justify-center"
-                        style={{ 
-                            backgroundColor: data.theme.accentColor,
-                            color: data.theme.ctaTextColor 
-                        }}
+                    <div
+                      className="relative h-14 px-10 rounded-full font-black text-sm lg:text-base tracking-widest transition-all border border-white/10 active:scale-[0.98] flex items-center justify-center"
+                      style={{
+                        backgroundColor: data.theme.accentColor,
+                        color: data.theme.ctaTextColor
+                      }}
                     >
                       {data.content.cta.primary.text}
                       <Icon icon="lucide:arrow-right" className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -226,24 +226,24 @@ export default function HeroSplit({
                   </button>
                 ) : (
                   <Link href={data.content.cta.primary.url} className="group relative">
-                    <div 
-                        className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"
-                        style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
+                    <div
+                      className="absolute -inset-1 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-200"
+                      style={{ backgroundColor: data.theme.ctaGlowColor || data.theme.accentColor }}
                     />
-                    <Button 
-                        aria-label={data.content.cta.primary.text}
-                        className="relative h-14 px-10 rounded-full font-black text-sm lg:text-base tracking-widest transition-all border border-white/10 active:scale-[0.98]"
-                        style={{ 
-                            backgroundColor: data.theme.accentColor,
-                            color: data.theme.ctaTextColor 
-                        }}
+                    <Button
+                      aria-label={data.content.cta.primary.text}
+                      className="relative h-14 px-10 rounded-full font-black text-sm lg:text-base tracking-widest transition-all border border-white/10 active:scale-[0.98]"
+                      style={{
+                        backgroundColor: data.theme.accentColor,
+                        color: data.theme.ctaTextColor
+                      }}
                     >
                       {data.content.cta.primary.text}
                       <Icon icon="lucide:arrow-right" className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
                 )}
-                
+
                 {/* CTA SECUNDÁRIO (pode ser modal ou link) */}
                 {data.content.cta.secondary.use_form ? (
                   <button
@@ -253,8 +253,8 @@ export default function HeroSplit({
                     {data.content.cta.secondary.text}
                   </button>
                 ) : (
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="h-14 px-8 rounded-full text-gray-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all font-bold"
                     asChild
                   >
@@ -266,80 +266,62 @@ export default function HeroSplit({
               </div>
 
               <div className="mt-10 pt-6 flex items-center gap-3 text-xs text-gray-500 border-t border-white/5 w-full max-w-[300px]">
-                 <div className="flex -space-x-2">
-                   {[1,2,3].map(i => (
-                     <div key={i} className="w-8 h-8 rounded-full bg-gray-800 border-2 border-[#020202] flex items-center justify-center">
-                        <Icon icon="ph:user-bold" className="text-gray-400 text-sm" />
-                     </div>
-                   ))}
-                 </div>
-                 <p><span className="text-white font-bold">{data.content.socialProof.count}</span> {data.content.socialProof.label}</p>
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gray-800 border-2 border-[#020202] flex items-center justify-center">
+                      <Icon icon="ph:user-bold" className="text-gray-400 text-sm" />
+                    </div>
+                  ))}
+                </div>
+                <p><span className="text-white font-bold">{data.content.socialProof.count}</span> {data.content.socialProof.label}</p>
               </div>
             </motion.div>
 
             {/* RIGHT CONTENT (DYNAMIC CARD) */}
-            <div className="relative hidden lg:flex justify-center items-center h-full perspective-[1200px]" onMouseMove={handleMouseMove} onMouseLeave={() => { x.set(0); y.set(0); }}>
-              <motion.div 
-                 style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                 className="relative w-full max-w-[400px] aspect-[4/5] bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden group"
+            {/* RIGHT CONTENT (IMAGE) */}
+            {/* RIGHT CONTENT (STATIC IMAGE) */}
+            <div className="relative hidden lg:flex justify-center items-center h-full">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative w-full max-w-[550px] flex items-center justify-center"
               >
-                  <div className="p-6 pb-5 border-b border-white/5 bg-white/[0.01]">
-                     <div className="flex justify-between items-start mb-6">
-                        <div className="p-3 rounded-2xl border transition-all" style={{ backgroundColor: `${data.theme.accentColor}1A`, borderColor: `${data.theme.accentColor}33` }}>
-                          <Icon icon="ph:shield-check-bold" className="w-6 h-6" style={{ color: data.theme.accentColor }} />
-                        </div>
-                        <div className="px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> {data.content.card.header.tag}
-                        </div>
-                     </div>
-                     <h3 className="text-xl font-bold text-white tracking-tight">{data.content.card.header.title}</h3>
-                     <p className="text-gray-500 text-xs mt-1.5 font-medium">{data.content.card.header.subtitle}</p>
-                  </div>
+                {/* Glow de fundo estático para dar profundidade */}
+                <div
+                  className="absolute w-[80%] h-[80%] rounded-full blur-[120px] opacity-20"
+                  style={{ backgroundColor: data.theme.accentColor }}
+                />
 
-                  {/* LISTA DINÂMICA DA API */}
-                  <div className="p-6 space-y-3 flex-1">
-                     {data.content.card.items.map((item, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5 transition-all hover:bg-white/[0.05]">
-                           <div className="flex items-center gap-3">
-                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.status === 'Bloqueado' ? '#333' : data.theme.accentColor, boxShadow: item.status !== 'Bloqueado' ? `0 0 10px ${data.theme.accentColor}` : 'none' }} />
-                              <span className={`text-xs font-semibold ${item.status === 'Bloqueado' ? 'text-gray-600' : 'text-gray-300'}`}>{item.name}</span>
-                           </div>
-                           <Icon icon={item.status === 'Bloqueado' ? "ph:lock-key-fill" : "ph:check-circle-fill"} className="w-4 h-4" style={{ color: item.status === 'Bloqueado' ? '#333' : data.theme.accentColor }} />
-                        </div>
-                     ))}
-                  </div>
+                {/* Imagem com animação de flutuação leve (Y-axis apenas) */}
+                <motion.img
+                  src="/doni.jpg"
+                  alt="Hero Illustration"
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="relative z-10 w-full h-auto max-h-[500px] object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+                />
 
-                  <div className="p-6 border-t border-white/5 bg-[#050505]/80">
-                     <div className="flex justify-between text-[11px] text-gray-400 mb-3 font-mono font-bold uppercase tracking-wider">
-                        <span>{data.content.card.footer.label}</span>
-                        <span style={{ color: data.theme.accentColor }}>{data.content.card.footer.value}</span>
-                     </div>
-                     <div className="w-full h-1.5 bg-gray-900 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: data.content.card.footer.value }}
-                          className="h-full shadow-[0_0_15px_rgba(255,204,0,0.5)]" 
-                          style={{ backgroundColor: data.theme.accentColor }} 
-                        />
-                     </div>
-                  </div>
-              </motion.div>
-
-              <motion.div 
-                animate={{ y: [-10, 10, -10] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-8 top-20 z-30"
-                style={{ transform: "translateZ(80px)" }}
-              >
-                 <div className="bg-[#111] p-4 rounded-2xl border border-white/10 shadow-2xl flex items-center gap-3 backdrop-blur-xl">
-                    <div className="bg-green-500/20 p-2 rounded-xl">
-                      <Icon icon="ph:trend-up-bold" className="w-5 h-5 text-green-500" />
+                {/* Badge Flutuante (Opcional - Remova se quiser 100% limpo) */}
+                <motion.div
+                  className="absolute -right-4 bottom-20 z-20 bg-[#111]/80 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-xl"
+                  initial={{ x: 20 }}
+                  animate={{ x: 0 }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-500/20 p-2 rounded-lg">
+                      <Icon icon="ph:chart-line-up-bold" className="w-5 h-5 text-green-500" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">{data.content.card.floatingBadge.label}</p>
+                      <p className="text-[10px] text-gray-500 font-bold uppercase">{data.content.card.floatingBadge.label}</p>
                       <p className="text-sm font-black text-white">{data.content.card.floatingBadge.value}</p>
                     </div>
-                 </div>
+                  </div>
+                </motion.div>
               </motion.div>
             </div>
 
