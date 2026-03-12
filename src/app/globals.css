@@ -1,38 +1,31 @@
 @import "tailwindcss";
 
 @font-face {
-    font-family: "Regular";
-    src: url("/fonts/Satoshi-Regular.woff2");
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Regular.woff2") format("woff2");
     font-weight: 400;
     font-display: swap;
-    /* ESSENCIAL */
 }
 
 @font-face {
-    font-family: "Medium";
-    src: url("/fonts/Satoshi-Medium.woff2") format('woff2');
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Medium.woff2") format("woff2");
     font-weight: 500;
-    preload: true;
     font-display: swap;
-    /* ESSENCIAL */
 }
 
 @font-face {
-    font-family: "SemiBold";
-    src: url("/fonts/Satoshi-Bold.woff2") format('woff2');
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Bold.woff2") format("woff2");
     font-weight: 700;
-    preload: true;
     font-display: swap;
-    /* ESSENCIAL */
-}
-
-@font-face {
-    font-family: "Bold";
-    src: url("/fonts/Satoshi-Bold.woff2") format('woff2');
-    font-weight: 800;
-    preload: true;
-    font-display: swap;
-    /* ESSENCIAL */
 }
 
 * {
@@ -49,10 +42,7 @@
 }
 
 @theme {
-    --font-regular: "Regular";
-    --font-medium: "Medium";
-    --font-semibold: "SemiBold";
-    --font-bold: "Bold";
+    --font-satoshi: "Satoshi";
     --color-primary: #0071e3;
     --color-dark-100: #86868b;
     --color-dark-200: #2e2e30;
@@ -70,7 +60,7 @@ body {
     overflow-x: hidden;
     background-color: #f6f6f6;
     color: var(--color-dark-100);
-    font-family: var(--font-bold);
+    font-family: var(--font-satoshi);
 }
 
 footer {

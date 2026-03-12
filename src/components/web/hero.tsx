@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const Hero = () => {
   return (
-    <section className="relative flex items-center justify-center min-h-[720px] w-full bg-[#0A0A0A] overflow-hidden">
+    <section className="relative flex items-center justify-center min-h-[592px] w-full bg-[#0A0A0A] overflow-hidden">
 
       {/* Radial glow */}
       <div className="absolute top-[-250px] w-[900px] h-[900px] bg-[#FFCC00]/10 blur-[200px] rounded-full" />
@@ -22,9 +22,9 @@ const Hero = () => {
       </div>
 
       <div
-        className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none"
+        className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-100"
         style={{
-            backgroundImage: "url('/noise.svg')",
+            backgroundImage: "url('/textura.svg')",
             backgroundRepeat: "repeat",
         }}
         />
@@ -39,20 +39,21 @@ const Hero = () => {
           width={420}
           height={200}
           priority
-          className="object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
+          className="object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] z-10000"
         />
 
         {/* Tagline */}
-        <p className="text-[#FFCC00] text-3xl md:text-4xl italic font-light tracking-wide">
+       
+
+      </div>
+       <p className="absolute bottom-10 z-10 text-[#F1D95D] text-3xl md:text-4xl italic font-medium tracking-wide font-serif">
           para quem quer mais.
         </p>
 
-      </div>
-
       {/* Watermark */}
-      <div className="absolute bottom-[-40px] whitespace-nowrap opacity-[0.025] select-none pointer-events-none">
-        <span className="text-white text-[260px] font-extrabold tracking-widest uppercase">
-          TEGBE
+      <div className="absolute right-[-30px] bottom-[-130px] whitespace-nowrap opacity-[0.025] select-none pointer-events-none">
+        <span className="text-white text-[260px] font-medium tracking-[-0.04em] uppercase ">
+          QUER MAIS
         </span>
       </div>
 
