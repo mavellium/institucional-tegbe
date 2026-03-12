@@ -80,7 +80,7 @@ export default async function SobrePage() {
                 <QuemSomos /> 
                 <OQueSomos />
                 <MetaAlunos  />
-                <Localizacao data={localizacaoData} />
+                {/* <Localizacao data={localizacaoData} /> */}
                 <CarrosselEspecialistas />
                 <TrabalheConosco/>
             </main>
