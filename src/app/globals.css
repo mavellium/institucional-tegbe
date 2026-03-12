@@ -28,6 +28,13 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Black.woff2") format("woff2");
+    font-weight: 900;
+    font-display: swap;
+}
+
 * {
     scrollbar-color: var(--color-dark-100) var(--color-black);
 }

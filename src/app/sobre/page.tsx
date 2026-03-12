@@ -5,11 +5,11 @@ import { fetchComponentData } from "@/lib/api";
 import { QuemSomos } from "@/components/web/quemSomos";
 import { OQueSomos } from "@/components/web/oQueSomos";
 import { MetaAlunos } from "@/components/web/metaAlunos";
-import Localizacao from "@/components/Section/Localizacao";
 import { CarrosselEspecialistas } from "@/components/web/carrosselEspecialistas";
 import { TrabalheConosco } from "@/components/web/trabalheConosco";
 import { ExplicarLogo } from "@/components/web/explicarLogo";
 import Hero from "@/components/web/hero";
+import Localizacao from "@/components/web/localizacao";
 
 // 1. Centralização de Configurações
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -36,6 +36,33 @@ async function getPageData(slug: string, isComponent = false) {
         return isComponent ? null : [];
     }
 }
+
+export const localizacaoFake = [
+  {
+    id: "1",
+    alt: "Escritório Tegbe em Garça",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c",
+    title: "Nosso QG estratégico fica em Garça, São Paulo.",
+    description:
+      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
+  },
+  {
+    id: "2",
+    alt: "Ambiente de trabalho da equipe",
+    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
+    title: "Nosso QG estratégico fica em Garça, São Paulo.",
+    description:
+      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
+  },
+  {
+    id: "3",
+    alt: "Time trabalhando em projetos digitais",
+    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72",
+    title: "Nosso QG estratégico fica em Garça, São Paulo.",
+    description:
+      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
+  }
+];
 
 export default async function SobrePage() {
     // 3. Execução em Paralelo (All-or-Nothing Treatment)
@@ -80,8 +107,8 @@ export default async function SobrePage() {
                 <QuemSomos /> 
                 <OQueSomos />
                 <MetaAlunos  />
-                {/* <Localizacao data={localizacaoData} /> */}
                 <CarrosselEspecialistas />
+                <Localizacao data={localizacaoFake} />
                 <TrabalheConosco/>
             </main>
             <Footer />

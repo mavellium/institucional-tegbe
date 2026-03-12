@@ -9,41 +9,119 @@ interface EspecialistaProps {
   imagem: string;
 }
 
-export function CardEspecialista({ nome, sobrenome, cargo, imagem }: EspecialistaProps) {
+export function CardEspecialista({
+  nome,
+  sobrenome,
+  cargo,
+  imagem,
+}: EspecialistaProps) {
   return (
-    <div className="relative bg-[#000]/90 rounded-xl overflow-hidden aspect-[3/4.2] group border border-white/5 shadow-2xl transition-all duration-500 hover:border-[#C5A47E]/30 h-full">
+    <div className="
+      relative
+      h-full
+      aspect-[3/5.5]
+      overflow-hidden
+      rounded-2xl
+      bg-black
+      group
+      border
+      border-white/5
+      hover:border-[#C5A47E]/40
+      transition-all
+      duration-500
+      
+    ">
 
-      {/* Imagem com fundo azul (Estilo G4) */}
-      <div className="relative h-[62%] w-full overflow-hidden bg-gradient-to-b from-[#1c1e21] to-[#3e464d]">
+      {/* FOTO */}
+      <div className="absolute inset-0">
+
         <Image
           src={imagem}
           alt={`${nome} ${sobrenome}`}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          className="object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out group-hover:scale-105"
+          className="
+            object-cover
+            object-top
+            grayscale
+            group-hover:grayscale-0
+            group-hover:scale-[1.04]
+            transition-all
+            duration-700
+          "
         />
-        {/* Overlay de luz sutil para dar profundidade à base da foto */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D1E2D] via-transparent opacity-60 pointer-events-none" />
+
+        {/* overlay cinematic */}
+        <div className="
+          absolute
+          inset-0
+          bg-gradient-to-t
+          from-black
+          via-black/40
+          to-transparent
+        "/>
+
       </div>
 
-      {/* Informações do Especialista */}
-      <div className="p-6 space-y-4">
-        <div>
-          <h4 className="text-white text-xl font-serif leading-none tracking-tight">
+      {/* CONTEÚDO */}
+      <div className="
+        relative
+        z-10
+        h-full
+        flex
+        flex-col
+        justify-end
+        p-7
+      ">
+
+        {/* NOME */}
+        <div className="space-y-1">
+
+          <h3 className="
+            text-white
+            text-2xl
+            font-serif
+            leading-none
+            tracking-tight
+          ">
             {nome}
-          </h4>
-          <span className="text-[#C5A47E] text-xl font-serif italic block mt-1">
+          </h3>
+
+          <span className="
+            text-[#F1D95D]
+            italic
+            font-serif
+            text-2xl
+          ">
             {sobrenome}
           </span>
+
         </div>
 
-        {/* Linha divisória elegante */}
-        <div className="h-[1px] w-full bg-gradient-to-r from-white/20 via-white/5 to-transparent" />
-
-        <p className="text-[#8E9BA7] text-[13px] leading-relaxed line-clamp-3 font-light italic lg:not-italic">
+        {/* CARGO */}
+        <p className="
+          mt-3
+          text-white/70
+          text-sm
+          leading-relaxed
+          max-w-[85%]
+        ">
           {cargo}
         </p>
+
       </div>
+
+      {/* glow hover */}
+      <div className="
+        absolute
+        inset-0
+        opacity-0
+        group-hover:opacity-100
+        transition
+        duration-700
+        pointer-events-none
+        bg-[radial-gradient(circle_at_50%_0%,rgba(197,164,126,0.2),transparent_60%)]
+      "/>
+
     </div>
   );
 }

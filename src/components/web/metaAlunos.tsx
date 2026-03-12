@@ -1,113 +1,220 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export function MetaAlunos() {
+
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+
   const [count, setCount] = useState(0);
-  
-  const targetValue = 756410; // Valor atual
-  const maxValue = 1000000;    // Meta total (1M)
+
+  const targetValue = 1500;
+  const maxValue = 5000;
+
   const percentage = (targetValue / maxValue) * 100;
 
   useGSAP(() => {
-    // Animação da Barra e do Thumb
+
+    gsap.from(".meta-item", {
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 80%"
+      },
+      y: 24,
+      opacity: 0,
+      stagger: 0.12,
+      duration: 0.9,
+      ease: "power2.out"
+    });
+
     gsap.fromTo(
       progressRef.current,
       { width: "0%" },
       {
         width: `${percentage}%`,
-        duration: 2.5,
-        ease: "power4.out",
+        duration: 2.2,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top 80%",
-        },
+          start: "top 80%"
+        }
       }
     );
 
-    // Animação do Contador Numérico
+    gsap.fromTo(
+  thumbRef.current,
+  { left: "0%", xPercent: -50 },
+  {
+    left: `${percentage}%`,
+    xPercent: -50,
+    duration: 2.2,
+    ease: "power3.out",
+    scrollTrigger: {
+      trigger: containerRef.current,
+      start: "top 80%"
+    }
+  }
+);
+
     const obj = { value: 0 };
+
     gsap.to(obj, {
       value: targetValue,
-      duration: 2.5,
-      ease: "power4.out",
+      duration: 2.2,
+      ease: "power3.out",
       scrollTrigger: {
         trigger: containerRef.current,
-        start: "top 80%",
+        start: "top 80%"
       },
       onUpdate: () => {
         setCount(Math.floor(obj.value));
-      },
+      }
     });
+
   }, { scope: containerRef });
 
   return (
-    <section 
-      ref={containerRef} 
-      className="bg-[#FAF9F6] py-20 lg:py-32 text-center overflow-hidden"
+
+    <section
+      ref={containerRef}
+      className="relative bg-[#FAFAF8] py-24 lg:py-32 text-center overflow-hidden selection:bg-[#F1D95D]/30"
     >
-      <div className="max-w-4xl mx-auto px-6">
-        
-        {/* Título Principal */}
-        <h2 className="text-3xl md:text-5xl font-serif text-[#0D1E2D] mb-4 tracking-tight">
-          Qual é a principal <span className="text-[#C5A47E] italic font-light">meta da Tegbe?</span>
-        </h2>
 
-        {/* Descrição da Meta */}
-        <p className="text-[#8E9BA7] text-sm md:text-base font-light mb-16 tracking-wide max-w-2xl mx-auto">
-          Gerar <span className="font-bold text-[#0D1E2D]">R$ 100 milhões em novas receitas</span> através dos nossos parceiros até 2030.
-        </p>
+      {/* textura leve */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: "url('/textura.svg')",
+          backgroundRepeat: "repeat"
+        }}
+      />
 
-        {/* CONTAINER DA BARRA (O Card Branco) */}
-        <div className="relative bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-8 md:p-12 border border-gray-100">
-          
-          {/* Barra de Fundo */}
-          <div className="relative h-2 w-full bg-gray-100 rounded-full mb-8">
-            
-            {/* Progresso Ativo */}
-            <div 
-              ref={progressRef}
-              className="absolute top-0 left-0 h-full bg-[#0D1E2D] rounded-full transition-all ease-out"
-            >
-              {/* Thumb (Ícone que desliza) */}
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-10 h-10 bg-[#C5A47E] rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-                <div className="w-4 h-4 text-white">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="relative z-10 max-w-4xl mx-auto px-6 space-y-16">
 
-          {/* Números da Meta */}
-          <div className="flex justify-between items-center">
-            <span className="text-gray-300 text-sm font-bold">0</span>
-            
-            {/* Valor Central Animado */}
-            <div className="text-4xl md:text-6xl font-bold text-[#0D1E2D] tracking-tighter">
-              {count.toLocaleString('pt-BR')}
-            </div>
-            
-            <span className="text-gray-300 text-sm font-bold">1M</span>
-          </div>
+        {/* TITULO */}
+
+        <div className="space-y-6">
+
+          <h2 className="meta-item text-3xl md:text-5xl text-[#0A0A0A] font-medium">
+
+            Qual é a principal{" "}
+            <span className="text-[#FFC72C] italic font-serif ">
+              meta
+            </span>
+            {" "}da Tegbe?
+
+          </h2>
+
+          <p className="meta-item text-[#0a0a0a] text-sm md:text-[18px] mx-auto leading-relaxed">
+
+            Gerar <span className="font-semibold text-[#0A0A0A]">R$ 100 milhões em novas receitas</span> através dos nossos parceiros até 2030.
+
+          </p>
+
         </div>
 
-        {/* Footer da Meta */}
-        <p className="mt-10 text-[#8E9BA7] text-[11px] md:text-xs uppercase tracking-[0.2em] font-medium">
-          Resultados gerados até agora pela <span className="text-[#0D1E2D] font-bold">#GeraçãoTegbe</span>
+        {/* BARRA DE PROGRESSO */}
+
+        <div className="meta-item bg-white/80 backdrop-blur rounded-2xl p-10 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-100 space-y-12">
+
+  <div className="relative w-full">
+
+    {/* TRACK */}
+   <div className="h-[14px] w-full rounded-full bg-[#E7E7E7]" />
+
+    {/* PROGRESSO */}
+<div
+  ref={progressRef}
+  className="
+  absolute
+  top-0
+  left-0
+  h-[12px]
+  rounded-full
+  bg-gradient-to-r
+  from-[#1A1A1A]
+  to-[#2A2A2A]
+"
+/>
+    {/* THUMB */}
+<div
+  ref={thumbRef}
+  className="
+  absolute
+  top-1/2
+  -translate-y-1/2
+  w-12
+  h-12
+  rounded-full
+  bg-gradient-to-br
+  from-[#2A2A2A]
+  to-[#0F0F0F]
+  border
+  border-[#3A3A3A]
+  shadow-[0_10px_25px_rgba(0,0,0,0.35)]
+  flex
+  items-center
+  justify-center
+">
+
+  <Image
+    src="/logo_icone4.svg"
+    alt="Tegbe"
+    width={24}
+    height={24}
+    className="object-contain"
+  />
+
+</div>
+    </div>
+
+    {/* NUMEROS */}
+    <div className="flex justify-between items-end">
+
+      <span className="text-gray-400 text-sm font-semibold tracking-wide">
+        0
+      </span>
+
+      <div className="flex flex-col items-center">
+
+        <span className="text-5xl md:text-3xl font-bold text-[#0A0A0A] tracking-tight">
+          {count.toLocaleString("pt-BR")}
+        </span>
+
+      </div>
+
+      <span className="text-gray-400 text-sm font-semibold tracking-wide">
+        5K
+      </span>
+
+    </div>
+
+  </div>
+
+        {/* FOOTER */}
+
+        <p className="meta-item text-xs text-[18px] text-[#0a0a0a]">
+
+          resultados gerados até agora pela{" "}
+          <span className="text-[#0A0A0A] font-semibold italic">
+            #geraçãotegbe
+          </span>
+
         </p>
 
       </div>
+      
+
     </section>
   );
 }

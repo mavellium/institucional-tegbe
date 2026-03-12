@@ -99,7 +99,7 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
             <h2 className="animate-up text-[32px] lg:text-[48px] leading-[1.1] tracking-tight text-[#0A0A0A] font-medium max-w-[720px]">
 
               Onde a parceria<br/>constrói{" "}
-              <span className="text-[#C9A646] font-serif italic">
+              <span className="text-[#FFC72C] font-serif italic">
                 resultado
               </span>
 
@@ -130,8 +130,8 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
                 size="lg"
                 className="
                 group
-                bg-[#C9A646]
-                hover:bg-[#b9973c]
+                bg-[#FFC72C]
+                hover:bg-[#F2CB5E]
                 text-[#0A0A0A]
                 rounded-10
                 px-10
