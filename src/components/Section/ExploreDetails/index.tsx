@@ -2,13 +2,14 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Button } from "../../ui/button"; 
+import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import { useSwipeable } from "react-swipeable";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -30,7 +31,6 @@ export interface ServiceFeature {
   color?: string;
 }
 
-// Interface do CTA com suporte a modal
 export interface ServiceCTA {
   enabled: boolean;
   text: string;
@@ -39,8 +39,8 @@ export interface ServiceCTA {
   showIcon?: boolean;
   icon?: string;
   position?: "below-content" | "below-image";
-  use_form?: boolean;   // Indica se deve abrir modal
-  form_html?: string;   // HTML do formulário (quando use_form = true)
+  use_form?: boolean;
+  form_html?: string;
 }
 
 export interface ApiResponse {
@@ -49,11 +49,11 @@ export interface ApiResponse {
   cta?: ServiceCTA;
 }
 
-// Função para obter classes do botão baseado no estilo
 const getButtonClasses = (style: string = "default") => {
-  const baseClasses = "inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95";
-  
-  switch(style) {
+  const baseClasses =
+    "inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95";
+
+  switch (style) {
     case "outline":
       return `${baseClasses} border-2 border-[#E31B63] text-[#E31B63] hover:bg-[#E31B63]/10 hover:border-[#FF0F43] hover:text-[#FF0F43]`;
     case "ghost":
@@ -68,32 +68,34 @@ const ExploreDetails = () => {
   const [features, setFeatures] = useState<ServiceFeature[]>([]);
   const [ctaData, setCtaData] = useState<ServiceCTA | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeFeature, setActiveFeature] = useState(0); 
+  const [activeFeature, setActiveFeature] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado do modal
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const descriptionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const desktopImageContainerRef = useRef<HTMLDivElement>(null);
   const mobileImageContainerRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
   const previousActiveFeatureRef = useRef<number>(-1);
 
   // --- INTEGRAÇÃO COM A API ---
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("https://tegbe-dashboard.vercel.app/api/tegbe-institucional/services-marketing");
+        const response = await fetch(
+          "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/services-marketing"
+        );
         const data: ApiResponse = await response.json();
-        
+
         if (data.services && data.services.length > 0) {
           setHeader(data.header);
           setFeatures(data.services);
           setCurrentImage(data.services[0].image);
-          
-          // Configurar CTA se existir e estiver habilitado
+
           if (data.cta && data.cta.enabled !== false) {
             setCtaData(data.cta);
           }
@@ -123,40 +125,94 @@ const ExploreDetails = () => {
           scrollTrigger: {
             trigger: ctaRef.current,
             start: "top 80%",
-            toggleActions: "play none none reverse"
-          }
+            toggleActions: "play none none reverse",
+          },
         }
       );
     }
   }, [ctaData]);
 
-  // --- LÓGICA DE ANIMAÇÃO DAS IMAGENS ---
-  const animateImageTransition = (containerRef: React.RefObject<HTMLDivElement | null>, newImage: string) => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    gsap.to(container, {
-      opacity: 0,
-      scale: 1.05,
-      duration: 0.3,
-      ease: "power2.in",
-      onComplete: () => {
-        setCurrentImage(newImage);
-        gsap.to(container, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.5,
-          ease: "power2.out"
-        });
+  // --- NAVEGAÇÃO POR TECLADO NA LISTA DESKTOP ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!sectionRef.current?.contains(document.activeElement)) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveFeature((prev) => (prev + 1) % features.length);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveFeature((prev) => (prev - 1 + features.length) % features.length);
       }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [features.length]);
+
+  // --- GERENCIAMENTO DO MODAL (ACESSIBILIDADE) ---
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleEsc);
+      // Focar no primeiro elemento interativo
+      const focusable = modalContentRef.current?.querySelector(
+        'button, input, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable) (focusable as HTMLElement).focus();
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
+
+  // --- LÓGICA DE ANIMAÇÃO DAS IMAGENS (COM FRAMER MOTION) ---
+  // Não precisamos mais do GSAP para a transição de imagem, usaremos AnimatePresence
+  // Mas mantemos a função para mudar a imagem ativa
+  const handleFeatureChange = (index: number, force = false) => {
+    if ((isTransitioning || index === activeFeature) && !force) return;
+    setIsTransitioning(true);
+
+    if (activeFeature !== -1 && !force) {
+      gsap.to(buttonsRef.current[activeFeature], {
+        backgroundColor: "transparent",
+        borderColor: "rgba(255,255,255,0.05)",
+        duration: 0.3,
+      });
+      gsap.to(descriptionsRef.current[activeFeature], {
+        height: 0,
+        opacity: 0,
+        marginTop: 0,
+        duration: 0.3,
+      });
+    }
+
+    setActiveFeature(index);
+    setCurrentImage(features[index].image);
+
+    gsap.to(buttonsRef.current[index], {
+      backgroundColor: "rgba(227, 27, 99, 0.1)",
+      borderColor: "#E31B63",
+      duration: 0.4,
+    });
+
+    gsap.to(descriptionsRef.current[index], {
+      height: "auto",
+      opacity: 1,
+      marginTop: 16,
+      duration: 0.4,
+      onComplete: () => setIsTransitioning(false),
     });
   };
 
+  // Atualiza a imagem quando activeFeature muda (caso a mudança venha de outra fonte)
   useEffect(() => {
     if (features.length > 0 && previousActiveFeatureRef.current !== activeFeature) {
-      const newImage = features[activeFeature]?.image || "";
-      animateImageTransition(desktopImageContainerRef, newImage);
-      animateImageTransition(mobileImageContainerRef, newImage);
+      setCurrentImage(features[activeFeature]?.image || "");
       previousActiveFeatureRef.current = activeFeature;
     }
   }, [activeFeature, features]);
@@ -170,42 +226,6 @@ const ExploreDetails = () => {
     }
   }, [features]);
 
-  const handleFeatureChange = (index: number, force = false) => {
-    if ((isTransitioning || index === activeFeature) && !force) return;
-
-    setIsTransitioning(true);
-    
-    if (activeFeature !== -1 && !force) {
-      gsap.to(buttonsRef.current[activeFeature], { 
-        backgroundColor: "transparent", 
-        borderColor: "rgba(255,255,255,0.05)", 
-        duration: 0.3 
-      });
-      gsap.to(descriptionsRef.current[activeFeature], { 
-        height: 0, 
-        opacity: 0, 
-        marginTop: 0, 
-        duration: 0.3 
-      });
-    }
-
-    setActiveFeature(index);
-
-    gsap.to(buttonsRef.current[index], {
-      backgroundColor: "rgba(227, 27, 99, 0.1)", 
-      borderColor: "#E31B63", 
-      duration: 0.4
-    });
-
-    gsap.to(descriptionsRef.current[index], {
-      height: "auto",
-      opacity: 1,
-      marginTop: 16,
-      duration: 0.4,
-      onComplete: () => setIsTransitioning(false)
-    });
-  };
-
   const handleCtaClick = (e: React.MouseEvent) => {
     if (ctaData?.use_form) {
       e.preventDefault();
@@ -213,20 +233,51 @@ const ExploreDetails = () => {
     }
   };
 
-  if (loading) return <div className="py-24 text-center text-white">Carregando inteligência...</div>;
+  // --- GESTOS DE SWIPE NO MOBILE ---
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () =>
+      handleFeatureChange((activeFeature + 1) % features.length),
+    onSwipedRight: () =>
+      handleFeatureChange((activeFeature - 1 + features.length) % features.length),
+    trackMouse: true,
+  });
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-[#020202] px-6">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="animate-pulse">
+            <div className="h-4 w-24 bg-gray-700 rounded mb-3"></div>
+            <div className="h-10 w-3/4 bg-gray-700 rounded"></div>
+            <div className="grid grid-cols-12 gap-8 mt-12">
+              <div className="col-span-4 space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-24 bg-gray-800 rounded-2xl"></div>
+                ))}
+              </div>
+              <div className="col-span-8">
+                <div className="aspect-video bg-gray-800 rounded-3xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (features.length === 0) return null;
 
-  // Lógica para destacar a última palavra do título da API
   const titleWords = header?.title.split(" ") || [];
   const lastWord = titleWords.pop();
   const firstPart = titleWords.join(" ");
-
-  // Determinar a posição do CTA
   const ctaPosition = ctaData?.position || "below-content";
 
   return (
     <>
-      <section ref={sectionRef} className="py-24 bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden">
+      <section
+        ref={sectionRef}
+        className="py-24 bg-[#020202] px-6 relative border-t border-white/5 overflow-hidden"
+      >
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
 
         <div className="mx-auto relative max-w-[1400px] z-10">
@@ -245,25 +296,40 @@ const ExploreDetails = () => {
           {/* DESKTOP */}
           <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
             <div className="col-span-4 sticky top-24">
-              <div className="flex flex-col space-y-3">
+              <div
+                className="flex flex-col space-y-3"
+                role="tablist"
+                aria-label="Lista de recursos"
+              >
                 {features.map((feature, index) => (
                   <button
                     key={feature.id}
-                    ref={(el) => { buttonsRef.current[index] = el }}
+                    ref={(el) => {
+                      buttonsRef.current[index] = el;
+                    }}
                     onClick={() => handleFeatureChange(index)}
-                    className="feature-button group w-full text-left p-6 rounded-2xl border border-white/5 bg-white/5 transition-all hover:bg-white/10 hover:border-white/10"
+                    className={`feature-button group w-full text-left p-6 rounded-2xl border transition-all ${
+                      activeFeature === index
+                        ? "bg-[#E31B63]/10 border-[#E31B63]"
+                        : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10"
+                    }`}
+                    role="tab"
+                    aria-selected={activeFeature === index}
+                    aria-controls={`feature-panel-${index}`}
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="font-bold text-lg flex items-center gap-3 text-white">
-                        <Icon 
-                          icon={feature.icon || "lucide:layers"} 
-                          className="w-6 h-6 text-[#E31B63] group-hover:scale-110 transition-transform" 
+                        <Icon
+                          icon={feature.icon || "lucide:layers"}
+                          className="w-6 h-6 text-[#E31B63] group-hover:scale-110 transition-transform"
                         />
                         {feature.title}
                       </h3>
                     </div>
-                    <div 
-                      ref={(el) => { descriptionsRef.current[index] = el }} 
+                    <div
+                      ref={(el) => {
+                        descriptionsRef.current[index] = el;
+                      }}
                       className="overflow-hidden h-0 opacity-0"
                     >
                       <p className="text-sm text-gray-400 leading-relaxed font-light border-l border-[#E31B63]/30 pl-4 mt-2">
@@ -276,24 +342,45 @@ const ExploreDetails = () => {
             </div>
 
             <div className="col-span-8">
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] aspect-video">
+              <div
+                id={`feature-panel-${activeFeature}`}
+                className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0A0A0A] aspect-video"
+                role="tabpanel"
+                aria-labelledby={`feature-tab-${activeFeature}`}
+              >
                 <div ref={desktopImageContainerRef} className="w-full h-full relative">
-                  {currentImage && (
-                    <Image 
-                      src={currentImage} 
-                      alt="Feature Display" 
-                      fill 
-                      className="object-cover" 
-                      unoptimized 
-                    />
-                  )}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentImage}
+                      initial={{ opacity: 0, scale: 1.1 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full relative"
+                    >
+                      <Image
+                        src={currentImage}
+                        alt={features[activeFeature]?.title || "Imagem do recurso"}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        priority={activeFeature === 0}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
                   <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60"></div>
                 </div>
               </div>
 
-              {/* CTA ABAIXO DA IMAGEM (SE CONFIGURADO) */}
               {ctaData && ctaPosition === "below-image" && (
-                <div ref={ctaRef} className="flex justify-center mt-8">
+                <motion.div
+                  ref={ctaRef}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="flex justify-center mt-8"
+                >
                   {ctaData.use_form ? (
                     <button
                       onClick={handleCtaClick}
@@ -315,7 +402,7 @@ const ExploreDetails = () => {
                       {ctaData.text}
                     </Link>
                   )}
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
@@ -323,16 +410,28 @@ const ExploreDetails = () => {
           {/* MOBILE */}
           <div className="lg:hidden">
             <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden mb-6">
-              <div ref={mobileImageContainerRef} className="aspect-video relative">
-                {currentImage && (
-                  <Image 
-                    src={currentImage} 
-                    alt="Mobile View" 
-                    fill 
-                    className="object-cover" 
-                    unoptimized 
-                  />
-                )}
+              <div
+                {...swipeHandlers}
+                className="aspect-video relative"
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImage}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full relative"
+                  >
+                    <Image
+                      src={currentImage}
+                      alt={features[activeFeature]?.title || "Imagem do recurso"}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                  </motion.div>
+                </AnimatePresence>
               </div>
               <div className="p-6 text-center">
                 <h3 className="text-xl font-bold text-white mb-2">
@@ -341,20 +440,45 @@ const ExploreDetails = () => {
                 <p className="text-gray-400 text-sm">
                   {features[activeFeature]?.description}
                 </p>
+
+                {/* Indicador de progresso (dots) */}
+                <div className="flex justify-center gap-2 mt-4">
+                  {features.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleFeatureChange(i)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === activeFeature
+                          ? "w-6 bg-[#E31B63]"
+                          : "w-1.5 bg-white/30 hover:bg-white/50"
+                      }`}
+                      aria-label={`Ver feature ${i + 1}`}
+                    />
+                  ))}
+                </div>
+
                 <div className="flex justify-center gap-4 mt-6">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
+                  <Button
+                    variant="outline"
+                    size="icon"
                     className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
-                    onClick={() => handleFeatureChange((activeFeature - 1 + features.length) % features.length)}
+                    onClick={() =>
+                      handleFeatureChange(
+                        (activeFeature - 1 + features.length) % features.length
+                      )
+                    }
+                    aria-label="Recurso anterior"
                   >
                     <Icon icon="lucide:arrow-left" />
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
+                  <Button
+                    variant="outline"
+                    size="icon"
                     className="border-white/10 text-white hover:border-[#E31B63] hover:text-[#E31B63]"
-                    onClick={() => handleFeatureChange((activeFeature + 1) % features.length)}
+                    onClick={() =>
+                      handleFeatureChange((activeFeature + 1) % features.length)
+                    }
+                    aria-label="Próximo recurso"
                   >
                     <Icon icon="lucide:arrow-right" />
                   </Button>
@@ -362,9 +486,14 @@ const ExploreDetails = () => {
               </div>
             </div>
 
-            {/* CTA MOBILE */}
             {ctaData && (
-              <div ref={ctaRef} className="flex justify-center">
+              <motion.div
+                ref={ctaRef}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                className="flex justify-center"
+              >
                 {ctaData.use_form ? (
                   <button
                     onClick={handleCtaClick}
@@ -386,13 +515,19 @@ const ExploreDetails = () => {
                     {ctaData.text}
                   </Link>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
 
-          {/* CTA ABAIXO DO CONTEÚDO (DESKTOP - SE CONFIGURADO) */}
+          {/* CTA ABAIXO DO CONTEÚDO (DESKTOP) */}
           {ctaData && ctaPosition === "below-content" && (
-            <div ref={ctaRef} className="hidden lg:flex justify-center mt-12">
+            <motion.div
+              ref={ctaRef}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="hidden lg:flex justify-center mt-12"
+            >
               {ctaData.use_form ? (
                 <button
                   onClick={handleCtaClick}
@@ -414,49 +549,58 @@ const ExploreDetails = () => {
                   {ctaData.text}
                 </Link>
               )}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
-      {/* Modal com formulário */}
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {isModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsModalOpen(false)}
-            >
+      {/* MODAL COM FORMULÁRIO */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {isModalOpen && (
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
-                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                onClick={() => setIsModalOpen(false)}
               >
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                <motion.div
+                  ref={modalContentRef}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                  className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Formulário de contato"
                 >
-                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
-                </button>
-                <div className="p-6">
-                  {ctaData?.form_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
-                  ) : (
-                    <p className="text-gray-500">Formulário não disponível.</p>
-                  )}
-                </div>
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                    aria-label="Fechar modal"
+                  >
+                    <Icon
+                      icon="solar:close-circle-linear"
+                      className="w-5 h-5 text-gray-600"
+                    />
+                  </button>
+                  <div className="p-6 max-h-[80vh] overflow-y-auto">
+                    {ctaData?.form_html ? (
+                      <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
+                    ) : (
+                      <p className="text-gray-500">Formulário não disponível.</p>
+                    )}
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </>
   );
 };

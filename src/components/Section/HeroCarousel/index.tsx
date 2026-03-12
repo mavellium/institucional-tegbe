@@ -71,13 +71,13 @@ export default function HeroCarousel() {
                                 <div className="container mx-auto px-6 lg:px-16 py-16 lg:py-24 flex flex-col lg:flex-row items-center justify-between gap-12 min-h-[600px]">
 
                                     {/* Lado Esquerdo: Textos e CTA */}
-                                    <div className="w-full lg:w-1/2 z-10 flex flex-col items-start gap-6">
+                                    <div className="w-full lg:w-1/2 z-10 flex flex-col items-center lg:items-start gap-6">
                                         {/* Animações encadeadas baseadas no estado 'isActive' */}
                                         <motion.div
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
                                             transition={{ duration: 0.5, delay: 0.1 }}
-                                            className="inline-block px-5 py-1.5 border border-[#4a5f78] rounded-full text-xs font-semibold tracking-[0.15em] text-gray-300 uppercase"
+                                            className="inline-block px-5 py-1.5 border border-[#4a5f78] rounded-full text-xs font-semibold tracking-[0.15em] text-gray-300 uppercase text-center lg:text-left"
                                         >
                                             {slide.tag}
                                         </motion.div>
@@ -86,7 +86,7 @@ export default function HeroCarousel() {
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
                                             transition={{ duration: 0.5, delay: 0.2 }}
-                                            className="text-4xl lg:text-5xl xl:text-6xl font-serif font-medium leading-[1.1]"
+                                            className="text-4xl lg:text-5xl xl:text-6xl font-serif font-medium leading-[1.1] text-center lg:text-left"
                                         >
                                             {slide.title}
                                         </motion.h1>
@@ -95,14 +95,14 @@ export default function HeroCarousel() {
                                             initial={{ opacity: 0, width: 0 }}
                                             animate={{ opacity: isActive ? 1 : 0, width: isActive ? "100px" : 0 }}
                                             transition={{ duration: 0.6, delay: 0.3 }}
-                                            className="h-[2px] bg-gradient-to-r from-[#b8935d] to-transparent"
+                                            className="h-[2px] bg-gradient-to-r from-[#7d2738] to-transparent mx-auto lg:mx-0"
                                         />
 
                                         <motion.p
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
                                             transition={{ duration: 0.5, delay: 0.4 }}
-                                            className="text-2xl lg:text-3xl font-light text-gray-200 leading-snug"
+                                            className="text-2xl lg:text-3xl font-light text-gray-200 leading-snug text-center lg:text-left"
                                         >
                                             {slide.description}
                                         </motion.p>
@@ -111,7 +111,7 @@ export default function HeroCarousel() {
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
                                             transition={{ duration: 0.5, delay: 0.5 }}
-                                            className="text-sm lg:text-base text-gray-400 max-w-lg"
+                                            className="text-sm lg:text-base text-gray-400 max-w-lg text-center lg:text-left"
                                         >
                                             {slide.subtext}
                                         </motion.p>
@@ -121,7 +121,7 @@ export default function HeroCarousel() {
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
                                             transition={{ duration: 0.5, delay: 0.6 }}
-                                            className="mt-4 px-8 py-4 bg-[#c0924e] hover:bg-[#a67a3a] transition-all duration-300 text-black font-bold rounded shadow-[0_0_20px_rgba(192,146,78,0.3)] hover:shadow-[0_0_30px_rgba(192,146,78,0.5)] transform hover:-translate-y-1 text-sm uppercase tracking-wider"
+                                            className="mt-4 px-8 py-4 bg-[#d9415f] hover:bg-[#7d2738] transition-all duration-300 text-white font-bold rounded shadow-[0_0_20px_rgba(255, 84, 118,0.3)] hover:shadow-[0_0_30px_rgba(255, 84, 118,0.5)] transform hover:-translate-y-1 text-sm uppercase tracking-wider mx-auto lg:mx-0"
                                         >
                                             {slide.ctaText}
                                         </motion.a>
@@ -153,7 +153,7 @@ export default function HeroCarousel() {
             {/* --- NAVEGAÇÃO CUSTOMIZADA --- */}
             <button
                 onClick={scrollPrev}
-                className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-[#6a2b2b] text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-[#8b3a3a] hover:scale-110 z-20 shadow-lg"
+                className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-[#d9415f] text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-[#7d2738] hover:scale-110 z-20 shadow-lg"
                 aria-label="Slide anterior"
             >
                 <ChevronLeft size={24} />
@@ -161,7 +161,7 @@ export default function HeroCarousel() {
 
             <button
                 onClick={scrollNext}
-                className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-[#6a2b2b] text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-[#8b3a3a] hover:scale-110 z-20 shadow-lg"
+                className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-[#d9415f] text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-[#7d2738] hover:scale-110 z-20 shadow-lg"
                 aria-label="Próximo slide"
             >
                 <ChevronRight size={24} />
@@ -173,7 +173,7 @@ export default function HeroCarousel() {
                     <button
                         key={i}
                         onClick={() => emblaApi?.scrollTo(i)}
-                        className={`h-2 rounded-full transition-all duration-300 ${i === selectedIndex ? "bg-[#c0924e] w-8" : "bg-white/30 w-2 hover:bg-white/50"
+                        className={`h-2 rounded-full transition-all duration-300 ${i === selectedIndex ? "bg-[#d9415f] w-8" : "bg-white/30 w-2 hover:bg-white/50"
                             }`}
                         aria-label={`Ir para o slide ${i + 1}`}
                     />
