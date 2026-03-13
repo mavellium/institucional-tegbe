@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import SocialLink from "./socialLink";
 
 interface CardFundadorProps {
   data?: {
@@ -102,15 +103,14 @@ export default function CardFundador({ data }: CardFundadorProps) {
           {/* socials */}
           <div className="mt-auto pt-7 flex gap-3">
 
-            {funder.socials.map((social, i) => (
+            {funder.socials.map((item, index) => (
 
-              <a
-                key={i}
-                href={social.link}
-                className="flex items-center justify-center w-[42px] h-[42px] rounded-full bg-[#DDC62F] hover:bg-[#C2AC1D] border border-white/5 hover:border-[#C9A646]/40 text-[#fff] transition"
-              >
-                <Icon icon={social.icon} className="text-[22px]" />
-              </a>
+             <SocialLink
+                             key={index}
+                             icon={item.icon}
+                             href={item.link}
+                             variant="ecommerce"
+                           />
 
             ))}
 

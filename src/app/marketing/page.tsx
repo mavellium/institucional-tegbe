@@ -2,7 +2,7 @@ import Schema from "@/components/Section/Schema";
 import AgenciasFalham from "@/components/Section/AgenciasFalham";
 import ExploreDetails from "@/components/Section/ExploreDetails";
 import { Empresas } from "@/components/Section/Empresas";
-import { Footer } from "@/components/Section/Footer";
+import { Footer } from "@/components/web/footer";
 import { SectionImage } from "@/components/Section/SectionImage";
 import NaoEParaVoce from "@/components/Section/NaoEParaVoce";
 import { Equipe } from "@/components/Section/Equipe";
@@ -10,7 +10,7 @@ import { fetchComponentData } from "@/lib/api";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
-import { VideoSection } from "@/enums/video";
+import { VideoSection } from "@/enums/video.enum";
 import Parceiro from "@/components/web/parceiro";
 import HeroCarousel from "@/components/Section/HeroCarousel";
 import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
@@ -147,7 +147,8 @@ export default async function MarketingPage() {
                         "description": "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
                         "button": {
                         "label": "Agendar Reunião",
-                        "link": "/reuniao"
+                        "link": "/reuniao",
+                        "target" : "_blank"
                         },
                         "image": {
                         "src": "/doni.jpg",
@@ -155,15 +156,15 @@ export default async function MarketingPage() {
                         }
                     },
                     "social": {
-                        "tag": "Mantenha-se atualizado",
-                        "title": "Acompanhe nossas mídias",
-                        "items": [
-                        { "icon": "ph:youtube-logo-fill", "link": "#" },
-                        { "icon": "ph:facebook-logo-fill", "link": "#" },
-                        { "icon": "ph:instagram-logo-fill", "link": "#" },
-                        { "icon": "ph:linkedin-logo-fill", "link": "#" }
-                        ]
-                    }
+                            "tag": "Mantenha-se atualizado",
+                            "title": "Acompanhe nossas mídias",
+                            "items": [
+                            { "icon": "mdi:youtube", "link": "#",},
+                            { "icon": "mdi:facebook", "link": "#",  },
+                            { "icon": "mdi:instagram", "link": "#", },
+                            { "icon": "mdi:linkedin", "link": "#", }
+                            ]
+                        }
                 }}
             />
             <Footer variant="marketing" />

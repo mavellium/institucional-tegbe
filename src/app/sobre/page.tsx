@@ -1,5 +1,5 @@
 import { Header } from "@/components/Section/Header";
-import { Footer } from "@/components/Section/Footer";
+import { Footer } from "@/components/web/footer";
 import Schema from "@/components/Section/Schema";
 import { fetchComponentData } from "@/lib/api";
 import { QuemSomos } from "@/components/web/quemSomos";
@@ -117,7 +117,8 @@ export default async function SobrePage() {
                             "description": "Se você quer crescer ao lado de empreendedores que constroem negócios relevantes, conheça nossas oportunidades.",
                             "button": {
                             "label": "Conheça nossas vagas",
-                            "link": "/carreiras"
+                            "link": "/carreiras",
+                            "target": "_blank"
                             },
                             "image": {
                             "src": "/doni.jpg",
@@ -128,10 +129,10 @@ export default async function SobrePage() {
                             "tag": "Mantenha-se atualizado",
                             "title": "Acompanhe nossas mídias",
                             "items": [
-                            { "icon": "ph:youtube-logo-fill", "link": "#" },
-                            { "icon": "ph:facebook-logo-fill", "link": "#" },
-                            { "icon": "ph:instagram-logo-fill", "link": "#" },
-                            { "icon": "ph:linkedin-logo-fill", "link": "#" }
+                            { "icon": "mdi:youtube", "link": "#",},
+                            { "icon": "mdi:facebook", "link": "#",  },
+                            { "icon": "mdi:instagram", "link": "#", },
+                            { "icon": "mdi:linkedin", "link": "#", }
                             ]
                         }
                     }}

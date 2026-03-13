@@ -5,6 +5,9 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import Heading from "../ui/heading";
+import Highlight from "../ui/highlight";
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -105,15 +108,17 @@ export function MetaAlunos() {
 
         <div className="space-y-6">
 
-          <h2 className="meta-item text-3xl md:text-5xl text-[#0A0A0A] font-medium">
-
+          <Heading
+            as="h2"
+            size="lg"
+            className="animate-up"
+          >
             Qual é a principal{" "}
-            <span className="text-[#FFC72C] italic font-serif ">
+            <Highlight color={"FFC72C"}>
               meta
-            </span>
+            </Highlight>
             {" "}da Tegbe?
-
-          </h2>
+          </Heading>
 
           <p className="meta-item text-[#0a0a0a] text-sm md:text-[18px] mx-auto leading-relaxed">
 

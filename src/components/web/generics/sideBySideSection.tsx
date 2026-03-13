@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import { Button } from "@/components/ui/button";
 import ButtonLink from "@/components/ui/buttonLink";
+import { TargetVideo } from "@/app/types/target-button.types";
+import SocialLink from "@/components/ui/socialLink";
+import Heading from "@/components/ui/heading";
 
 interface SocialItem {
   icon: string;
@@ -20,6 +22,7 @@ interface SideBySideSectionProps {
       button: {
         label: string;
         link: string;
+        target: TargetVideo
       };
       image: {
         src: string;
@@ -51,17 +54,23 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
               {hero.tag}
             </span>
 
-            <h2 className="text-4xl lg:text-5xl font-medium text-[#0a0a0a] leading-tight">
+
+            <Heading
+              as="h2"
+              size="lg"
+              className="animate-up max-w-[720px]"
+            >
               {hero.title}
-            </h2>
+            </Heading>
 
             <p className="text-lg text-[#0a0a0a] leading-relaxed max-w-md">
               {hero.description}
             </p>
 
             <ButtonLink button={{
-              label: "Conheça nossas vagas",
-              link: "carreiras"
+              label: hero.button.label,
+              link: hero.button.link,
+              target: hero.button.target
             }}/>
 
           </div>
@@ -99,28 +108,14 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
           </div>
 
           <div className="flex gap-5">
-
             {social.items.map((item, index) => (
-              <a
+              <SocialLink
                 key={index}
+                icon={item.icon}
                 href={item.link}
-                className="
-                  w-12
-                  h-12
-                  rounded-full
-                  bg-black/60
-                  flex
-                  items-center
-                  justify-center
-                  text-white
-                  hover:scale-105
-                  transition
-                "
-              >
-                <Icon icon={item.icon} className="text-xl" />
-              </a>
+                variant="dark"
+              />
             ))}
-
           </div>
 
         </div>

@@ -1,5 +1,5 @@
 import { HeroVideoView } from "@/components/Section/HeroVideoView";
-import { VideoSection } from "@/enums/video";
+import { VideoSection } from "@/enums/video.enum";
 
 interface HeroThemeProps {
   accentColor?: string;

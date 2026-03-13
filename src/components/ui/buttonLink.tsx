@@ -1,13 +1,18 @@
+import { TargetVideo } from "@/app/types/target-button.types";
+
 interface ButtonLinkProps {
       button: {
         label: string;
         link: string;
+        target?: TargetVideo
   };
 }
 
-export default function ButtonLink({ button }: ButtonLinkProps){
+
+export default function ButtonLink({  button: { label, link, target = "_self" }  }: ButtonLinkProps){
     return <a
-              href={button.link}
+              href={link}
+              target={target}
               className="
                 inline-block
                 mt-4
@@ -21,6 +26,6 @@ export default function ButtonLink({ button }: ButtonLinkProps){
                 transition
               "
             >
-              {button.label}
+              {label}
             </a>
 }

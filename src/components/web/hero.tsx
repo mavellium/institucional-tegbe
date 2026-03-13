@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Textura from "../ui/textura";
 
 const Hero = () => {
   return (
@@ -21,13 +22,7 @@ const Hero = () => {
         />
       </div>
 
-      <div
-        className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-100"
-        style={{
-            backgroundImage: "url('/textura.svg')",
-            backgroundRepeat: "repeat",
-        }}
-        />
+      <Textura misturar opacity={0.15}/>
 
       {/* Conteúdo */}
       <div className="relative z-10 flex flex-col items-center text-center gap-10 px-6">

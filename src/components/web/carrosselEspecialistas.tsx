@@ -10,6 +10,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { CardEspecialista } from "../ui/cardEspecialista";
+import Heading from "../ui/heading";
+import Highlight from "../ui/highlight";
+
 
 const especialistas = [
   {
@@ -51,9 +54,15 @@ export function CarrosselEspecialistas() {
 
         {/* Título Estilo G4 */}
         <div className="text-center mb-16">
-          <h2 className="text-2xl md:text-4xl text-white tracking-tight">
-            E nesse processo reunimos vários <span className="text-[#F1D95D] font-serif italic font-light">especialistas</span>
-          </h2>
+           <Heading
+                      as="h2"
+                      size="p"
+                      className="animate-up text-2xl md:text-4xl tracking-tight"
+                      color="#FFFFFF"
+                      font="regular"
+                    >
+                      E nesse processo reunimos vários <Highlight>especialistas</Highlight>
+                    </Heading>
         </div>
 
         {/* Slider Container */}

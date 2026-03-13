@@ -1,0 +1,1 @@
+export type TargetVideo = "_blank" | "_self";

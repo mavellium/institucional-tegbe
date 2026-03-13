@@ -7,6 +7,9 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import FotoCarrossel from "../ui/fotoCarrossel";
+import ButtonLink from "../ui/buttonLink";
+import { TargetVideo } from "@/app/types/target-button.types";
+import Heading from "../ui/heading";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,9 +71,15 @@ export default function Localizacao({ data }: Props) {
         {/* TEXTO */}
         <div className="loc-left space-y-10">
 
-          <h2 className="text-4xl md:text-5xl text-white leading-tight">
+          <Heading
+            as="h2"
+            size="lg"
+            className="animate-up max-w-[720px]"
+            color="#FFFFFF"
+            font="regular"
+          >
             {main.title}
-          </h2>
+          </Heading>
 
           <p className="text-white/80 text-lg leading-relaxed max-w-lg">
             {main.description}
@@ -78,44 +87,12 @@ export default function Localizacao({ data }: Props) {
 
           <div className="flex gap-12 pt-8 border-t border-white/10"></div>
 
-          <Link
-  href="https://maps.app.goo.gl"
-  target="_blank"
-  className="
-  inline-flex
-  items-center
-  justify-center
-  gap-3
-  bg-[#FFC72C]
-  hover:bg-[#F2CB5E]
-  text-[#0A0A0A]
-  rounded-[10px]
-  px-10
-  py-5
-  text-[12px]
-  font-bold
-  tracking-[0.28em]
-  uppercase
-  shadow-[0_6px_18px_rgba(0,0,0,0.08)]
-  transition-all
-  duration-300
-  ease-out
-  hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)]
-  hover:-translate-y-[1px]
-  active:translate-y-0
-  group
-  mt-2
-"
->
-
-  Ver sede no Google Maps
-
-  <Icon
-    icon="ph:arrow-right"
-    className="transition-transform group-hover:translate-x-1"
-  />
-
-</Link>
+          <ButtonLink button={{
+                        label: "Ver sede no Google Maps",
+                        link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
+                        target: "_blank"
+                      }}
+          />
 
         </div>
 

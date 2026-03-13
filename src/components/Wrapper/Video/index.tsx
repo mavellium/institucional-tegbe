@@ -1,6 +1,6 @@
 import AnimationVideoView from "@/components/Section/AnimationVideoView";
 import { HeroVideoView } from "@/components/Section/HeroVideoView"; // Ajuste o path conforme sua pasta
-import { VideoSection } from "@/enums/video";
+import { VideoSection } from "@/enums/video.enum";
 import { div } from "framer-motion/client";
 
 interface Props {

@@ -1,7 +1,7 @@
 import { Header } from "@/components/Section/Header";
 import Logos from "@/components/Section/Logos";
 import { Companys } from "@/components/Section/Companys";
-import { Footer } from "@/components/Section/Footer";
+import { Footer } from "@/components/web/footer";
 import Schema from "@/components/Section/Schema";
 import { Equipe } from "@/components/Section/Equipe";
 import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
@@ -13,7 +13,7 @@ import ServiceFlow from "@/components/Section/ServiceFlow";
 import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
 import HeadlineWrapper from "@/components/Wrapper/Headline";
 import Video from "@/components/Wrapper/Video";
-import { VideoSection } from "@/enums/video";
+import { VideoSection } from "@/enums/video.enum";
 
 async function getSafeData(slug: string) {
     try {

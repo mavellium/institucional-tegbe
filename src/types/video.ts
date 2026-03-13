@@ -1,4 +1,4 @@
-import { VideoSection } from "@/enums/video";
+import { VideoSection } from "@/enums/video.enum";
 
 export type AnimationSectionData = {
     style: Record<string, any>;

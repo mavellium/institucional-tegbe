@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
+import SocialLink from "../ui/socialLink";
 
 export type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
 
@@ -102,9 +103,9 @@ export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
               {content.desc}
             </p>
             <div className="flex gap-3 pt-2">
-              <SocialLink theme={theme} icon="mdi:instagram" href={footerConfig.general.socials.instagram} />
-              <SocialLink theme={theme} icon="mdi:linkedin" href={footerConfig.general.socials.linkedin} />
-              <SocialLink theme={theme} icon="mdi:youtube" href={footerConfig.general.socials.youtube} />
+              <SocialLink key={1} icon="mdi:instagram" href={footerConfig.general.socials.instagram} />
+              <SocialLink key={2} icon="mdi:linkedin" href={footerConfig.general.socials.linkedin} />
+              <SocialLink key={3} icon="mdi:youtube" href={footerConfig.general.socials.youtube} />
             </div>
           </div>
 
@@ -183,20 +184,6 @@ export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
         <Icon icon="solar:arrow-up-linear" className="w-5 h-5" />
       </button>
     </footer>
-  );
-}
-
-// Subcomponentes para melhor organização e performance
-function SocialLink({ icon, href, theme }: any) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`group p-2.5 rounded-full bg-white/5 hover:-translate-y-1 transition-all duration-300 border border-white/5 ${theme.bgHover} ${theme.iconHoverText}`}
-    >
-      <Icon icon={icon} className="size-5 text-gray-400 group-hover:text-inherit transition-colors" />
-    </Link>
   );
 }
 

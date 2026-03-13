@@ -1,5 +1,5 @@
 import { Header } from "@/components/Section/Header";
-import { Footer } from "@/components/Section/Footer";
+import { Footer } from "@/components/web/footer";
 import Schema from "@/components/Section/Schema";
 import Dores from "@/components/Section/Dores";
 import ComoFazemos from "@/components/Section/ComoFazemos";

@@ -4,9 +4,12 @@ import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Icon } from "@iconify/react";
 import CardFundador from "@/components/ui/cardFundador";
-import { Button } from "@/components/ui/button";
+import ButtonLink from "../ui/buttonLink";
+import ParagrafoTexto from "../ui/paragrafoTexto";
+import Heading from "../ui/heading";
+import Highlight from "../ui/highlight";
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -94,65 +97,37 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
 
 
           <div className="space-y-12">
+
             {/* título */}
-
-            <h2 className="animate-up text-[32px] lg:text-[48px] leading-[1.1] tracking-tight text-[#0A0A0A] font-medium max-w-[720px]">
-
-              Onde a parceria<br/>constrói{" "}
-              <span className="text-[#FFC72C] font-serif italic">
+            <Heading
+              as="h2"
+              size="lg"
+              className="animate-up max-w-[720px]"
+            >
+              Onde a parceria<br />
+              constrói{" "}
+              <Highlight>
                 resultado
-              </span>
-
-            </h2>
+              </Highlight>
+            </Heading>
 
             {/* texto */}
-
             <div className="animate-up max-w-[560px] space-y-7 text-[#444] text-[17px] leading-[1.75] font-light ">
 
-              {data.header.subtitle.split(".  ").map((para: string, i: number) => {
-
-                const text = para.trim();
-                if (!text) return null;
-
-                return (
-                  <p className="text-[#0A0A0A]"  key={i}>
-                    {text}{text.endsWith('.') ? '' : '.'}
-                  </p>
-                );
-
-              })}
+              <ParagrafoTexto
+                content={data.header.subtitle}
+                className="animate-up max-w-[560px]"
+              />
 
             </div>
 
             <div className="animate-up flex justify-center">
 
-              <Button
-                size="lg"
-                className="
-                group
-                bg-[#FFC72C]
-                hover:bg-[#F2CB5E]
-                text-[#0A0A0A]
-                rounded-10
-                px-10
-                py-7
-                text-[12px]
-                font-bold
-                tracking-[0.28em]
-                uppercase
-                shadow-[0_6px_18px_rgba(0,0,0,0.08)]
-                transition-all
-                duration-300
-                ease-out
-                hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)]
-                hover:-translate-y-[1px]
-                active:translate-y-0
-                "
-              >
-
-                Conhecer o Método
-
-              </Button>
+              <ButtonLink button={{
+                            label: "Conhecer o Método",
+                            link: "carreiras",
+                            target: "_blank"
+                          }}/>
 
             </div>
 

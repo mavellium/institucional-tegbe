@@ -1,7 +1,7 @@
 import videoConfig from "@/json/Video2/cursoConfig.json";
 import { Header } from "@/components/Section/Header";
 import Schema from "@/components/Section/Schema";
-import { Footer } from "@/components/Section/Footer";
+import { Footer } from "@/components/web/footer";
 import Expertise from "@/components/Section/Expertise";
 import HeadlineCurso from "@/components/Section/HeadlineCurso";
 import PorqueAprender from "@/components/Section/PorqueAprender";

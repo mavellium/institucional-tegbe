@@ -4,6 +4,10 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Textura from "../ui/textura";
+import Heading from "../ui/heading";
+import Highlight from "../ui/highlight";
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -37,13 +41,7 @@ export function OQueSomos() {
     >
 
       {/* TEXTURA */}
-      <div
-        className="absolute inset-0 opacity-[0.05] pointer-events-none"
-        style={{
-          backgroundImage: "url('/textura.svg')",
-          backgroundRepeat: "repeat"
-        }}
-      />
+      <Textura/>
 
       {/* GRAFISMO DE FUNDO */}
       <div className="absolute left-[-15%] top-1/2 -translate-y-1/2 w-[720px] h-[720px] opacity-[0.03] pointer-events-none">
@@ -61,15 +59,17 @@ export function OQueSomos() {
 
       <div className="relative z-10 max-w-[900px] mx-auto px-6 text-center space-y-8">
 
-        {/* HEADLINE */}
-        <h2 className="manifesto-item text-[30px] md:text-[42px] lg:text-[40] leading-[1.15] text-[#F5F5F5] tracking-tight">
-
-          Somos a nova ordem da{" "}
-          <span className="text-[#F1D95D] italic font-light font-serif">
-            nação empreendedora
-          </span>
-
-        </h2>
+        <Heading
+                    as="h2"
+                    size="p"
+                    className="animate-up manifesto-item text-[30px] md:text-[42px] lg:text-[40] leading-[1.15] tracking-tight"
+                    color="#FFFFFF"
+                  >
+                    Somos a nova ordem da{" "}
+                    <Highlight  color={"F1D95D"}>
+                      nação empreendedora
+                    </Highlight>
+                  </Heading>
 
         {/* TEXTO INTRO */}
         <p className="manifesto-item text-[#fff] text-[13px] md:text-[18px] mx-auto leading-[1.8]">
