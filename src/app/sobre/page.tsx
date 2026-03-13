@@ -6,8 +6,7 @@ import { QuemSomos } from "@/components/web/quemSomos";
 import { OQueSomos } from "@/components/web/oQueSomos";
 import { MetaAlunos } from "@/components/web/metaAlunos";
 import { CarrosselEspecialistas } from "@/components/web/carrosselEspecialistas";
-import { TrabalheConosco } from "@/components/web/trabalheConosco";
-import { ExplicarLogo } from "@/components/web/explicarLogo";
+import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
 import Hero from "@/components/web/hero";
 import Localizacao from "@/components/web/localizacao";
 
@@ -109,7 +108,34 @@ export default async function SobrePage() {
                 <MetaAlunos  />
                 <CarrosselEspecialistas />
                 <Localizacao data={localizacaoFake} />
-                <TrabalheConosco/>
+                <SideBySideSection 
+                    type={"trabalheConosco"}
+                    data={{
+                        "hero": {
+                            "tag": "Quer construir sua carreira na Tegbe?",
+                            "title": "Trabalhe conosco",
+                            "description": "Se você quer crescer ao lado de empreendedores que constroem negócios relevantes, conheça nossas oportunidades.",
+                            "button": {
+                            "label": "Conheça nossas vagas",
+                            "link": "/carreiras"
+                            },
+                            "image": {
+                            "src": "/doni.jpg",
+                            "alt": "Equipe G4"
+                            }
+                        },
+                        "social": {
+                            "tag": "Mantenha-se atualizado",
+                            "title": "Acompanhe nossas mídias",
+                            "items": [
+                            { "icon": "ph:youtube-logo-fill", "link": "#" },
+                            { "icon": "ph:facebook-logo-fill", "link": "#" },
+                            { "icon": "ph:instagram-logo-fill", "link": "#" },
+                            { "icon": "ph:linkedin-logo-fill", "link": "#" }
+                            ]
+                        }
+                    }}
+                />
             </main>
             <Footer />
         </>

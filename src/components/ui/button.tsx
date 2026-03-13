@@ -40,7 +40,7 @@ interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   "aria-label"?: string
-  pressed?: boolean // para botões toggle
+  pressed?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

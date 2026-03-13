@@ -1,9 +1,6 @@
 import Schema from "@/components/Section/Schema";
-import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
 import AgenciasFalham from "@/components/Section/AgenciasFalham";
 import ExploreDetails from "@/components/Section/ExploreDetails";
-import Expertise from "@/components/Section/Expertise";
-import { Companys } from "@/components/Section/Companys";
 import { Empresas } from "@/components/Section/Empresas";
 import { Footer } from "@/components/Section/Footer";
 import { SectionImage } from "@/components/Section/SectionImage";
@@ -11,14 +8,12 @@ import NaoEParaVoce from "@/components/Section/NaoEParaVoce";
 import { Equipe } from "@/components/Section/Equipe";
 import { fetchComponentData } from "@/lib/api";
 import ServiceFlow from "@/components/Section/ServiceFlow";
-import Headline from "@/components/Wrapper/Headline";
 import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video";
 import Parceiro from "@/components/web/parceiro";
 import HeroCarousel from "@/components/Section/HeroCarousel";
-import WorkWithUs from "@/components/Section/WorkWithUs";
-import { TrabalheConosco } from "@/components/web/trabalheConosco";
+import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
@@ -143,7 +138,34 @@ export default async function MarketingPage() {
             <SectionImage variant="marketing" apiData={data} />
             <Equipe variant="marketing" data={equipeData} />
             <Parceiro />
-            <TrabalheConosco />
+            <SideBySideSection
+                type={"AgendarReuniao"}
+                data={{
+                    "hero": {
+                        "tag": "Ficou com dúvida?",
+                        "title": "Agende uma reunião",
+                        "description": "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
+                        "button": {
+                        "label": "Agendar Reunião",
+                        "link": "/reuniao"
+                        },
+                        "image": {
+                        "src": "/doni.jpg",
+                        "alt": "Equipe G4"
+                        }
+                    },
+                    "social": {
+                        "tag": "Mantenha-se atualizado",
+                        "title": "Acompanhe nossas mídias",
+                        "items": [
+                        { "icon": "ph:youtube-logo-fill", "link": "#" },
+                        { "icon": "ph:facebook-logo-fill", "link": "#" },
+                        { "icon": "ph:instagram-logo-fill", "link": "#" },
+                        { "icon": "ph:linkedin-logo-fill", "link": "#" }
+                        ]
+                    }
+                }}
+            />
             <Footer variant="marketing" />
         </>
     );

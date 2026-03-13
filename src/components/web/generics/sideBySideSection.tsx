@@ -2,18 +2,43 @@
 
 import Image from "next/image";
 import { Icon } from "@iconify/react";
+import { Button } from "@/components/ui/button";
+import ButtonLink from "@/components/ui/buttonLink";
 
-const socials = [
-  { icon: "ph:youtube-logo-fill", link: "#" },
-  { icon: "ph:facebook-logo-fill", link: "#" },
-  { icon: "ph:instagram-logo-fill", link: "#" },
-  { icon: "ph:linkedin-logo-fill", link: "#" },
-];
+interface SocialItem {
+  icon: string;
+  link: string;
+}
 
-export function TrabalheConosco() {
+interface SideBySideSectionProps {
+  type: string
+  data: {
+    hero: {
+      tag: string;
+      title: string;
+      description: string;
+      button: {
+        label: string;
+        link: string;
+      };
+      image: {
+        src: string;
+        alt: string;
+      };
+    };
+    social: {
+      tag: string;
+      title: string;
+      items: SocialItem[];
+    };
+  };
+}
+
+export function SideBySideSection({ data }: SideBySideSectionProps) {
+  const { hero, social } = data;
+
   return (
     <section className="bg-[#F7F6F3] py-24">
-
       <div className="max-w-6xl mx-auto px-6">
 
         {/* HERO */}
@@ -23,34 +48,21 @@ export function TrabalheConosco() {
           <div className="space-y-6">
 
             <span className="text-sm text-[#0a0a0a] text-[18px] font-medium">
-              Quer construir sua carreira na G4?
+              {hero.tag}
             </span>
 
             <h2 className="text-4xl lg:text-5xl font-medium text-[#0a0a0a] leading-tight">
-              Trabalhe conosco
+              {hero.title}
             </h2>
 
             <p className="text-lg text-[#0a0a0a] leading-relaxed max-w-md">
-              Se você quer crescer ao lado de empreendedores que
-              constroem negócios relevantes, conheça nossas
-              oportunidades.
+              {hero.description}
             </p>
 
-            <button
-              className="
-              mt-4
-              bg-[#FFC72C]
-              hover:bg-[#F2CB5E]
-              text-black
-              font-semibold
-              px-8
-              py-3
-              rounded-lg
-              transition
-            "
-            >
-              Conheça nossas vagas
-            </button>
+            <ButtonLink button={{
+              label: "Conheça nossas vagas",
+              link: "carreiras"
+            }}/>
 
           </div>
 
@@ -58,8 +70,8 @@ export function TrabalheConosco() {
           <div className="relative w-full h-[320px] lg:h-[340px] rounded-xl overflow-hidden">
 
             <Image
-              src="/doni.jpg"
-              alt="Equipe G4"
+              src={hero.image.src}
+              alt={hero.image.alt}
               fill
               className="object-cover"
             />
@@ -77,32 +89,32 @@ export function TrabalheConosco() {
           <div>
 
             <span className="text-sm text-[#0a0a0a] text-[16px]">
-              Mantenha-se atualizado
+              {social.tag}
             </span>
 
             <h3 className="text-4xl font-medium text-[#0a0a0a] mt-1">
-              Acompanhe nossas mídias
+              {social.title}
             </h3>
 
           </div>
 
           <div className="flex gap-5">
 
-            {socials.map((item, index) => (
+            {social.items.map((item, index) => (
               <a
                 key={index}
                 href={item.link}
                 className="
-                w-12
-                h-12
-                rounded-full
-                bg-black/60
-                flex
-                items-center
-                justify-center
-                text-white
-                hover:scale-105
-                transition
+                  w-12
+                  h-12
+                  rounded-full
+                  bg-black/60
+                  flex
+                  items-center
+                  justify-center
+                  text-white
+                  hover:scale-105
+                  transition
                 "
               >
                 <Icon icon={item.icon} className="text-xl" />
@@ -114,7 +126,6 @@ export function TrabalheConosco() {
         </div>
 
       </div>
-
     </section>
   );
 }
