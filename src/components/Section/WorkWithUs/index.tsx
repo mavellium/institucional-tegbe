@@ -50,7 +50,7 @@ export default function WorkWithUs() {
             <div className="relative aspect-video w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
               <Image 
                 src="/doni.jpg" // Caminho relativo na pasta public
-                alt="Equipe G4 celebrando juntos com instrumentos e confetes"
+                alt="Equipe TEGBE celebrando juntos com instrumentos e confetes"
                 fill // Preenche o container relativo
                 className="object-cover" // Mantém a proporção e cobre a área
                 sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw" // Responsividade de carregamento

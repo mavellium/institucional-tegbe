@@ -12,7 +12,7 @@ const slides = [
     {
         id: 1,
         tag: "PROGRAMA PRESENCIAL",
-        title: "G4 GESTÃO E ESTRATÉGIA",
+        title: "TEGBE GESTÃO E ESTRATÉGIA",
         description: "Construa estratégias sólidas para escalar sua empresa com segurança e velocidade",
         subtext: "Aprenda com líderes de mercado a dominar estratégias e decisões claras que geram resultados em apenas 4 dias.",
         ctaText: "Conheça agora o programa",
@@ -22,7 +22,7 @@ const slides = [
     {
         id: 2,
         tag: "IMERSÃO ONLINE",
-        title: "G4 GROWTH EXTREMO",
+        title: "TEGBE GROWTH EXTREMO",
         description: "Dobre o faturamento da sua empresa utilizando as táticas do Vale do Silício",
         subtext: "Acelere suas vendas com frameworks práticos e validados pelas maiores empresas do mundo.",
         ctaText: "Garantir minha vaga",

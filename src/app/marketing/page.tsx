@@ -141,31 +141,41 @@ export default async function MarketingPage() {
             <SideBySideSection
                 type={"AgendarReuniao"}
                 data={{
-                    "hero": {
-                        "tag": "Ficou com dúvida?",
-                        "title": "Agende uma reunião",
-                        "description": "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
-                        "button": {
-                        "label": "Agendar Reunião",
-                        "link": "/reuniao",
-                        "target" : "_blank"
+                        hero: {
+                            tag: "Ficou com dúvida?",
+                            title: [
+                                { type: "text", value: "Agende uma reunião" }
+                            ],
+                            description: [
+                                {
+                                    type: "text",
+                                    value:
+                                        "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
+                                },
+                            ],
+                            button: {
+                                label: "Agendar Reunião",
+                                link: "/reuniao",
+                                target: "_blank",
+                            },
+                            image: {
+                                src: "/doni.jpg",
+                                alt: "Equipe Tegbe",
+                            },
                         },
-                        "image": {
-                        "src": "/doni.jpg",
-                        "alt": "Equipe G4"
-                        }
-                    },
-                    "social": {
-                            "tag": "Mantenha-se atualizado",
-                            "title": "Acompanhe nossas mídias",
-                            "items": [
-                            { "icon": "mdi:youtube", "link": "#",},
-                            { "icon": "mdi:facebook", "link": "#",  },
-                            { "icon": "mdi:instagram", "link": "#", },
-                            { "icon": "mdi:linkedin", "link": "#", }
-                            ]
-                        }
-                }}
+                        social: {
+                            tag: "Mantenha-se atualizado",
+                            title: [
+                                { type: "text", value: "Acompanhe nossas mídias" }
+                            ],
+                            items: [
+                                { icon: "mdi:youtube", link: "#" },
+                                { icon: "mdi:facebook", link: "#" },
+                                { icon: "mdi:instagram", link: "#" },
+                                { icon: "mdi:linkedin", link: "#" },
+                            ],
+                        },
+                    }}
             />
             <Footer variant="marketing" />
         </>
