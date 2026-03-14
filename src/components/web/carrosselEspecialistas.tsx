@@ -61,7 +61,7 @@ export function CarrosselEspecialistas() {
                       color="#FFFFFF"
                       font="regular"
                     >
-                      E nesse processo reunimos vários <Highlight>especialistas</Highlight>
+                      E nesse processo reunimos vários <Highlight color={"F1D95D"}>especialistas</Highlight>
                     </Heading>
         </div>
 

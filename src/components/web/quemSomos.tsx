@@ -106,7 +106,7 @@ export function QuemSomos({ endpoint = `${process.env.NEXT_PUBLIC_API_URL}/socio
             >
               Onde a parceria<br />
               constrói{" "}
-              <Highlight>
+              <Highlight color={"F1D95D"}>
                 resultado
               </Highlight>
             </Heading>

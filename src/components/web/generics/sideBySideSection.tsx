@@ -113,7 +113,7 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
                 key={index}
                 icon={item.icon}
                 href={item.link}
-                variant="dark"
+                // variant removed or replace with a valid SocialVariant value if needed
               />
             ))}
           </div>
