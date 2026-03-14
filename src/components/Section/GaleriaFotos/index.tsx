@@ -101,7 +101,15 @@ function Card({
 }
 
 // --- COMPONENTE MOBILE (STICKY STACKING) ---
-function StickyStackCardsMobile({ images }: { images: GalleryItem[] }) {
+function StickyStackCardsMobile({ 
+  images, 
+  onLoadMore, 
+  remaining 
+}: { 
+  images: GalleryItem[]; 
+  onLoadMore: () => void; 
+  remaining: number;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -121,7 +129,7 @@ function StickyStackCardsMobile({ images }: { images: GalleryItem[] }) {
           width: "100%",
           height: "100vh",
           pointerEvents: isActive ? "auto" : "none",
-          opacity: isActive,
+          opacity: isActive, // mantém controle de opacidade para transição suave
         }}
         className="flex items-center justify-center"
       >
@@ -134,6 +142,23 @@ function StickyStackCardsMobile({ images }: { images: GalleryItem[] }) {
             scrollYProgress={scrollYProgress}
           />
         ))}
+
+        {/* Botão "Ver mais" fixo na parte inferior */}
+        {remaining > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50"
+          >
+            <button
+              onClick={onLoadMore}
+              className="px-6 py-3 rounded-full border border-[#FFD700]/30 bg-black/70 backdrop-blur-md text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-colors shadow-lg"
+            >
+              Ver mais ({remaining} restantes)
+            </button>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );
@@ -266,19 +291,11 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
 
         {/* RENDERIZAÇÃO CONDICIONAL */}
         {isMobile ? (
-          <>
-            <StickyStackCardsMobile images={images.slice(0, visibleCount)} />
-            {visibleCount < images.length && (
-              <div className="flex justify-center mt-8">
-                <button
-                  onClick={handleLoadMore}
-                  className="px-6 py-3 rounded-full border border-[#FFD700]/30 bg-black/50 backdrop-blur-md text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-colors"
-                >
-                  Ver mais ({images.length - visibleCount} restantes)
-                </button>
-              </div>
-            )}
-          </>
+  <StickyStackCardsMobile
+    images={images.slice(0, visibleCount)}
+    onLoadMore={handleLoadMore}
+    remaining={images.length - visibleCount}
+  />
         ) : (
           /* VERSÃO DESKTOP (masonry) */
           <>
