@@ -100,16 +100,16 @@ export function CarrosselEspecialistas() {
 
     <section className="bg-[#0A0A0A] py-16 overflow-hidden selection:bg-[#B38E5D]/30">
 
-      <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-16">
 
         {/* HEADER */}
 
-        <div className="text-center mb-16">
+        <div className="text-center mb-10 md:mb-16">
 
           <Heading
             as="h2"
             size="p"
-            className="text-2xl md:text-4xl tracking-tight"
+            className="text-xl sm:text-2xl md:text-4xl"
             color="#FFFFFF"
           >
             <RichText content={data.header.title} />
@@ -123,8 +123,9 @@ export function CarrosselEspecialistas() {
 
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={1}
+            spaceBetween={16}
+            slidesPerView={1.15}
+            centeredSlides
             loop
             autoplay={{ delay: 5000 }}
             navigation={{
@@ -136,8 +137,9 @@ export function CarrosselEspecialistas() {
               el: ".especialistas-pagination"
             }}
             breakpoints={{
-              640: { slidesPerView: 2 },
-              768: { slidesPerView: 3 },
+              640: { slidesPerView: 1.6 },
+              768: { slidesPerView: 2.3 },
+              1024: { slidesPerView: 3 },
               1280: { slidesPerView: 4 }
             }}
           >
@@ -175,7 +177,7 @@ export function CarrosselEspecialistas() {
 
         </div>
 
-        <div className="especialistas-pagination flex justify-center gap-3 mt-12" />
+        <div className="especialistas-pagination flex justify-center gap-3 mt-8 md:mt-12" />
 
       </div>
       <style jsx global>{`

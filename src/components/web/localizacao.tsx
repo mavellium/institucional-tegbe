@@ -14,8 +14,6 @@ import { RichTextItem } from "@/types/richText.type";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ---------------- TYPES ---------------- */
-
 export interface LocalizacaoItem {
   id: string;
   alt: string;
@@ -29,9 +27,6 @@ export interface LocalizacaoItem {
     target?: "_blank" | "_self";
   };
 }
-
-/* ---------------- MOCK DATA ---------------- */
-
 const mockData: LocalizacaoItem[] = [
   {
     id: "1",
@@ -115,14 +110,10 @@ const mockData: LocalizacaoItem[] = [
   }
 ];
 
-/* ---------------- COMPONENT ---------------- */
-
 export default function Localizacao() {
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [data, setData] = useState<LocalizacaoItem[]>(mockData);
-
-  /* ---------------- API FETCH ---------------- */
 
   useEffect(() => {
 
@@ -136,13 +127,11 @@ export default function Localizacao() {
 
         const json = await res.json();
 
-        if (json?.length) {
-          setData(json);
-        }
+        if (json?.length) setData(json);
 
-      } catch (err) {
+      } catch {
 
-        console.warn("Localizacao usando mockData", err);
+        console.warn("Localizacao usando mockData");
 
       }
 
@@ -154,35 +143,31 @@ export default function Localizacao() {
 
   const main = data[0];
 
-  const images = data
-    .map((item) => item.image)
-    .filter(Boolean);
-
-  /* ---------------- GSAP ---------------- */
+  const images = data.map((item) => item.image).filter(Boolean);
 
   useGSAP(() => {
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-        start: "top 70%",
-      },
+        start: "top 75%"
+      }
     });
 
-    tl.from(".loc-left", {
-      y: 60,
+    tl.from(".loc-right", {
+      y: 40,
       opacity: 0,
       duration: 0.9,
-      ease: "power3.out",
+      ease: "power3.out"
     });
 
     tl.from(
-      ".loc-right",
+      ".loc-left",
       {
-        y: 60,
+        y: 40,
         opacity: 0,
         duration: 0.9,
-        ease: "power3.out",
+        ease: "power3.out"
       },
       "-=0.6"
     );
@@ -195,45 +180,49 @@ export default function Localizacao() {
 
     <section
       ref={sectionRef}
-      className="relative bg-black py-28 lg:py-36 overflow-hidden selection:bg-[#C5A47E]/30"
+      className="relative bg-black py-20 lg:py-36 overflow-hidden selection:bg-[#C5A47E]/30"
     >
 
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-24 items-center relative z-10">
+      <div className="max-w-7xl mx-auto px-6">
 
-        {/* TEXTO */}
+        <div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-24">
 
-        <div className="loc-left space-y-10">
+          {/* TEXTO */}
 
-          <Heading
-            as="h2"
-            size="lg"
-            className="max-w-[720px]"
-            color="#FFFFFF"
-            font="regular"
-          >
-            <RichText content={main.title} />
-          </Heading>
+          <div className="loc-left w-full lg:w-1/2 space-y-8 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
 
-          <div className="text-white/80 text-lg leading-relaxed max-w-lg">
+            <Heading
+              as="h2"
+              size="lg"
+              className="max-w-[720px]"
+              color="#FFFFFF"
+              font="regular"
+            >
+              <RichText content={main.title} />
+            </Heading>
 
-            <RichText content={main.description} />
+            <div className="text-white/80 text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
+
+              <RichText content={main.description} />
+
+            </div>
+
+            <div className="border-t border-white/10 flex items-center justify-center lg:justify-start w-24 mx-auto lg:mx-0" />
+
+            <div className="flex justify-center lg:justify-start">
+              <ButtonLink button={main.button} />
+            </div>
 
           </div>
 
-          <div className="flex gap-12 pt-8 border-t border-white/10" />
+          <div className="loc-right w-full lg:w-1/2 mb-6 lg:mb-0">
 
-          <ButtonLink button={main.button} />
+            <FotoCarrossel
+              images={images}
+              alt={main.alt}
+            />
 
-        </div>
-
-        {/* CARROSSEL */}
-
-        <div className="loc-right relative">
-
-          <FotoCarrossel
-            images={images}
-            alt={main.alt}
-          />
+          </div>
 
         </div>
 

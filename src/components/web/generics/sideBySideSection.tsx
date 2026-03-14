@@ -84,37 +84,39 @@ export function SideBySideSection({
   const { hero, social } = content;
 
   return (
-    <section className="bg-[#F7F6F3] py-24">
+    <section className="bg-[#F7F6F3] py-16 lg:py-24">
       <div className="max-w-6xl mx-auto px-6">
 
         {/* HERO */}
 
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
 
-          <div className="space-y-6">
+          <div className="space-y-7 lg:space-y-6 text-center lg:text-left max-w-xl mx-auto lg:mx-0 order-2 lg:order-1">
 
             {hero.tag && (
-              <span className="text-[18px] font-medium text-[#0a0a0a]">
+              <span className="flex justify-center lg:justify-start text-[18px] font-medium text-[#0a0a0a]">
                 {hero.tag}
               </span>
             )}
 
-            <Heading as="h2" size="lg" className="animate-up max-w-[720px]">
+            <Heading as="h2" size="lg" className="flex justify-center lg:justify-start animate-up max-w-[720px]">
               <RichText content={hero.title} />
             </Heading>
 
-            <div className="text-lg text-[#0a0a0a] leading-relaxed max-w-md">
+            <div className="text-lg text-[#0a0a0a] leading-relaxed max-w-lg text-center lg:text-left mx-auto lg:mx-0">
               <RichText content={hero.description} />
             </div>
 
             {hero.button && (
-              <ButtonLink button={hero.button} />
+               <div className="flex justify-center lg:justify-start">
+                            <ButtonLink button={hero.button} />
+                          </div>
             )}
 
           </div>
 
           {hero.image?.src && (
-            <div className="relative w-full h-[320px] lg:h-[340px] rounded-xl overflow-hidden">
+            <div className="relative w-full h-[260px] sm:h-[300px] lg:h-[340px] rounded-xl overflow-hidden order-1 lg:order-2">
               <Image
                 src={hero.image.src}
                 alt={hero.image.alt || ""}
@@ -131,7 +133,7 @@ export function SideBySideSection({
 
         {/* SOCIAL */}
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+        <div className="flex flex-col items-center text-center md:flex-row md:items-center md:justify-between md:text-left gap-6 md:gap-8">
 
           <div className="space-y-2">
 
@@ -149,7 +151,7 @@ export function SideBySideSection({
 
           {social.items?.length > 0 && (
 
-            <div className="flex gap-5">
+            <div className="flex gap-4 sm:gap-5 justify-center md:justify-start">
 
               {social.items.map((item, index) => (
 

@@ -20,8 +20,8 @@ if (typeof window !== "undefined") {
 }
 
 type Founder = {
-  name: string;
-  role: string;
+  name: RichTextItem[];
+  role: RichTextItem[];
   image: string;
 
   socials: {
@@ -34,6 +34,7 @@ type Founder = {
     name: string;
   }[];
 };
+
 
 type SobreData = {
   header: {
@@ -72,7 +73,7 @@ const mockData: SobreData = {
           type: "text",
           value:
             "Nossa fundação foi motivada por uma falha clara no mercado: empresas com excelente potencial, mas travadas por falta de um método prático. Percebemos que o empresário não precisava de mais relatórios teóricos, mas de um aliado que soubesse desenhar canais de vendas e, mais importante, soubesse como fazê-los funcionar no dia a dia."
-        
+
         }
       ],
       [
@@ -80,7 +81,7 @@ const mockData: SobreData = {
           type: "text",
           value:
             "Começamos no terreno fértil do Mercado Livre. Como consultoria certificada e agência de marketing digital, aprendemos a unir a inteligência estratégica à execução implacável."
-       
+
         }
       ],
       [
@@ -88,7 +89,7 @@ const mockData: SobreData = {
           type: "text",
           value:
             "Com o tempo, essa relação de confiança com nossos parceiros nos fez evoluir. Entendemos que o nosso papel é atuar como um braço de engenharia de vendas dentro do negócio, auxiliando no desenvolvimento de canais de forma estruturada. O que começou como um suporte operacional transformou-se em uma estrutura capaz de orientar decisões de alto nível, sustentar o crescimento e ampliar o impacto de quem faz o Brasil avançar."
-        
+
         }
       ],
       [
@@ -96,7 +97,7 @@ const mockData: SobreData = {
           type: "text",
           value:
             "Na Tegbe, a sua meta é a nossa bússola. Não entregamos apenas uma solução de vendas; entregamos a presença estratégica e a prática necessária para transformar cada canal em uma máquina de escala e lucro."
-        
+
         }
       ]
     ]
@@ -109,20 +110,18 @@ const mockData: SobreData = {
   },
 
   founder: {
-    name: "Donizete Caetano",
-    role: "Fundador da Tegbe • Especialista em Escala",
+    name: [{ type: "text", value: "Donizete Caetano" }],
+    role: [{ type: "text", value: "Fundador da Tegbe • Especialista em Escala" }],
     image: "/teste2.png",
-
     socials: [
       { icon: "ph:instagram-logo", link: "#" },
-      { icon: "ph:linkedin-logo", link: "#" }
+      { icon: "ph:linkedin-logo", link: "#" },
     ],
-
     companies: [
-      { logo: "simple-icons:mercadolibre", name: "Mercado Livre" },
+      { logo: "simple-icons:mercadopago", name: "Mercado Livre" },
       { logo: "simple-icons:amazon", name: "Amazon" },
-      { logo: "simple-icons:shopee", name: "Shopee" }
-    ]
+      { logo: "simple-icons:shopee", name: "Shopee" },
+    ],
   }
 };
 
@@ -200,26 +199,25 @@ export function QuemSomos({
 
       <div className="relative max-w-6xl mx-auto px-6">
 
-        <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-24 items-start">
+        <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-24 items-start">
 
-          {/* TEXTO */}
-
-          <div className="space-y-12">
+          <div className="space-y-10 lg:space-y-12">
 
             <Heading
               as="h2"
               size="lg"
-              className="animate-up max-w-[720px]"
+              className="animate-up max-w-[720px] mx-auto lg:mx-0 text-center lg:text-left"
               font="medium"
             >
               <RichText content={data.header.title} />
             </Heading>
 
-            <div className="space-y-6 max-w-[560px]">
+            <div className="space-y-5 max-w-[560px] mx-auto lg:mx-0 text-center lg:text-left">
+
               {data.header.subtitle.map((paragraph, i) => (
                 <Paragrafo
                   key={i}
-                  className="animate-up text-[#0A0A0A] text-[17px]"
+                  className="animate-up text-[#0A0A0A] text-[16px] sm:text-[17px]"
                 >
                   <RichText content={paragraph} />
                 </Paragrafo>
@@ -233,11 +231,9 @@ export function QuemSomos({
 
           </div>
 
-          {/* CARD FUNDADOR */}
+          <div className="animate-up flex justify-center lg:justify-end lg:sticky lg:top-10 mt-4 lg:mt-0">
 
-          <div className="animate-up flex justify-center lg:justify-end lg:sticky lg:top-10">
-
-            <div className="w-full max-w-[420px]">
+            <div className="w-full max-w-[420px] flex justify-center">
               <CardFundador data={data.founder} />
             </div>
 

@@ -89,7 +89,7 @@ export function MetaAlunos() {
 
     gsap.from(".meta-item", {
       scrollTrigger: trigger,
-      y: 24,
+      y: 18,
       opacity: 0,
       stagger: 0.12,
       duration: 0.9,
@@ -135,16 +135,16 @@ export function MetaAlunos() {
 
     <section
       ref={containerRef}
-      className="relative bg-[#FAFAF8] py-24 lg:py-32 text-center overflow-hidden selection:bg-[#F1D95D]/30"
+      className="relative bg-[#FAFAF8] py-20 lg:py-32 text-center overflow-hidden selection:bg-[#F1D95D]/30"
     >
 
       <Textura opacity={0.03} />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 space-y-16">
+      <div className="relative z-10 max-w-3xl lg:max-w-4xl max-w-xl mx-auto px-6 space-y-12 lg:space-y-16">
 
         {/* HEADER */}
 
-        <div className="space-y-6">
+        <div className="space-y-5 lg:space-y-6">
 
           <Heading
             as="h2"
@@ -154,7 +154,7 @@ export function MetaAlunos() {
             <RichText content={data.header.title} />
           </Heading>
 
-          <Paragrafo className="meta-item text-[#0A0A0A] text-[18px] mx-auto">
+          <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px] max-w-xl mx-auto">
             <RichText content={data.header.subtitle} />
           </Paragrafo>
 
@@ -168,7 +168,7 @@ export function MetaAlunos() {
 
         {/* FOOTER */}
 
-        <Paragrafo className="meta-item text-[#0A0A0A] text-[18px]">
+        <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px]">
           <RichText content={data.footer} />
         </Paragrafo>
 
