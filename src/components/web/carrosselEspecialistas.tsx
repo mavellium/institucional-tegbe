@@ -100,7 +100,7 @@ export function CarrosselEspecialistas() {
 
     <section className="bg-[#0A0A0A] py-16 overflow-hidden selection:bg-[#B38E5D]/30">
 
-      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-8 xl:px-16">
 
         {/* HEADER */}
 
@@ -125,7 +125,6 @@ export function CarrosselEspecialistas() {
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={16}
             slidesPerView={1.15}
-            centeredSlides
             loop
             autoplay={{ delay: 5000 }}
             navigation={{
@@ -137,10 +136,10 @@ export function CarrosselEspecialistas() {
               el: ".especialistas-pagination"
             }}
             breakpoints={{
-              640: { slidesPerView: 1.6 },
-              768: { slidesPerView: 2.3 },
-              1024: { slidesPerView: 3 },
-              1280: { slidesPerView: 4 }
+              640: { slidesPerView: 1.6, centeredSlides: true },
+              768: { slidesPerView: 2.3, centeredSlides: true },
+              1024: { slidesPerView: 3, centeredSlides: true },
+              1280: { slidesPerView: 4, centeredSlides: false } // <-- desativado
             }}
           >
 
