@@ -9,7 +9,7 @@ type SocialVariant =
   | "ecommerce"
   | "marketing"
   | "ghost"
-    "dark";
+  | "dark";
 
 type SocialSize = "sm" | "md" | "lg";
 
