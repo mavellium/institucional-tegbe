@@ -4,25 +4,87 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import Textura from "../ui/textura";
 import Heading from "../ui/heading";
-import Highlight from "../ui/highlight";
-
+import RichText from "../ui/richText";
+import Paragrafo from "../ui/paragrafo";
+import { RichTextItem } from "@/types/richText.type";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+/* ---------------- TYPES ---------------- */
+
+type OQueSomosData = {
+  header: {
+    title: RichTextItem[];
+  };
+  paragraphs: RichTextItem[][];
+};
+
+/* ---------------- MOCK DATA ---------------- */
+
+const mockData: OQueSomosData = {
+  header: {
+    title: [
+      { type: "text", value: "Somos a nova ordem da " },
+      { type: "highlight", value: "nação empreendedora", color: "#F1D95D" }
+    ]
+  },
+
+  paragraphs: [
+    [
+      {
+        type: "text",
+        value:
+          "Uma plataforma de soluções corporativas para orientar quem lidera empresas reais, em um país com desafios reais."
+      }
+    ],
+
+    [
+      { type: "text", value: "A TEGBE é " },
+      {
+        type: "highlight",
+        value: "instrumento de poder para empresários brasileiros.",
+        color: "#F1D95D",
+        serif: false,
+        italic: false
+      },
+      {
+        type: "text",
+        value:
+          " Bússola, método, rede, influência e inteligência para empresas que fazem a diferença no Brasil."
+      }
+    ],
+
+    [
+      {
+        type: "text",
+        value:
+          "Unimos conhecimento aplicado, comunidade de alto nível e serviços selecionados sob um princípio simples: dar direção, voz e poder aos empresários que fazem o Brasil avançar."
+      }
+    ]
+  ]
+};
+
+/* ---------------- COMPONENT ---------------- */
+
 export function OQueSomos() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const data = mockData;
+
   useGSAP(() => {
+
+    if (!containerRef.current) return;
 
     gsap.from(".manifesto-item", {
       scrollTrigger: {
         trigger: containerRef.current,
-        start: "top 85%",
+        start: "top 85%"
       },
       opacity: 0,
       y: 20,
@@ -40,11 +102,14 @@ export function OQueSomos() {
       className="relative bg-[#0A0A0A] py-24 lg:py-32 overflow-hidden selection:bg-[#F1D95D]/30"
     >
 
-      {/* TEXTURA */}
-      <Textura/>
+      <Textura />
 
-      {/* GRAFISMO DE FUNDO */}
-      <div className="absolute left-[-15%] top-1/2 -translate-y-1/2 w-[720px] h-[720px] opacity-[0.03] pointer-events-none">
+      {/* GRAFISMO */}
+
+      <div
+        aria-hidden
+        className="absolute left-[-15%] top-1/2 -translate-y-1/2 w-[720px] h-[720px] opacity-[0.03] pointer-events-none"
+      >
 
         <svg viewBox="0 0 100 100" fill="none" className="text-[#F1D95D] w-full h-full">
 
@@ -57,46 +122,40 @@ export function OQueSomos() {
 
       </div>
 
-      <div className="relative z-10 max-w-[900px] mx-auto px-6 text-center space-y-8">
+      <div className="relative z-10 max-w-[900px] mx-auto px-6 text-center space-y-10">
+
+        {/* TITLE */}
 
         <Heading
-                    as="h2"
-                    size="p"
-                    className="animate-up manifesto-item text-[30px] md:text-[42px] lg:text-[40] leading-[1.15] tracking-tight"
-                    color="#FFFFFF"
-                  >
-                    Somos a nova ordem da{" "}
-                    <Highlight  color={"F1D95D"}>
-                      nação empreendedora
-                    </Highlight>
-                  </Heading>
+          as="h2"
+          size="p"
+          className="manifesto-item text-[30px] md:text-[42px] leading-[1.15] tracking-tight"
+          color="#FFFFFF"
+        >
+          <RichText content={data.header.title} />
+        </Heading>
 
-        {/* TEXTO INTRO */}
-        <p className="manifesto-item text-[#fff] text-[13px] md:text-[18px] mx-auto leading-[1.8]">
+        {/* PARAGRAPHS */}
 
-          Uma plataforma de soluções corporativas para orientar quem lidera empresas reais, em um país com desafios reais.
+        <div className="space-y-6">
 
-        </p>
+          {data.paragraphs.map((paragraph, i) => (
 
-        {/* TEXTO PRINCIPAL */}
-        <p className="manifesto-item text-[#FFFFFF] text-[16px] md:text-[18px] leading-[1.8] mx-auto font-light">
+            <Paragrafo
+              key={i}
+              className="manifesto-item text-[#FFFFFF] text-[16px] md:text-[19px] font-light"
+            >
 
-          O G4 é <span className="text-[#F1D95D] font-medium">
-          instrumento de poder para empresários brasileiros.
-          </span> Bússola, método, rede, influência e inteligência para empresas que fazem a diferença no Brasil.
+              <RichText content={paragraph} />
 
-        </p>
+            </Paragrafo>
 
-        {/* TEXTO FINAL */}
-        <p className="manifesto-item text-[#fff] text-[18px] leading-[1.8] mx-auto">
+          ))}
 
-          Unimos conhecimento aplicado, comunidade de alto nível e serviços selecionados sob um princípio simples: dar direção, voz e poder aos empresários que fazem o Brasil avançar.
-
-        </p>
+        </div>
 
       </div>
 
     </section>
-
   );
 }

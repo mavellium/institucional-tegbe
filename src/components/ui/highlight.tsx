@@ -4,18 +4,24 @@ interface HighlightProps {
   children: React.ReactNode;
   className?: string;
   color: HighlightColor;
+  withSerif?: boolean;
+  withItalic?: boolean;
 }
 
-type HighlightColor = "F1D95D" | "FFC72C"
+export type HighlightColor = "#FFC72C" | "#F1D95D"
 
 
-export default function Highlight({ children, className, color = "FFC72C" }: HighlightProps) {
+export default function Highlight({ children, className, color, withSerif = true, withItalic = true}: HighlightProps) {
+  let serif = withSerif ? "font-serif" : "";
+  let italic = withItalic ? "italic" : "";
+
   return (
     <span
       className={cn(
-        `text-[#${color}] font-serif italic`,
+        `${serif} ${italic}`,
         className
       )}
+       style={{ color: color }}
     >
       {children}
     </span>

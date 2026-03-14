@@ -10,73 +10,7 @@ import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
 import Hero from "@/components/web/hero";
 import Localizacao from "@/components/web/localizacao";
 
-// 1. Centralização de Configurações
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const REVALIDATE_TIME = 3600; // Otimizado: 1 hora (60s é muito pouco para página 'sobre')
-
-// 2. Fetcher Único Otimizado (Evita repetição de código)
-async function getPageData(slug: string, isComponent = false) {
-    try {
-        if (isComponent) {
-            const res = await fetchComponentData(slug);
-            // Sanitização profunda para evitar erros de serialização (Client Components)
-            return JSON.parse(JSON.stringify(res?.data?.sobre || null));
-        }
-        
-        const res = await fetch(`${API_URL}/${slug}`, {
-            next: { revalidate: REVALIDATE_TIME }
-        });
-        
-        if (!res.ok) return [];
-        const json = await res.json();
-        return JSON.parse(JSON.stringify(json?.values || []));
-    } catch (e) {
-        console.error(`[SobrePage] Erro em ${slug}:`, e);
-        return isComponent ? null : [];
-    }
-}
-
-export const localizacaoFake = [
-  {
-    id: "1",
-    alt: "Escritório Tegbe em Garça",
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c",
-    title: "Nosso QG estratégico fica em Garça, São Paulo.",
-    description:
-      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-  },
-  {
-    id: "2",
-    alt: "Ambiente de trabalho da equipe",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-    title: "Nosso QG estratégico fica em Garça, São Paulo.",
-    description:
-      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-  },
-  {
-    id: "3",
-    alt: "Time trabalhando em projetos digitais",
-    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72",
-    title: "Nosso QG estratégico fica em Garça, São Paulo.",
-    description:
-      "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-  }
-];
-
 export default async function SobrePage() {
-    // 3. Execução em Paralelo (All-or-Nothing Treatment)
-    // Buscamos apenas o que é essencial para o carregamento inicial
-    const [
-        localizacaoData,
-        metricasData,
-        empresasData,
-        ctaData
-    ] = await Promise.all([
-        getPageData('localizacao'),
-        getPageData('metricas'),
-        getPageData('empresas', true),
-        getPageData('call-to-action', true)
-    ]);
 
     return (
         <>
@@ -102,41 +36,51 @@ export default async function SobrePage() {
 
             <Header />
             <main>
-                <Hero/>
-                <QuemSomos /> 
-                <OQueSomos />
-                <MetaAlunos  />
-                <CarrosselEspecialistas />
-                <Localizacao data={localizacaoFake} />
+                <Hero />
+                <QuemSomos /> {/* Pronto */}
+                <OQueSomos /> {/* Pronto */}
+                <MetaAlunos /> {/* Pronto */}
+                <CarrosselEspecialistas /> {/* Pronto */}
+                <Localizacao /> {/* Pronto */}
                 <SideBySideSection 
                     type={"trabalheConosco"}
                     data={{
-                        "hero": {
-                            "tag": "Quer construir sua carreira na Tegbe?",
-                            "title": "Trabalhe conosco",
-                            "description": "Se você quer crescer ao lado de empreendedores que constroem negócios relevantes, conheça nossas oportunidades.",
-                            "button": {
-                            "label": "Conheça nossas vagas",
-                            "link": "/carreiras",
-                            "target": "_blank"
+                        hero: {
+                            tag: "Quer construir sua carreira na Tegbe?",
+                            title: [
+                                { type: "text", value: "Trabalhe conosco" }
+                            ],
+                            description: [
+                                {
+                                    type: "text",
+                                    value:
+                                        "Se você quer crescer ao lado de empreendedores que constroem negócios relevantes, conheça nossas oportunidades.",
+                                },
+                            ],
+                            button: {
+                                label: "Conheça nossas vagas",
+                                link: "/carreiras",
+                                target: "_blank",
                             },
-                            "image": {
-                            "src": "/doni.jpg",
-                            "alt": "Equipe G4"
-                            }
+                            image: {
+                                src: "/doni.jpg",
+                                alt: "Equipe Tegbe",
+                            },
                         },
-                        "social": {
-                            "tag": "Mantenha-se atualizado",
-                            "title": "Acompanhe nossas mídias",
-                            "items": [
-                            { "icon": "mdi:youtube", "link": "#",},
-                            { "icon": "mdi:facebook", "link": "#",  },
-                            { "icon": "mdi:instagram", "link": "#", },
-                            { "icon": "mdi:linkedin", "link": "#", }
-                            ]
-                        }
+                        social: {
+                            tag: "Mantenha-se atualizado",
+                            title: [
+                                { type: "text", value: "Acompanhe nossas mídias" }
+                            ],
+                            items: [
+                                { icon: "mdi:youtube", link: "#" },
+                                { icon: "mdi:facebook", link: "#" },
+                                { icon: "mdi:instagram", link: "#" },
+                                { icon: "mdi:linkedin", link: "#" },
+                            ],
+                        },
                     }}
-                />
+                /> {/* Pronto */}
             </main>
             <Footer />
         </>

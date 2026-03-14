@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import RichText from "./richText";
+import { RichTextItem } from "@/types/richText.type";
 
 interface EspecialistaProps {
   nome: string;
   sobrenome: string;
-  cargo: string;
+  cargo: RichTextItem[];
   imagem: string;
 }
 
@@ -16,7 +18,8 @@ export function CardEspecialista({
   imagem,
 }: EspecialistaProps) {
   return (
-    <div className="
+    <div
+      className="
       relative
       h-full
       aspect-[3/5.5]
@@ -29,10 +32,10 @@ export function CardEspecialista({
       hover:border-[#C5A47E]/40
       transition-all
       duration-500
-      
-    ">
-
+    "
+    >
       {/* FOTO */}
+
       <div className="absolute inset-0">
 
         <Image
@@ -51,19 +54,24 @@ export function CardEspecialista({
         />
 
         {/* overlay cinematic */}
-        <div className="
+
+        <div
+          className="
           absolute
           inset-0
           bg-gradient-to-t
           from-black
           via-black/40
           to-transparent
-        "/>
+        "
+        />
 
       </div>
 
       {/* CONTEÚDO */}
-      <div className="
+
+      <div
+        className="
         relative
         z-10
         h-full
@@ -71,47 +79,58 @@ export function CardEspecialista({
         flex-col
         justify-end
         p-7
-      ">
+      "
+      >
 
         {/* NOME */}
+
         <div className="space-y-1">
 
-          <h3 className="
+          <h3
+            className="
             text-white
             text-2xl
             font-serif
             leading-none
             tracking-tight
-          ">
+          "
+          >
             {nome}
           </h3>
 
-          <span className="
+          <span
+            className="
             text-[#F1D95D]
             italic
             font-serif
             text-2xl
-          ">
+          "
+          >
             {sobrenome}
           </span>
 
         </div>
 
         {/* CARGO */}
-        <p className="
+
+        <div
+          className="
           mt-3
           text-white/70
           text-sm
           leading-relaxed
           max-w-[85%]
-        ">
-          {cargo}
-        </p>
+        "
+        >
+          <RichText content={cargo} />
+        </div>
 
       </div>
 
       {/* glow hover */}
-      <div className="
+
+      <div
+        className="
         absolute
         inset-0
         opacity-0
@@ -120,7 +139,8 @@ export function CardEspecialista({
         duration-700
         pointer-events-none
         bg-[radial-gradient(circle_at_50%_0%,rgba(197,164,126,0.2),transparent_60%)]
-      "/>
+      "
+      />
 
     </div>
   );

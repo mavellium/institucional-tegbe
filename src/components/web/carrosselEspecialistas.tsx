@@ -1,121 +1,183 @@
 "use client";
 
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { Icon } from "@iconify/react";
 
-// Import Swiper styles
+import Heading from "../ui/heading";
+import RichText from "../ui/richText";
+import { CardEspecialista } from "../ui/cardEspecialista";
+
+import { RichTextItem } from "@/types/richText.type";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { CardEspecialista } from "../ui/cardEspecialista";
-import Heading from "../ui/heading";
-import Highlight from "../ui/highlight";
 
+/* ---------------- TYPES ---------------- */
 
-const especialistas = [
-  {
-    nome: "Rafael",
-    sobrenome: "Milagre",
-    cargo: "Fundador da Viver de AI, professor de IA na ESPM e mentor do G4.",
-    imagem: "/doni.jpg",
-  },
-  {
-    nome: "Marcelo",
-    sobrenome: "Camargo",
-    cargo: "Ex-diretor Nacional da Ambev e Labatt Breweries.",
-    imagem: "/doni.jpg",
-  },
-  {
-    nome: "Fabíola",
-    sobrenome: "Overrath",
-    cargo: "Cofundadora do Edubank e Ex-Diretora de Pessoas da Ambev.",
-    imagem: "/doni.jpg",
-  },
-  {
-    nome: "Tomás",
-    sobrenome: "Duarte",
-    cargo: "CEO e co-fundador da Track.co.",
-    imagem: "/doni.jpg",
-  },
-  {
-    nome: "Donizete",
-    sobrenome: "Caetano",
-    cargo: "Fundador da Tegbe e Especialista em Escala de E-commerce.",
-    imagem: "/doni.jpg",
-  },
-];
+type CarrosselEspecialistasData = {
+  header: {
+    title: RichTextItem[];
+  };
+
+  especialistas: {
+    nome: string;
+    sobrenome: string;
+    cargo: RichTextItem[];
+    imagem: string;
+  }[];
+};
+
+/* ---------------- MOCK DATA ---------------- */
+
+const mockData: { especialistas: CarrosselEspecialistasData } = {
+  especialistas: {
+
+    header: {
+      title: [
+        { type: "text", value: "E nesse processo reunimos vários " },
+        { type: "highlight", value: "especialistas", color: "#F1D95D" }
+      ]
+    },
+
+    especialistas: [
+      {
+        nome: "Rafael",
+        sobrenome: "Milagre",
+        cargo: [
+          { type: "text", value: "Fundador da Viver de AI, professor de IA na ESPM e mentor do TEGBE." }
+        ],
+        imagem: "/doni.jpg"
+      },
+
+      {
+        nome: "Marcelo",
+        sobrenome: "Camargo",
+        cargo: [
+          { type: "text", value: "Ex-diretor Nacional da Ambev e Labatt Breweries." }
+        ],
+        imagem: "/doni.jpg"
+      },
+
+      {
+        nome: "Fabíola",
+        sobrenome: "Overrath",
+        cargo: [
+          { type: "text", value: "Cofundadora do Edubank e Ex-Diretora de Pessoas da Ambev." }
+        ],
+        imagem: "/doni.jpg"
+      },
+
+      {
+        nome: "Tomás",
+        sobrenome: "Duarte",
+        cargo: [
+          { type: "text", value: "CEO e co-fundador da Track.co." }
+        ],
+        imagem: "/doni.jpg"
+      },
+
+      {
+        nome: "Donizete",
+        sobrenome: "Caetano",
+        cargo: [
+          { type: "text", value: "Fundador da Tegbe e Especialista em Escala de E-commerce." }
+        ],
+        imagem: "/doni.jpg"
+      }
+    ]
+  }
+};
+
+/* ---------------- COMPONENT ---------------- */
 
 export function CarrosselEspecialistas() {
+
+  const data = mockData.especialistas;
+
   return (
+
     <section className="bg-[#0A0A0A] py-16 overflow-hidden selection:bg-[#B38E5D]/30">
+
       <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-16">
 
-        {/* Título Estilo G4 */}
+        {/* HEADER */}
+
         <div className="text-center mb-16">
-           <Heading
-                      as="h2"
-                      size="p"
-                      className="animate-up text-2xl md:text-4xl tracking-tight"
-                      color="#FFFFFF"
-                      font="regular"
-                    >
-                      E nesse processo reunimos vários <Highlight color={"F1D95D"}>especialistas</Highlight>
-                    </Heading>
+
+          <Heading
+            as="h2"
+            size="p"
+            className="text-2xl md:text-4xl tracking-tight"
+            color="#FFFFFF"
+          >
+            <RichText content={data.header.title} />
+          </Heading>
+
         </div>
 
-        {/* Slider Container */}
+        {/* SLIDER */}
+
         <div className="relative">
+
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20} // Espaço entre os cards
-            slidesPerView={1} // Mobile default
-            loop={true}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            spaceBetween={20}
+            slidesPerView={1}
+            loop
+            autoplay={{ delay: 5000 }}
             navigation={{
-              nextEl: ".swiper-button-next-custom",
-              prevEl: ".swiper-button-prev-custom",
+              nextEl: ".especialistas-next",
+              prevEl: ".especialistas-prev"
             }}
-            pagination={{ clickable: true, el: ".swiper-pagination-custom" }}
+            pagination={{
+              clickable: true,
+              el: ".especialistas-pagination"
+            }}
             breakpoints={{
-              // Tablet: 2 cards
               640: { slidesPerView: 2 },
-              // Desktop Médio: 3 cards
               768: { slidesPerView: 3 },
-              // Desktop Large: Exatamente 4 cards
-              1280: { slidesPerView: 4 },
+              1280: { slidesPerView: 4 }
             }}
-            className="mySwiper !static" // !static permite que as setas fiquem posicionadas em relação à seção
           >
-            {especialistas.map((esp, index) => (
-              <SwiperSlide key={index}>
-                {/* h-full garante que todos os cards tenham a mesma altura */}
-                <div className="h-full pb-4">
-                  <CardEspecialista
-                    nome={esp.nome}
-                    sobrenome={esp.sobrenome}
-                    cargo={esp.cargo}
-                    imagem={esp.imagem}
-                  />
-                </div>
+
+            {data.especialistas.map((esp, i) => (
+
+              <SwiperSlide key={i}>
+
+                <CardEspecialista
+                  nome={esp.nome}
+                  sobrenome={esp.sobrenome}
+                  imagem={esp.imagem}
+                  cargo={esp.cargo}
+                />
+
               </SwiperSlide>
+
             ))}
+
           </Swiper>
 
-          {/* Botões de Navegação (Posicionados para fora dos cards) */}
-          <button className="swiper-button-prev-custom absolute left-[-40px] lg:left-[-50px] top-1/2 -translate-y-1/2 w-12 h-12 text-white/50 hover:text-[#C5A47E] transition-all z-30 disabled:opacity-0 hidden md:flex items-center justify-center">
-            <Icon icon="ph:caret-left-light" className="text-4xl" />
+          {/* NAVIGATION */}
+
+          <button className="especialistas-prev absolute left-[-40px] top-1/2 -translate-y-1/2 hidden md:flex">
+
+            <Icon icon="ph:caret-left-light" className="text-4xl text-white/50" />
+
           </button>
-          <button className="swiper-button-next-custom absolute right-[-40px] lg:right-[-50px] top-1/2 -translate-y-1/2 w-12 h-12 text-white/50 hover:text-[#C5A47E] transition-all z-30 disabled:opacity-0 hidden md:flex items-center justify-center">
-            <Icon icon="ph:caret-right-light" className="text-4xl" />
+
+          <button className="especialistas-next absolute right-[-40px] top-1/2 -translate-y-1/2 hidden md:flex">
+
+            <Icon icon="ph:caret-right-light" className="text-4xl text-white/50" />
+
           </button>
+
         </div>
 
-        {/* Dots Customizados */}
-        <div className="swiper-pagination-custom flex justify-center gap-3 mt-12" />
-      </div>
+        <div className="especialistas-pagination flex justify-center gap-3 mt-12" />
 
+      </div>
       <style jsx global>{`
         .swiper-pagination-bullet {
           background: #ffffff !important;
@@ -131,5 +193,6 @@ export function CarrosselEspecialistas() {
         }
       `}</style>
     </section>
+
   );
 }

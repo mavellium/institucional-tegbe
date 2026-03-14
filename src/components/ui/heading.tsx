@@ -1,10 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-
-type HeadingLevel = "h1" | "h2" | "h3" | "h4";
-type HeadingSize = "sm" | "md" | "lg" | "xl" | "p";
-type HeadingFont = "light" | "regular" | "medium" | "bold" | "black"
+import { HeadingFont, HeadingLevel, HeadingSize } from "@/types/formatacaoText.type";
 
 interface HeadingProps {
   children: React.ReactNode;

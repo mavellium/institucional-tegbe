@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
-// --- INTERFACES PARA O SCHEMA MAVELLIUM ---
 interface Stat {
   label: string;
   value: string;
