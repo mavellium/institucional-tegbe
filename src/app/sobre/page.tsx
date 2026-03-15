@@ -61,6 +61,7 @@ export default async function SobrePage() {
                                 label: "Conheça nossas vagas",
                                 link: "/carreiras",
                                 target: "_blank",
+                                
                             },
                             image: {
                                 src: "/doni.jpg",

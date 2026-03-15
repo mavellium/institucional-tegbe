@@ -23,7 +23,7 @@ interface HeroData {
     label: string;
     link: string;
     target: TargetVideo;
-    variant: Variant
+    variant?: Variant
   };
   image?: {
     src: string;
