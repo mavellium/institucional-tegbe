@@ -183,6 +183,7 @@ export default async function MarketingPage() {
                                 label: "Agendar Reunião",
                                 link: "/reuniao",
                                 target: "_blank",
+                                variant:"marketing"
                             },
                             image: {
                                 src: "/doni.jpg",

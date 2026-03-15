@@ -82,8 +82,8 @@ export default function HeroSlideContent({ slide, isActive }: HeroSlideContentPr
               label: slide.ctaText,
               link: slide.ctaLink,
               target: "_blank",
+              variant:"marketing"
             }}
-            variant="marketing"
           />
         </motion.div>
       )}

@@ -8,6 +8,7 @@ import Heading from "@/components/ui/heading";
 import RichText from "@/components/ui/richText";
 
 import { TargetVideo } from "@/app/types/target-button.types";
+import { Variant } from "@/types/variant.type";
 
 interface SocialItem {
   icon: string;
@@ -22,6 +23,7 @@ interface HeroData {
     label: string;
     link: string;
     target: TargetVideo;
+    variant: Variant
   };
   image?: {
     src: string;
