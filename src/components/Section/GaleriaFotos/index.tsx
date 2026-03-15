@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useMediaQuery } from "react-responsive";
 
-// --- TIPAGEM ---
+// --- TIPAGEM (mantida igual) ---
 export interface GalleryItem {
   id: string;
   alt: string;
@@ -43,7 +43,7 @@ interface GaleriaFotosProps {
 const CARD_HEIGHT = 400;
 const CARD_GAP = 10;
 
-// --- COMPONENTE CARD INDIVIDUAL (para uso exclusivo no mobile) ---
+// --- COMPONENTE CARD INDIVIDUAL (inalterado) ---
 function Card({
   image,
   index,
@@ -74,7 +74,7 @@ function Card({
         scale,
         opacity,
         position: "absolute",
-        top: "20%",
+        top: "10%",
         left: "50%",
         x: "-50%",
         zIndex: index,
@@ -100,14 +100,24 @@ function Card({
   );
 }
 
-// --- COMPONENTE MOBILE (STICKY STACKING) ---
-function StickyStackCardsMobile({ 
-  images, 
-  onLoadMore, 
-  remaining 
-}: { 
-  images: GalleryItem[]; 
-  onLoadMore: () => void; 
+// --- COMPONENTE MOBILE (STICKY STACKING COM HEADER INTEGRADO) ---
+function StickyStackCardsMobile({
+  images,
+  headerContent,
+  onLoadMore,
+  remaining
+}: {
+  images: GalleryItem[];
+  headerContent: {
+    badgeText?: string;
+    badgeIcon?: string;
+    titleLine1?: string;
+    titleLine2?: string;
+    highlightWords?: string;
+    description?: string;
+    renderHighlightedText: (text: string, words: string) => React.ReactNode;
+  };
+  onLoadMore: () => void;
   remaining: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,6 +129,10 @@ function StickyStackCardsMobile({
   const totalCards = images.length;
   const isActive = useTransform(scrollYProgress, [0, 0.01, 0.99, 1], [0, 1, 1, 0]);
 
+  // Animação do header: fade out nos primeiros 15% do progresso
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.07], [1, 0]);
+  const headerY = useTransform(scrollYProgress, [0, 0.15], [0, -50]);
+
   return (
     <div ref={containerRef} className="relative" style={{ height: `${totalCards * 100}vh` }}>
       <motion.div
@@ -129,10 +143,49 @@ function StickyStackCardsMobile({
           width: "100%",
           height: "100vh",
           pointerEvents: isActive ? "auto" : "none",
-          opacity: isActive, // mantém controle de opacidade para transição suave
+          opacity: isActive,
         }}
         className="flex items-center justify-center"
       >
+        {/* Header animado (desaparece no início da rolagem) */}
+        {(headerContent.badgeText || headerContent.titleLine1 || headerContent.titleLine2) && (
+          <motion.div
+            style={{
+              opacity: headerOpacity,
+              y: headerY,
+              position: "absolute",
+              top: "15%", // posicionado no topo da área fixa
+              left: 0,
+              right: 0,
+              zIndex: 60,
+              textAlign: "center",
+              pointerEvents: "none", // não bloqueia cliques
+            }}
+            className="px-4"
+          >
+            {headerContent.badgeText && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-4">
+                <Icon icon={headerContent.badgeIcon || "ph:users-three-fill"} className="text-[#FFD700] w-4 h-4" />
+                <span className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
+                  {headerContent.badgeText}
+                </span>
+              </div>
+            )}
+            {(headerContent.titleLine1 || headerContent.titleLine2) && (
+              <h2 className="text-3xl font-bold text-white tracking-tight mb-2">
+                {headerContent.titleLine1 && <>{headerContent.titleLine1} <br /></>}
+                {headerContent.titleLine2 && headerContent.renderHighlightedText(headerContent.titleLine2, headerContent.highlightWords || "")}
+              </h2>
+            )}
+            {headerContent.description && (
+              <p className="text-gray-400 text-base font-light max-w-md mx-auto">
+                {headerContent.description}
+              </p>
+            )}
+          </motion.div>
+        )}
+
+        {/* Cards */}
         {images.map((image, index) => (
           <Card
             key={image.id}
@@ -143,7 +196,7 @@ function StickyStackCardsMobile({
           />
         ))}
 
-        {/* Botão "Ver mais" fixo na parte inferior */}
+        {/* Botão "Ver mais" */}
         {remaining > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -164,7 +217,7 @@ function StickyStackCardsMobile({
   );
 }
 
-// --- COMPONENTE PRINCIPAL ---
+// --- COMPONENTE PRINCIPAL (modificado) ---
 export default function GaleriaFotos({ data }: GaleriaFotosProps) {
   const containerRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
@@ -258,14 +311,25 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
     setVisibleCount((prev) => Math.min(prev + 10, images.length));
   };
 
+  // Prepara o conteúdo do header para passar ao componente mobile
+  const headerContent = {
+    badgeText,
+    badgeIcon,
+    titleLine1,
+    titleLine2,
+    highlightWords,
+    description,
+    renderHighlightedText,
+  };
+
   return (
-    <section ref={containerRef} className="py-24 bg-[#020202] relative">
+    <section ref={containerRef} className={`bg-[#020202] relative ${!isMobile ? 'py-24' : ''}`}>
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
 
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
-        {/* HEADER DINÂMICO */}
-        {hasHeaderContent && (
+        {/* Em desktop, o header permanece fora do sticky */}
+        {!isMobile && hasHeaderContent && (
           <div className="flex flex-col items-center text-center mb-16 max-w-3xl mx-auto">
             {badgeText && (
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
@@ -275,29 +339,28 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
                 </span>
               </div>
             )}
-
             {(titleLine1 || titleLine2) && (
               <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
                 {titleLine1 && <>{titleLine1} <br /></>}
                 {titleLine2 && renderHighlightedText(titleLine2, highlightWords || "")}
               </h2>
             )}
-
             {description && (
               <p className="text-gray-400 text-lg font-light leading-relaxed">{description}</p>
             )}
           </div>
         )}
 
-        {/* RENDERIZAÇÃO CONDICIONAL */}
+        {/* Renderização condicional mobile/desktop */}
         {isMobile ? (
-  <StickyStackCardsMobile
-    images={images.slice(0, visibleCount)}
-    onLoadMore={handleLoadMore}
-    remaining={images.length - visibleCount}
-  />
+          <StickyStackCardsMobile
+            images={images.slice(0, visibleCount)}
+            headerContent={headerContent}
+            onLoadMore={handleLoadMore}
+            remaining={images.length - visibleCount}
+          />
         ) : (
-          /* VERSÃO DESKTOP (masonry) */
+          /* VERSÃO DESKTOP (masonry) - inalterada */
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 py-30 gap-4 md:gap-6 min-h-[800px] overflow-hidden mask-gradient-b">
               {/* COLUNA 1 */}
@@ -305,9 +368,8 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
                 {col1.map((img) => (
                   <div
                     key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${
-                      img.span === "row-span-2" ? "h-[400px]" : "h-[250px]"
-                    }`}
+                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-2" ? "h-[400px]" : "h-[250px]"
+                      }`}
                   >
                     <Image
                       width={400}
@@ -328,9 +390,8 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
                 {col2.map((img) => (
                   <div
                     key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${
-                      img.span === "row-span-2" ? "h-[450px]" : "h-[300px]"
-                    }`}
+                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-2" ? "h-[450px]" : "h-[300px]"
+                      }`}
                   >
                     <Image
                       width={400}
@@ -351,9 +412,8 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
                 {col3.map((img) => (
                   <div
                     key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${
-                      img.span === "row-span-3" ? "h-[500px]" : "h-[350px]"
-                    }`}
+                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-3" ? "h-[500px]" : "h-[350px]"
+                      }`}
                   >
                     <Image
                       width={400}
@@ -386,7 +446,7 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
           </>
         )}
 
-        {/* CTA Button (geral) */}
+        {/* CTA Button (geral) - mantido fora para desktop e mobile (opcional) */}
         {ctaButtonText && (
           <div className="relative z-30 flex justify-center -mt-10">
             <button className="px-8 py-3 rounded-full border border-white/10 bg-black/50 backdrop-blur-md text-white text-sm font-bold hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] transition-all duration-300">
