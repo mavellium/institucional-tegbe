@@ -3,14 +3,16 @@
 import { cn } from "@/lib/utils";
 
 interface TexturaProps {
-  src?: string;
+  src?: string;               // imagem de fundo
+  backgroundImage?: string;   // permite passar gradientes ou múltiplos layers
   opacity?: number;
   className?: string;
   misturar?: boolean;
 }
 
 export default function Textura({
-  src = "/textura.svg",
+  src,
+  backgroundImage,
   opacity = 0.05,
   className,
   misturar = false,
@@ -24,8 +26,13 @@ export default function Textura({
       )}
       style={{
         opacity,
-        backgroundImage: `url('${src}')`,
+        backgroundImage: backgroundImage
+          ? backgroundImage
+          : src
+          ? `url('${src}')`
+          : undefined,
         backgroundRepeat: "repeat",
+        backgroundSize: "auto",
       }}
     />
   );

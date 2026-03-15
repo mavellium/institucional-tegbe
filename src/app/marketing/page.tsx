@@ -12,8 +12,9 @@ import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video.enum";
 import Parceiro from "@/components/web/parceiro";
-import HeroCarousel from "@/components/Section/HeroCarousel";
+import HeroCarousel from "@/components/web/generics/heroCarrossel";
 import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
+import { HeroSlide } from "@/types/heroSlide.type";
 
 // 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
@@ -69,6 +70,31 @@ export default async function MarketingPage() {
     const servicesData = servicesResponse?.values || [];
     const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
 
+    const mockSlides: HeroSlide[] = [
+  {
+    id: 1,
+    tag: "PROGRAMA PRESENCIAL",
+    title: "TEGBE GESTÃO E ESTRATÉGIA",
+    description: "Construa estratégias sólidas para escalar sua empresa",
+    subtext: "Aprenda com líderes de mercado em apenas 4 dias.",
+    ctaText: "Conheça agora",
+    ctaLink: "#",
+    image: "/exemplo_carrossel.png",
+  },
+  {
+    id: 2,
+    tag: "IMERSÃO ONLINE",
+    title: "TEGBE GROWTH EXTREMO",
+    description: "Dobre o faturamento da sua empresa",
+    subtext: "Táticas do Vale do Silício aplicáveis imediatamente.",
+    ctaText: "Garantir minha vaga",
+    ctaLink: "#",
+    image: "/exemplo_carrossel.png",
+  },
+];
+
+<HeroCarousel slides={mockSlides} type="home" />
+
     return (
         <>
             <Schema
@@ -116,7 +142,7 @@ export default async function MarketingPage() {
                 }}
             />
             <Navbar variant="marketing" />
-            <HeroCarousel />
+            <HeroCarousel slides={mockSlides} type={"Hero"} />
             <AgenciasFalham />
             <Video2
                 slug="video-marketing"
