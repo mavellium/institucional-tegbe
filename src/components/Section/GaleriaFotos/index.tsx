@@ -1,71 +1,63 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { useScroll, useTransform, motion } from "framer-motion";
+import { useRef, useEffect, useState, useMemo } from "react";
+import { useScroll, useTransform, motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useMediaQuery } from "react-responsive";
 
-// --- TIPAGEM (mantida igual) ---
-export interface GalleryItem {
+// --- CONFIGURAÇÕES DO STACK ---
+const CARD_HEIGHT = 400;
+const CARD_GAP = 12;
+
+interface GalleryItem {
   id: string;
   alt: string;
   image: string;
-  span: string;
-}
-
-interface TextContent {
-  cta?: {
-    button?: string;
-    cardTitle?: string;
-    cardDescription?: string;
-  };
-  badge?: {
-    icon?: string;
-    text?: string;
-  };
-  title?: {
-    line1?: string;
-    line2?: string;
-    highlightWords?: string;
-  };
-  description?: string;
 }
 
 interface GaleriaFotosProps {
   data: {
-    data?: GalleryItem[];
-    textContent?: TextContent;
-  } | null | any;
+    data: GalleryItem[];
+    textContent: {
+      badge?: { icon?: string; text?: string };
+      title?: { line1?: string; line2?: string; highlightWords?: string };
+      description?: string;
+    };
+  };
 }
 
-// --- CONSTANTES ---
-const CARD_HEIGHT = 400;
-const CARD_GAP = 10;
-
-// --- COMPONENTE CARD INDIVIDUAL (inalterado) ---
-function Card({
-  image,
+// --- COMPONENTE DE CARD INDIVIDUAL ---
+function MobileStackCard({
+  img,
   index,
   totalCards,
   scrollYProgress,
 }: {
-  image: GalleryItem;
+  img: GalleryItem;
   index: number;
   totalCards: number;
   scrollYProgress: any;
 }) {
   const startRange = index / totalCards;
   const endRange = (index + 1) / totalCards;
-  const finalY = (index - (totalCards - 1) / 2) * CARD_GAP;
+
+  // Calcula a posição final ideal (centralizada com espaçamento)
+  let finalY = (index - (totalCards - 1) / 2) * CARD_GAP;
+
+  // Limita o deslocamento máximo para não ultrapassar a viewport
+  // 35vh é um valor empírico; ajuste conforme necessário
+  const MAX_DISPLACEMENT = 35; // em vh
+  finalY = Math.min(finalY, MAX_DISPLACEMENT);
+  finalY = Math.max(finalY, -MAX_DISPLACEMENT);
 
   const y = useTransform(scrollYProgress, [startRange, endRange], [600, finalY]);
   const scale = useTransform(
     scrollYProgress,
     [endRange, 1],
-    [1, 1 - (totalCards - 1 - index) * 0.03]
+    [1, 1 - (totalCards - 1 - index) * 0.025]
   );
-  const opacity = useTransform(scrollYProgress, [startRange, startRange + 0.02], [0, 1]);
+  const opacity = useTransform(scrollYProgress, [startRange, startRange + 0.03], [0, 1]);
 
   return (
     <motion.div
@@ -74,64 +66,63 @@ function Card({
         scale,
         opacity,
         position: "absolute",
-        top: "10%",
         left: "50%",
         x: "-50%",
         zIndex: index,
       }}
-      className="w-full max-w-md px-4"
+      className="w-full max-w-[350px] px-4"
     >
       <div
-        className="relative rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+        className="relative rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden bg-zinc-900"
         style={{ height: CARD_HEIGHT }}
       >
-        <Image
-          src={image.image}
-          alt={image.alt}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-          <span className="text-white font-bold text-lg">{image.alt}</span>
+        <Image src={img.image} alt={img.alt} fill className="object-cover" sizes="100vw" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent flex items-end p-8">
+          <span className="text-white font-bold text-lg uppercase tracking-widest">
+            {img.alt}
+          </span>
         </div>
       </div>
     </motion.div>
   );
 }
 
-// --- COMPONENTE MOBILE (STICKY STACKING COM HEADER INTEGRADO) ---
-function StickyStackCardsMobile({
-  images,
-  headerContent,
-  onLoadMore,
-  remaining
-}: {
-  images: GalleryItem[];
-  headerContent: {
-    badgeText?: string;
-    badgeIcon?: string;
-    titleLine1?: string;
-    titleLine2?: string;
-    highlightWords?: string;
-    description?: string;
-    renderHighlightedText: (text: string, words: string) => React.ReactNode;
-  };
-  onLoadMore: () => void;
-  remaining: number;
-}) {
+// --- COMPONENTE MOBILE: STICKY STACK (COM OFFSET AJUSTADO) ---
+// --- COMPONENTE MOBILE: STICKY STACK (COM FADE SUAVE NO FINAL E BOTÃO CONTROLADO) ---
+// --- COMPONENTE MOBILE: STICKY STACK (COM SAÍDA ANTECIPADA E SEM INVASÃO) ---
+function MobileStack({ images, onLoadMore, hasMore }: { images: GalleryItem[]; onLoadMore: () => void; hasMore: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start end", "end start"],
   });
 
   const totalCards = images.length;
-  const isActive = useTransform(scrollYProgress, [0, 0.01, 0.99, 1], [0, 1, 1, 0]);
 
-  // Animação do header: fade out nos primeiros 15% do progresso
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.07], [1, 0]);
-  const headerY = useTransform(scrollYProgress, [0, 0.15], [0, -50]);
+  // Opacidade da área fixa: começa em 1, começa a desaparecer após 60% do progresso
+  // e atinge ZERO exatamente em 95% (antes do fim)
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.6, 0.95, 1],
+    [1, 1, 0, 0] // de 95% a 100% permanece 0
+  );
+
+  // Opacidade do botão: aparece entre 50% e 85% do progresso
+  const buttonOpacity = useTransform(
+    scrollYProgress,
+    [0.5, 0.6, 0.85, 0.95],
+    [0, 1, 1, 0]
+  );
+
+  // Pointer events: só quando opacidade > 0.1
+  const pointerEvents = useTransform(opacity, (v) => (v > 0.1 ? "auto" : "none"));
+
+  // Escala sutil no final
+  const scale = useTransform(
+    scrollYProgress,
+    [0.7, 0.95],
+    [1, 0.95]
+  );
 
   return (
     <div ref={containerRef} className="relative" style={{ height: `${totalCards * 100}vh` }}>
@@ -142,73 +133,33 @@ function StickyStackCardsMobile({
           left: 0,
           width: "100%",
           height: "100vh",
-          pointerEvents: isActive ? "auto" : "none",
-          opacity: isActive,
+          pointerEvents,
+          opacity,
+          scale,
         }}
         className="flex items-center justify-center"
       >
-        {/* Header animado (desaparece no início da rolagem) */}
-        {(headerContent.badgeText || headerContent.titleLine1 || headerContent.titleLine2) && (
-          <motion.div
-            style={{
-              opacity: headerOpacity,
-              y: headerY,
-              position: "absolute",
-              top: "15%", // posicionado no topo da área fixa
-              left: 0,
-              right: 0,
-              zIndex: 60,
-              textAlign: "center",
-              pointerEvents: "none", // não bloqueia cliques
-            }}
-            className="px-4"
-          >
-            {headerContent.badgeText && (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-4">
-                <Icon icon={headerContent.badgeIcon || "ph:users-three-fill"} className="text-[#FFD700] w-4 h-4" />
-                <span className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
-                  {headerContent.badgeText}
-                </span>
-              </div>
-            )}
-            {(headerContent.titleLine1 || headerContent.titleLine2) && (
-              <h2 className="text-3xl font-bold text-white tracking-tight mb-2">
-                {headerContent.titleLine1 && <>{headerContent.titleLine1} <br /></>}
-                {headerContent.titleLine2 && headerContent.renderHighlightedText(headerContent.titleLine2, headerContent.highlightWords || "")}
-              </h2>
-            )}
-            {headerContent.description && (
-              <p className="text-gray-400 text-base font-light max-w-md mx-auto">
-                {headerContent.description}
-              </p>
-            )}
-          </motion.div>
-        )}
-
-        {/* Cards */}
-        {images.map((image, index) => (
-          <Card
-            key={image.id}
-            image={image}
+        {images.map((img, index) => (
+          <MobileStackCard
+            key={img.id}
+            img={img}
             index={index}
             totalCards={totalCards}
             scrollYProgress={scrollYProgress}
           />
         ))}
 
-        {/* Botão "Ver mais" */}
-        {remaining > 0 && (
+        {hasMore && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            style={{ opacity: buttonOpacity }}
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50"
           >
             <button
               onClick={onLoadMore}
-              className="px-6 py-3 rounded-full border border-[#FFD700]/30 bg-black/70 backdrop-blur-md text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-colors shadow-lg"
+              className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#FFD700]/30 bg-black text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-all duration-300 shadow-lg"
             >
-              Ver mais ({remaining} restantes)
+              <Icon icon="ph:plus-circle-fill" className="text-xl group-hover:rotate-90 transition-transform" />
+              VER MAIS FOTOS
             </button>
           </motion.div>
         )}
@@ -217,242 +168,140 @@ function StickyStackCardsMobile({
   );
 }
 
-// --- COMPONENTE PRINCIPAL (modificado) ---
+// --- COMPONENTE PRINCIPAL ---
 export default function GaleriaFotos({ data }: GaleriaFotosProps) {
-  const containerRef = useRef(null);
-  const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [visibleCount, setVisibleCount] = useState(11);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  // Parallax (apenas desktop)
   const { scrollYProgress } = useScroll({
-    target: isClient ? containerRef : undefined,
+    target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const { images, texts } = useMemo(() => {
+    if (!data) return { images: [], texts: {} };
+    return { images: data.data || [], texts: data.textContent || {} };
+  }, [data]);
 
-  const renderHighlightedText = (text: string, wordsToHighlight: string) => {
-    if (!text || !wordsToHighlight) return text;
-    const wordsArray = wordsToHighlight.split(",").map((word) => word.trim());
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMore = visibleCount < images.length;
+
+  // Desktop Parallax
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -180]);
+
+  const renderTitle = () => {
+    const { line1, line2, highlightWords } = texts.title || {};
+    if (!line2 || !highlightWords) return <>{line1} <br /> {line2}</>;
+    const wordsArray = highlightWords.split(",").map(w => w.trim());
     const regex = new RegExp(`(${wordsArray.join("|")})`, "gi");
-    return text.split(regex).map((part, index) => {
-      if (wordsArray.some((word) => part.toLowerCase() === word.toLowerCase())) {
-        return (
-          <span
-            key={index}
-            className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]"
-          >
-            {part}
-          </span>
-        );
-      }
-      return part;
-    });
-  };
-
-  const processData = (data: any): { images: GalleryItem[]; texts: TextContent } => {
-    const result = { images: [] as GalleryItem[], texts: {} as TextContent };
-    if (!data) return result;
-
-    if (data.data && Array.isArray(data.data)) {
-      result.images = data.data
-        .map((item: any) => ({
-          id: item.id || "",
-          alt: item.alt || "",
-          image: item.image || "",
-          span: item.span || "row-span-1",
-        }))
-        .filter((item: { image: any; }) => item.image);
-    }
-
-    if (data.textContent) {
-      result.texts = data.textContent;
-    }
-
-    return result;
-  };
-
-  if (!isClient) {
     return (
-      <section className="py-24 bg-[#020202] relative">
-        <div className="container px-4 md:px-6 relative z-10 mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 min-h-[800px]" />
-        </div>
-      </section>
+      <>
+        {line1} <br />
+        {line2.split(regex).map((part, i) =>
+          wordsArray.some(w => part.toLowerCase() === w.toLowerCase()) ? (
+            <span key={i} className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </>
     );
-  }
-
-  const { images, texts } = processData(data);
-  const badgeText = texts?.badge?.text;
-  const badgeIcon = texts?.badge?.icon;
-  const titleLine1 = texts?.title?.line1;
-  const titleLine2 = texts?.title?.line2;
-  const highlightWords = texts?.title?.highlightWords;
-  const description = texts?.description;
-  const ctaButtonText = texts?.cta?.button;
-  const ctaCardTitle = texts?.cta?.cardTitle;
-  const ctaCardDescription = texts?.cta?.cardDescription;
-
-  if (!images || images.length === 0) return null;
-
-  const hasHeaderContent = badgeText || titleLine1 || titleLine2 || description;
-  const col1 = images.slice(0, 3);
-  const col2 = images.slice(3, 6);
-  const col3 = images.slice(6, 9);
+  };
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 10, images.length));
+    setVisibleCount(prev => Math.min(prev + 6, images.length));
   };
 
-  // Prepara o conteúdo do header para passar ao componente mobile
-  const headerContent = {
-    badgeText,
-    badgeIcon,
-    titleLine1,
-    titleLine2,
-    highlightWords,
-    description,
-    renderHighlightedText,
-  };
+  if (!images.length) return null;
 
   return (
-    <section ref={containerRef} className={`bg-[#020202] relative ${!isMobile ? 'py-24' : ''}`}>
-      {/* Background Ambience */}
+    <section ref={containerRef} className="bg-[#020202] relative">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
 
-      <div className="container px-4 md:px-6 relative z-10 mx-auto">
-        {/* Em desktop, o header permanece fora do sticky */}
-        {!isMobile && hasHeaderContent && (
-          <div className="flex flex-col items-center text-center mb-16 max-w-3xl mx-auto">
-            {badgeText && (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
-                <Icon icon={badgeIcon || "ph:users-three-fill"} className="text-[#FFD700] w-4 h-4" />
-                <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-[#FFD700] uppercase">
-                  {badgeText}
-                </span>
-              </div>
-            )}
-            {(titleLine1 || titleLine2) && (
-              <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
-                {titleLine1 && <>{titleLine1} <br /></>}
-                {titleLine2 && renderHighlightedText(titleLine2, highlightWords || "")}
-              </h2>
-            )}
-            {description && (
-              <p className="text-gray-400 text-lg font-light leading-relaxed">{description}</p>
-            )}
-          </div>
-        )}
+      <div className="container px-4 md:px-6 relative z-10 mx-auto py-12 md:py-24">
+        {/* HEADER COM MARGEM INFERIOR REDUZIDA */}
+        <div className="flex flex-col items-center text-center mb-8 md:mb-16 max-w-3xl mx-auto">
+          {texts.badge?.text && (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
+              <Icon icon={texts.badge.icon || "ph:camera-fill"} className="text-[#FFD700] w-4 h-4" />
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
+                {texts.badge.text}
+              </span>
+            </div>
+          )}
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-6">
+            {renderTitle()}
+          </h2>
+          <p className="text-gray-400 text-lg font-light">{texts.description}</p>
+        </div>
 
-        {/* Renderização condicional mobile/desktop */}
-        {isMobile ? (
-          <StickyStackCardsMobile
-            images={images.slice(0, visibleCount)}
-            headerContent={headerContent}
-            onLoadMore={handleLoadMore}
-            remaining={images.length - visibleCount}
-          />
-        ) : (
-          /* VERSÃO DESKTOP (masonry) - inalterada */
+        {mounted && (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 py-30 gap-4 md:gap-6 min-h-[800px] overflow-hidden mask-gradient-b">
-              {/* COLUNA 1 */}
-              <motion.div style={{ y: y1 }} className="flex flex-col gap-4 md:gap-6">
-                {col1.map((img) => (
-                  <div
-                    key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-2" ? "h-[400px]" : "h-[250px]"
-                      }`}
-                  >
-                    <Image
-                      width={400}
-                      height={250}
-                      src={img.image}
-                      alt={img.alt}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
+            {isMobile ? (
+              // MOBILE: STICKY STACK (ativado mais cedo)
+              <MobileStack
+                images={visibleImages}
+                onLoadMore={handleLoadMore}
+                hasMore={hasMore}
+              />
+            ) : (
+              // DESKTOP: GRID COM PARALLAX
+              <>
+                <div className="grid grid-cols-3 gap-8 mb-32">
+                  {[0, 1, 2].map((colIdx) => (
+                    <motion.div
+                      key={colIdx}
+                      style={{ y: colIdx === 0 ? y1 : colIdx === 1 ? y2 : y3 }}
+                      className={`flex flex-col gap-8 ${colIdx === 1 ? 'pt-24' : ''}`}
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {visibleImages.filter((_, i) => i % 3 === colIdx).map((img) => (
+                          <motion.div
+                            layout
+                            key={img.id}
+                            className="relative rounded-3xl overflow-hidden group border border-white/5 h-[400px]"
+                          >
+                            <Image
+                              src={img.image}
+                              alt={img.alt}
+                              fill
+                              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                              <span className="text-[#FFD700] text-xs font-bold tracking-widest uppercase">
+                                {img.alt}
+                              </span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  ))}
+                </div>
 
-              {/* COLUNA 2 */}
-              <motion.div style={{ y: y2 }} className="flex flex-col gap-4 md:gap-6 pt-12 md:pt-24">
-                {col2.map((img) => (
-                  <div
-                    key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-2" ? "h-[450px]" : "h-[300px]"
-                      }`}
-                  >
-                    <Image
-                      width={400}
-                      height={300}
-                      src={img.image}
-                      alt={img.alt}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* COLUNA 3 */}
-              <motion.div style={{ y: y3 }} className="hidden md:flex flex-col gap-4 md:gap-6">
-                {col3.map((img) => (
-                  <div
-                    key={img.id}
-                    className={`relative rounded-2xl overflow-hidden group border border-white/5 hover:border-[#FFD700]/30 transition-all duration-500 ${img.span === "row-span-3" ? "h-[500px]" : "h-[350px]"
-                      }`}
-                  >
-                    <Image
-                      width={400}
-                      height={350}
-                      src={img.image}
-                      alt={img.alt}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">{img.alt}</span>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Card extra de CTA (apenas desktop) */}
-                {(ctaCardTitle || ctaCardDescription) && (
-                  <div className="relative rounded-2xl overflow-hidden bg-[#0A0A0A] border border-[#FFD700]/20 flex flex-col items-center justify-center p-6 text-center h-[300px] group cursor-pointer hover:bg-[#FFD700]/5 transition-colors">
-                    <div className="w-12 h-12 rounded-full bg-[#FFD700]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Icon icon="ph:plus-bold" className="text-[#FFD700] w-6 h-6" />
-                    </div>
-                    {ctaCardTitle && <h3 className="text-white font-bold text-lg mb-2">{ctaCardTitle}</h3>}
-                    {ctaCardDescription && <p className="text-gray-500 text-xs">{ctaCardDescription}</p>}
+                {/* Botão "Ver mais" no desktop */}
+                {hasMore && (
+                  <div className="flex justify-center mt-10">
+                    <button
+                      onClick={handleLoadMore}
+                      className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#FFD700]/30 bg-black text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-all duration-300"
+                    >
+                      <Icon icon="ph:plus-circle-fill" className="text-xl group-hover:rotate-90 transition-transform" />
+                      VER MAIS FOTOS ({hasMore ? images.length - visibleCount : 0} restantes)
+                    </button>
                   </div>
                 )}
-              </motion.div>
-            </div>
-
-            {/* Fade bottom (desktop) */}
-            <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#020202] to-transparent pointer-events-none z-20" />
+              </>
+            )}
           </>
-        )}
-
-        {/* CTA Button (geral) - mantido fora para desktop e mobile (opcional) */}
-        {ctaButtonText && (
-          <div className="relative z-30 flex justify-center -mt-10">
-            <button className="px-8 py-3 rounded-full border border-white/10 bg-black/50 backdrop-blur-md text-white text-sm font-bold hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] transition-all duration-300">
-              {ctaButtonText}
-            </button>
-          </div>
         )}
       </div>
     </section>
