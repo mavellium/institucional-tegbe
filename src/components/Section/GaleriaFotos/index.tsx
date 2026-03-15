@@ -90,6 +90,7 @@ function MobileStackCard({
 // --- COMPONENTE MOBILE: STICKY STACK (COM OFFSET AJUSTADO) ---
 // --- COMPONENTE MOBILE: STICKY STACK (COM FADE SUAVE NO FINAL E BOTÃO CONTROLADO) ---
 // --- COMPONENTE MOBILE: STICKY STACK (COM SAÍDA ANTECIPADA E SEM INVASÃO) ---
+// --- COMPONENTE MOBILE: STICKY STACK (COM FADE ANTECIPADO) ---
 function MobileStack({ images, onLoadMore, hasMore }: { images: GalleryItem[]; onLoadMore: () => void; hasMore: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -99,28 +100,27 @@ function MobileStack({ images, onLoadMore, hasMore }: { images: GalleryItem[]; o
 
   const totalCards = images.length;
 
-  // Opacidade da área fixa: começa em 1, começa a desaparecer após 60% do progresso
-  // e atinge ZERO exatamente em 95% (antes do fim)
+  // Opacidade do container fixo: começa a desaparecer em 50% e atinge ZERO em 85% do progresso
   const opacity = useTransform(
     scrollYProgress,
-    [0, 0.6, 0.95, 1],
-    [1, 1, 0, 0] // de 95% a 100% permanece 0
+    [0, 0.9, 0.85, 1],
+    [1, 1, 0, 0] // de 85% a 100% permanece 0
   );
 
-  // Opacidade do botão: aparece entre 50% e 85% do progresso
+  // Opacidade do botão: aparece entre 40% e 50%, desaparece entre 75% e 90%
   const buttonOpacity = useTransform(
     scrollYProgress,
-    [0.5, 0.6, 0.85, 0.95],
+    [0.4, 0.5, 0.85, 0.9],
     [0, 1, 1, 0]
   );
 
   // Pointer events: só quando opacidade > 0.1
   const pointerEvents = useTransform(opacity, (v) => (v > 0.1 ? "auto" : "none"));
 
-  // Escala sutil no final
+  // Escala sutil (opcional)
   const scale = useTransform(
     scrollYProgress,
-    [0.7, 0.95],
+    [0.7, 0.9],
     [1, 0.95]
   );
 
