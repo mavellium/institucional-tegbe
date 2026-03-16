@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Textura from "../ui/textura";
 
 const Hero = () => {
   return (

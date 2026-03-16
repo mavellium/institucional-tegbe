@@ -1,7 +1,10 @@
 "use client";
 
-import { HeaderContent } from './types';
-import { ServiceTheme } from './types';
+import { Badge } from '@/components/ui/badge';
+import { HeaderContent, ServiceTheme } from './types';
+import Heading from '@/components/ui/heading';
+import RichText from '@/components/ui/rich/richText';
+import Paragrafo from '@/components/ui/paragrafo';
 
 interface ServiceHeaderProps {
   content: HeaderContent;
@@ -10,48 +13,40 @@ interface ServiceHeaderProps {
 }
 
 export default function ServiceHeader({ content, theme, variant }: ServiceHeaderProps) {
-  // Determina qual HTML usar no título
-  const getTitleHtml = () => {
-    if (variant === 'marketing' && content.gradientTitle) {
-      return content.gradientTitle;
-    }
-    return content.title;
-  };
-
+  
+console.log("TITLE:", content.title)
   return (
     <div className={`mb-16 text-center section-title will-change-transform ${variant === 'marketing' ? 'mb-20' : ''}`}>
-      {/* Badge para marketing */}
-      {variant === 'marketing' && content.preTitle && (
-        <div className="inline-block mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
-          <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+      
+      {/* Badge seguindo seu padrão */}
+      {content.preTitle && (
+        <div className="mb-4">
+          <Badge 
+            variant={variant === 'marketing' ? 'outline' : 'secondary'}
+            className="uppercase tracking-widest font-bold text-xs px-3 py-1"
+          >
+            {variant === 'sobre' && <span className="w-2 h-2 mr-2 rounded-full bg-primary" />}
             {content.preTitle}
-          </span>
+          </Badge>
         </div>
       )}
 
-      {/* Badge para sobre */}
-      {variant === 'sobre' && content.preTitle && (
-        <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#0071E3]"></span>
-          <span className="text-xs font-bold text-gray-500 tracking-wide uppercase">
-            {content.preTitle}
-          </span>
-        </div>
-      )}
+      {/* Heading usando o RichText interno para processar o Array da API */}
+      <Heading
+        as="h2"
+        font="medium"
+        className={`max-w-[800px] mx-auto ${theme.text.title}`}
+      >
+        <RichText content={content.title} />
+      </Heading>
 
-      {/* Título */}
-      <h2 
-        className={`text-4xl md:text-5xl ${variant === 'marketing' ? 'lg:text-6xl' : 'lg:text-5xl'} font-bold tracking-tight mb-4 ${theme.text.title}`}
-        dangerouslySetInnerHTML={{
-          __html: getTitleHtml()
-        }}
-      />
-
-      {/* Subtítulo */}
-      {content.subtitle && (
-        <p className={`text-lg max-w-2xl mx-auto ${theme.text.secondary} ${variant === 'sobre' ? 'hidden' : ''}`}>
+      {/* Subtítulo usando seu componente de texto */}
+      {content.subtitle && variant !== 'sobre' && (
+        <Paragrafo
+          className={`max-w-2xl mx-auto mt-4 ${theme.text.secondary}`}
+        >
           {content.subtitle}
-        </p>
+        </Paragrafo>
       )}
     </div>
   );

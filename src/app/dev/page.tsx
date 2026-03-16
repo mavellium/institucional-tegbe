@@ -1,6 +1,6 @@
 "use client";
 
-import RichContent from "@/components/ui/richBlock";
+import RichContent from "@/components/ui/rich/richBlock";
 import { RichBlock } from "@/types/richBlock.type";
 
 const mockPage: RichBlock[] = [

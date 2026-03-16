@@ -1,5 +1,4 @@
 import { Header } from "@/components/Section/Header";
-import Logos from "@/components/Section/Logos";
 import { Companys } from "@/components/Section/Companys";
 import { Footer } from "@/components/web/footer";
 import Schema from "@/components/Section/Schema";
@@ -11,9 +10,11 @@ import Plataforms from "@/components/Section/Solucoes/Plataforms";
 import Passos from "@/components/Section/Passos";
 import ServiceFlow from "@/components/Section/ServiceFlow";
 import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
-import HeadlineWrapper from "@/components/Wrapper/Headline";
 import Video from "@/components/Wrapper/Video";
 import { VideoSection } from "@/enums/video.enum";
+import HeroCarrossel from "@/components/web/generics/heroCarrossel";
+import { HeroSlide } from "@/types/heroSlide.type";
+import Logos from "@/components/web/logos";
 
 async function getSafeData(slug: string) {
     try {
@@ -58,6 +59,29 @@ export default async function EcommercePage() {
     const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 
     const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
+
+    const mockSlides: HeroSlide[] = [
+        {
+            "id": 1,
+            "tag": "CONSULTORIA OFICIAL MERCADO LIVRE",
+            "title": "TEGBE GESTÃO E ESTRATÉGIA",
+            "description": "É hora de construir uma operação profissional e escalar seus resultados.",
+            "subtext": "Estratégia certificada para transformar sua conta em líder de categoria.",
+            "ctaText": "QUERO ESCALAR AGORA!",
+            "ctaLink": "https://wa.me/5514988281001",
+            "image": "/exemplo_carrossel.png"
+        },
+        {
+            "id": 2,
+            "tag": "AGENDA ABERTA - MARÇO",
+            "title": "ENGENHARIA DE VENDAS",
+            "description": "Chega de 'tentar' vender online. Tenha um método prático e lucrativo.",
+            "subtext": "Vagas limitadas para novos parceiros de consultoria este mês.",
+            "ctaText": "FALAR COM ESPECIALISTA",
+            "ctaLink": "https://wa.me/5514988281001",
+            "image": "/exemplo_carrossel.png"
+        }
+    ];
 
     return (
         <>
@@ -107,9 +131,19 @@ export default async function EcommercePage() {
             />
 
             <Header />
-            <HeadlineWrapper variant="ecommerce" />
+            <HeroCarrossel
+                slides={mockSlides}
+                type="HeroEcommerce"
+                corFundo="#020202"
+                corDestaque="#FFCC00"
+                textoFundo="ECOMMERCE"
+                navGradienteFrom="#FFCC00"
+                navGradienteTo="#FFB800"  
+                navAccent="#FFDB4D"      
+                corIcone="black"
+            />
             <Logos />
-            <ServiceFlow variant="ecommerce" />
+            <ServiceFlow />
             <Video
                 slug="video-sections"
                 section={VideoSection.Ecommerce}
@@ -126,7 +160,7 @@ export default async function EcommercePage() {
             <Logos />
             <Passos />
             <Plataforms />
-            
+
             <CertifiedSection />
             <SectionImage variant="ecommerce" apiData={data} />
 

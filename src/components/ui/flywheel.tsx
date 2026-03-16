@@ -12,26 +12,33 @@ interface FlywheelProps {
 export default function Flywheel({
   centerText = "CRESCIMENTO",
   outerItems = ["DESCONHECIDOS", "PROSPECTS", "CLIENTES", "PROMOTORES"],
-  innerItems = ["ATRAIR", "ENVOLVER", "ENCANTAR"]
+  innerItems = ["ATRAIR", "ENVOLVER", "ENCANTAR"],
 }: FlywheelProps) {
-  
-  const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
+  const polarToCartesian = (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    angleInDegrees: number
+  ) => {
     const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
     return {
       x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians)
+      y: centerY + radius * Math.sin(angleInRadians),
     };
   };
 
   // Desenha o formato do Chevron (Flecha)
   const getChevronPath = (
-    centerX: number, centerY: number, 
-    innerRadius: number, outerRadius: number, 
-    startAngle: number, endAngle: number, 
+    centerX: number,
+    centerY: number,
+    innerRadius: number,
+    outerRadius: number,
+    startAngle: number,
+    endAngle: number,
     reverse: boolean = false
   ) => {
     const midRadius = (innerRadius + outerRadius) / 2;
-    const arrowDepth = 8; 
+    const arrowDepth = 8;
 
     if (!reverse) {
       const p1 = polarToCartesian(centerX, centerY, outerRadius, endAngle - arrowDepth);
@@ -53,15 +60,27 @@ export default function Flywheel({
   };
 
   // Cria um arco invisível centralizado para guiar o texto
-  const getLabelPath = (centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number, reverse: boolean) => {
-    const start = polarToCartesian(centerX, centerY, radius, reverse ? endAngle : startAngle);
+  const getLabelPath = (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number,
+    reverse: boolean
+  ) => {
+    const start = polarToCartesian(
+      centerX,
+      centerY,
+      radius,
+      reverse ? endAngle : startAngle
+    );
     const end = polarToCartesian(centerX, centerY, radius, reverse ? startAngle : endAngle);
     const sweep = reverse ? 0 : 1;
     return `M ${start.x} ${start.y} A ${radius} ${radius} 0 0 ${sweep} ${end.x} ${end.y}`;
   };
 
   return (
-    <div className="relative w-full max-w-[550px] aspect-square mx-auto flex items-center justify-center  rounded-xl overflow-hidden">
+    <div className="relative w-full max-w-[550px] aspect-square mx-auto flex items-center justify-center rounded-xl overflow-hidden bg-white">
       <style>{`
         @keyframes spin-cw { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spin-ccw { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
@@ -88,11 +107,30 @@ export default function Flywheel({
               <g key={`outer-group-${i}`}>
                 <path
                   d={getChevronPath(250, 250, 190, 235, start + 1, end - 1, true)}
-                  fill="#FF0F43" fillOpacity="0.1" stroke="#FF0F43" strokeOpacity="0.4" strokeWidth="1"
+                  fill="#FF0F43"
+                  fillOpacity="0.1"
+                  stroke="#FF0F43"
+                  strokeOpacity="0.4"
+                  strokeWidth="1"
                 />
-                <path id={id} d={getLabelPath(250, 250, 212.5, start + 5, end - 5, true)} fill="none" />
-                <text fill="white" fillOpacity="0.7" fontSize="12" fontWeight="800" letterSpacing="0.05em">
-                  <textPath href={`#${id}`} startOffset="50%" textAnchor="middle" dominantBaseline="middle">
+                <path
+                  id={id}
+                  d={getLabelPath(250, 250, 212.5, start + 5, end - 5, true)}
+                  fill="none"
+                />
+                {/* Mudança: Texto alterado de branco para cinza escuro para contraste no fundo branco */}
+                <text
+                  fill="#1F2937"
+                  fontSize="12"
+                  fontWeight="800"
+                  letterSpacing="0.05em"
+                >
+                  <textPath
+                    href={`#${id}`}
+                    startOffset="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
                     {item}
                   </textPath>
                 </text>
@@ -112,11 +150,25 @@ export default function Flywheel({
               <g key={`inner-group-${i}`}>
                 <path
                   d={getChevronPath(250, 250, 115, 175, start + 2, end - 2, false)}
-                  fill="#FF0F43" fillOpacity="0.25" stroke="#FF0F43" strokeOpacity="0.6" strokeWidth="1"
+                  fill="#FF0F43"
+                  fillOpacity="0.25"
+                  stroke="#FF0F43"
+                  strokeOpacity="0.6"
+                  strokeWidth="1"
                 />
-                <path id={id} d={getLabelPath(250, 250, 145, start + 8, end - 8, false)} fill="none" />
-                <text fill="white" fontSize="16" fontWeight="900">
-                  <textPath href={`#${id}`} startOffset="50%" textAnchor="middle" dominantBaseline="middle">
+                <path
+                  id={id}
+                  d={getLabelPath(250, 250, 145, start + 8, end - 8, false)}
+                  fill="none"
+                />
+                {/* Mudança: Texto alterado de branco para cinza escuro para contraste no fundo branco */}
+                <text fill="#1F2937" fontSize="16" fontWeight="900">
+                  <textPath
+                    href={`#${id}`}
+                    startOffset="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
                     {item}
                   </textPath>
                 </text>
@@ -125,24 +177,31 @@ export default function Flywheel({
           })}
         </g>
 
-        
-
         {/* Centro Sólido */}
         <circle cx="250" cy="250" r="82" fill="url(#brandGrad)" />
-        <text 
-          x="250" y="250" textAnchor="middle" dominantBaseline="middle" 
-          fill="white" fontSize="14" fontWeight="950" className="tracking-tight"
+        {/* Mudança: Texto alterado de branco para preto para contraste contra o círculo rosa vibrante e o fundo branco */}
+        <text
+          x="250"
+          y="250"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="#ffffff"
+          fontSize="14"
+          fontWeight="950"
+          className="tracking-tight"
         >
           {centerText}
         </text>
       </svg>
 
       {/* Ícones de Impulso nas Bordas */}
+      {/* Mudança: O Zap já funciona bem em branco. Nenhuma mudança necessária no estilo dele. */}
       <div className="absolute top-[8%] right-[8%] w-11 h-11 bg-[#FF0F43]/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg">
         <Zap className="w-5 h-5 text-[#FF0F43] fill-[#FF0F43]" />
       </div>
+      {/* Mudança: Círculo permanece vibrante, o ícone TrendingUp muda de branco para rosa claro para combinar mais */}
       <div className="absolute bottom-[8%] left-[8%] w-11 h-11 bg-[#E31B63] rounded-full flex items-center justify-center shadow-2xl">
-        <TrendingUp className="w-5 h-5 text-white" />
+        <TrendingUp className="w-5 h-5 text-[#FFE4E6]" />
       </div>
     </div>
   );

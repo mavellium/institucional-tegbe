@@ -1,8 +1,6 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { HeadlineEcommerce } from "@/components/Section/HeadlineEcommerce";
-import { HeadlineMarketing } from "@/components/Section/HeadlineMarketing";
 import { HeadlineHome } from "../HeadlineHome";
 
 interface JsonBadge { cor: string; icone: string; texto: string; visivel: boolean; }
@@ -125,13 +123,6 @@ export function Headline({ variant, data }: HeadlineProps) {
 
   const content = data[activeVariant];
   const theme = themeConfig[activeVariant] || themeConfig.home;
-
-  // Layouts específicos
-  if (activeVariant === "ecommerce")
-    return <HeadlineEcommerce content={content} theme={theme} />;
-
-  if (activeVariant === "marketing")
-    return <HeadlineMarketing content={content} theme={theme} />;
 
   if (activeVariant === "home")
     return <HeadlineHome content={content} theme={theme} />;

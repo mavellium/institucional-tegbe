@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Textura from "../ui/textura";
 import Heading from "../ui/heading";
-import RichText from "../ui/richText";
+import RichText from "../ui/rich/richText";
 import Paragrafo from "../ui/paragrafo";
 import { RichTextItem } from "@/types/richText.type";
 
@@ -101,7 +101,7 @@ export function OQueSomos() {
   ref={containerRef}
   className="relative bg-[#0A0A0A] py-20 sm:py-24 lg:py-32 overflow-hidden selection:bg-[#F1D95D]/30"
 >
-  <Textura />
+  <Textura src="/textura.svg" />
 
   {/* GRAFISMO */}
   <div

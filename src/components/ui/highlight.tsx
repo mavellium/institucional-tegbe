@@ -3,12 +3,10 @@ import { cn } from "@/lib/utils";
 interface HighlightProps {
   children: React.ReactNode;
   className?: string;
-  color: HighlightColor;
+  color: string;
   withSerif?: boolean;
   withItalic?: boolean;
 }
-
-export type HighlightColor = "#FFC72C" | "#F1D95D" | "#F9265E" | "#FF0400" | "#F9396F";
 
 export default function Highlight({
   children,

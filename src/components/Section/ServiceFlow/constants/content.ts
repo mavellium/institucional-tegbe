@@ -4,7 +4,7 @@ export const CONTENT: Record<string, VariantContent> = {
   home: {
     header: {
       preTitle: "",
-      title: "Como fazemos você vender",
+      title: [{ type: "text", value: "Como fazemos você vender" }],
       subtitle: "Metodologia validada em mais de R$ 40 milhões faturados."
     },
     services: [
@@ -50,7 +50,12 @@ export const CONTENT: Record<string, VariantContent> = {
   marketing: {
     header: {
       preTitle: "O Padrão Tegbe",
-      title: "Não é mágica.<br />É Metodologia.",
+      title:
+      [
+        { type: "text", value: "Não é mágica." },
+        { type: "linebreak" },
+        { type: "text", value: "É Metodologia." }
+      ],
       gradientTitle: "Não é mágica.<br /><span class='text-transparent bg-clip-text bg-gradient-to-r from-[#FF0F43] to-[#A30030]'>É Metodologia.</span>",
       subtitle: "O tripé estratégico que sustenta operações de alta performance."
     },
@@ -97,7 +102,11 @@ export const CONTENT: Record<string, VariantContent> = {
   sobre: {
     header: {
       preTitle: "Nosso Modus Operandi",
-      title: "A engenharia por trás<br/>da nossa excelência.",
+      title: [
+        { type: "text", value: "A engenharia por trás" },
+        { type: "linebreak" },
+        { type: "text", value: "da nossa excelência." }
+      ],
       subtitle: "",
       gradientTitle: ""
     },

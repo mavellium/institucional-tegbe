@@ -4,16 +4,15 @@ import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-import CardFundador from "@/components/ui/cardFundador";
-import ButtonLink from "../ui/buttonLink";
+import CardFundador from "@/components/ui/card/cardFundador";
 import Heading from "../ui/heading";
-import RichText from "../ui/richText";
+import RichText from "../ui/rich/richText";
 import Paragrafo from "../ui/paragrafo";
 import Textura from "../ui/textura";
-
-import { TargetVideo } from "@/app/types/target-button.types";
 import { RichTextItem } from "@/types/richText.type";
+import { IButton } from "@/interface/button/IButton";
+import { Button } from "../ui/button/button";
+import Link from "next/link";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -42,11 +41,7 @@ type SobreData = {
     subtitle: RichTextItem[][];
   };
 
-  cta: {
-    label: string;
-    link: string;
-    target?: TargetVideo;
-  };
+  button?: IButton;
 
   founder: Founder;
 };
@@ -103,10 +98,11 @@ const mockData: SobreData = {
     ]
   },
 
-  cta: {
+  button: {
     label: "Conhecer o Método",
     link: "carreiras",
-    target: "_blank"
+    target: "_blank",
+    action: "link"
   },
 
   founder: {
@@ -226,7 +222,13 @@ export function QuemSomos({
             </div>
 
             <div className="animate-up flex justify-center">
-              <ButtonLink button={data.cta} />
+              {data.button?.action === "link" && (
+                <Button asChild variant={data.button.variant}>
+                  <Link href={data.button.link} target={data.button.target}>
+                    {data.button.label}
+                  </Link>
+                </Button>
+              )}
             </div>
 
           </div>

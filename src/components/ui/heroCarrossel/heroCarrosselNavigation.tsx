@@ -8,6 +8,10 @@ interface HeroCarouselNavigationProps {
   selectedIndex: number;
   slidesLength: number;
   onDotClick: (index: number) => void;
+  corPrimaria?: string; 
+  corSecundaria?: string;
+  corAcento?: string;
+  corIcone?: string; // Nova prop para o controle que você pediu
 }
 
 export default function HeroCarouselNavigation({
@@ -16,18 +20,27 @@ export default function HeroCarouselNavigation({
   selectedIndex,
   slidesLength,
   onDotClick,
+  corPrimaria = "#ff0400",
+  corSecundaria = "#f9396f",
+  corAcento = "#f9265e",
+  corIcone = "white", // Valor padrão original
 }: HeroCarouselNavigationProps) {
-  const accentColor = "#f9265e";
-  const gradientFrom = "#ff0400";
-  const gradientTo = "#f9396f";
+
+  const vars = {
+    "--nav-from": corPrimaria,
+    "--nav-to": corSecundaria,
+    "--nav-accent": corAcento,
+    "--nav-icon": corIcone, // Variável para o ícone
+  } as React.CSSProperties;
 
   return (
-    <>
+    <div style={vars}>
       {/* Botão anterior */}
       <button
         onClick={scrollPrev}
         aria-label="Slide anterior"
-        className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gradient-to-tr from-[#ff0400] via-[#f9396f] to-[#f9265e] text-white opacity-100 lg:opacity-0 group-hover:lg:opacity-100 transition-all duration-300 hover:scale-110 z-20 shadow-xl"
+        style={{ color: "var(--nav-icon)" }} // Aplica a cor do ícone
+        className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gradient-to-tr from-[var(--nav-from)] via-[var(--nav-to)] to-[var(--nav-accent)] opacity-100 lg:opacity-0 group-hover:lg:opacity-100 transition-all duration-300 hover:scale-110 z-20 shadow-xl"
       >
         <ChevronLeft size={24} />
       </button>
@@ -36,7 +49,8 @@ export default function HeroCarouselNavigation({
       <button
         onClick={scrollNext}
         aria-label="Próximo slide"
-        className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gradient-to-tr from-[#ff0400] via-[#f9396f] to-[#f9265e] text-white opacity-100 lg:opacity-0 group-hover:lg:opacity-100 transition-all duration-300 hover:scale-110 z-20 shadow-xl"
+        style={{ color: "var(--nav-icon)" }} // Aplica a cor do ícone
+        className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gradient-to-tr from-[var(--nav-from)] via-[var(--nav-to)] to-[var(--nav-accent)] opacity-100 lg:opacity-0 group-hover:lg:opacity-100 transition-all duration-300 hover:scale-110 z-20 shadow-xl"
       >
         <ChevronRight size={24} />
       </button>
@@ -48,13 +62,14 @@ export default function HeroCarouselNavigation({
             key={i}
             onClick={() => onDotClick(i)}
             aria-label={`Ir para o slide ${i + 1}`}
-            className={`transition-all duration-300 rounded-full shadow-md ${i === selectedIndex
-                ? `w-8 h-2 bg-gradient-to-r from-[${gradientFrom}] via-[${gradientTo}] to-[${accentColor}] scale-110`
+            className={`transition-all duration-300 rounded-full shadow-md ${
+              i === selectedIndex
+                ? "w-8 h-2 bg-gradient-to-r from-[var(--nav-from)] via-[var(--nav-to)] to-[var(--nav-accent)] scale-110"
                 : "w-2 h-2 bg-white/30 hover:bg-white/50"
-              }`}
+            }`}
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }

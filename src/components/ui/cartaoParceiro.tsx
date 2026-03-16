@@ -1,13 +1,5 @@
-interface CartaoParceiroProps {
-  nome: string;
-  cargo: string;
-  depoimento: React.ReactNode;
-  img_principal: string;
-  img_nome: string;
-  img_nome_alt: string;
-  img_logo: string;
-  img_logo_alt: string;
-}
+import { IParceiro } from "@/interface/parceiro/IParceiro";
+import RichText from "./rich/richText";
 
 export default function CartaoParceiro({
   nome, 
@@ -18,33 +10,40 @@ export default function CartaoParceiro({
   img_nome_alt, 
   img_logo, 
   img_logo_alt
-}: CartaoParceiroProps) {
+}: IParceiro) {
   return (
-    <div className="flex max-w-2xl bg-white rounded-[2rem] overflow-hidden shadow-lg font-sans">
+    <div className="flex w-full max-w-[850px] bg-white/[0.03] border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-md shadow-2xl transition-colors duration-300 hover:bg-white/[0.05] group font-sans">
+      
       {/* Lado Esquerdo: Imagem do Parceiro */}
-      <div className="relative w-1/3 min-w-[200px]">
+      <div className="relative w-[35%] min-w-[250px] overflow-hidden">
         <img 
           src={img_principal}
           alt={nome} 
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
+        {/* Overlay gradiente suave para mesclar a imagem com o fundo escuro do card */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#020202]/40" />
       </div>
 
       {/* Lado Direito: Conteúdo */}
-      <div className="w-2/3 p-8 flex flex-col justify-center">
-        <h2 className="text-3xl font-medium text-gray-800">{nome}</h2>
-        <p className="text-gray-500 text-sm mt-1 mb-6">{cargo}</p>
+      <div className="w-[65%] p-10 flex flex-col justify-center relative">
+        <h2 className="text-3xl font-medium text-white">{nome}</h2>
+        <p className="text-[#E31B63] text-sm mt-1 font-medium tracking-wide uppercase">{cargo}</p>
 
-        <div className="space-y-4 pr-8 text-gray-600 leading-snug">
-          {depoimento}
+        <div className="mt-6 space-y-4 pr-4 text-white/70 leading-relaxed text-base">
+          <RichText content={depoimento}/>
         </div>
 
-        <hr className="my-8 border-gray-200" />
+        <hr className="my-8 border-white/10" />
 
         {/* Logos de Autoridade */}
-        <div className="flex items-center justify-between grayscale">
-          <img src={img_nome} alt={img_nome_alt} className="h-8 opacity-20" />
-          <img src={img_logo} alt={img_logo_alt} className="h-12 mr-3" />
+        <div className="flex items-center gap-8 opacity-60 transition-opacity duration-300 group-hover:opacity-100">
+          {img_nome && (
+            <img src={img_nome} alt={img_nome_alt || 'Logo 1'} className="h-8 object-contain filter brightness-0 invert" />
+          )}
+          {img_logo && (
+            <img src={img_logo} alt={img_logo_alt || 'Logo 2'} className="h-10 object-contain filter brightness-0 invert" />
+          )}
         </div>
       </div>
     </div>

@@ -14,6 +14,14 @@ interface HeroCarrosselProps {
   type: string;
   loop?: boolean;
   autoplayDelay?: number;
+  corFundo?: string;
+  corDestaque?: string; // Usada para a textura e texto
+  textoFundo?: string;
+  // Cores do Gradiente da Navegação
+  navGradienteFrom?: string;
+  navGradienteTo?: string;
+  navAccent?: string;
+  corIcone?: string;
 }
 
 export default function HeroCarrossel({
@@ -21,6 +29,13 @@ export default function HeroCarrossel({
   type,
   loop = true,
   autoplayDelay = 6000,
+  corFundo = "#0A0A0A",
+  corDestaque = "#f9265e", // Cor de destaque padrão (Rosa/Vermelho)
+  textoFundo = "MARKETING",
+  navGradienteFrom = "#ff0400",
+  navGradienteTo = "#f9396f",
+  navAccent = "#f9265e",
+  corIcone = "white"
 }: HeroCarrosselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop },
@@ -43,19 +58,20 @@ export default function HeroCarrossel({
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="relative w-full overflow-hidden text-white bg-[#0A0A0A] group">
-
+    <section
+      className="relative w-full overflow-hidden text-white group"
+      style={{ backgroundColor: corFundo }}
+    >
       {/* --- Textura Overlay --- */}
       <Textura
         misturar
         opacity={0.04}
         backgroundImage={`
-          linear-gradient(45deg, rgba(249,38,94,0.05) 1px, transparent 1px),
-          linear-gradient(-45deg, rgba(255,4,0,0.04) 1px, transparent 1px),
-          radial-gradient(circle, rgba(249,38,94,0.02) 1px, transparent 1px)
+          linear-gradient(45deg, ${corDestaque} 1px, transparent 1px),
+          linear-gradient(-45deg, ${corDestaque} 1px, transparent 1px),
+          radial-gradient(circle, ${corDestaque} 1px, transparent 1px)
         `}
       />
-
 
       {/* --- Carousel --- */}
       <div className="overflow-hidden relative z-10" ref={emblaRef}>
@@ -65,13 +81,13 @@ export default function HeroCarrossel({
             return (
               <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
                 <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
-
-                  {/* Texto: centralizado no mobile, margem à esquerda no desktop */}
                   <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
-                    <HeroSlideContent slide={slide} isActive={isActive} />
+                    <HeroSlideContent
+                      slide={slide}
+                      isActive={isActive}
+                      corDestaque={corDestaque} // Adicione esta linha
+                    />
                   </div>
-
-                  {/* Imagem: colada na lateral direita no desktop */}
                   {slide.image && (
                     <div className="w-full lg:w-[60%] flex items-end h-full lg:pr-0">
                       <HeroSlideImage
@@ -83,7 +99,7 @@ export default function HeroCarrossel({
                     </div>
                   )}
                 </div>
-              </div> 
+              </div>
             );
           }) : (
             <div className="flex justify-center w-full py-40 text-gray-500">Nenhum slide disponível</div>
@@ -91,22 +107,30 @@ export default function HeroCarrossel({
         </div>
       </div>
 
-      {/* --- Navegação --- */}
       <HeroCarouselNavigation
         scrollPrev={scrollPrev}
         scrollNext={scrollNext}
         selectedIndex={selectedIndex}
         slidesLength={slides.length}
         onDotClick={(i) => emblaApi?.scrollTo(i)}
+        corPrimaria={navGradienteFrom}
+        corSecundaria={navGradienteTo}
+        corAcento={navAccent}
+        corIcone={corIcone}
       />
 
       {/* --- Mensagem sutil de fundo --- */}
       <div className="absolute right-[-40px] bottom-[-80px] md:right-[-30px] md:bottom-[-130px] whitespace-nowrap opacity-[0.025] select-none pointer-events-none">
-        <span className="text-white text-[120px] md:text-[260px] font-medium tracking-[-0.04em] uppercase">MARKETING</span>
+        <span className="text-white text-[120px] md:text-[260px] font-medium tracking-[-0.04em] uppercase">
+          {textoFundo}
+        </span>
       </div>
 
       {/* --- Gradiente de Fade Inferior --- */}
-      <div className="absolute bottom-0 w-full h-[80px] md:h-[120px] bg-gradient-to-t from-[#0A0A0A] to-transparent" />
+      <div
+        className="absolute bottom-0 w-full h-[80px] md:h-[120px] bg-gradient-to-t to-transparent"
+        style={{ backgroundImage: `linear-gradient(to top, ${corFundo}, transparent)` }}
+      />
     </section>
   );
 }

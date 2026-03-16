@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button/button";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);

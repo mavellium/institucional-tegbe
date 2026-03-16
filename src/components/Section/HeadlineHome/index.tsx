@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Icon } from "@iconify/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button/button";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
