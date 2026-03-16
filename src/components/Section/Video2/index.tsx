@@ -346,7 +346,7 @@ const ShowcaseVideo = ({
                     </span>
                 </div>
 
-                <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight" style={{ color: config.style.textColor }}>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter leading-tight" style={{ color: config.style.textColor }}>
                     {config.content.title}
                 </h2>
             </div>
