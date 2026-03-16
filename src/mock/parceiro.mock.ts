@@ -4,13 +4,9 @@ export const parceirosMock: IParceiro[] = [
   {
     id: 1,
 
-    nome: [
-      { type: "text", value: "João Branco" }
-    ],
+    nome: "João Branco",
 
-    cargo: [
-      { type: "text", value: "Ex-CMO do McDonald's" }
-    ],
+    cargo: "Ex-CMO do McDonald's",
 
     depoimento: [
       { type: "text", value: "Top 10 profissionais de marketing no Brasil pela Forbes. " },

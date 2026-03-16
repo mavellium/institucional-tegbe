@@ -22,8 +22,8 @@ export const parceiroSectionMock: IParceiroSection = {
       id: 1,
       nome: "João Branco",
       cargo: "Ex-CMO do McDonald's",
-      depoimento:
-        "Top 10 profissionais de marketing no Brasil pela Forbes. Considerado CMO mais eficaz do país pela Scopen.",
+      depoimento: [
+        {type: "text", value:"Top 10 profissionais de marketing no Brasil pela Forbes. Considerado CMO mais eficaz do país pela Scopen."}],
       img_principal: "/dev/foto_card.avif",
       img_principal_alt: "João Branco",
 
@@ -37,8 +37,7 @@ export const parceiroSectionMock: IParceiroSection = {
       id: 1,
       nome: "Vinícius",
       cargo: "Ex-CMO do McDonald's",
-      depoimento:
-        "Top 10 profissionais de marketing no Brasil pela Forbes. Considerado CMO mais eficaz do país pela Scopen.",
+      depoimento: [{type: "text", value:"Top 10 profissionais de marketing no Brasil pela Forbes. Considerado CMO mais eficaz do país pela Scopen."}],
       img_principal: "/dev/foto_card.avif",
       img_principal_alt: "João Branco",
 

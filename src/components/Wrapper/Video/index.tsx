@@ -43,14 +43,9 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
             return (
                 <HeroVideoView
                     videoSrc={videoUrl}
-                    // Mapeamento focado em conversão e vendas
-                    line1={content.line1 || "Estratégia para"}
-                    line2={content.line2 || {
-                        prefix: "Você",
-                        highlight: "Vender Mais",
-                        suffix: "com a Tegbe"
-                    }}
-                    subline={content.subline || "Transformamos tecnologia em faturamento real"}
+                    // Agora passamos o objeto completo que o RichText espera processar
+                    title={content.title}
+                    subtitle={content.subtitle}
                     accentColor={theme?.colors?.primary}
                     gradientFrom={theme?.colors?.gradientFrom}
                     gradientTo={theme?.colors?.gradientTo}
@@ -62,14 +57,14 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
         // --- RETORNO PADRÃO (AnimationVideoView) ---
         return (
             <div className="relative w-full justify-center items-center h-full">
-            <AnimationVideoView
-                badge={content.badge || "Tegbe Performance"}
-                title={content.title || "Venda mais com nossas soluções digitais"}
-                videoSrc={videoUrl}
-                startMuted={false}
-                variant="sobre"
-                theme={theme}
-            />
+                <AnimationVideoView
+                    badge={content.badge || "Tegbe Performance"}
+                    title={content.title || "Venda mais com nossas soluções digitais"}
+                    videoSrc={videoUrl}
+                    startMuted={false}
+                    variant="sobre"
+                    theme={theme}
+                />
             </div>
         );
 

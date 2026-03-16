@@ -1,4 +1,5 @@
 import { IParceiro } from "@/interface/parceiro/IParceiro";
+import RichText from "./rich/richText";
 
 export default function CartaoParceiro({
   nome, 
@@ -30,7 +31,7 @@ export default function CartaoParceiro({
         <p className="text-[#E31B63] text-sm mt-1 font-medium tracking-wide uppercase">{cargo}</p>
 
         <div className="mt-6 space-y-4 pr-4 text-white/70 leading-relaxed text-base">
-          {depoimento}
+          <RichText content={depoimento}/>
         </div>
 
         <hr className="my-8 border-white/10" />

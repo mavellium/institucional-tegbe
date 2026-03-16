@@ -4,7 +4,7 @@ export interface IParceiro {
   id: number
   nome: string
   cargo: string
-  depoimento: string
+  depoimento: RichTextItem[]
 
   img_principal: string
   img_principal_alt: string
