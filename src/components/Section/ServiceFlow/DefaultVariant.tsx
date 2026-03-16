@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import ServiceCard from '../ServiceCard';
-import ServiceHeader from '../ServiceHeader';
+import ServiceCard from './ServiceCard';
+import ServiceHeader from './ServiceHeader';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
-import { THEMES } from '../constants/themes';
-import { VariantContent, ServiceFlowVariant } from '../types';
+import { THEMES } from './constants/themes';
+import { VariantContent, ServiceFlowVariant } from './types';
 
 interface DefaultVariantProps {
   content: VariantContent;

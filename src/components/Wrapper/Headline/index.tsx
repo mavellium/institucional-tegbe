@@ -1,6 +1,6 @@
 import { Headline } from "../../Section/Headline";
 
-type HeadlineVariant = "home" | "ecommerce" | "marketing" | "sobre";
+type HeadlineVariant = "home" | "marketing" | "sobre";
 
 interface Props {
   variant?: HeadlineVariant;

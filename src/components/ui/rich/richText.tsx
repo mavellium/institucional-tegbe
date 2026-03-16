@@ -17,10 +17,18 @@ const fonts = {
   black: "font-black",
 };
 
-export default function RichText({ content = [] }: RichTextProps) {
+export default function RichText({ content }: { content?: any }) {
+
+  // normaliza conteúdo
+  if (!content) return null;
+
+  if (!Array.isArray(content)) {
+    content = [{ type: "text", value: String(content) }];
+  }
+
   return (
     <>
-      {content.map((item, i) => {
+      {content.map((item: RichTextItem, i: number) => {
         switch (item.type) {
 
           case "text":
@@ -77,7 +85,7 @@ export default function RichText({ content = [] }: RichTextProps) {
 
           case "linebreak":
             return <br key={`br-${i}`} />;
-            
+
           default:
             return null;
         }

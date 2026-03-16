@@ -1,11 +1,7 @@
 import Schema from "@/components/Section/Schema";
 import Feature from "@/components/web/feature";
 import { Footer } from "@/components/web/footer";
-import { SectionImage } from "@/components/Section/SectionImage";
-import NaoEParaVoce from "@/components/Section/NaoEParaVoce";
-import { Equipe } from "@/components/Section/Equipe";
 import { fetchComponentData } from "@/lib/api";
-import ServiceFlow from "@/components/Section/ServiceFlow";
 import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video.enum";
@@ -15,13 +11,11 @@ import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
 import { HeroSlide } from "@/types/heroSlide.type";
 import PorqueATegbe from "@/components/web/porqueATegbe";
 import MarketingInteligente from "@/components/web/marketingInteligente";
-import Empresas from "@/components/web/generics/empresas/empresas";
 import { parceiroSectionMock } from "@/mock/parceiroSection.mock";
 import Meta from "@/components/web/generics/meta";
 import CarrosselEspecialistas from "@/components/web/generics/carrosselEspecialistas";
+import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 
-
-// 1. Wrapper para dados de Componentes (JSON Estruturado)
 async function getSafeData(slug: string) {
     try {
         const res = await fetchComponentData(slug);
@@ -147,7 +141,13 @@ export default async function MarketingPage() {
                 }}
             />
             <Navbar variant="marketing" />
-            <HeroCarousel slides={mockSlides} type={"Hero"} />
+            <HeroCarrossel 
+            slides={mockSlides} 
+            type={"HeroMarketing"}
+
+                corDestaque="#f9265e"
+                textoFundo="MARKETING"
+             />
             <PorqueATegbe />
             <Video2
                 slug="video-marketing"

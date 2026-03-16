@@ -7,8 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ServiceFlowProps } from './types';
 import { THEMES } from './constants/themes';
 import { useServiceFlowContent } from "./hooks/useServiceFlowContent";
-import { DefaultVariant } from "./variants/DefaultVariant";
-import { MarketingVariant } from "./variants/MarketingVariant";
+import { DefaultVariant } from "./DefaultVariant";
 
 export default function ServiceFlow({ variant = 'ecommerce' }: ServiceFlowProps) {
   const { content, loading, error, useFallback } = useServiceFlowContent(variant);
@@ -81,12 +80,7 @@ export default function ServiceFlow({ variant = 'ecommerce' }: ServiceFlowProps)
 
   const renderVariant = () => {
     if (!content) return null;
-    switch (variant) {
-      case 'marketing':
-        return <MarketingVariant content={content} />;
-      default:
-        return <DefaultVariant content={content} theme={theme} variant={variant} showFallbackWarning={useFallback} />;
-    }
+    return <DefaultVariant content={content} theme={theme} variant={variant} showFallbackWarning={useFallback} />;
   };
 
   return (

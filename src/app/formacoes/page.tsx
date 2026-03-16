@@ -14,7 +14,7 @@ import Preco from "@/components/Section/Preco";
 import Faq from "@/components/Section/Faq";
 import Localizacao2 from "@/components/Section/Localizacao2";
 import { fetchComponentData } from "@/lib/api";
-import Logos from "@/components/Section/Logos";
+import Logos from "@/components/web/logos";
 
 // 1. Wrapper para dados de FORMS (.../form/slug)
 async function getFormData(slug: string) {

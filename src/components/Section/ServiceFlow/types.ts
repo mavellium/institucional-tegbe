@@ -1,3 +1,5 @@
+import { RichTextItem } from "@/types/richText.type";
+
 export type ServiceFlowVariant = 'ecommerce' | 'marketing' | 'sobre';
 
 export interface ServiceFlowProps {
@@ -38,7 +40,7 @@ export interface Service {
 
 export interface HeaderContent {
   preTitle: string;
-  title: string;
+  title: RichTextItem[];
   subtitle: string;
   gradientTitle?: string;
   // Novos campos para marketing

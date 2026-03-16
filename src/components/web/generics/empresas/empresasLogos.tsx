@@ -1,4 +1,5 @@
-import Logos from "@/components/Section/Logos";
+import Logos from "../../logos"
+
 
 export default function EmpresasLogos({ logos }: any) {
 
