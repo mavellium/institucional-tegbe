@@ -66,7 +66,6 @@ export default function HeroCarrossel({
               <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
                 <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
 
-                  {/* Texto: centralizado no mobile, margem à esquerda no desktop */}
                   <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
                     <HeroSlideContent slide={slide} isActive={isActive} />
                   </div>

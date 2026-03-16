@@ -1,0 +1,1 @@
+export type ButtonTarget = "_blank" | "_self";

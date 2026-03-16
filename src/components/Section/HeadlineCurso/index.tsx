@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button/button";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createPortal } from "react-dom";

@@ -1,114 +1,101 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
-import React, { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Icon } from '@iconify/react';
-import Link from 'next/link';
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+import Heading from "../ui/heading";
+import RichText from "../ui/rich/richText";
+import { Button } from "../ui/button/button";
 import CarrosselParceiros from "../ui/carrosselParceiros";
 
-export default function Parceiro() {
-  const ctaRef = useRef<HTMLDivElement>(null);
+import { IParceiroSection } from "@/interface/parceiro/IParceiroSection";
 
-  useEffect(() => {
-    // Animação simples de entrada para o CTA ao scroll
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in-up');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+interface Props {
+  data: IParceiroSection;
+}
 
-    if (ctaRef.current) observer.observe(ctaRef.current);
-    return () => observer.disconnect();
-  }, []);
+export default function Parceiro({ data }: Props) {
+  const button = data.button;
 
   return (
-    <section className="py-24 px-4 sm:px-6 md:px-8 bg-[#020202] relative overflow-hidden border-t border-white/5">
-    
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-[#E31B63]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+    // Reduzi de py-28 para py-16 (e py-20 em telas maiores) para conter mais a seção
+    <section className="py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-[#020202] relative overflow-hidden border-t border-white/5">
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        
-        {/* Header da Seção */}
-        <div className="flex flex-col items-center text-center mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-rose-500/20 bg-rose-900/10 backdrop-blur-sm"
-          >
-            <Icon icon="solar:star-ring-bold" className="text-[#E31B63] w-4 h-4" />
-            <span className="text-xs font-bold tracking-wider uppercase text-rose-200/80">
-              Elite do Mercado
-            </span>
+      {/* Background Effects */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#E31B63]/10 rounded-[100%] blur-[120px] pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+
+      <div className="max-w-[1200px] mx-auto relative z-10">
+
+        {/* HEADER */}
+        {/* Reduzi o mb-20 para mb-10 e o gap-5 para gap-3 */}
+        <div className="flex flex-col items-center text-center mb-10 gap-3">
+          {data.badge && (
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <div className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-1">
+                <RichText content={data.badge} />
+              </div>
+            </motion.div>
+          )}
+
+          <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+            <Heading as="h2" size="xl" align="center" className="text-4xl md:text-5xl font-medium tracking-tight !text-white">
+              <RichText content={data.title} />
+            </Heading>
           </motion.div>
 
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-bold text-white leading-tight"
-          >
-            Trabalhamos com quem <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF0F43] to-[#E31B63]">
-              domina o jogo.
+          {data.description && (
+            <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+              <div className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed mt-2">
+                <RichText content={data.description} />
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* CARROSSEL */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }} 
+          whileInView={{ opacity: 1, scale: 1 }} 
+          viewport={{ once: true }} 
+          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          className="relative w-full"
+        >
+          <div className="absolute inset-y-0 left-0 w-8 md:w-24 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-8 md:w-24 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
+          
+          <CarrosselParceiros items={data.parceiros} />
+        </motion.div>
+
+        {/* CTA */}
+        {/* Reduzi o mt-24 para mt-10 para grudar mais o botão ao carrossel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex flex-col items-center mt-10"
+        >
+          {button?.action === "link" && (
+            <Button asChild variant={button.variant}>
+              <Link href={button.link} target={button.target}>
+                {button.label}
+              </Link>
+            </Button>
+          )}
+
+          <div className="mt-5 flex items-center gap-2 text-white/50 bg-white/[0.03] px-4 py-2 rounded-full border border-white/5 backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E31B63] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E31B63]"></span>
             </span>
-          </motion.h2>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 text-gray-400 max-w-2xl text-lg"
-          >
-            Unimos forças com os maiores especialistas para garantir que sua operação 
-            não apenas rode, mas escale com previsibilidade e lucro.
-          </motion.p>
-        </div>
-
-        {/* O Carrossel de Cartões */}
-        <div className="relative">
-          <CarrosselParceiros />
-        </div>
-
-        <div ref={ctaRef} className="flex flex-col items-center mt-20 opacity-0 transition-all duration-700 translate-y-10 [&.animate-fade-in-up]:opacity-100 [&.animate-fade-in-up]:translate-y-0">
-          <Link
-            href="https://api.whatsapp.com/send?phone="
-            target="_blank"
-            className="group inline-flex items-center gap-3 px-10 py-5 rounded-full font-bold transition-all duration-300 bg-white text-black hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
-          >
-            <span>Quero Escalar meu Negócio</span>
-            <Icon
-              icon="lucide:arrow-right"
-              className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
-          
-          <p className="mt-6 text-[10px] font-bold tracking-[0.2em] uppercase flex items-center gap-2 text-gray-500">
-            <span className="w-2 h-2 rounded-full animate-pulse bg-rose-500"></span>
-            Vagas limitadas para consultoria estratégica
-          </p>
-        </div>
+            <p className="text-[11px] font-medium tracking-[0.15em] uppercase">
+              {data.msgFinal}
+            </p>
+          </div>
+        </motion.div>
 
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-      `}</style>
     </section>
   );
 }

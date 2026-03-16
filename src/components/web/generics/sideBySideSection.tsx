@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import ButtonLink from "@/components/ui/buttonLink";
 import SocialLink from "@/components/ui/socialLink";
 import Heading from "@/components/ui/heading";
-import RichText from "@/components/ui/richText";
-
-import { TargetVideo } from "@/app/types/target-button.types";
-import { Variant } from "@/types/variant.type";
+import RichText from "@/components/ui/rich/richText";
+import { Button } from "@/components/ui/button/button";
+import Link from "next/link";
+import { IButton } from "@/interface/button/IButton";
 
 interface SocialItem {
   icon: string;
@@ -19,12 +18,7 @@ interface HeroData {
   tag?: string;
   title: any;
   description: any;
-  button?: {
-    label: string;
-    link: string;
-    target: TargetVideo;
-    variant?: Variant
-  };
+  button?: IButton
   image?: {
     src: string;
     alt?: string;
@@ -109,10 +103,12 @@ export function SideBySideSection({
               <RichText content={hero.description} />
             </div>
 
-            {hero.button && (
-               <div className="flex justify-center lg:justify-start">
-                            <ButtonLink button={hero.button} />
-                          </div>
+            {hero.button?.action === "link" && (
+              <Button asChild variant={hero.button.variant}>
+                <Link href={hero.button.link} target={hero.button.target}>
+                  {hero.button.label}
+                </Link>
+              </Button>
             )}
 
           </div>

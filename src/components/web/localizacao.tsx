@@ -4,13 +4,13 @@ import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
 import FotoCarrossel from "../ui/fotoCarrossel";
-import ButtonLink from "../ui/buttonLink";
 import Heading from "../ui/heading";
-import RichText from "../ui/richText";
-
+import RichText from "../ui/rich/richText";
 import { RichTextItem } from "@/types/richText.type";
+import { IButton } from "@/interface/button/IButton";
+import { Button } from "../ui/button/button";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,11 +21,7 @@ export interface LocalizacaoItem {
   title: RichTextItem[];
   description: RichTextItem[];
 
-  button: {
-    label: string;
-    link: string;
-    target?: "_blank" | "_self";
-  };
+  button?: IButton
 }
 const mockData: LocalizacaoItem[] = [
   {
@@ -51,7 +47,8 @@ const mockData: LocalizacaoItem[] = [
     button: {
       label: "Ver sede no Google Maps",
       link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank"
+      target: "_blank",
+      action: "link"
     }
   },
 
@@ -78,7 +75,8 @@ const mockData: LocalizacaoItem[] = [
     button: {
       label: "Ver sede no Google Maps",
       link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank"
+      target: "_blank",
+      action: "link"
     }
   },
 
@@ -105,7 +103,8 @@ const mockData: LocalizacaoItem[] = [
     button: {
       label: "Ver sede no Google Maps",
       link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank"
+      target: "_blank",
+      action: "link"
     }
   }
 ];
@@ -210,7 +209,13 @@ export default function Localizacao() {
             <div className="border-t border-white/10 flex items-center justify-center lg:justify-start w-24 mx-auto lg:mx-0" />
 
             <div className="flex justify-center lg:justify-start">
-              <ButtonLink button={main.button} />
+              {main.button?.action === "link" && (
+                <Button asChild variant={main.button.variant}>
+                  <Link href={main.button.link} target={main.button.target}>
+                    {main.button.label}
+                  </Link>
+                </Button>
+              )}
             </div>
 
           </div>

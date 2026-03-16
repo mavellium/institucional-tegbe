@@ -3,111 +3,118 @@
 import { VideoPlayer } from "@/components/ui/videoplayer";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/all";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
+import RichText from "@/components/ui/rich/richText";
+import { RichTextItem } from "@/types/richText.type";
 
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-}
+gsap.registerPlugin(ScrollTrigger);
 
 interface HeroVideoProps {
-    // Essenciais
-    videoSrc: string;
-    line1: string;
-    line2: {
-        prefix?: string;
-        highlight: string;
-        suffix?: string;
-    };
-    subline?: string;
+  videoSrc: string;
 
-    // Customização (com valores padrão para o seu estilo atual)
-    accentColor?: string;
-    gradientFrom?: string;
-    gradientTo?: string;
-    videoOpacity?: number;
-    startMuted?: boolean;
+  title: RichTextItem[];
+  subtitle?: RichTextItem[];
+
+  accentColor?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
+
+  videoOpacity?: number;
+  startMuted?: boolean;
 }
 
 export const HeroVideoView = ({
-    videoSrc,
-    line1,
-    line2,
-    subline,
-    accentColor = "#E31B63",
-    gradientFrom = "#FF0F43",
-    gradientTo = "#B3002D",
-    videoOpacity = 0.7,
-    startMuted = true
+  videoSrc,
+  title,
+  subtitle,
+
+  accentColor = "#FFC72C",
+  gradientFrom = "#FFC72C",
+  gradientTo = "#F59E0B",
+
+  videoOpacity = 0.7,
+  startMuted = true,
 }: HeroVideoProps) => {
-    const sectionRef = useRef(null);
 
-    useGSAP(() => {
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top 60%"
-            }
-        });
+  const sectionRef = useRef<HTMLDivElement>(null);
 
-        tl.fromTo(".hero-line",
-            { y: 100, opacity: 0, rotateX: -20 },
-            { y: 0, opacity: 1, rotateX: 0, duration: 1, stagger: 0.1, ease: "power4.out" }
-        );
-    }, { scope: sectionRef });
+  useGSAP(() => {
 
-    return (
-        <section ref={sectionRef} className="relative w-full bg-[#020202] overflow-hidden transition-opacity duration-700">
-            {/* Altura Responsiva Padrão */}
-            <div className='relative w-full h-[60vh] md:h-[80vh] lg:h-screen max-h-[1080px]'>
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 75%",
+      },
+    });
 
-                {/* BACKGROUND DINÂMICO */}
-                <div className="absolute inset-0 w-full h-full">
-                    <VideoPlayer
-                        src={videoSrc}
-                        accentColor={accentColor}
-                        opacity={videoOpacity}
-                        startMuted={startMuted}
-                        className="w-full h-full"
-                    />
+    tl.from(".hero-reveal", {
+      y: 60,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.12,
+      ease: "power3.out",
+    });
 
-                    {/* Efeitos de Textura Fixos (Identidade Visual) */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-10" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-black/40 z-10" />
-                </div>
+  }, { scope: sectionRef });
 
-                {/* CONTEÚDO */}
-                <div className="absolute inset-0 flex items-center justify-center z-20 px-4 pointer-events-none">
-                    <h1 className="flex flex-col items-center text-center">
-                        <span className="overflow-hidden block">
-                            <span className="hero-line block text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter leading-none uppercase">
-                                {line1}
-                            </span>
-                        </span>
+  return (
+    
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#020202] overflow-hidden"
+    >
 
-                        <span className="overflow-hidden block">
-                            <span className="hero-line block text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter leading-none uppercase">
-                                {line2.prefix}{" "}
-                                <span
-                                    className="text-transparent bg-clip-text drop-shadow-[0_0_20px_rgba(227,27,99,0.4)]"
-                                    style={{ backgroundImage: `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})` }}
-                                >
-                                    {line2.highlight}
-                                </span>
-                                {line2.suffix}
-                            </span>
-                        </span>
+      <div className="relative w-full h-[65vh] md:h-[85vh] lg:h-screen max-h-[1080px]">
 
-                        {subline && (
-                            <span className="overflow-hidden block mt-4">
-                                <span className="hero-line block text-lg sm:text-2xl font-light text-gray-400 tracking-[0.4em] uppercase">
-                                    {subline}
-                                </span>
-                            </span>
-                        )}
-                    </h1>
-                </div>
-            </div>
-        </section>
-    );
+        {/* VIDEO */}
+        <div className="absolute inset-0">
+
+          <VideoPlayer
+            src={videoSrc}
+            accentColor={accentColor}
+            opacity={videoOpacity}
+            startMuted={startMuted}
+            className="w-full h-full"
+          />
+
+          {/* overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent z-10" />
+
+          {/* noise */}
+          <div className="absolute inset-0 opacity-[0.18] mix-blend-overlay pointer-events-none z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
+        </div>
+
+        {/* CONTENT */}
+        <div className="absolute inset-0 flex items-center justify-center z-20 px-6">
+
+          <div className="text-center max-w-6xl">
+
+            {/* TITLE */}
+            <h1 className="hero-reveal text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tight leading-[0.95] uppercase">
+
+              <RichText content={title} />
+
+            </h1>
+
+            {/* SUBTITLE */}
+            {subtitle && (
+
+              <p className="hero-reveal mt-6 text-lg sm:text-2xl font-light text-white/70 tracking-[0.35em] uppercase">
+
+                <RichText content={subtitle} />
+
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
 };

@@ -20,7 +20,7 @@ export default function Textura({
   return (
     <div
       className={cn(
-        "absolute inset-0 pointer-events-none z-[100]",
+        "absolute inset-0 pointer-events-none z-[1]",
         misturar && "mix-blend-overlay",
         className
       )}
