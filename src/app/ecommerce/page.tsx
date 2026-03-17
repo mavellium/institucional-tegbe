@@ -8,13 +8,13 @@ import { SectionImage } from "@/components/Section/SectionImage";
 import { fetchComponentData } from "@/lib/api";
 import Plataforms from "@/components/Section/Solucoes/Plataforms";
 import Passos from "@/components/Section/Passos";
-import ServiceFlow from "@/components/Section/ServiceFlow";
 import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
 import Video from "@/components/Wrapper/Video";
 import { VideoSection } from "@/enums/video.enum";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 import { HeroSlide } from "@/types/heroSlide.type";
 import Logos from "@/components/web/logos";
+import Service, { ServiceProps } from "@/components/web/service";
 
 async function getSafeData(slug: string) {
     try {
@@ -30,6 +30,75 @@ async function getSafeData(slug: string) {
         return { data: null };
     }
 }
+
+const content: ServiceProps["content"] = {
+    "header": {
+        "preTitle": "As melhores soluções para seu e-commerce",
+        "title": [
+            { "type": "text", "value": "Tudo o que faltava para você " },
+            { "type": "highlight", "value": "escalar seu e-commerce", "color": "#FFCC00" }
+        ],
+        "subtitle": "Seremos seu parceiro nessa jornada de crescimento no e-commerce"
+    },
+    "services": [
+        { 
+            "id": "setup-infra", 
+            "step": "01", 
+            "color": "#0a0a0a",
+            "titleColor": "#0a0a0a", 
+            "descColor": "#1d1d1d", 
+            "title": "Criação de Anúncios", 
+            "image": "/dev/teste-1.png", // Exemplo de imagem para Ads
+            "description": "Anúncios que vendem de verdade. Nossa equipe faz o trabalho duro de criar imagens e textos que chamam a atenção e fazem o cliente clicar." 
+        }, 
+        { 
+            "id": "logistica", 
+            "step": "02", 
+            "color": "#0071E3", 
+            "titleColor": "#e7e7e7", 
+            "descColor": "#ececec", 
+            "title": "Direcionamento Logístico", 
+            "image": "/dev/teste-2.png", // Exemplo de imagem para logística
+            "description": "Prepare sua operação para o volume. Não adianta ter anúncio bom se a logística trava." 
+        },
+        { 
+            "id": "growth-ads", 
+            "step": "03", 
+            "color": "#FF2D55", 
+            "titleColor": "#1D1D1F", 
+            "descColor": "#86868B", 
+            "title": "Gerenciamento de Publicidade", 
+            "image": "/dev/teste-3.png", // Exemplo de dashboard
+            "description": "Gestão profissional do seu dinheiro. Cuidamos das suas campanhas com um único foco: colocar lucro no seu bolso." 
+        },
+        { 
+            "id": "treinamento", 
+            "step": "04", 
+            "color": "#AF52DE", 
+            "titleColor": "#1D1D1F", 
+            "descColor": "#86868B", 
+            "title": "Treinamento Estratégico", 
+            "image": "/dev/teste-3.png",
+            "description": "Nós ensinamos você a controlar o jogo. Garantindo que você tenha autonomia e visão clara do seu negócio." 
+        }, 
+        { 
+            "id": "venda-onde-quiser", 
+            "step": "05", 
+            "color": "#34C759", 
+            "titleColor": "#000000", 
+            "descColor": "#A1A1A6", 
+            "title": "Venda onde quiser", 
+            "image": "/dev/teste-3.png",
+            "description": "Sua marca nos maiores sites do Brasil. Colocamos seus anúncios para rodar com força no Mercado Livre, Shopee e Amazon." 
+        }
+    ], 
+    "button": { 
+        "label": "Quero Estruturar e Escalar Meu Negócio", 
+        "link": "https://api.whatsapp.com/send?phone=5514991779502", 
+        "target": "_blank", 
+        "action": "link" 
+    }
+};
 
 export default async function EcommercePage() {
     // PERFORMANCE: Busca paralela
@@ -138,12 +207,12 @@ export default async function EcommercePage() {
                 corDestaque="#FFCC00"
                 textoFundo="ECOMMERCE"
                 navGradienteFrom="#FFCC00"
-                navGradienteTo="#FFB800"  
-                navAccent="#FFDB4D"      
+                navGradienteTo="#FFB800"
+                navAccent="#FFDB4D"
                 corIcone="black"
             />
             <Logos />
-            <ServiceFlow />
+            <Service content={content} />
             <Video
                 slug="video-sections"
                 section={VideoSection.Ecommerce}

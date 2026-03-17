@@ -80,7 +80,7 @@ export default function Flywheel({
   };
 
   return (
-    <div className="relative w-full max-w-[550px] aspect-square mx-auto flex items-center justify-center rounded-xl overflow-hidden bg-white">
+    <div className="relative w-full max-w-[550px] aspect-square mx-auto flex items-center justify-center rounded-xl overflow-hidden">
       <style>{`
         @keyframes spin-cw { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes spin-ccw { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
