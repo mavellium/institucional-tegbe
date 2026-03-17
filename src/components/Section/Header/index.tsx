@@ -64,14 +64,14 @@ export function Header({ variant = 'default' }: HeaderProps) {
       try {
         const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header')
         const result = await response.json()
-        
+
         // Validação para garantir estrutura correta
         if (result.announcementBar) {
           // Garante que 'enabled' existe (default para true se não definido)
           if (result.announcementBar.enabled === undefined) {
             result.announcementBar.enabled = true;
           }
-          
+
           // Garante que 'behavior' existe
           if (!result.announcementBar.behavior) {
             result.announcementBar.behavior = {
@@ -80,7 +80,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
             };
           }
         }
-        
+
         setData(result)
       } catch (error) {
         console.error("Erro ao carregar dados do Header:", error)
@@ -121,12 +121,12 @@ export function Header({ variant = 'default' }: HeaderProps) {
   // Fecha o menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node) && 
-          menuButtonRef.current && !menuButtonRef.current.contains(e.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        menuButtonRef.current && !menuButtonRef.current.contains(e.target as Node)) {
         setMenuOpen(false)
       }
     }
-    
+
     if (menuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -157,7 +157,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
   const headerStyles = useMemo(() => {
     if (menuOpen) return "bg-[#050505] py-5 border-b border-white/10";
     return scrolled
-      ? "bg-black/40 backdrop-blur-xl border-b border-white/5 py-3"
+      ? "bg-black/20 backdrop-blur-2xl backdrop-saturate-[1.5] bg-gradient-to-b from-white/[0.08] via-transparent to-white/[0.03] border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3),inset_0_1px_1px_0_rgba(255,255,255,0.15),inset_0_-1px_1px_0_rgba(255,255,255,0.1)] py-3"
       : "bg-transparent border-b border-transparent py-6";
   }, [scrolled, menuOpen]);
 
@@ -212,7 +212,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
 
             {/* AÇÕES (CTA FIXO COM CORES DAS VARIANTES) */}
             <div className="flex items-center gap-3 sm:gap-6">
-              
+
 
               <Link
                 href={data.general.ctaLink}
@@ -314,12 +314,12 @@ export function Header({ variant = 'default' }: HeaderProps) {
           </div>
         )}
       </header>
-      
-      
-      
+
+
+
       {/* Announcement Bar - APENAS SE ESTIVER HABILITADO */}
       {data.announcementBar?.enabled && (
-        <AnnouncementBar 
+        <AnnouncementBar
           text={data.announcementBar.content.text}
           linkText={data.announcementBar.content.linkText}
           linkUrl={data.announcementBar.content.linkUrl}
