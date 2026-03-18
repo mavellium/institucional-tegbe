@@ -12,6 +12,7 @@ import Textura from "../../ui/textura";
 
 import { RichTextItem } from "@/types/richText.type";
 import ProgressMetric from "../../ui/progressMetric";
+import { useApi } from "@/hooks/useApi";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -31,15 +32,11 @@ export interface MetaData {
   footer: RichTextItem[];
 }
 
-interface Props {
-  data: MetaData;
-}
-
 /* ---------------- COMPONENT ---------------- */
 
-export default function MetaSection({ data }: Props) {
+export default function MetaSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-
+    const { data } = useApi<MetaData>("meta-alunos");
   useGSAP(() => {
     if (!containerRef.current) return;
 
@@ -58,6 +55,8 @@ export default function MetaSection({ data }: Props) {
     });
 
   }, { scope: containerRef });
+
+  if (!data) return null;
 
   return (
     <section
@@ -88,7 +87,7 @@ export default function MetaSection({ data }: Props) {
         </div>
 
         {/* FOOTER */}
-        <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px]">
+        <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px]" align="center">
           <RichText content={data.footer} />
         </Paragrafo>
 

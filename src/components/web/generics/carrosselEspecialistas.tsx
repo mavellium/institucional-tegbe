@@ -13,6 +13,7 @@ import { RichTextItem } from "@/types/richText.type";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useApi } from "@/hooks/useApi";
 
 /* ---------------- TYPES ---------------- */
 
@@ -31,13 +32,13 @@ export interface CarrosselEspecialistasData {
   especialistas: EspecialistaItem[];
 }
 
-interface Props {
-  data: CarrosselEspecialistasData;
-}
-
 /* ---------------- COMPONENT ---------------- */
 
-export default function CarrosselEspecialistas({ data }: Props) {
+export default function CarrosselEspecialistas() {
+
+  const { data } = useApi<CarrosselEspecialistasData>("carrossel-de-especialistas");
+  if (!data) return null;
+
   return (
     <section className="bg-[#0A0A0A] py-16 overflow-hidden selection:bg-[#B38E5D]/30">
       <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-8 xl:px-16">

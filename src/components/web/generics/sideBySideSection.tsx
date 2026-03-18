@@ -8,6 +8,8 @@ import RichText from "@/components/ui/rich/richText";
 import { Button } from "@/components/ui/button/button";
 import Link from "next/link";
 import { IButton } from "@/interface/button/IButton";
+import { useApi } from "@/hooks/useApi";
+import { RichTextItem } from "@/types/richText.type";
 
 interface SocialItem {
   icon: string;
@@ -16,8 +18,8 @@ interface SocialItem {
 
 interface HeroData {
   tag?: string;
-  title: any;
-  description: any;
+  title: RichTextItem[];
+  description: RichTextItem[];
   button?: IButton
   image?: {
     src: string;
@@ -38,42 +40,17 @@ interface SideBySideSectionData {
 
 interface SideBySideSectionProps {
   type?: string;
-  endpoint?: string;
+  endpoint: string;
   data?: SideBySideSectionData;
 }
 
 export function SideBySideSection({
   endpoint,
-  data,
 }: SideBySideSectionProps) {
 
-  const [apiData, setApiData] = useState<SideBySideSectionData | null>(null);
+  const { data } = useApi<SideBySideSectionData>(endpoint);
 
-  useEffect(() => {
-
-    if (!endpoint || data) return;
-
-    async function fetchData() {
-      try {
-
-        const res = await fetch(`/api/${endpoint}`);
-
-        if (!res.ok) throw new Error("Erro na API");
-
-        const json = await res.json();
-
-        setApiData(json);
-
-      } catch (error) {
-        console.error("[SideBySideSection] erro ao buscar:", error);
-      }
-    }
-
-    fetchData();
-
-  }, [endpoint, data]);
-
-  const content = data || apiData;
+  const content = data
 
   if (!content) return null;
 

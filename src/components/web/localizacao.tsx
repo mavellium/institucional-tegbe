@@ -11,6 +11,7 @@ import { RichTextItem } from "@/types/richText.type";
 import { IButton } from "@/interface/button/IButton";
 import { Button } from "../ui/button/button";
 import Link from "next/link";
+import { useApi } from "@/hooks/useApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,126 +24,14 @@ export interface LocalizacaoItem {
 
   button?: IButton
 }
-const mockData: LocalizacaoItem[] = [
-  {
-    id: "1",
-    alt: "Escritório Tegbe em Garça",
-    image: "/doni.jpg",
-
-    title: [
-      {
-        type: "text",
-        value: "Nosso QG estratégico fica em Garça, São Paulo."
-      }
-    ],
-
-    description: [
-      {
-        type: "text",
-        value:
-          "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-      }
-    ],
-
-    button: {
-      label: "Ver sede no Google Maps",
-      link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank",
-      action: "link"
-    }
-  },
-
-  {
-    id: "2",
-    alt: "Ambiente de trabalho da equipe",
-    image: "/logo-tegbe-fundo.png",
-
-    title: [
-      {
-        type: "text",
-        value: "Nosso QG estratégico fica em Garça, São Paulo."
-      }
-    ],
-
-    description: [
-      {
-        type: "text",
-        value:
-          "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-      }
-    ],
-
-    button: {
-      label: "Ver sede no Google Maps",
-      link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank",
-      action: "link"
-    }
-  },
-
-  {
-    id: "3",
-    alt: "Time trabalhando em projetos digitais",
-    image: "/doni.jpg",
-
-    title: [
-      {
-        type: "text",
-        value: "Nosso QG estratégico fica em Garça, São Paulo."
-      }
-    ],
-
-    description: [
-      {
-        type: "text",
-        value:
-          "É daqui que coordenamos projetos, estratégias e operações digitais que impactam empresas em todo o Brasil. Nossa estrutura é enxuta, estratégica e totalmente conectada."
-      }
-    ],
-
-    button: {
-      label: "Ver sede no Google Maps",
-      link: "https://maps.app.goo.gl/vPoKscAn58iodWEP7",
-      target: "_blank",
-      action: "link"
-    }
-  }
-];
 
 export default function Localizacao() {
 
+   
+    
+
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const [data, setData] = useState<LocalizacaoItem[]>(mockData);
-
-  useEffect(() => {
-
-    async function fetchData() {
-
-      try {
-
-        const res = await fetch("/api/localizacao");
-
-        if (!res.ok) throw new Error("API error");
-
-        const json = await res.json();
-
-        if (json?.length) setData(json);
-
-      } catch {
-
-        console.warn("Localizacao usando mockData");
-
-      }
-
-    }
-
-    fetchData();
-
-  }, []);
-
-  const main = data[0];
-
-  const images = data.map((item) => item.image).filter(Boolean);
+  const { data } = useApi<LocalizacaoItem[]>("localizacao");
 
   useGSAP(() => {
 
@@ -173,7 +62,10 @@ export default function Localizacao() {
 
   }, { scope: sectionRef });
 
-  if (!main) return null;
+  if (!data || data.length === 0) return null;
+
+  const main = data[0];
+  const images = data.map((item) => item.image).filter(Boolean);
 
   return (
 

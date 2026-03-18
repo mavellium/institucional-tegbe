@@ -14,7 +14,6 @@ import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 import { HeroSlide } from "@/types/heroSlide.type";
 import Logos from "@/components/web/logos";
 import Service, { ServiceProps } from "@/components/web/service";
-import Plataforms from "@/components/Section/Solucoes/Plataforms";
 
 async function getSafeData(slug: string) {
     try {
