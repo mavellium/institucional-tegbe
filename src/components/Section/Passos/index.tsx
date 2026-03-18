@@ -4,17 +4,18 @@ import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
-import { Icon } from '@iconify/react'
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
-import { createPortal } from 'react-dom'
+import { useApi } from '@/hooks/useApi'
+import { IButton } from '@/interface/button/IButton'
+import { StepsList } from './passosList'
+import { StepVisualizer } from './passosVisualizador'
+import { StepCTA } from './passosCta'
+import { RichTextItem } from '@/types/richText.type'
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface Passos {
+export interface Passos {
   id: number;
   title: string;
   subtitle: string;
@@ -22,395 +23,180 @@ interface Passos {
   image: string;
 }
 
-interface ApiResponse {
+export interface ApiResponse {
   id: string;
   type: string;
-  subtype: string;
+  subtype: RichTextItem[];
   values: Passos[];
-  cta?: {
-    text: string;
-    url: string;
-    description?: string;
-    use_form?: boolean;
-    form_html?: string;
-  };
+  button: IButton;
 }
 
+const mockData: ApiResponse = {
+  id: "fallback",
+  type: "E-commerce",
+  subtype: [{ type: "text", value: "Não importa onde você está hoje. Nós temos o mapa para o seu próximo nível." }],
+  values: [
+    {
+      id: 1,
+      title: "Preciso aprender",
+      subtitle: "Do zero ao primeiro faturamento",
+      description: "Para quem está começando do zero: nós ensinamos e acompanhamos sua jornada para que você domine o digital com segurança e suporte real.",
+      image: "https://tegbe-cdn.b-cdn.net/uploads/1773038086716-Imagens-Site-3.png"
+    },
+    {
+      "id": 2,
+      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150865131-2.png",
+      "title": "Vou começar do ZERO",
+      "subtitle": "Comece do jeito certo",
+      "description": "Para quem busca velocidade e execução: nós fazemos por você, criando seus anúncios e gerindo seu tráfego para sua operação decolar de forma profissional e livre de erros comuns."
+    },
+    {
+      "id": 3,
+      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150911088-3.png",
+      "title": "Estruturar meu negócio",
+      "subtitle": "Coloque sua operação em ordem",
+      "description": "Se suas campanhas estão gastando demais e os anúncios estão bagunçados, nós organizamos sua operação e ajustamos seus processos para que você recupere o controle e volte a crescer com clareza."
+    },
+    {
+      "id": 4,
+      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150951167-4.png",
+      "title": "Gestão de Performance",
+      "subtitle": "Máxima eficiência e lucratividade",
+      "description": "Para operações sólidas que buscam escala agressiva, aplicamos inteligência avançada para reduzir seus custos, identificar novas oportunidades de mercado e maximizar sua lucratividade total."
+    }
+  ],
+  button: {
+    action: "link",
+    label: "Quero Estruturar e Escalar Meu Negócio",
+    link: "https://api.whatsapp.com/send?phone=5514991779502"
+  }
+};
+
 export default function Steps() {
+  const { data: apiData, loading, error } = useApi<ApiResponse>("quem-somos");
+
   const [data, setData] = useState<ApiResponse | null>(null);
   const [activeStep, setActiveStep] = useState<Passos | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [ctaData, setCtaData] = useState({
-    text: "Quero Estruturar e Escalar Meu Negócio",
-    url: "https://api.whatsapp.com/send?phone=5514991779502",
-    description: "Anúncios, operação e dados trabalhando juntos para vender mais.",
-    use_form: false,
-    form_html: "",
-  });
 
   const sectionRef = useRef<HTMLDivElement>(null)
   const leftColumnRef = useRef<HTMLDivElement>(null)
   const rightColumnRef = useRef<HTMLDivElement>(null)
   const imageContainerRef = useRef<HTMLDivElement>(null)
-  const titleRef = useRef<HTMLHeadingElement>(null)
-  const descriptionRef = useRef<HTMLParagraphElement>(null)
   const stepButtonsRef = useRef<(HTMLButtonElement | null)[]>([])
   const ctaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const loadSteps = async () => {
-      try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/passos');
-        const result: ApiResponse = await response.json();
-
-        if (result) {
-          setData(result);
-          if (result.values && result.values.length > 0) {
-            setActiveStep(result.values[0]);
-          }
-          if (result.cta) {
-            setCtaData({
-              text: result.cta.text,
-              url: result.cta.url,
-              description: result.cta.description || "Anúncios, operação e dados trabalhando juntos para vender mais.",
-              use_form: result.cta.use_form || false,
-              form_html: result.cta.form_html || "",
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Erro ao carregar estágios Mavellium:", error);
-        const fallbackData: ApiResponse = {
-          id: "fallback",
-          type: "E-commerce",
-          subtype: "Em qual estágio do seu e-commerce você está?",
-          values: [
-            {
-              id: 1,
-              title: "Estou Começando",
-              subtitle: "Idea & Validation",
-              description: "Validação de ideia e construção da base do negócio.",
-              image: "/images/step1.png"
-            },
-            {
-              id: 2,
-              title: "Já Tenho um Site",
-              subtitle: "Scale & Grow",
-              description: "Otimização e escalabilidade para crescimento acelerado.",
-              image: "/images/step2.png"
-            }
-          ],
-          cta: {
-            text: "Quero Estruturar e Escalar Meu Negócio",
-            url: "https://api.whatsapp.com/send?phone=5514991779502",
-            description: "Anúncios, operação e dados trabalhando juntos para vender mais.",
-            use_form: false,
-            form_html: "",
-          }
-        };
-        setData(fallbackData);
-        setActiveStep(fallbackData.values[0]);
-        setCtaData({
-          text: fallbackData.cta!.text,
-          url: fallbackData.cta!.url,
-          description: fallbackData.cta!.description || "Anúncios, operação e dados trabalhando juntos para vender mais.",
-          use_form: false,
-          form_html: "",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadSteps();
-  }, []);
+    if (loading) return;
+    if (error || !apiData || !apiData.values || apiData.values.length === 0) {
+      setData(mockData);
+      setActiveStep(mockData.values[0]);
+    } else {
+      setData(apiData);
+      setActiveStep(apiData.values[0]);
+    }
+  }, [apiData, loading, error]);
 
   useGSAP(() => {
     if (loading || !data || !sectionRef.current) return;
 
-    gsap.set([leftColumnRef.current, rightColumnRef.current, ctaRef.current], { 
-      opacity: 0, 
-      y: 50 
-    });
-
-    gsap.to(leftColumnRef.current, {
-      opacity: 1, 
-      y: 0, 
-      duration: 0.8, 
-      ease: "power2.out",
-      scrollTrigger: { 
-        trigger: sectionRef.current, 
-        start: "top 75%" 
-      }
-    });
-
-    gsap.to(rightColumnRef.current, {
-      opacity: 1, 
-      y: 0, 
-      duration: 0.8, 
-      delay: 0.2, 
-      ease: "power2.out",
-      scrollTrigger: { 
-        trigger: sectionRef.current, 
-        start: "top 75%" 
-      }
-    });
+    gsap.from(leftColumnRef.current, { opacity: 0, y: 50, duration: 0.8, scrollTrigger: { trigger: sectionRef.current, start: "top 75%" } });
+    gsap.from(rightColumnRef.current, { opacity: 0, y: 50, duration: 0.8, delay: 0.2, scrollTrigger: { trigger: sectionRef.current, start: "top 75%" } });
+    gsap.from(ctaRef.current, { opacity: 0, y: 50, duration: 0.8, delay: 0.4, scrollTrigger: { trigger: sectionRef.current, start: "top 60%" } });
 
     stepButtonsRef.current.forEach((button, index) => {
       if (!button) return;
       gsap.fromTo(button,
         { opacity: 0, x: -30 },
-        {
-          opacity: 1, 
-          x: 0, 
-          duration: 0.6, 
-          delay: 0.1 * index,
-          scrollTrigger: { 
-            trigger: leftColumnRef.current, 
-            start: "top 80%" 
-          }
-        }
+        { opacity: 1, x: 0, duration: 0.5, delay: 0.08 * index, scrollTrigger: { trigger: leftColumnRef.current, start: "top 80%" } }
       );
     });
-
-    gsap.to(ctaRef.current, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      delay: 0.4,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 60%"
-      }
-    });
-
   }, { dependencies: [loading, data], scope: sectionRef });
 
   const handleStepChange = (step: Passos) => {
     if (!activeStep || step.id === activeStep.id || !data) return;
-
-    const prevIndex = data.values.findIndex(s => s.id === activeStep.id);
-    const nextIndex = data.values.findIndex(s => s.id === step.id);
-
-    // Animação de saída
     const tl = gsap.timeline({
       onComplete: () => {
         setActiveStep(step);
-        setImageLoaded(false); // reset loaded state
+        setImageLoaded(false);
       }
     });
-
-    tl.to([titleRef.current, descriptionRef.current], {
-      opacity: 0,
-      y: 20,
-      duration: 0.3,
-      ease: "power2.in"
-    });
-
-    // Animação do container de imagem
-    tl.to(imageContainerRef.current, {
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.3,
-      ease: "power2.in"
-    }, "<"); // começa junto com o texto
-
-    // Atualiza o botão ativo
-    if (stepButtonsRef.current[prevIndex]) {
-      gsap.to(stepButtonsRef.current[prevIndex], { 
-        scale: 1, 
-        duration: 0.3 
-      });
-    }
+    tl.to(imageContainerRef.current, { opacity: 0, scale: 0.95, duration: 0.25 });
   };
 
   const handleImageLoad = () => {
     setImageLoaded(true);
-    // Animação de entrada quando a imagem carregar
-    gsap.fromTo([imageContainerRef.current, titleRef.current, descriptionRef.current],
-      { opacity: 0, y: -20 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.5,
-        stagger: 0.1,
-        ease: "power2.out",
-        delay: 0.1 // pequeno delay para garantir que tudo está pronto
-      }
-    );
+    gsap.fromTo(imageContainerRef.current, { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.4 });
   };
 
-  // Quando activeStep muda, automaticamente inicia o carregamento da imagem
   useEffect(() => {
-    if (activeStep && imageContainerRef.current) {
-      // Se a imagem já estiver em cache, o onLoad pode não disparar, então forçamos um pequeno timeout
-      const timer = setTimeout(() => {
-        if (!imageLoaded) {
-          // Se após 300ms a imagem não carregou, talvez esteja em cache – forçamos a animação
-          handleImageLoad();
-        }
-      }, 300);
-      return () => clearTimeout(timer);
-    }
+    if (!activeStep) return;
+    const timer = setTimeout(() => {
+      if (!imageLoaded) handleImageLoad();
+    }, 300);
+    return () => clearTimeout(timer);
   }, [activeStep]);
-
-  const handleCtaClick = (e: React.MouseEvent) => {
-    if (ctaData.use_form) {
-      e.preventDefault();
-      setIsModalOpen(true);
-    }
-  };
 
   if (loading) {
     return (
-      <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4] min-h-[500px] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <section className="w-full max-w-7xl mx-auto my-20 flex items-center justify-center min-h-[400px]">
+        <div className="w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin" />
       </section>
     );
   }
 
-  if (!data || !activeStep) {
-    return (
-      <section className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4] p-8">
-        <p className="text-center text-gray-600">Erro ao carregar os dados. Por favor, tente novamente.</p>
-      </section>
-    );
-  }
+  if (!data || !activeStep) return null;
 
   return (
-    <>
-      <section ref={sectionRef} className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto my-12 md:my-20 bg-[#F4F4F4]">
-        <div className="flex flex-col lg:flex-row gap-12 items-center">
-          {/* Coluna Esquerda */}
-          <div ref={leftColumnRef} className="w-full lg:w-1/2">
-            <p className="tracking-wide text-lg sm:text-xl mb-2 text-black font-medium uppercase">
-              {data.type}
-            </p>
-            <h1 className="font-bold text-2xl sm:text-4xl md:text-5xl mb-8 leading-tight text-black">
-              {data.subtype}
-            </h1>
-            <div className="flex flex-col gap-4">
-              {data.values.map((step, index) => (
-                <button
-                  key={step.id}
-                  ref={(el) => { stepButtonsRef.current[index] = el }}
-                  onClick={() => handleStepChange(step)}
-                  className={`text-left p-5 rounded-xl border transition-all duration-300 transform
-                    ${activeStep.id === step.id
-                      ? 'bg-white border-blue-500 shadow-xl scale-[1.02]'
-                      : 'bg-transparent border-gray-200 hover:bg-white'
-                    }
-                  `}
-                >
-                  <h1 className="font-bold text-base text-black">{step.title}</h1>
-                  <p className="text-sm text-gray-600">{step.subtitle}</p>
-                </button>
-              ))}
-            </div>
-          </div>
+    <section ref={sectionRef} className="w-full py-24 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
-          {/* Coluna Direita */}
-          <div ref={rightColumnRef} className="w-full lg:w-1/2 flex flex-col items-center text-center">
-            <div 
-              ref={imageContainerRef}
-              className="relative w-full max-w-[500px] h-[300px] md:h-[400px] mb-6"
-            >
-              <Image
-                key={activeStep.id} // força re-render
-                src={activeStep.image}
-                fill
-                className="object-contain"
-                alt={activeStep.title}
-                priority
-                onLoad={handleImageLoad}
+        {/* CARD */}
+        <div className="
+      relative rounded-3xl 
+      bg-white/80 backdrop-blur-xl 
+      border border-slate-200/60
+      shadow-[0_20px_60px_rgba(0,0,0,0.08)]
+      p-8 md:p-12 lg:p-16
+      overflow-hidden
+    ">
+
+          {/* Glow sutil (Apple touch) */}
+          <div className="pointer-events-none absolute inset-0 rounded-3xl 
+        bg-gradient-to-br from-yellow-100/40 via-transparent to-transparent opacity-60"
+          />
+
+          {/* Conteúdo */}
+          <div className="relative z-10 flex flex-col gap-16">
+
+            <div className="flex flex-col lg:flex-row gap-16 items-center">
+
+              <StepsList
+                type={data.type}
+                subtype={data.subtype}
+                steps={data.values}
+                activeStep={activeStep}
+                onStepChange={handleStepChange}
+                containerRef={leftColumnRef}
+                registerButtonRef={(el, index) => { stepButtonsRef.current[index] = el }}
               />
+
+              <StepVisualizer
+                activeStep={activeStep}
+                containerRef={rightColumnRef}
+                imageContainerRef={imageContainerRef}
+                onImageLoad={handleImageLoad}
+              />
+
             </div>
-            <h2 ref={titleRef} className="font-bold text-xl sm:text-2xl mb-3 text-black opacity-0">
-              {activeStep.subtitle}
-            </h2>
-            <p ref={descriptionRef} className="text-sm sm:text-base text-gray-700 max-w-md leading-relaxed opacity-0">
-              {activeStep.description}
-            </p>
+
+            {data.button && (
+              <StepCTA buttonData={data.button} containerRef={ctaRef} />
+            )}
+
           </div>
         </div>
-
-        {/* CTA Dinâmico */}
-        <div ref={ctaRef} className="reveal-text flex flex-col items-center mt-12">
-          {ctaData.use_form ? (
-            <button
-              onClick={handleCtaClick}
-              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl cursor-pointer"
-            >
-              <span>{ctaData.text}</span>
-              <Icon
-                icon="lucide:arrow-right"
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </button>
-          ) : (
-            <Link
-              aria-label="Entre em contato pelo WhatsApp"
-              href={ctaData.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-all duration-300 hover:scale-105 bg-black text-white shadow-lg hover:shadow-2xl"
-            >
-              <span>{ctaData.text}</span>
-              <Icon
-                icon="lucide:arrow-right"
-                className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-          )}
-          {ctaData.description && (
-            <p className="mt-4 text-[10px] font-medium tracking-widest uppercase flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-blue-500"></span>
-              {ctaData.description}
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* Modal com formulário - renderizado no body via portal */}
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {isModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                >
-                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
-                </button>
-                <div className="p-6">
-                  {ctaData.form_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: ctaData.form_html }} />
-                  ) : (
-                    <p className="text-gray-500">Formulário não disponível.</p>
-                  )}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
-    </>
-  )
+      </div>
+    </section>
+  );
 }

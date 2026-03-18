@@ -10,7 +10,7 @@ interface BaseButton {
 }
 
 export interface ButtonLink extends BaseButton {
-  action?: "link"
+  action: "link"
   link: string
   target?: ButtonTarget
 }

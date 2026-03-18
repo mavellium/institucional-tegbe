@@ -7,10 +7,9 @@ import { RichTextItem } from "@/types/richText.type";
 import RichText from "../ui/rich/richText";
 import ServiceCard from "../ui/serviceCard";
 import { ServiceA, ServiceTheme } from "../../types/service.type";
-
-// 1. Importações obrigatórias do Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import Textura from "@/components/ui/textura";
 
 export interface ServiceProps {
   content: {
@@ -18,6 +17,7 @@ export interface ServiceProps {
       preTitle?: string;
       title?: RichTextItem[];
       subtitle?: string;
+      colorTitle?: string;
     };
     services: ServiceA[];
     button?: {
@@ -27,11 +27,29 @@ export interface ServiceProps {
       action?: "link";
     };
   };
+
+  // 🔥 Background config
+  backgroundColor?: string;
+  backgroundImage?: string;
+
+  // 🔥 Texture config
+  showTexture?: boolean;
+  textureOpacity?: number;
+  textureSrc?: string;
 }
 
-export default function Service({ content }: ServiceProps) {
-  const { header, services, button } = content;
 
+
+export default function Service({
+  content,
+  backgroundColor,
+  backgroundImage,
+  showTexture,
+  textureOpacity = 0.08,
+  textureSrc
+}: ServiceProps) {
+  const { header, services, button } = content;
+  const shouldCenter = services.length <= 3;
   const theme: ServiceTheme = {
     badge: {
       background: "bg-gray-100"
@@ -39,10 +57,28 @@ export default function Service({ content }: ServiceProps) {
   };
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section
+      className="py-24 relative overflow-hidden"
+      style={{
+        backgroundColor: backgroundColor || undefined,
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
 
-      {/* HEADER (Mantido com limite de largura) */}
-      <div className="max-w-6xl mx-auto px-6 text-center mb-16">
+      }}
+    >
+      {/* TEXTURA */}
+      {showTexture && (
+        <Textura
+          misturar
+          opacity={textureOpacity}
+          src={textureSrc}
+          className="absolute inset-0 w-full h-full z-0 pointer-events-none"
+        />
+      )}
+
+      {/* HEADER */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center mb-16">
         {header.preTitle && (
           <p className="text-sm font-medium text-muted-foreground mb-4">
             {header.preTitle}
@@ -50,7 +86,7 @@ export default function Service({ content }: ServiceProps) {
         )}
 
         {header.title && (
-          <Heading as="h2" className="mb-4">
+          <Heading as="h2" className="mb-4" color={header.colorTitle ? header.colorTitle : "#0a0a0a"}>
             <RichText content={header.title} />
           </Heading>
         )}
@@ -62,7 +98,8 @@ export default function Service({ content }: ServiceProps) {
         )}
       </div>
 
-      <div className="w-full px-6 md:px-12 lg:px-32">
+      {/* CARROSSEL */}
+      <div className="relative z-10 w-full px-6 md:px-12 lg:px-32">
         <Swiper
           spaceBetween={24}
           slidesPerView={1.2}
@@ -71,8 +108,7 @@ export default function Service({ content }: ServiceProps) {
             1024: { slidesPerView: 3.5 },
             1280: { slidesPerView: 4.2 },
           }}
-  
-          className="!overflow-visible !pt-8 !pb-16"
+          className={`mySwiper ${shouldCenter ? 'is-centered' : ''} !overflow-visible !pt-8 !pb-16 `}
         >
           {services.map((service) => (
             <SwiperSlide key={service.id} className="h-auto">
@@ -88,7 +124,7 @@ export default function Service({ content }: ServiceProps) {
 
       {/* CTA */}
       {button && (
-        <div className="flex justify-center mt-12">
+        <div className="relative z-10 flex justify-center mt-12">
           <Link href={button.link} target={button.target ?? "_self"}>
             <Button>
               {button.label}
@@ -96,7 +132,6 @@ export default function Service({ content }: ServiceProps) {
           </Link>
         </div>
       )}
-
     </section>
   );
 }

@@ -85,9 +85,7 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          {/* Se o seu componente Button aceitar style, aplicamos o background. 
-            Caso contrário, você pode precisar passar uma prop de cor se o componente suportar.
-          */}
+
           <Button 
             asChild 
             variant="marketing" 

@@ -114,3 +114,7 @@ footer {
         }
     }
 }
+
+.mySwiper.is-centered .swiper-wrapper {
+  justify-content: center;
+}

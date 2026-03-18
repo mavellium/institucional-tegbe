@@ -1,6 +1,6 @@
 export interface ServiceA {
   id: string;
-  step: string;
+  step?: string;
   title: string;
   description: string;
   image: string;

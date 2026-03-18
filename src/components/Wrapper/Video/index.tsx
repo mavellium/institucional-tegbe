@@ -1,17 +1,27 @@
+// AnimationVideoWrapper.tsx
 import AnimationVideoView from "@/components/Section/AnimationVideoView";
-import { HeroVideoView } from "@/components/Section/HeroVideoView"; // Ajuste o path conforme sua pasta
+import { HeroVideoView } from "@/components/Section/HeroVideoView";
 import { VideoSection } from "@/enums/video.enum";
-import { div } from "framer-motion/client";
 
 interface Props {
     slug: string;
     section?: VideoSection;
     theme: any;
-    // Adicionamos uma prop opcional para forçar a variante se desejar
     viewVariant?: 'animation' | 'hero';
+    showTexture?: boolean;
+    textureOpacity?: number;
+    textureSrc?: string;
 }
 
-export default async function AnimationVideoWrapper({ slug, section, theme, viewVariant }: Props) {
+export default async function AnimationVideoWrapper({ 
+    slug, 
+    section, 
+    theme, 
+    viewVariant,
+    showTexture,
+    textureOpacity,
+    textureSrc
+}: Props) {
     const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/${slug}`;
 
     try {
@@ -22,7 +32,6 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
 
         const data = await response.json();
 
-        // 🔒 REGRA DE SELEÇÃO DE SEÇÃO
         const sectionKey: VideoSection =
             section ??
             data.defaultSection ??
@@ -35,15 +44,12 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
         const { content } = sectionData;
         const videoUrl = content.videoSrc || data.metadata?.assets?.video_url;
 
-        // --- LÓGICA DE DECISÃO DE COMPONENTE ---
-        // Decidimos com base na prop passada ou em algum campo vindo da API (ex: content.type)
         const activeVariant = viewVariant || content.type || 'animation';
 
         if (activeVariant === 'hero') {
             return (
                 <HeroVideoView
                     videoSrc={videoUrl}
-                    // Agora passamos o objeto completo que o RichText espera processar
                     title={content.title}
                     subtitle={content.subtitle}
                     accentColor={theme?.colors?.primary}
@@ -54,7 +60,6 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
             );
         }
 
-        // --- RETORNO PADRÃO (AnimationVideoView) ---
         return (
             <div className="relative w-full justify-center items-center h-full">
                 <AnimationVideoView
@@ -64,6 +69,10 @@ export default async function AnimationVideoWrapper({ slug, section, theme, view
                     startMuted={false}
                     variant="sobre"
                     theme={theme}
+                    // 🔹 ADICIONADO AQUI: Repassando as props para a View final
+                    showTexture={showTexture}
+                    textureOpacity={textureOpacity}
+                    textureSrc={textureSrc}
                 />
             </div>
         );

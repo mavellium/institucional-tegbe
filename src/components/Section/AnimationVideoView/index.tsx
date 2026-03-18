@@ -10,17 +10,27 @@ import {
 } from "./theme";
 import { VideoPlayer } from "@/components/ui/videoplayer";
 
+// Importando seus componentes de UI
+import Heading from "@/components/ui/heading";
+import RichText from "@/components/ui/rich/richText";
+import { RichTextItem } from "@/types/richText.type";
+import Textura from "@/components/ui/textura"; // Ajuste o caminho se necessário
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 interface AnimationVideoProps {
-  badge: string;
-  title: string;
+  badge?: string;
+  title: RichTextItem[] | string; // Agora aceita o RichText ou string normal
   videoSrc: string;
   variant?: "sobre" | "cursos";
   theme?: Partial<AnimationVideoTheme>;
   startMuted?: boolean;
+  // Novas props para a Textura
+  showTexture?: boolean;
+  textureOpacity?: number;
+  textureSrc?: string;
 }
 
 export const AnimationVideoView = ({
@@ -30,6 +40,9 @@ export const AnimationVideoView = ({
   variant = "cursos",
   theme,
   startMuted = true,
+  showTexture = false,
+  textureOpacity = 0.1,
+  textureSrc = "/textura.svg",
 }: AnimationVideoProps) => {
   const mergedTheme: AnimationVideoTheme = {
     ...DEFAULT_ANIMATION_VIDEO_THEME,
@@ -56,11 +69,10 @@ export const AnimationVideoView = ({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // 🎬 GSAP – Animação de expansão do vídeo ao scroll
+  // 🎬 GSAP – INTACTO (Não mexi em nada aqui)
   useGSAP(() => {
     if (!containerRef.current || !videoWrapperRef.current) return;
 
-    // Mata apenas os ScrollTriggers antigos deste container
     ScrollTrigger.getAll()
       .filter(st => st.trigger === containerRef.current)
       .forEach(st => st.kill());
@@ -68,16 +80,15 @@ export const AnimationVideoView = ({
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
-        start: "top top",         // começa quando o topo da seção encosta no topo da viewport
-        end: "bottom top",        // termina quando o fundo da seção atinge o topo da viewport
-        pin: true,                // fixa a seção durante a animação
-        scrub: 1,                 // liga o progresso ao scroll
+        start: "top top",
+        end: "bottom top",
+        pin: true,
+        scrub: 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       },
     });
 
-    // Header desaparece suavemente
     tl.to(".section-header", {
       y: -80,
       autoAlpha: 0,
@@ -85,7 +96,6 @@ export const AnimationVideoView = ({
       ease: "power2.inOut",
     }, 0);
 
-    // Expansão do vídeo
     tl.fromTo(
       videoWrapperRef.current,
       {
@@ -112,19 +122,16 @@ export const AnimationVideoView = ({
       0
     );
 
-    // Pequeno atraso para garantir refresh após criação
     setTimeout(() => {
       ScrollTrigger.refresh();
     }, 100);
 
-    // Cleanup específico (já é feito automaticamente pelo useGSAP, mas por segurança)
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
     };
   }, { scope: containerRef, dependencies: [isMobile, backgroundColor] });
 
-  // 🔄 Força refresh no resize e no load da página
   useEffect(() => {
     const handleRefresh = () => ScrollTrigger.refresh();
     window.addEventListener("resize", handleRefresh);
@@ -141,33 +148,53 @@ export const AnimationVideoView = ({
       className="relative w-full h-screen overflow-hidden"
       style={{ backgroundColor }}
     >
-      {/* HEADER */}
-      <div className="section-header absolute top-[12%] w-full text-center z-10">
-        <div
-          className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border backdrop-blur-md"
-          style={{ backgroundColor: badgeBg, borderColor: badgeBorder }}
-        >
-          <span
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: accentColor }}
-          />
-          <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: badgeText }}
-          >
-            {badge}
-          </span>
-        </div>
+      {/* 🔹 TEXTURA DE FUNDO (Z-0) */}
+      {showTexture && (
+        <Textura
+          misturar
+          opacity={textureOpacity}
+          src={textureSrc}
+          className="absolute inset-0 w-full h-full z-0 pointer-events-none"
+        />
+      )}
 
-        <h2
-          className="text-4xl md:text-6xl font-bold"
-          style={{ color: textColor }}
+      {/* 🔹 HEADER COM RICHTEXT E HEADING (Z-10) */}
+      <div className="section-header absolute top-[12%] w-full text-center z-10 px-6">
+        
+        {/* Badge protegido por condicional caso não exista */}
+        {badge && (
+          <div
+            className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border backdrop-blur-md shadow-sm"
+            style={{ backgroundColor: badgeBg, borderColor: badgeBorder }}
+          >
+            <span
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: accentColor }}
+            />
+            <span
+              className="text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: badgeText }}
+            >
+              {badge}
+            </span>
+          </div>
+        )}
+
+        <Heading 
+          as="h2" 
+          className="max-w-4xl mx-auto" 
+          color={textColor}
+          align="center"
         >
-          {title}
-        </h2>
+          {typeof title === 'string' ? (
+            title
+          ) : (
+            <RichText content={title} />
+          )}
+        </Heading>
       </div>
 
-      {/* VIDEO */}
+      {/* 🔹 VIDEO (Z-20) */}
       <div
         ref={videoWrapperRef}
         className="absolute left-[50%] top-[35%] overflow-hidden bg-black z-20"
@@ -180,7 +207,7 @@ export const AnimationVideoView = ({
         <VideoPlayer
           src={videoSrc}
           accentColor={accentColor}
-          startMuted={false}
+          startMuted={startMuted}
           showVolumeControl={false}
         />
       </div>
