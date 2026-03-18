@@ -32,11 +32,17 @@ export interface CarrosselEspecialistasData {
   especialistas: EspecialistaItem[];
 }
 
+interface CarrosselProps{
+  type: string;
+  endpoint: string;
+}
+
 /* ---------------- COMPONENT ---------------- */
 
-export default function CarrosselEspecialistas() {
+export default function Carrossel({endpoint,
+}: CarrosselProps) {
 
-  const { data } = useApi<CarrosselEspecialistasData>("carrossel-de-especialistas");
+  const { data } = useApi<CarrosselEspecialistasData>(endpoint);
   if (!data) return null;
 
   return (

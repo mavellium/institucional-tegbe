@@ -13,7 +13,7 @@ import PorqueATegbe from "@/components/web/porqueATegbe";
 import MarketingInteligente from "@/components/web/marketingInteligente";
 import { parceiroSectionMock } from "@/mock/parceiroSection.mock";
 import Meta from "@/components/web/generics/meta";
-import CarrosselEspecialistas from "@/components/web/generics/carrosselEspecialistas";
+import Carrossel from "@/components/web/generics/carrosselEspecialistas";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 
 async function getSafeData(slug: string) {
@@ -141,13 +141,13 @@ export default async function MarketingPage() {
                 }}
             />
             <Navbar variant="marketing" />
-            <HeroCarrossel 
-            slides={mockSlides} 
-            type={"HeroMarketing"}
+            <HeroCarrossel
+                slides={mockSlides}
+                type={"HeroMarketing"}
 
                 corDestaque="#f9265e"
                 textoFundo="MARKETING"
-             />
+            />
             <PorqueATegbe />
             <Video2
                 slug="video-marketing"
@@ -182,93 +182,8 @@ export default async function MarketingPage() {
             />
             <Feature />
             <Parceiro data={parceiroSectionMock} />
-            <Meta data={{
-                header: {
-                    title: [
-                        { type: "text", value: "Qual é a principal " },
-                        { type: "highlight", value: "meta", color: "#F9396F" },
-                        { type: "text", value: " da Tegbe?" }
-                    ],
-
-                    subtitle: [
-                        { type: "text", value: "Gerar ", size: 18 },
-                        { type: "bold", value: "R$ 100 milhões em novas receitas", size: 18 },
-                        { type: "text", value: " através dos nossos parceiros até 2030.", size: 18 }
-                    ]
-                },
-
-                progress: {
-                    current: 1500,
-                    target: 1500,
-                    max: 5000
-                },
-
-                footer: [
-                    { type: "text", value: "resultados gerados até agora pela " },
-                    { type: "bold", value: "#geraçãotegbe", },
-                ]
-            }} />
-            <CarrosselEspecialistas data={{
-                header: {
-                    title: [
-                        { type: "text", value: "E nesse processo reunimos vários " },
-                        { type: "highlight", value: "especialistas", color: "#F9396F" }
-                    ]
-                },
-
-                especialistas: [
-                    {
-                        nome: "Rafael",
-                        sobrenome: "Milagre",
-                        cargo: [
-                            { type: "text", value: "Fundador da Viver de AI, professor de IA na ESPM e mentor do TEGBE." }
-                        ],
-                        imagem: "/doni.jpg",
-                        corSobrenome: "#F9396F"
-                    },
-
-                    {
-                        nome: "Marcelo",
-                        sobrenome: "Camargo",
-                        cargo: [
-                            { type: "text", value: "Ex-diretor Nacional da Ambev e Labatt Breweries." }
-                        ],
-                        imagem: "/doni.jpg",
-                        corSobrenome: "#F9396F"
-                    },
-
-                    {
-                        nome: "Fabíola",
-                        sobrenome: "Overrath",
-                        cargo: [
-                            { type: "text", value: "Cofundadora do Edubank e Ex-Diretora de Pessoas da Ambev." }
-                        ],
-                        imagem: "/doni.jpg",
-                        corSobrenome: "#F9396F"
-                    },
-
-                    {
-                        nome: "Tomás",
-                        sobrenome: "Duarte",
-                        cargo: [
-                            { type: "text", value: "CEO e co-fundador da Track.co." }
-                        ],
-                        imagem: "/doni.jpg",
-                        corSobrenome: "#F9396F"
-                    },
-
-                    {
-                        nome: "Donizete",
-                        sobrenome: "Caetano",
-                        cargo: [
-                            { type: "text", value: "Fundador da Tegbe e Especialista em Escala de E-commerce." }
-                        ],
-                        imagem: "/doni.jpg",
-                        corSobrenome: "#F9396F"
-                    }
-                ]
-            }
-            } />
+            <Meta endpoint="meta-marketing" type={"Meta de Marketing"} />
+            <Carrossel type={"Carrossel de Funcionários"} endpoint={"carrossel-de-funcionarios"} />
             <SideBySideSection
                 type={"AgendarReuniao"}
                 data={{
@@ -280,8 +195,7 @@ export default async function MarketingPage() {
                         description: [
                             {
                                 type: "text",
-                                value:
-                                    "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
+                                value: "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
                             },
                         ],
                         button: {
@@ -308,7 +222,7 @@ export default async function MarketingPage() {
                             { icon: "mdi:linkedin", link: "#" },
                         ],
                     },
-                }}
+                }} endpoint={"agendar-reuniao"}
             />
             <Footer variant="marketing" />
         </>
