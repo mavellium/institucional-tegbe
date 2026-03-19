@@ -79,7 +79,7 @@ export default function MetaSection({endpoint,
             <RichText content={data.header.title} />
           </Heading>
 
-          <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px] max-w-xl mx-auto">
+          <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px] max-w-xl mx-auto" align="center">
             <RichText content={data.header.subtitle} />
           </Paragrafo>
         </div>

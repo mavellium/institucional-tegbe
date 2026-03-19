@@ -58,6 +58,7 @@ export const HeroVideoView = ({
 
   }, { scope: sectionRef });
 
+  if (!videoSrc) return null;
   return (
     
     <section

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import SocialLink from "@/components/ui/socialLink";
 import Heading from "@/components/ui/heading";
@@ -10,6 +9,7 @@ import Link from "next/link";
 import { IButton } from "@/interface/button/IButton";
 import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
+import { IImage } from "@/interface/IImage";
 
 interface SocialItem {
   icon: string;
@@ -21,10 +21,6 @@ interface HeroData {
   title: RichTextItem[];
   description: RichTextItem[];
   button?: IButton
-  image?: {
-    src: string;
-    alt?: string;
-  };
 }
 
 interface SocialData {
@@ -36,6 +32,7 @@ interface SocialData {
 interface SideBySideSectionData {
   hero: HeroData;
   social: SocialData;
+  imagem: IImage;
 }
 
 interface SideBySideSectionProps {
@@ -54,7 +51,10 @@ export function SideBySideSection({
 
   if (!content) return null;
 
-  const { hero, social } = content;
+
+  const { hero, social, imagem } = content;
+
+  const hasImage = imagem && imagem.imagem;
 
   return (
     <section className="bg-[#F7F6F3] py-16 lg:py-24">
@@ -90,11 +90,11 @@ export function SideBySideSection({
 
           </div>
 
-          {hero.image?.src && (
+          {hasImage && (
             <div className="relative w-full h-[260px] sm:h-[300px] lg:h-[340px] rounded-xl overflow-hidden order-1 lg:order-2">
               <Image
-                src={hero.image.src}
-                alt={hero.image.alt || ""}
+                src={imagem.imagem}
+                alt={imagem.alt || ""}
                 fill
                 className="object-cover"
                 sizes="(max-width:1024px) 100vw, 50vw"

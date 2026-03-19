@@ -127,6 +127,7 @@ export function OQueSomos() {
       size="p"
       className="manifesto-item text-[28px] sm:text-[30px] md:text-[42px] leading-[1.15] tracking-tight"
       color="#FFFFFF"
+      align="center"
     >
       <RichText content={data.header.title} />
     </Heading>
@@ -137,6 +138,7 @@ export function OQueSomos() {
         <Paragrafo
           key={i}
           className="manifesto-item text-[#FFFFFF] text-[15px] sm:text-[16px] md:text-[19px] font-light"
+          align="center"
         >
           <RichText content={paragraph} />
         </Paragrafo>

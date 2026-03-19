@@ -5,10 +5,6 @@ import Highlight from "../highlight";
 import { RichTextItem } from "@/types/richText.type";
 import Link from "next/link";
 
-interface RichTextProps {
-  content: RichTextItem[];
-}
-
 const fonts = {
   light: "font-light",
   regular: "font-normal",

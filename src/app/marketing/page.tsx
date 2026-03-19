@@ -205,10 +205,10 @@ export default async function MarketingPage() {
                             variant: "marketing",
                             action: "link"
                         },
-                        image: {
-                            src: "/doni.jpg",
-                            alt: "Equipe Tegbe",
-                        },
+                    },
+                    imagem: {
+                        imagem: "/doni.jpg",
+                        alt: "Equipe Tegbe",
                     },
                     social: {
                         tag: "Mantenha-se atualizado",

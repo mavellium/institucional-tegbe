@@ -31,7 +31,7 @@ export default function CarrosselParceiros({ items }: Props) {
           centeredSlides={true}
           loop={false}
           allowTouchMove={true}
-          grabCursor={true}    
+          grabCursor={true}
           navigation={{
             nextEl: '.btn-next',
             prevEl: '.btn-prev',
@@ -43,9 +43,8 @@ export default function CarrosselParceiros({ items }: Props) {
           className="rounded-[2rem] overflow-hidden"
         >
 
-          {items.map((p) => (
-
-            <SwiperSlide key={p.id} className="flex justify-center">
+          {items.map((p, index) => (
+            <SwiperSlide key={`${p.id}-${index}`} className="flex justify-center">
 
               <CartaoParceiro
                 id={p.id}
@@ -67,9 +66,8 @@ export default function CarrosselParceiros({ items }: Props) {
 
         {/* BOTÃO ESQUERDA */}
         <button
-          className={`btn-prev absolute left-0 top-1/2 -translate-y-1/2 z-40 p-4 bg-white/5 backdrop-blur-md rounded-full border border-white/10 transition-all duration-300 -translate-x-1/2 hover:bg-white/10 hover:border-white/20 hover:scale-110 ${
-            isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
+          className={`btn-prev absolute left-0 top-1/2 -translate-y-1/2 z-40 p-4 bg-white/5 backdrop-blur-md rounded-full border border-white/10 transition-all duration-300 -translate-x-1/2 hover:bg-white/10 hover:border-white/20 hover:scale-110 ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
         >
           <svg
             width="24"
@@ -88,9 +86,8 @@ export default function CarrosselParceiros({ items }: Props) {
 
         {/* BOTÃO DIREITA */}
         <button
-          className={`btn-next absolute right-0 top-1/2 -translate-y-1/2 z-40 p-4 bg-white/5 backdrop-blur-md rounded-full border border-white/10 translate-x-1/2 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-110 ${
-            isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
+          className={`btn-next absolute right-0 top-1/2 -translate-y-1/2 z-40 p-4 bg-white/5 backdrop-blur-md rounded-full border border-white/10 translate-x-1/2 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-110 ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
         >
           <svg
             width="24"
