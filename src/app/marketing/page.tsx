@@ -169,7 +169,7 @@ export default async function MarketingPage() {
                             { icon: "mdi:linkedin", link: "#" },
                         ],
                     },
-                }} endpoint={"agendar-reuniao"}
+                }} endpoint={"agendar-reuniao-marketing"}
             />
             <Footer variant="marketing" />
         </>

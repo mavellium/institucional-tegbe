@@ -1,23 +1,20 @@
 "use client";
 import Image from "next/image";
+import { IImage } from "@/interface/IImage";
+import { useApi } from "@/hooks/useApi";
 
-// --- TIPAGEM DO JSON DO ENDPOINT ---
-interface ApiData {
-  alt: Record<string, string>;
-  image: Record<string, string>;
-  objectPosition: Record<string, string>;
+type ImageVariant = "home" | "ecommerce" | "marketing";
+
+interface ImagemProps {
+  variant: ImageVariant;
+  endpoint: string;
+  customImage?: IImage;
 }
 
-type SectionImageVariant = 'home' | 'ecommerce' | 'marketing';
-
-interface SectionImageProps {
-  variant: SectionImageVariant;
-  apiData: ApiData; // O JSON que você postou entra aqui
-  customImage?: string;
-  customAlt?: string;
+interface ImagemData{
+  imagem: IImage
 }
 
-// Configurações visuais fixas (Design System Mavellium)
 const styleConfig = {
   gradient: {
     home: "absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent sm:from-black/70 sm:via-black/30 sm:to-transparent md:from-black/60 md:via-black/20 md:to-transparent lg:from-black/60 lg:via-transparent lg:to-transparent",
@@ -31,37 +28,36 @@ const styleConfig = {
   }
 };
 
-export function SectionImage({ 
-  variant = 'home', 
-  apiData,
-  customImage, 
-  customAlt 
-}: SectionImageProps) {
-  
-  // Extração segura dos dados baseada na variante
-  const imageSrc = customImage || apiData.image[variant];
-  const imageAlt = customAlt || apiData.alt[variant] || "Mavellium Background";
-  const objectPos = apiData.objectPosition[variant] || "object-center";
-  
-  const isHome = variant === 'home';
+export function Imagem({
+  variant = "home",
+  endpoint,
+  customImage,
+}: ImagemProps) {
+
+  const { data } = useApi<ImagemData>(endpoint ?? "");
+
+  const image = data?.imagem;
+
+  if (!image) return null;
+
+  const isHome = variant === "home";
 
   return (
-    <section className={`relative w-full flex flex-col overflow-hidden ${styleConfig.height[variant]}`}>
-      {/* Imagem de fundo dinâmica */}
+    <section
+      className={`relative w-full flex flex-col overflow-hidden ${styleConfig.height[variant]}`}
+    >
       <div className="absolute inset-0 z-0">
         <Image
-          src={imageSrc}
-          alt={imageAlt}
-          fill
-          sizes="100vw"
-          className={`w-full h-full object-cover ${objectPos}`}
-          priority={isHome}
-          loading={isHome ? undefined : "lazy"}
-          quality={90}
+          src={image.imagem}
+          alt={image.alt}
+          fill={image.fill ?? true}
+          sizes={image.sizes || "100vw"}
+          priority={image.priority ?? isHome}
+          quality={image.quality ?? 90}
+          className={`object-cover ${image.className || ""}`}
         />
       </div>
 
-      {/* Camada de Gradiente Estilizada */}
       <div className={styleConfig.gradient[variant]} />
     </section>
   );
