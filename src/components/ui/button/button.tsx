@@ -21,7 +21,7 @@ const buttonVariants = cva(
           "border bg-background hover:bg-accent",
 
         secondary:
-          "bg-secondary hover:bg-secondary/80",
+          "group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all",
 
         ghost:
           "hover:bg-accent",
@@ -47,27 +47,29 @@ const buttonVariants = cva(
 
 interface ButtonProps
   extends React.ComponentProps<"button">,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
   "aria-label"?: string
   pressed?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, children, pressed, "aria-label": ariaLabel, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      children,
+      pressed,
+      "aria-label": ariaLabel,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button"
 
-    // Verifica se é só ícone e não tem aria-label
-    React.useEffect(() => {
-      const isIconButton =
-        typeof children === "object" &&
-        !(children && React.isValidElement<{ children?: React.ReactNode }>(children) && children.props.children)
-      if (isIconButton && !ariaLabel) {
-        console.warn(
-          "Botão ícone detectado sem aria-label! Para acessibilidade, passe um aria-label."
-        )
-      }
-    }, [children, ariaLabel])
+    const isSecondary = variant === "secondary"
 
     return (
       <Comp
@@ -77,7 +79,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-pressed={pressed}
         {...props}
       >
-        {children}
+        {isSecondary ? (
+          <>
+            {/* TEXTO */}
+            <span className="relative z-10">{children}</span>
+
+            {/* BG ANIMADO */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0071E3] to-[#00a2ff] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+          </>
+        ) : (
+          children
+        )}
       </Comp>
     )
   }

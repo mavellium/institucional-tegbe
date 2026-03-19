@@ -7,7 +7,7 @@ import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
 import { SectionImage } from "@/components/Section/SectionImage";
 import { fetchComponentData } from "@/lib/api";
 import Passos from "@/components/Section/Passos";
-import CertifiedSection from "@/components/Section/ServiceFlow/CertifiedSection";
+import ConsultorOficial from "@/components/Section/ServiceFlow/CertifiedSection";
 import Video from "@/components/Wrapper/Video";
 import { VideoSection } from "@/enums/video.enum";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
@@ -273,7 +273,7 @@ export default async function EcommercePage() {
                 textureOpacity={.5}
                 textureSrc="/textura.svg"
                 backgroundColor="#0a0a0a" />
-            <CertifiedSection />
+            <ConsultorOficial />
             <SectionImage variant="ecommerce" apiData={data} />
 
             <Equipe variant="ecommerce" data={equipeData} />

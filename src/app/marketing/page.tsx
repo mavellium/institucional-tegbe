@@ -1,7 +1,6 @@
 import Schema from "@/components/Section/Schema";
 import Feature from "@/components/web/feature";
 import { Footer } from "@/components/web/footer";
-import { fetchComponentData } from "@/lib/api";
 import Navbar from "@/components/web/navbar";
 import Video2 from "@/components/Wrapper/Video2";
 import { VideoSection } from "@/enums/video.enum";
@@ -16,59 +15,7 @@ import Meta from "@/components/web/generics/meta";
 import Carrossel from "@/components/web/generics/carrosselEspecialistas";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 
-async function getSafeData(slug: string) {
-    try {
-        const res = await fetchComponentData(slug);
-        return res;
-    } catch (error) {
-        console.warn(`[MarketingPage] Erro ao carregar dados de ${slug}. Usando fallback.`);
-        return { data: null };
-    }
-}
-
-// 2. Wrapper para dados de Formulário (Estrutura plana 'values')
-async function getFormData(slug: string) {
-    try {
-        const res = await fetch(`https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/${slug}`, {
-            next: { revalidate: 60 }
-        });
-        if (!res.ok) throw new Error('Falha no fetch');
-        return res.json();
-    } catch (error) {
-        console.warn(`[MarketingPage] Erro ao carregar form ${slug}.`);
-        return { values: [] };
-    }
-}
-
 export default async function MarketingPage() {
-    // 3. PERFORMANCE: Promise.all dispara 6 requisições em paralelo.
-    // Zero Waterfall. O tempo de carregamento será ditado pela requisição mais lenta, não pela soma delas.
-    const [
-        headlineResponse,
-        companyResponse,
-        ctaResponse,
-        equipeResponse,   // Endpoint: .../json/equipe (Seção "Why Tegbe")
-        servicesResponse, // Endpoint: .../form/services
-        empresasResponse  // Endpoint: .../json/empresas (Seção "Logos/Social Proof")
-    ] = await Promise.all([
-        getSafeData('headline'),
-        getSafeData('company'),
-        getSafeData('call-to-action'),
-        getSafeData('equipe'),
-        getFormData('services'),
-        getSafeData('empresas')
-    ]);
-
-    // 4. Extração Cirúrgica dos Nós (Variante 'marketing')
-    const companysData = companyResponse?.data?.marketing || null;
-    const ctaData = ctaResponse?.data?.marketing || null;
-    const equipeData = equipeResponse?.data?.marketing || null;     // Dados para <Equipe />
-    const empresasData = empresasResponse?.data?.marketing || null; // Dados para <Empresas />
-
-    // Extração do array de serviços
-    const servicesData = servicesResponse?.values || [];
-    const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
-
     const mockSlides: HeroSlide[] = [
         {
             id: 1,

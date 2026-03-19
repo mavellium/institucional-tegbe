@@ -36,15 +36,15 @@ export default async function SobrePage() {
             <Header />
             <main>
                 <Hero />
-                <QuemSomos /> {/* INTEGRADO */}
-                <OQueSomos /> {/* INTEGRADO */}
-                <Meta endpoint="meta-alunos" type={"Meta de Alunos"}/> {/* INTEGRADO */}
-                <Carrossel type={"Carrossel de Especialistas"} endpoint={"carrossel-de-especialistas"}/> {/* INTEGRADO */}
-                <Localizacao /> {/* INTEGRADO */}
+                <QuemSomos />
+                <OQueSomos /> 
+                <Meta endpoint="meta-alunos" type={"Meta de Alunos"}/>
+                <Carrossel type={"Carrossel de Especialistas"} endpoint={"carrossel-de-especialistas"}/> 
+                <Localizacao />
                 <SideBySideSection
                     type={"trabalheConosco"}
                     endpoint="trabalhar-conosco"
-                /> {/* Pronto */}
+                />
             </main>
             <Footer />
         </>
