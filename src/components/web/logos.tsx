@@ -19,7 +19,7 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
   const logos: ILogo[] =
     data?.values.map((item) => ({
       ...item,
-      alt: item.name || item.description || "Logo",
+      alt: item.values.name || item.values.description || "Logo",
     })) ?? [];
 
   useEffect(() => {
