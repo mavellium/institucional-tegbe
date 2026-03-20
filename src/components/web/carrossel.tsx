@@ -10,45 +10,42 @@ import { ServiceA, ServiceTheme } from "../../types/service.type";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import Textura from "@/components/ui/textura";
+import { useApi } from "@/hooks/useApi";
+import { IButton } from "@/interface/button/IButton";
 
 export interface ServiceProps {
-  content: {
-    header: {
-      preTitle?: string;
-      title?: RichTextItem[];
-      subtitle?: string;
-      colorTitle?: string;
-    };
-    services: ServiceA[];
-    button?: {
-      label: string;
-      link: string;
-      target?: "_self" | "_blank";
-      action?: "link";
-    };
-  };
-
-  // 🔥 Background config
+  endpoint: string;
   backgroundColor?: string;
   backgroundImage?: string;
 
-  // 🔥 Texture config
   showTexture?: boolean;
   textureOpacity?: number;
   textureSrc?: string;
 }
 
+interface IService {
+  header: {
+    preTitle?: string;
+    title?: RichTextItem[];
+    subtitle?: string;
+    colorTitle?: string;
+  };
+  services: ServiceA[];
+  button?: IButton
+}
 
 
-export default function Service({
-  content,
+export default function Carrossel({
+  endpoint,
   backgroundColor,
   backgroundImage,
   showTexture,
   textureOpacity = 0.08,
   textureSrc
 }: ServiceProps) {
-  const { header, services, button } = content;
+  const { data } = useApi<IService>(endpoint);
+  if (!data) return null;
+  const { header, services, button } = data;
   const shouldCenter = services.length <= 3;
   const theme: ServiceTheme = {
     badge: {
@@ -123,7 +120,7 @@ export default function Service({
       </div>
 
       {/* CTA */}
-      {button && (
+      {button && button.action === "link" && (
         <div className="relative z-10 flex justify-center mt-12">
           <Link href={button.link} target={button.target ?? "_self"}>
             <Button>
