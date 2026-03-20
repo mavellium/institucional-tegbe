@@ -15,8 +15,8 @@ export default function LogoItem({ logo, config }: LogoItemProps) {
     >
       <div className="h-[40px] md:h-[50px] flex items-center">
         <Image
-          src={logo.image}
-          alt={logo.alt}
+          src={logo.values.image}
+          alt={logo.values.alt}
           width={200}
           height={100}
           className={`h-full w-auto object-contain transition-all duration-500 ${config.logoFilter} ${config.logoOpacity} group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105`}
