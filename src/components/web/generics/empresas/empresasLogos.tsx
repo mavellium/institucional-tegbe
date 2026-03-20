@@ -17,9 +17,7 @@ export default function EmpresasLogos({ logos }: any) {
   }))
 
   return (
-    <Logos
-      data={formatted}
-      variant="marketing"
+    <Logos endpoint={""}      
     />
   )
 }

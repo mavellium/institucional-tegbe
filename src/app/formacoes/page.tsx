@@ -136,13 +136,12 @@ export default async function CursosPage() {
             <HeadlineCurso />
             <PorqueAprender />
             <Video2 variant="cursos" />
-            
+
             {/* Componente Logos com dados do endpoint logos-curso */}
-            <Logos 
-                variant="cursos" 
+            <Logos
                 endpoint=""
             />
-            
+
             <Cursos />
             <CasesCarousel data={testimonialsData} />
             <GaleriaFotos data={galleryData} />
