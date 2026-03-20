@@ -1,9 +1,7 @@
 import { Header } from "@/components/Section/Header";
-import { Companys } from "@/components/Section/Companys";
 import { Footer } from "@/components/web/footer";
 import Schema from "@/components/Section/Schema";
 import { Equipe } from "@/components/Section/Equipe";
-import { ChamadaAcao } from "@/components/Section/ChamadaAcao";
 import { fetchComponentData } from "@/lib/api";
 import Passos from "@/components/Section/Passos";
 import ConsultorOficial from "@/components/Section/ServiceFlow/CertifiedSection";
@@ -15,6 +13,7 @@ import Logos from "@/components/web/logos";
 import Service, { ServiceProps } from "@/components/web/service";
 import { Imagem } from "@/components/Section/SectionImage";
 import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
+import { Clientes } from "@/components/web/clientes";
 
 async function getSafeData(slug: string) {
     try {
@@ -268,7 +267,7 @@ export default async function EcommercePage() {
             />
             <Logos />
             <Passos />
-            <Companys variant="ecommerce" data={companysData} />
+            <Clientes endpoint={"clientes"} />
             <Service
                 content={plataforms}
                 showTexture
@@ -278,48 +277,48 @@ export default async function EcommercePage() {
             <ConsultorOficial />
             <Imagem variant="ecommerce" endpoint={"imagem"} />
 
-            <Equipe variant="ecommerce" data={equipeData} />
+            <Equipe />
             {/* <ChamadaAcao variant="ecommerce" data={ctaData} /> */}
             <SideBySideSection
-                            type={"AgendarReuniao"}
-                            data={{
-                                hero: {
-                                    tag: "Ficou com dúvida?",
-                                    title: [
-                                        { type: "text", value: "Agende uma reunião" }
-                                    ],
-                                    description: [
-                                        {
-                                            type: "text",
-                                            value: "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
-                                        },
-                                    ],
-                                    button: {
-                                        label: "Agendar Reunião",
-                                        link: "/reuniao",
-                                        target: "_blank",
-                                        variant: "default",
-                                        action: "link"
-                                    },
-                                },
-                                imagem: {
-                                    imagem: "/doni.jpg",
-                                    alt: "Equipe Tegbe",
-                                },
-                                social: {
-                                    tag: "Mantenha-se atualizado",
-                                    title: [
-                                        { type: "text", value: "Acompanhe nossas mídias" }
-                                    ],
-                                    items: [
-                                        { icon: "mdi:youtube", link: "#" },
-                                        { icon: "mdi:facebook", link: "#" },
-                                        { icon: "mdi:instagram", link: "#" },
-                                        { icon: "mdi:linkedin", link: "#" },
-                                    ],
-                                },
-                            }} endpoint={"agendar-reuniao-ecommerce"}
-                        />
+                type={"AgendarReuniao"}
+                data={{
+                    hero: {
+                        tag: "Ficou com dúvida?",
+                        title: [
+                            { type: "text", value: "Agende uma reunião" }
+                        ],
+                        description: [
+                            {
+                                type: "text",
+                                value: "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
+                            },
+                        ],
+                        button: {
+                            label: "Agendar Reunião",
+                            link: "/reuniao",
+                            target: "_blank",
+                            variant: "default",
+                            action: "link"
+                        },
+                    },
+                    imagem: {
+                        imagem: "/doni.jpg",
+                        alt: "Equipe Tegbe",
+                    },
+                    social: {
+                        tag: "Mantenha-se atualizado",
+                        title: [
+                            { type: "text", value: "Acompanhe nossas mídias" }
+                        ],
+                        items: [
+                            { icon: "mdi:youtube", link: "#" },
+                            { icon: "mdi:facebook", link: "#" },
+                            { icon: "mdi:instagram", link: "#" },
+                            { icon: "mdi:linkedin", link: "#" },
+                        ],
+                    },
+                }} endpoint={"agendar-reuniao-ecommerce"}
+            />
 
             <Footer />
         </>

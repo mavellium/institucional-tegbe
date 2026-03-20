@@ -28,10 +28,10 @@ export default function RichText({ content }: { content?: any }) {
         switch (item.type) {
 
           case "text":
-            return <span key={`text-${i}`} className={fonts[item.font ?? "regular"]} style={{ fontSize: item.size ? `${item.size}px` : undefined , color: item.color}}>{item.value}</span>;
+            return <span key={`text-${i}`} className={fonts[item.font ?? "regular"]} style={{ fontSize: item.size ? `${item.size}px` : undefined, color: item.color }}>{item.value}</span>;
 
           case "bold":
-            return <span key={`bold-${i}`} className={`font-bold`} style={{ fontSize: item.size ? `${item.size}px` : undefined ,color: item.color}}>{item.value}</span>;
+            return <span key={`bold-${i}`} className={`font-bold`} style={{ fontSize: item.size ? `${item.size}px` : undefined, color: item.color }}>{item.value}</span>;
 
           case "highlight":
             return (
@@ -41,6 +41,7 @@ export default function RichText({ content }: { content?: any }) {
                 withSerif={item.serif}
                 withItalic={item.italic}
                 className={fonts[item.font ?? "regular"]}
+                size={item.size}
               >
                 {item.value}
               </Highlight>
