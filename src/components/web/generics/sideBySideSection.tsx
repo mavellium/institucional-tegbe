@@ -9,7 +9,7 @@ import Link from "next/link";
 import { IButton } from "@/interface/button/IButton";
 import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
-import { IImage } from "@/interface/IImage";
+import { IImage } from "@/interface/imagem/IImage";
 
 interface SocialItem {
   icon: string;

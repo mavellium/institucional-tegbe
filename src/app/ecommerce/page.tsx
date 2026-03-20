@@ -165,29 +165,6 @@ export default async function EcommercePage() {
 
     const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
 
-    const mockSlides: HeroSlide[] = [
-        {
-            "id": 1,
-            "tag": "CONSULTORIA OFICIAL MERCADO LIVRE",
-            "title": "TEGBE GESTÃO E ESTRATÉGIA",
-            "description": "É hora de construir uma operação profissional e escalar seus resultados.",
-            "subtext": "Estratégia certificada para transformar sua conta em líder de categoria.",
-            "ctaText": "QUERO ESCALAR AGORA!",
-            "ctaLink": "https://wa.me/5514988281001",
-            "image": "/exemplo_carrossel.png"
-        },
-        {
-            "id": 2,
-            "tag": "AGENDA ABERTA - MARÇO",
-            "title": "ENGENHARIA DE VENDAS",
-            "description": "Chega de 'tentar' vender online. Tenha um método prático e lucrativo.",
-            "subtext": "Vagas limitadas para novos parceiros de consultoria este mês.",
-            "ctaText": "FALAR COM ESPECIALISTA",
-            "ctaLink": "https://wa.me/5514988281001",
-            "image": "/exemplo_carrossel.png"
-        }
-    ];
-
     return (
         <>
             <Schema
@@ -237,7 +214,7 @@ export default async function EcommercePage() {
 
             <Header />
             <HeroCarrossel
-                slides={mockSlides}
+                endpoint="hero-carrossel-ecommerce"
                 type="HeroEcommerce"
                 corFundo="#020202"
                 corDestaque="#FFCC00"
@@ -247,7 +224,7 @@ export default async function EcommercePage() {
                 navAccent="#FFDB4D"
                 corIcone="black"
             />
-            <Logos />
+            <Logos endpoint="logos-ecommerce" />
             <Service content={content} />
             <Video
                 slug="video-sections"
@@ -265,7 +242,7 @@ export default async function EcommercePage() {
                 textureOpacity={0.05}
                 textureSrc="/textura.svg"
             />
-            <Logos />
+            <Logos endpoint="logos-ecommerce" />
             <Passos />
             <Clientes endpoint={"clientes"} />
             <Service

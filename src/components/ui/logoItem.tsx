@@ -1,31 +1,27 @@
-import { LogosApiData } from "@/types/logos.type";
+
+import { ILogo } from "@/interface/imagem/ILogo";
 import Image from "next/image";
 
 interface LogoItemProps {
-  logo: LogosApiData;
+  logo: ILogo;
   config: any;
 }
 
 export default function LogoItem({ logo, config }: LogoItemProps) {
-  const handleClick = () => {
-    if (logo.url && logo.url !== '#') {
-      window.open(logo.url, '_blank', 'noopener,noreferrer');
-    }
-  };
 
   return (
-    <div 
-      className="flex-shrink-0 px-8 md:px-16 group cursor-pointer"
-      onClick={handleClick}
+    <div
+      className="flex-shrink-0 px-8 md:px-16 group cursor-pointer flex items-center justify-center"
     >
-      <Image
-        src={logo.src}
-        alt={logo.alt}
-        width={logo.width || 150}
-        height={logo.height || 100}
-        className={`w-auto ${config.logoHeight} object-contain transition-all duration-500 ${config.logoFilter} ${config.logoOpacity} group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105`}
-        onError={(e) => (e.currentTarget.style.display = 'none')}
-      />
+      <div className="h-[40px] md:h-[50px] flex items-center">
+        <Image
+          src={logo.image}
+          alt={logo.alt}
+          width={200}
+          height={100}
+          className={`h-full w-auto object-contain transition-all duration-500 ${config.logoFilter} ${config.logoOpacity} group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105`}
+        />
+      </div>
     </div>
   );
 }

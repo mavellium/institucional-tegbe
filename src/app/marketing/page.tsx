@@ -16,31 +16,6 @@ import Carrossel from "@/components/web/generics/carrosselEspecialistas";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
 
 export default async function MarketingPage() {
-    const mockSlides: HeroSlide[] = [
-        {
-            id: 1,
-            tag: "PROGRAMA PRESENCIAL",
-            title: "TEGBE GESTÃO E ESTRATÉGIA",
-            description: "Construa estratégias sólidas para escalar sua empresa",
-            subtext: "Aprenda com líderes de mercado em apenas 4 dias.",
-            ctaText: "Conheça agora",
-            ctaLink: "#",
-            image: "/exemplo_carrossel.png",
-        },
-        {
-            id: 2,
-            tag: "IMERSÃO ONLINE",
-            title: "TEGBE GROWTH EXTREMO",
-            description: "Dobre o faturamento da sua empresa",
-            subtext: "Táticas do Vale do Silício aplicáveis imediatamente.",
-            ctaText: "Garantir minha vaga",
-            ctaLink: "#",
-            image: "/exemplo_carrossel.png",
-        },
-    ];
-
-    <HeroCarousel slides={mockSlides} type="home" />
-
     return (
         <>
             <Schema
@@ -89,9 +64,8 @@ export default async function MarketingPage() {
             />
             <Navbar variant="marketing" />
             <HeroCarrossel
-                slides={mockSlides}
-                type={"HeroMarketing"}
-
+                endpoint="hero-carrossel-marketing"
+                type={"Hero Marketing"}
                 corDestaque="#f9265e"
                 textoFundo="MARKETING"
             />

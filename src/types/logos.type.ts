@@ -1,15 +1,13 @@
+import { ILogo } from "@/interface/imagem/ILogo";
+
+
 export interface LogosApiData {
-  id: string | number;
-  src: string;
-  alt: string;
-  width?: number;
-  height?: number;
-  url?: string;
+  values: ILogo[]
 }
 
 export interface LogosProps {
-  data?: LogosApiData[];
   variant?: 'default' | 'cursos' | 'marketing';
+  endpoint: string
 }
 
 export const VARIANT_CONFIGS = {

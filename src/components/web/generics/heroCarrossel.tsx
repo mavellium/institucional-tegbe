@@ -8,9 +8,10 @@ import HeroSlideImage from "@/components/ui/heroCarrossel/heroSlideImage";
 import HeroCarouselNavigation from "@/components/ui/heroCarrossel/heroCarrosselNavigation";
 import Textura from "@/components/ui/textura";
 import { HeroSlide } from "@/types/heroSlide.type";
+import { useApi } from "@/hooks/useApi";
 
 interface HeroCarrosselProps {
-  slides: HeroSlide[];
+  endpoint: string;
   type: string;
   loop?: boolean;
   autoplayDelay?: number;
@@ -25,7 +26,7 @@ interface HeroCarrosselProps {
 }
 
 export default function HeroCarrossel({
-  slides = [],
+  endpoint,
   type,
   loop = true,
   autoplayDelay = 6000,
@@ -37,6 +38,8 @@ export default function HeroCarrossel({
   navAccent = "#f9265e",
   corIcone = "white"
 }: HeroCarrosselProps) {
+  const { data } = useApi<HeroSlide[]>(endpoint);
+  const slides = data ?? [];
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop },
     [Autoplay({ delay: autoplayDelay, stopOnInteraction: true })]

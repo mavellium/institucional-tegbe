@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { IImage } from "@/interface/IImage";
+import { IImage } from "@/interface/imagem/IImage";
 import { useApi } from "@/hooks/useApi";
 
 type ImageVariant = "home" | "ecommerce" | "marketing";

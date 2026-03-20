@@ -10,7 +10,7 @@ import RichText from "@/components/ui/rich/richText";
 import { Button } from "@/components/ui/button/button";
 import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
-import { IImage } from "@/interface/IImage";
+import { IImage } from "@/interface/imagem/IImage";
 import { IButton } from "@/interface/button/IButton";
 import Paragrafo from "@/components/ui/paragrafo";
 import Link from "next/link";
