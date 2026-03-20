@@ -140,7 +140,7 @@ export default async function CursosPage() {
             {/* Componente Logos com dados do endpoint logos-curso */}
             <Logos 
                 variant="cursos" 
-                data={logosData} 
+                endpoint=""
             />
             
             <Cursos />

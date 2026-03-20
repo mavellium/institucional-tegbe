@@ -105,7 +105,7 @@ export default async function Home() {
 
       <main>
         <HeroCarousel
-          slides={mockSlides}
+          endpoint=""
           type="HeroHome"
           corDestaque="#cfba19"      // cor de destaque (botões, textos)
           textoFundo="TEGBE"         // texto de fundo sutil
