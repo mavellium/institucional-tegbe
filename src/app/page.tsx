@@ -13,15 +13,39 @@ import RedirectSobre from "@/components/Section/RedirectSobre";
 import FaqHome from "@/components/Section/FaqHome";
 import UltimaChamadaAcao from "@/components/Section/UltimaChamadaAcao";
 import Headline from "@/components/Wrapper/Headline";
+import { HeroSlide } from "@/types/heroSlide.type";
+import HeroCarousel from "@/components/web/generics/heroCarrossel";
 
 export default async function Home() {
+  const mockSlides: HeroSlide[] = [
+    {
+      id: 1,
+      tag: "SOLUÇÕES INTEGRADAS",
+      title: "Transforme sua empresa com a Tegbe",
+      description: "Estratégia, tecnologia e performance para escalar negócios.",
+      subtext: "Mais de 10 anos de experiência no mercado digital.",
+      ctaText: "Conheça nossas soluções",
+      ctaLink: "/solucoes",
+      image: "/home-hero-1.jpg", // substitua pela imagem desejada
+    },
+    {
+      id: 2,
+      tag: "SOLUÇÕES INTEGRADAS",
+      title: "Sua solução completa em vendas",
+      description: "Estratégia, tecnologia e performance para escalar negócios.",
+      subtext: "Mais de 10 anos de experiência no mercado digital.",
+      ctaText: "Fale com um especialista",
+      ctaLink: "/contato",
+      image: "/home-hero-2.jpg",
+    },
+  ];
   return (
     <>
       <Schema
         data={{
           "@context": "https://schema.org",
           "@type": "Service",
-          name: "Consultoria e Estratégias de E-commerce e Marketing Digital",
+          name: "Sua solução completa em vendas",
           description: "Serviços especializados em consultoria de e-commerce, gestão de marketplaces como Mercado Livre e Shopee, tráfego pago, CRM e estratégias digitais para aumentar vendas online, oferecidos pela agência Tegbe.",
           serviceType: [
             "Consultoria e Gestão de Marketplaces",
@@ -76,20 +100,31 @@ export default async function Home() {
           }
         }}
       />
-      
+
       <Header />
-      
-      <main> 
-        <Headline /> 
+
+      <main>
+        <HeroCarousel
+          slides={mockSlides}
+          type="HeroHome"
+          corDestaque="#cfba19"      // cor de destaque (botões, textos)
+          textoFundo="TEGBE"         // texto de fundo sutil
+          navGradienteFrom="#f5df36"
+          navGradienteTo="#f5df36"
+          navAccent="#f5df36"
+          corIcone="white"
+          loop={true}
+          autoplayDelay={6000}
+        />
         <Dores />
         <ComoFazemos />
-        <Solucoes />   
+        <Solucoes />
         <Metricas />
-        
+
         <RedirectEcommerce />
         <RedirectMarketing />
         <RedirectTegpro />
-        
+
         <Resultados />
         <RedirectSobre />
         <FaqHome />
