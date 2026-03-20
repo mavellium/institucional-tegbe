@@ -1,17 +1,15 @@
 export interface ILogo {
-  values: {
-    id: string;
+  id: string;
 
-    image: string;
-    alt: string;
+  image: string;
+  alt: string;
 
-    name?: string;
-    category?: string;
-    description?: string;
+  name?: string;
+  category?: string;
+  description?: string;
 
-    width?: number;
-    height?: number;
+  width?: number;
+  height?: number;
 
-    className?: string;
-  }
+  className?: string;
 }

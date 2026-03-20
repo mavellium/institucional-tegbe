@@ -12,16 +12,16 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
   const singleSetRef = useRef<HTMLDivElement>(null);
   const [setWidth, setSetWidth] = useState(0);
 
+  // 🔹 Pega os dados da API
+  const { data, loading } = useApi<LogosApiData>(endpoint);
 
-  const { data } = useApi<LogosApiData>(endpoint);
-  
+  // 🔹 Garante que sempre teremos um array de logos
+  const logos: ILogo[] = data?.values?.map((item) => ({
+    ...item,
+    alt: item.alt || item.name || item.description || "Logo",
+  })) ?? [];
 
-  const logos: ILogo[] =
-    data?.values.map((item) => ({
-      ...item,
-      alt: item.values.name || item.values.description || "Logo",
-    })) ?? [];
-
+  // 🔹 Calcula a largura do conjunto de logos (para animação)
   useEffect(() => {
     if (!logos.length) return;
 
@@ -34,30 +34,33 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
     return () => clearTimeout(timer);
   }, [logos]);
 
-  if (!logos.length) return null;
+  if (loading || !logos.length) return null;
 
   const duration = setWidth / config.speed || 20;
 
   return (
     <section className={`py-24 ${config.bgColor} overflow-hidden relative`}>
-      {/* Gradientes */}
-      <div className={`absolute inset-y-0 left-0 w-32 bg-gradient-to-r ${config.gradientFrom} to-transparent z-10 pointer-events-none`} />
-      <div className={`absolute inset-y-0 right-0 w-32 bg-gradient-to-l ${config.gradientFrom} to-transparent z-10 pointer-events-none`} />
+      {/* Gradientes laterais */}
+      <div
+        className={`absolute inset-y-0 left-0 w-32 bg-gradient-to-r ${config.gradientFrom} to-transparent z-10 pointer-events-none`}
+      />
+      <div
+        className={`absolute inset-y-0 right-0 w-32 bg-gradient-to-l ${config.gradientFrom} to-transparent z-10 pointer-events-none`}
+      />
 
       <div className="relative overflow-hidden">
-
-        {/* Medição */}
+        {/* Medição da largura real */}
         <div
           ref={singleSetRef}
           className="flex items-center invisible absolute"
           aria-hidden="true"
         >
-          {logos.map((logo: any, i: number) => (
+          {logos.map((logo: ILogo, i: number) => (
             <LogoItem key={`measure-${i}`} logo={logo} config={config} />
           ))}
         </div>
 
-        {/* Marquee */}
+        {/* Marquee animado */}
         <motion.div
           className="flex items-center"
           style={{ width: "max-content" }}
@@ -68,7 +71,7 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
             duration,
           }}
         >
-          {[...logos, ...logos, ...logos].map((logo: any, i: number) => (
+          {[...logos, ...logos, ...logos].map((logo: ILogo, i: number) => (
             <LogoItem key={`logo-${i}`} logo={logo} config={config} />
           ))}
         </motion.div>
