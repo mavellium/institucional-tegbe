@@ -122,11 +122,11 @@ export default async function Home() {
           autoplayDelay={6000}
         />
         <HomeCards />
-        <SectionMarketing />
         <SectionEcommerce />
+        <SectionMarketing />
         <SectionFormacoes />
         <SectionFerramentas />
-        <ComoFazemos />
+        {/* <ComoFazemos />
         <Solucoes />
         <Metricas />
 
@@ -137,7 +137,7 @@ export default async function Home() {
         <Resultados />
         <RedirectSobre />
         <FaqHome />
-        <UltimaChamadaAcao />
+        <UltimaChamadaAcao /> */}
       </main>
 
       <Footer />
