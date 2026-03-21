@@ -24,58 +24,15 @@ export interface Passos {
 }
 
 export interface ApiResponse {
-  id: string;
-  type: string;
+
   subtype: RichTextItem[];
   values: Passos[];
   button: IButton;
 }
 
-const mockData: ApiResponse = {
-  id: "fallback",
-  type: "E-commerce",
-  subtype: [{ type: "text", value: "Não importa onde você está hoje. Nós temos o mapa para o seu próximo nível." }],
-  values: [
-    {
-      id: 1,
-      title: "Preciso aprender",
-      subtitle: "Do zero ao primeiro faturamento",
-      description: "Para quem está começando do zero: nós ensinamos e acompanhamos sua jornada para que você domine o digital com segurança e suporte real.",
-      image: "https://tegbe-cdn.b-cdn.net/uploads/1773038086716-Imagens-Site-3.png"
-    },
-    {
-      "id": 2,
-      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150865131-2.png",
-      "title": "Vou começar do ZERO",
-      "subtitle": "Comece do jeito certo",
-      "description": "Para quem busca velocidade e execução: nós fazemos por você, criando seus anúncios e gerindo seu tráfego para sua operação decolar de forma profissional e livre de erros comuns."
-    },
-    {
-      "id": 3,
-      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150911088-3.png",
-      "title": "Estruturar meu negócio",
-      "subtitle": "Coloque sua operação em ordem",
-      "description": "Se suas campanhas estão gastando demais e os anúncios estão bagunçados, nós organizamos sua operação e ajustamos seus processos para que você recupere o controle e volte a crescer com clareza."
-    },
-    {
-      "id": 4,
-      "image": "https://oaaddtqd6pehgldz.public.blob.vercel-storage.com/1768150951167-4.png",
-      "title": "Gestão de Performance",
-      "subtitle": "Máxima eficiência e lucratividade",
-      "description": "Para operações sólidas que buscam escala agressiva, aplicamos inteligência avançada para reduzir seus custos, identificar novas oportunidades de mercado e maximizar sua lucratividade total."
-    }
-  ],
-  button: {
-    action: "link",
-    label: "Quero Estruturar e Escalar Meu Negócio",
-    link: "https://api.whatsapp.com/send?phone=5514991779502"
-  }
-};
-
 export default function Steps() {
-  const { data: apiData, loading, error } = useApi<ApiResponse>("quem-somos");
+  const { data, loading } = useApi<ApiResponse>("passos");
 
-  const [data, setData] = useState<ApiResponse | null>(null);
   const [activeStep, setActiveStep] = useState<Passos | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -87,15 +44,10 @@ export default function Steps() {
   const ctaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (loading) return;
-    if (error || !apiData || !apiData.values || apiData.values.length === 0) {
-      setData(mockData);
-      setActiveStep(mockData.values[0]);
-    } else {
-      setData(apiData);
-      setActiveStep(apiData.values[0]);
+    if (data?.values?.length) {
+      setActiveStep(data.values[0]);
     }
-  }, [apiData, loading, error]);
+  }, [data]);
 
   useGSAP(() => {
     if (loading || !data || !sectionRef.current) return;
@@ -172,7 +124,7 @@ export default function Steps() {
             <div className="flex flex-col lg:flex-row gap-16 items-center">
 
               <StepsList
-                type={data.type}
+                type={"E-commerce"}
                 subtype={data.subtype}
                 steps={data.values}
                 activeStep={activeStep}

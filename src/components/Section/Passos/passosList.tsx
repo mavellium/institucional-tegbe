@@ -6,7 +6,7 @@ import { RichTextItem } from '@/types/richText.type';
 
 interface StepsListProps {
   type: string;
-  subtype: RichTextItem[]; // Se o subtype vier como rich text da API, você pode precisar mudar essa tipagem para 'any' ou 'any[]'
+  subtype: RichTextItem[]; 
   steps: Passos[];
   activeStep: Passos;
   onStepChange: (step: Passos) => void;

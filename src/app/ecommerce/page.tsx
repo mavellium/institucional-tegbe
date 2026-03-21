@@ -148,7 +148,6 @@ export default async function EcommercePage() {
             <Imagem variant="ecommerce" endpoint={"imagem-ecommerce"} />
 
             <Equipe />
-            {/* <ChamadaAcao variant="ecommerce" data={ctaData} /> */}
             <SideBySideSection
                 type={"AgendarReuniao"}
                 data={{
