@@ -15,6 +15,11 @@ import UltimaChamadaAcao from "@/components/Section/UltimaChamadaAcao";
 import Headline from "@/components/Wrapper/Headline";
 import { HeroSlide } from "@/types/heroSlide.type";
 import HeroCarousel from "@/components/web/generics/heroCarrossel";
+import HomeCards from "@/components/Section/HomeCards";
+import SectionMarketing from "@/components/Section/SectionMarketing";
+import SectionEcommerce from "@/components/Section/SectionEcommerce";
+import SectionFormacoes from "@/components/Section/SectionFormacoes";
+import SectionFerramentas from "@/components/Section/SectionFerramentas";
 
 export default async function Home() {
   const mockSlides: HeroSlide[] = [
@@ -105,7 +110,7 @@ export default async function Home() {
 
       <main>
         <HeroCarousel
-          endpoint=""
+          endpoint="hero-carrossel-ecommerce"
           type="HeroHome"
           corDestaque="#cfba19"      // cor de destaque (botões, textos)
           textoFundo="TEGBE"         // texto de fundo sutil
@@ -116,7 +121,11 @@ export default async function Home() {
           loop={true}
           autoplayDelay={6000}
         />
-        <Dores />
+        <HomeCards />
+        <SectionMarketing />
+        <SectionEcommerce />
+        <SectionFormacoes />
+        <SectionFerramentas />
         <ComoFazemos />
         <Solucoes />
         <Metricas />
