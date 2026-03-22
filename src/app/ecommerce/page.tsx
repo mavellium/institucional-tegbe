@@ -46,12 +46,6 @@ export default async function EcommercePage() {
             .catch(() => [])
     ]);
 
-    // Extração Segura (Null Coalescing)
-    const headlineData = headlineRes?.data ?? null;
-    const companysData = companyRes?.data?.ecommerce ?? null;
-    const ctaData = ctaRes?.data?.ecommerce ?? null;
-    const equipeData = equipeRes?.data?.ecommerce ?? null;
-
     // Tratamento para garantir que steps seja sempre um Array
     const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 

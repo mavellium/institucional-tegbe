@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { resolveApiUrl } from "@/hooks/useApi";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- TIPAGEM DOS DADOS ---
@@ -19,11 +20,41 @@ export interface FaqData {
 }
 
 interface FaqProps {
-  data: FaqData | null;
+  data?: FaqData | null;
+  /** Ex.: `/api-tegbe/tegbe-institucional/json/faq-curso` */
+  endpoint?: string;
 }
 
-export default function FaqSection({ data }: FaqProps) {
+export default function FaqSection({ data: dataProp, endpoint }: FaqProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [fetched, setFetched] = useState<FaqData | null>(null);
+
+  useEffect(() => {
+    if (!endpoint) {
+      setFetched(null);
+      return;
+    }
+    const url = resolveApiUrl(endpoint);
+    if (!url) {
+      setFetched(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(url)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (cancelled || !json) return;
+        setFetched(json as FaqData);
+      })
+      .catch(() => {
+        if (!cancelled) setFetched(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [endpoint]);
+
+  const data = fetched ?? dataProp ?? null;
 
   const toggleIndex = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);

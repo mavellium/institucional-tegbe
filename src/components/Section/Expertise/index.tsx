@@ -31,7 +31,7 @@ interface ExpertiseProps {
 }
 
 export default function Expertise({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/expertise", 
+  endpoint = "/api-tegbe/tegbe-institucional/expertise", 
   variant = "marketing" 
 }: ExpertiseProps) {
   

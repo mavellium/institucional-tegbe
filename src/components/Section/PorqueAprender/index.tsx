@@ -28,7 +28,7 @@ interface PorqueAprenderProps {
 }
 
 export default function PorqueAprender({ 
-    endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/aprender", 
+    endpoint = "/api-tegbe/tegbe-institucional/aprender", 
     variant = "cursos" 
 }: PorqueAprenderProps) {
     const sectionRef = useRef<HTMLElement>(null); // Referência correta

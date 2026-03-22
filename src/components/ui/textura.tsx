@@ -3,11 +3,17 @@
 import { cn } from "@/lib/utils";
 
 interface TexturaProps {
-  src?: string;               // imagem de fundo
-  backgroundImage?: string;   // permite passar gradientes ou múltiplos layers
+  /** URL da imagem de fundo (local `/...` ou remota permitida no `next.config`). */
+  src?: string;
+  /** Gradiente CSS ou várias camadas (`backgroundImage`). Tem prioridade sobre `src` quando os dois existem. */
+  backgroundImage?: string;
   opacity?: number;
   className?: string;
   misturar?: boolean;
+  /** Ex.: `cover` + `backgroundRepeat="no-repeat"` para foto de fundo em tela cheia. */
+  backgroundSize?: string;
+  backgroundPosition?: string;
+  backgroundRepeat?: "repeat" | "no-repeat" | "round" | "space";
 }
 
 export default function Textura({
@@ -16,7 +22,14 @@ export default function Textura({
   opacity = 0.05,
   className,
   misturar = false,
+  backgroundSize = "auto",
+  backgroundPosition = "center",
+  backgroundRepeat = "repeat",
 }: TexturaProps) {
+  const usesCssLayers = Boolean(backgroundImage);
+  const resolvedRepeat = backgroundRepeat;
+  const resolvedSize = backgroundSize;
+
   return (
     <div
       className={cn(
@@ -29,10 +42,11 @@ export default function Textura({
         backgroundImage: backgroundImage
           ? backgroundImage
           : src
-          ? `url('${src}')`
-          : undefined,
-        backgroundRepeat: "repeat",
-        backgroundSize: "auto",
+            ? `url('${src}')`
+            : undefined,
+        backgroundRepeat: resolvedRepeat,
+        backgroundSize: resolvedSize,
+        backgroundPosition,
       }}
     />
   );

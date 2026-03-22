@@ -5,6 +5,7 @@ import { useScroll, useTransform, motion, AnimatePresence } from "framer-motion"
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useMediaQuery } from "react-responsive";
+import { resolveApiUrl } from "@/hooks/useApi";
 
 // --- CONFIGURAÇÕES DO STACK ---
 const CARD_HEIGHT = 400;
@@ -16,15 +17,47 @@ interface GalleryItem {
   image: string;
 }
 
-interface GaleriaFotosProps {
-  data: {
-    data: GalleryItem[];
-    textContent: {
-      badge?: { icon?: string; text?: string };
-      title?: { line1?: string; line2?: string; highlightWords?: string };
-      description?: string;
-    };
+type GaleriaPayload = {
+  data: GalleryItem[];
+  textContent: {
+    badge?: { icon?: string; text?: string };
+    title?: { line1?: string; line2?: string; highlightWords?: string };
+    description?: string;
   };
+};
+
+interface GaleriaFotosProps {
+  data?: GaleriaPayload | null;
+  /** Ex.: `/api-tegbe/tegbe-institucional/form/gallery` — tem prioridade sobre `data` quando definido */
+  endpoint?: string;
+}
+
+function normalizeGalleryJson(json: unknown): GaleriaPayload | null {
+  if (!json || typeof json !== "object") return null;
+  const o = json as Record<string, unknown>;
+
+  if (Array.isArray(o.data)) {
+    return {
+      data: o.data as GalleryItem[],
+      textContent: (o.textContent as GaleriaPayload["textContent"]) || {},
+    };
+  }
+
+  if (Array.isArray(o.values)) {
+    const items: GalleryItem[] = (o.values as Record<string, unknown>[]).map(
+      (v, i) => ({
+        id: String(v.id ?? i),
+        alt: String(v.alt ?? v.name ?? "Galeria"),
+        image: String(v.image ?? v.url ?? v.src ?? ""),
+      })
+    ).filter((item) => item.image);
+    return {
+      data: items,
+      textContent: (o.textContent as GaleriaPayload["textContent"]) || {},
+    };
+  }
+
+  return null;
 }
 
 // --- COMPONENTE DE CARD INDIVIDUAL ---
@@ -168,29 +201,34 @@ function MobileStack({ images, onLoadMore, hasMore }: { images: GalleryItem[]; o
   );
 }
 
-// --- COMPONENTE PRINCIPAL ---
-export default function GaleriaFotos({ data }: GaleriaFotosProps) {
-  const [mounted, setMounted] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(9);
+type GaleriaScrollBodyProps = {
+  visibleImages: GalleryItem[];
+  hasMore: boolean;
+  texts: GaleriaPayload["textContent"];
+  mounted: boolean;
+  isMobile: boolean;
+  imagesLength: number;
+  visibleCount: number;
+  onLoadMore: () => void;
+};
+
+/** Só monta depois que há imagens — evita useScroll com ref sem elemento no DOM (Motion). */
+function GaleriaFotosScrollBody({
+  visibleImages,
+  hasMore,
+  texts,
+  mounted,
+  isMobile,
+  imagesLength,
+  visibleCount,
+  onLoadMore,
+}: GaleriaScrollBodyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-
-  useEffect(() => setMounted(true), []);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  const { images, texts } = useMemo(() => {
-    if (!data) return { images: [], texts: {} };
-    return { images: data.data || [], texts: data.textContent || {} };
-  }, [data]);
-
-  const visibleImages = images.slice(0, visibleCount);
-  const hasMore = visibleCount < images.length;
-
-  // Desktop Parallax
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -180]);
@@ -198,14 +236,17 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
   const renderTitle = () => {
     const { line1, line2, highlightWords } = texts.title || {};
     if (!line2 || !highlightWords) return <>{line1} <br /> {line2}</>;
-    const wordsArray = highlightWords.split(",").map(w => w.trim());
+    const wordsArray = highlightWords.split(",").map((w) => w.trim());
     const regex = new RegExp(`(${wordsArray.join("|")})`, "gi");
     return (
       <>
         {line1} <br />
         {line2.split(regex).map((part, i) =>
-          wordsArray.some(w => part.toLowerCase() === w.toLowerCase()) ? (
-            <span key={i} className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]">
+          wordsArray.some((w) => part.toLowerCase() === w.toLowerCase()) ? (
+            <span
+              key={i}
+              className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]"
+            >
               {part}
             </span>
           ) : (
@@ -215,12 +256,6 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
       </>
     );
   };
-
-  const handleLoadMore = () => {
-    setVisibleCount(prev => Math.min(prev + 6, images.length));
-  };
-
-  if (!images.length) return null;
 
   return (
     <section ref={containerRef} className="bg-[#020202] relative">
@@ -249,7 +284,7 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
               // MOBILE: STICKY STACK (ativado mais cedo)
               <MobileStack
                 images={visibleImages}
-                onLoadMore={handleLoadMore}
+                onLoadMore={onLoadMore}
                 hasMore={hasMore}
               />
             ) : (
@@ -291,11 +326,11 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
                 {hasMore && (
                   <div className="flex justify-center mt-10">
                     <button
-                      onClick={handleLoadMore}
+                      onClick={onLoadMore}
                       className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#FFD700]/30 bg-black text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-all duration-300"
                     >
                       <Icon icon="ph:plus-circle-fill" className="text-xl group-hover:rotate-90 transition-transform" />
-                      VER MAIS FOTOS ({hasMore ? images.length - visibleCount : 0} restantes)
+                      VER MAIS FOTOS ({hasMore ? imagesLength - visibleCount : 0} restantes)
                     </button>
                   </div>
                 )}
@@ -305,5 +340,69 @@ export default function GaleriaFotos({ data }: GaleriaFotosProps) {
         )}
       </div>
     </section>
+  );
+}
+
+// --- COMPONENTE PRINCIPAL ---
+export default function GaleriaFotos({ data: dataProp, endpoint }: GaleriaFotosProps) {
+  const [mounted, setMounted] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
+  const [fetched, setFetched] = useState<GaleriaPayload | null>(null);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!endpoint) {
+      setFetched(null);
+      return;
+    }
+    const url = resolveApiUrl(endpoint);
+    if (!url) {
+      setFetched(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(url)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (cancelled || !json) return;
+        setFetched(normalizeGalleryJson(json));
+      })
+      .catch(() => {
+        if (!cancelled) setFetched(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [endpoint]);
+
+  const data = fetched ?? dataProp ?? null;
+
+  const { images, texts } = useMemo(() => {
+    if (!data) return { images: [] as GalleryItem[], texts: {} as GaleriaPayload["textContent"] };
+    return { images: data.data || [], texts: data.textContent || {} };
+  }, [data]);
+
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMore = visibleCount < images.length;
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + 6, images.length));
+  };
+
+  if (!images.length) return null;
+
+  return (
+    <GaleriaFotosScrollBody
+      visibleImages={visibleImages}
+      hasMore={hasMore}
+      texts={texts}
+      mounted={mounted}
+      isMobile={isMobile}
+      imagesLength={images.length}
+      visibleCount={visibleCount}
+      onLoadMore={handleLoadMore}
+    />
   );
 }

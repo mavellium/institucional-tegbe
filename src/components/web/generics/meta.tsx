@@ -32,15 +32,14 @@ export interface MetaData {
   footer: RichTextItem[];
 }
 
-interface MetaProps{
-  type: string;
+interface MetaProps {
+  type?: string;
   endpoint: string;
 }
 
 /* ---------------- COMPONENT ---------------- */
 
-export default function MetaSection({endpoint,
-}: MetaProps) {
+export default function MetaSection({ endpoint }: MetaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
     const { data } = useApi<MetaData>(endpoint);
   useGSAP(() => {

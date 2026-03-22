@@ -42,7 +42,7 @@ interface LocationsConfig {
 }
 
 export default function LocationsSection({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/localizacoes" 
+  endpoint = "/api-tegbe/tegbe-institucional/localizacoes" 
 }: { 
   endpoint?: string 
 }) {

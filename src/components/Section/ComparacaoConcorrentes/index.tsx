@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { resolveApiUrl } from "@/hooks/useApi";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -36,11 +37,44 @@ export interface ComparisonData {
 }
 
 interface ComparisonTableProps {
-  data: ComparisonData | null;
+  data?: ComparisonData | null;
+  /** Ex.: `/api-tegbe/tegbe-institucional/json/comparison` */
+  endpoint?: string;
 }
 
-export default function ComparacaoConcorrentes({ data }: ComparisonTableProps) {
+export default function ComparacaoConcorrentes({
+  data: dataProp,
+  endpoint,
+}: ComparisonTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fetched, setFetched] = useState<ComparisonData | null>(null);
+
+  useEffect(() => {
+    if (!endpoint) {
+      setFetched(null);
+      return;
+    }
+    const url = resolveApiUrl(endpoint);
+    if (!url) {
+      setFetched(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(url)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (cancelled || !json) return;
+        setFetched(json as ComparisonData);
+      })
+      .catch(() => {
+        if (!cancelled) setFetched(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [endpoint]);
+
+  const data = fetched ?? dataProp ?? null;
 
   // Segurança: Se não houver dados ou se a estrutura estiver errada (sem features), não renderiza
   if (!data || !data.features) return null;

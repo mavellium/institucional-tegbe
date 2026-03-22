@@ -31,7 +31,7 @@ interface ShowcaseProps {
 }
 
 const ShowcaseVideo = ({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/video-sections", 
+  endpoint = "/api-tegbe/tegbe-institucional/video-sections", 
   variant = "cursos" 
 }: ShowcaseProps) => {
     const containerRef = useRef<HTMLDivElement>(null);

@@ -24,7 +24,7 @@ interface ConfigData {
 }
 
 export default function CourseModules({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/cursos-curso" 
+  endpoint = "/api-tegbe/tegbe-institucional/cursos-curso" 
 }: { 
   endpoint?: string 
 }) {

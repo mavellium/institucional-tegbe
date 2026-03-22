@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import Image from "next/image";
+import { useApi } from "@/hooks/useApi";
 
 // --- TIPAGEM ---
 export type CaseType = 'video' | 'image' | 'text';
@@ -42,7 +43,26 @@ export interface TestimonialsData {
 }
 
 interface CasesCarouselProps {
-  data: TestimonialsData | null;
+  data?: TestimonialsData | null;
+  endpoint?: string;
+}
+
+function normalizeTestimonialsPayload(raw: unknown): TestimonialsData | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  const inner = o.data;
+  if (
+    inner &&
+    typeof inner === "object" &&
+    "testimonials" in inner &&
+    Array.isArray((inner as { testimonials?: unknown }).testimonials)
+  ) {
+    return inner as unknown as TestimonialsData;
+  }
+  if ("testimonials" in o && Array.isArray((o as { testimonials?: unknown }).testimonials)) {
+    return raw as TestimonialsData;
+  }
+  return null;
 }
 
 interface VideoCardProps {
@@ -439,7 +459,14 @@ const TextCard = ({ data, isDimmed }: TextCardProps) => (
 );
 
 // --- COMPONENTE PRINCIPAL (CARROSSEL) ---
-export default function CasesCarousel({ data }: CasesCarouselProps) {
+export default function CasesCarousel({ data: dataProp, endpoint }: CasesCarouselProps) {
+  const { data: apiRaw, loading: apiLoading } = useApi<unknown>(endpoint ?? "");
+  const data = useMemo(() => {
+    if (dataProp) return dataProp;
+    if (!endpoint) return null;
+    return normalizeTestimonialsPayload(apiRaw);
+  }, [dataProp, apiRaw, endpoint]);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -522,6 +549,14 @@ export default function CasesCarousel({ data }: CasesCarouselProps) {
     // Libera o loading após um breve delay para garantir que a largura foi atualizada
     setTimeout(() => setIsLoadingMore(false), 500);
   };
+
+  if (endpoint && apiLoading) {
+    return (
+      <section className="py-24 w-full bg-[#020202] flex items-center justify-center min-h-[320px]">
+        <div className="w-10 h-10 border-2 border-[#FFD700] border-t-transparent rounded-full animate-spin" />
+      </section>
+    );
+  }
 
   if (!data) return null;
 
