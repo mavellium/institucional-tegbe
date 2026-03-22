@@ -8,9 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Heading from "@/components/ui/heading";
 import RichText from "@/components/ui/rich/richText";
 import { RichTextItem } from "@/types/richText.type";
-
-const TEGBE_API_URL =
-  "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/agencias-falham!";
+import { useApi } from "@/hooks/useApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,58 +18,10 @@ interface PorqueATegbeData {
   body: RichTextItem[];
 }
 
-const mockData: PorqueATegbeData = {
-  badge: "Marketing Estratégico",
-
-  heading: [
-    { type: "text", value: "Por que tantas " },
-    {
-      type: "highlight",
-      value: "agências falham",
-      color: "#F9396F",
-    },
-    { type: "text", value: " em gerar resultados reais?" },
-  ],
-
-  body: [
-    {
-      type: "text",
-      value:
-        "A maioria das agências foca apenas em tráfego e estética.",
-    },
-    { type: "linebreak" },
-    {
-      type: "text",
-      value:
-        "Mas crescimento de verdade exige estratégia, posicionamento e execução consistente.",
-    },
-    { type: "linebreak" },
-    {
-      type: "bold",
-      value: "É aqui que a Tegbe faz diferente.",
-    },
-  ],
-};
-
 export default function PorqueATegbe() {
   const sectionRef = useRef(null);
-  const [data, setData] = useState<PorqueATegbeData>(mockData);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch(TEGBE_API_URL);
-        if (!res.ok) throw new Error("API error");
-
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        console.warn("Using mockData because API failed:", err);
-      }
-    }
-
-    loadData();
-  }, []);
+  const { data} = useApi<PorqueATegbeData>("agencias-falham");
 
   useGSAP(
     () => {
@@ -89,6 +39,8 @@ export default function PorqueATegbe() {
     },
     { scope: sectionRef, dependencies: [data] }
   );
+
+  if (!data) return null;
 
   return (
     <section

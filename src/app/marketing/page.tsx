@@ -1,19 +1,15 @@
 import Schema from "@/components/Section/Schema";
-import Feature from "@/components/web/feature";
 import { Footer } from "@/components/web/footer";
 import Navbar from "@/components/web/navbar";
-import Video2 from "@/components/Wrapper/Video2";
-import { VideoSection } from "@/enums/video.enum";
 import Parceiro from "@/components/web/parceiro";
-import HeroCarousel from "@/components/web/generics/heroCarrossel";
 import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
-import { HeroSlide } from "@/types/heroSlide.type";
 import PorqueATegbe from "@/components/web/porqueATegbe";
 import MarketingInteligente from "@/components/web/marketingInteligente";
-import { parceiroSectionMock } from "@/mock/parceiroSection.mock";
 import Meta from "@/components/web/generics/meta";
 import Carrossel from "@/components/web/generics/carrosselEspecialistas";
 import HeroCarrossel from "@/components/web/generics/heroCarrossel";
+import Video from "@/components/Wrapper/Video";
+import Solucoes from "@/components/web/solucoes";
 
 export default async function MarketingPage() {
     return (
@@ -70,9 +66,9 @@ export default async function MarketingPage() {
                 textoFundo="MARKETING"
             />
             <PorqueATegbe />
-            <Video2
-                slug="video-marketing"
-                section={VideoSection.Marketing}
+            <Video
+                endpoint="video-marketing"
+                viewVariant="hero"
                 theme={{
                     accentColor: "#f9265e",
                     gradientFrom: "#ff0400",
@@ -82,68 +78,14 @@ export default async function MarketingPage() {
                 }}
 
             />
-            <MarketingInteligente
-                content={{
-                    badge: [{ type: "text", value: "Marketing Inteligente" }],
-                    title: [{ type: "text", value: "Aumente suas vendas com estratégia" }],
-                    description: [{ type: "text", value: "Criamos sistemas de marketing que escalam negócios." }],
-                    stats: [
-                        {
-                            value: "+120%",
-                            label: [{ type: "text", value: "crescimento médio" }]
-                        }
-                    ],
-                    button: {
-                        action: "link",
-                        label: "Falar com especialista",
-                        link: "/contato",
-                        variant: "marketing"
-                    }
-                }}
-            />
-            <Feature />
-            <Parceiro data={parceiroSectionMock} />
+            <MarketingInteligente />
+            <Solucoes />
+            <Parceiro />
             <Meta endpoint="meta-marketing" type={"Meta de Marketing"} />
             <Carrossel type={"Carrossel de Funcionários"} endpoint={"carrossel-de-funcionarios"} />
             <SideBySideSection
                 type={"AgendarReuniao"}
-                data={{
-                    hero: {
-                        tag: "Ficou com dúvida?",
-                        title: [
-                            { type: "text", value: "Agende uma reunião" }
-                        ],
-                        description: [
-                            {
-                                type: "text",
-                                value: "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
-                            },
-                        ],
-                        button: {
-                            label: "Agendar Reunião",
-                            link: "/reuniao",
-                            target: "_blank",
-                            variant: "marketing",
-                            action: "link"
-                        },
-                    },
-                    imagem: {
-                        imagem: "/doni.jpg",
-                        alt: "Equipe Tegbe",
-                    },
-                    social: {
-                        tag: "Mantenha-se atualizado",
-                        title: [
-                            { type: "text", value: "Acompanhe nossas mídias" }
-                        ],
-                        items: [
-                            { icon: "mdi:youtube", link: "#" },
-                            { icon: "mdi:facebook", link: "#" },
-                            { icon: "mdi:instagram", link: "#" },
-                            { icon: "mdi:linkedin", link: "#" },
-                        ],
-                    },
-                }} endpoint={"agendar-reuniao-marketing"}
+                endpoint={"agendar-reuniao-marketing"}
             />
             <Footer variant="marketing" />
         </>

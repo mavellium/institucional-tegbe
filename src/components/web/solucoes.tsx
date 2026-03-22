@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Icon } from "@iconify/react"
 import Heading from "@/components/ui/heading"
@@ -11,17 +11,34 @@ import { motion, AnimatePresence } from "framer-motion"
 import CTAButton from "@/components/ui/button/ctaButton"
 import RichText from "@/components/ui/rich/richText"
 import Textura from "@/components/ui/textura"
+import { useApi } from "@/hooks/useApi"
 
-interface Props {
-  data?: FeatureSectionData
-}
-
-export default function FeatureSection({ data = mockData }: Props) {
+export default function Solucoes() {
+  const { data: apiData, loading, error } = useApi<FeatureSectionData>("solucoes")
+  const [data, setData] = useState<FeatureSectionData>(mockData)
   const [active, setActive] = useState(0)
+
+  useEffect(() => {
+    if (loading) return
+    if (error || !apiData) {
+      console.log("Não carregou!")
+    } else {
+      setData(apiData)
+    }
+  }, [apiData, loading, error])
+
+  useEffect(() => {
+    setActive(0)
+  }, [data])
+
   const feature = data.items[active]
 
-  function setIsModalOpen(arg0: boolean): void {
-    // Implement your modal logic
+  if (loading) {
+    return (
+      <section className="relative z-0 py-24 bg-[#0A0A0A] px-6 text-white flex items-center justify-center min-h-[400px]">
+        <div className="w-10 h-10 border-4 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
+      </section>
+    )
   }
 
   return (
@@ -30,10 +47,10 @@ export default function FeatureSection({ data = mockData }: Props) {
         misturar
         opacity={0.1}
         src="/textura.svg"
-        className="z-0" 
+        className="z-0"
       />
 
-     <div className="max-w-[1200px] mx-auto relative z-10">
+      <div className="max-w-[1200px] mx-auto relative z-10">
 
         {/* HEADER */}
         <div className="mb-20 text-center lg:text-left">
@@ -65,12 +82,11 @@ export default function FeatureSection({ data = mockData }: Props) {
                   onClick={() => setActive(index)}
                   className={`
                     relative w-full text-left p-5 rounded-2xl transition-all duration-300 ease-out group border
-                    ${isActive 
-                      ? "bg-white/[0.04] border-white/10 shadow-lg" 
+                    ${isActive
+                      ? "bg-white/[0.04] border-white/10 shadow-lg"
                       : "bg-transparent border-transparent hover:bg-white/[0.02] hover:border-white/5"}
                   `}
                 >
-                  {/* Indicador Lateral */}
                   {isActive && (
                     <motion.div
                       layoutId="active-indicator"
@@ -79,14 +95,13 @@ export default function FeatureSection({ data = mockData }: Props) {
                     />
                   )}
 
-                  {/* HEADER DO ITEM (Sempre Centralizado) */}
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       {item.icon && (
                         <div className={`
                           p-3 rounded-xl transition-all duration-300 flex items-center justify-center
-                          ${isActive 
-                            ? "bg-[#E31B63]/10 text-[#E31B63]" 
+                          ${isActive
+                            ? "bg-[#E31B63]/10 text-[#E31B63]"
                             : "bg-white/[0.03] text-white/40 group-hover:bg-white/[0.06] group-hover:text-white/70"}
                         `}>
                           <Icon icon={item.icon} className="w-6 h-6" />
@@ -100,7 +115,6 @@ export default function FeatureSection({ data = mockData }: Props) {
                       </Heading>
                     </div>
 
-                    {/* Ícone de Seta (Gatilho visual de clique) */}
                     <div className={`
                       transition-transform duration-300 flex-shrink-0
                       ${isActive ? "rotate-180 text-[#E31B63]" : "text-white/20 group-hover:text-white/50"}
@@ -109,7 +123,6 @@ export default function FeatureSection({ data = mockData }: Props) {
                     </div>
                   </div>
 
-                  {/* DESCRIÇÃO ANIMADA */}
                   <AnimatePresence initial={false}>
                     {isActive && (
                       <motion.div
@@ -119,7 +132,6 @@ export default function FeatureSection({ data = mockData }: Props) {
                         transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                         className="overflow-hidden"
                       >
-                        {/* pl-16 compensa o tamanho do ícone (48px) + gap (16px) = 64px para alinhar o texto */}
                         <div className="pl-16 pt-2 pb-1">
                           <Paragrafo className="text-white/60 text-base leading-relaxed pr-4">
                             <RichText content={item.description} />
@@ -152,7 +164,6 @@ export default function FeatureSection({ data = mockData }: Props) {
                     className="object-cover"
                     priority
                   />
-                  {/* Overlay gradiente sutil para integrar a imagem ao fundo dark */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#020202]/30 to-transparent pointer-events-none" />
                 </motion.div>
               </AnimatePresence>
@@ -170,10 +181,7 @@ export default function FeatureSection({ data = mockData }: Props) {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <CTAButton
-                button={data.button}
-                onOpenForm={() => setIsModalOpen(true)}
-              />
+              <CTAButton button={data.button} />
             </motion.div>
           </div>
         )}

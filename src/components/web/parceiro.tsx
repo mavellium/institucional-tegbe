@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -9,26 +10,48 @@ import { Button } from "../ui/button/button";
 import CarrosselParceiros from "../ui/carrosselParceiros";
 
 import { IParceiroSection } from "@/interface/parceiro/IParceiroSection";
+import { useApi } from "@/hooks/useApi";
 
-interface Props {
-  data: IParceiroSection;
-}
+const mockData: IParceiroSection = {
+  badge: [],
+  title: [],
+  description: [],
+  parceiros: [],
+  button: { action: "link", label: "", link: "#" },
+  msgFinal: "",
+};
 
-export default function Parceiro({ data }: Props) {
+export default function Parceiro() {
+  const { data: apiData, loading, error } = useApi<IParceiroSection>("parceiros");
+  const [data, setData] = useState<IParceiroSection>(mockData);
+
+  useEffect(() => {
+    if (loading) return;
+    if (error || !apiData) {
+      setData(mockData);
+    } else {
+      setData(apiData);
+    }
+  }, [apiData, loading, error]);
+
+  if (loading) {
+    return (
+      <section className="py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-[#020202] flex items-center justify-center min-h-[300px]">
+        <div className="w-10 h-10 border-4 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
+      </section>
+    );
+  }
+
   const button = data.button;
 
   return (
-    // Reduzi de py-28 para py-16 (e py-20 em telas maiores) para conter mais a seção
     <section className="py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-[#020202] relative overflow-hidden border-t border-white/5">
 
-      {/* Background Effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#E31B63]/10 rounded-[100%] blur-[120px] pointer-events-none opacity-50" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
 
       <div className="max-w-[1200px] mx-auto relative z-10">
 
-        {/* HEADER */}
-        {/* Reduzi o mb-20 para mb-10 e o gap-5 para gap-3 */}
         <div className="flex flex-col items-center text-center mb-10 gap-3">
           {data.badge && (
             <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
@@ -53,22 +76,19 @@ export default function Parceiro({ data }: Props) {
           )}
         </div>
 
-        {/* CARROSSEL */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }} 
-          whileInView={{ opacity: 1, scale: 1 }} 
-          viewport={{ once: true }} 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
           className="relative w-full"
         >
           <div className="absolute inset-y-0 left-0 w-8 md:w-24 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-8 md:w-24 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
-          
+
           <CarrosselParceiros items={data.parceiros} />
         </motion.div>
 
-        {/* CTA */}
-        {/* Reduzi o mt-24 para mt-10 para grudar mais o botão ao carrossel */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
