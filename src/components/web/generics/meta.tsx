@@ -35,13 +35,18 @@ export interface MetaData {
 interface MetaProps {
   type?: string;
   endpoint: string;
+  theme?: any;
 }
-
 /* ---------------- COMPONENT ---------------- */
 
-export default function MetaSection({ endpoint }: MetaProps) {
+export default function MetaSection({ endpoint, theme }: MetaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-    const { data } = useApi<MetaData>(endpoint);
+  const { data } = useApi<MetaData>(endpoint);
+
+  const accent = theme?.primary || "#F1D95D";
+  const textColor = theme?.text || "#0A0A0A";
+  const bgColor = theme?.background || "#FAFAF8";
+
   useGSAP(() => {
     if (!containerRef.current) return;
 
@@ -66,7 +71,8 @@ export default function MetaSection({ endpoint }: MetaProps) {
   return (
     <section
       ref={containerRef}
-      className="relative bg-[#FAFAF8] py-20 lg:py-32 text-center overflow-hidden selection:bg-[#F1D95D]/30"
+      className="relative py-20 lg:py-32 text-center overflow-hidden selection:bg-[#F1D95D]/30"
+      style={{ backgroundColor: bgColor }}
     >
       <Textura opacity={0.03} />
 
@@ -74,11 +80,15 @@ export default function MetaSection({ endpoint }: MetaProps) {
 
         {/* HEADER */}
         <div className="space-y-5 lg:space-y-6">
-          <Heading as="h2" size="lg" align="center" className="meta-item">
+          <Heading as="h2" size="lg" align="center" className="meta-item" color={textColor}>
             <RichText content={data.header.title} />
           </Heading>
 
-          <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px] max-w-xl mx-auto" align="center">
+          <Paragrafo
+            className="meta-item text-[16px] sm:text-[18px] max-w-xl mx-auto"
+            align="center"
+           color={textColor}
+          >
             <RichText content={data.header.subtitle} />
           </Paragrafo>
         </div>
@@ -92,7 +102,11 @@ export default function MetaSection({ endpoint }: MetaProps) {
         </div>
 
         {/* FOOTER */}
-        <Paragrafo className="meta-item text-[#0A0A0A] text-[16px] sm:text-[18px]" align="center">
+        <Paragrafo
+          className="meta-item text-[16px] sm:text-[18px]"
+          align="center"
+          color={textColor}
+        >
           <RichText content={data.footer} />
         </Paragrafo>
 

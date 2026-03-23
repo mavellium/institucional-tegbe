@@ -3,9 +3,8 @@ import Schema from "@/components/Section/Schema";
 import { Footer } from "@/components/web/footer";
 import HomeFormacoes from "@/components/web/homeFormacoes";
 import PorqueAprender from "@/components/Section/PorqueAprender";
-import Video2 from "@/components/Section/Video2";
 import Logos from "@/components/web/logos";
-import Cursos from "@/components/Section/Cursos";
+import Cursos from "@/components/web/formacoes";
 import CasesCarousel from "@/components/Section/Carrossel";
 import GaleriaFotos from "@/components/Section/GaleriaFotos";
 import Expertise from "@/components/Section/Expertise";
@@ -15,6 +14,7 @@ import Localizacao2 from "@/components/Section/Localizacao2";
 import Preco from "@/components/Section/Preco";
 import Meta from "@/components/web/generics/meta";
 import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
+import Video from "@/components/Wrapper/Video";
 
 
 export default function FormacoesPage() {
@@ -72,12 +72,25 @@ export default function FormacoesPage() {
       <Header />
       <main>
         <HomeFormacoes />
-        <PorqueAprender variant="cursos" />
-        <Video2 variant="cursos" />
-        <Logos variant="cursos" endpoint="json/logos-curso" />
+        <PorqueAprender />
+        <Video endpoint="video-formacoes"
+          theme={{
+            backgroundColor: "#020202",
+            textColor: "#fff",
+            accentColor: "#FFD700",
+            badgeBg: "rgba(255,215,0,0.1)",
+            badgeBorder: "rgba(255,215,0,0.3)",
+            badgeText: "#B8860B",
+          }} />
         <Meta
           type="Meta de Formações"
           endpoint={`meta-alunos`}
+          theme={{
+            background: "#0a0a0a",
+            primary: "#FFD700",
+            text: "#fafafa",
+          }
+          }
         />
         <Cursos />
         <CasesCarousel endpoint={`alunos`} />

@@ -14,6 +14,7 @@ interface TextProps {
   variant?: TextVariant;
   className?: string;
   as?: React.ElementType;
+  color?: string;
 }
 
 const variants = {
@@ -27,6 +28,7 @@ const variants = {
 export default function Text({
   children,
   variant = "body",
+  color = "#0A0A0A",
   className,
   as: Component = "p",
 }: TextProps) {
@@ -36,6 +38,7 @@ export default function Text({
         variants[variant],
         className
       )}
+      style={{ color }}
     >
       {children}
     </Component>

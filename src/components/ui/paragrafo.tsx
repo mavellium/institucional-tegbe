@@ -9,6 +9,7 @@ interface ParagrafoTextoProps {
   children: ReactNode;
   className?: string;
   align?: HeadingAlign;
+  color?: string;
 }
 
 const aligns: Record<HeadingAlign, string> = {
@@ -20,10 +21,11 @@ const aligns: Record<HeadingAlign, string> = {
 export default function Paragrafo({
   children,
   className,
+  color,
   align = "left",
 }: ParagrafoTextoProps) {
   return (
-    <Text className={cn("leading-[1.8]", className, aligns[align],)}>
+    <Text color={color} className={cn("leading-[1.8]", className, aligns[align],)}>
       {children}
     </Text>
   );

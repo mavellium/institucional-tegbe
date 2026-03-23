@@ -25,51 +25,6 @@ type OQueSomosData = {
   paragraphs: RichTextItem[][];
 };
 
-/* ---------------- MOCK DATA ---------------- */
-
-// const mockData: OQueSomosData = {
-//   header: {
-//     title: [
-//       { type: "text", value: "Somos a nova ordem da " },
-//       { type: "highlight", value: "nação empreendedora", color: "#F1D95D" }
-//     ]
-//   },
-
-//   paragraphs: [
-//     [
-//       {
-//         type: "text",
-//         value:
-//           "Uma plataforma de soluções corporativas para orientar quem lidera empresas reais, em um país com desafios reais."
-//       }
-//     ],
-
-//     [
-//       { type: "text", value: "A TEGBE é " },
-//       {
-//         type: "highlight",
-//         value: "instrumento de poder para empresários brasileiros.",
-//         color: "#F1D95D",
-//         serif: false,
-//         italic: false
-//       },
-//       {
-//         type: "text",
-//         value:
-//           " Bússola, método, rede, influência e inteligência para empresas que fazem a diferença no Brasil."
-//       }
-//     ],
-
-//     [
-//       {
-//         type: "text",
-//         value:
-//           "Unimos conhecimento aplicado, comunidade de alto nível e serviços selecionados sob um princípio simples: dar direção, voz e poder aos empresários que fazem o Brasil avançar."
-//       }
-//     ]
-//   ]
-// };
-
 /* ---------------- COMPONENT ---------------- */
 
 export function OQueSomos() {
