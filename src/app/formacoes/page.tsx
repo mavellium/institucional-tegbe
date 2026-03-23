@@ -3,8 +3,7 @@ import Schema from "@/components/Section/Schema";
 import { Footer } from "@/components/web/footer";
 import HomeFormacoes from "@/components/web/homeFormacoes";
 import PorqueAprender from "@/components/Section/PorqueAprender";
-import Logos from "@/components/web/logos";
-import Cursos from "@/components/web/formacoes";
+import Formacoes from "@/components/web/formacoes";
 import CasesCarousel from "@/components/Section/Carrossel";
 import GaleriaFotos from "@/components/Section/GaleriaFotos";
 import Expertise from "@/components/Section/Expertise";
@@ -92,8 +91,8 @@ export default function FormacoesPage() {
           }
           }
         />
-        <Cursos />
-        <CasesCarousel endpoint={`alunos`} />
+        <Formacoes />
+        <CasesCarousel />
         <GaleriaFotos endpoint="form/gallery" />
         <Expertise variant="cursos" />
         <Localizacao2 />
