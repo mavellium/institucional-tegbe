@@ -1,15 +1,31 @@
 "use client";
 
-import { useRef, useEffect, useState, useMemo } from "react";
-import { useScroll, useTransform, motion, AnimatePresence } from "framer-motion";
+import { useRef, useEffect, useState, useMemo, useCallback } from "react";
+import { useScroll, useTransform, motion, AnimatePresence, Variants, useInView } from "framer-motion";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useMediaQuery } from "react-responsive";
 import { resolveApiUrl } from "@/hooks/useApi";
+import { IButton } from "@/interface/button/IButton";
 
-// --- CONFIGURAÇÕES DO STACK ---
-const CARD_HEIGHT = 400;
-const CARD_GAP = 12;
+// Seus componentes de UI
+import Heading from "@/components/ui/heading";
+import RichText from "@/components/ui/rich/richText";
+import Paragrafo from "@/components/ui/paragrafo";
+import { Button } from "@/components/ui/button/button";
+import { RichTextItem } from "@/types/richText.type";
+
+const CARD_HEIGHT = 450;
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 50, scale: 0.9 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { type: "spring", stiffness: 100, damping: 20 }
+  }
+};
 
 interface GalleryItem {
   id: string;
@@ -20,27 +36,26 @@ interface GalleryItem {
 type GaleriaPayload = {
   data: GalleryItem[];
   textContent: {
-    badge?: { icon?: string; text?: string };
-    title?: { line1?: string; line2?: string; highlightWords?: string };
-    description?: string;
+    badge?: RichTextItem[];
+    title?: RichTextItem[];
+    description?: RichTextItem[];
+    button?: IButton;
   };
 };
 
 interface GaleriaFotosProps {
-  data?: GaleriaPayload | null;
-  /** Ex.: `/api-tegbe/tegbe-institucional/form/gallery` — tem prioridade sobre `data` quando definido */
-  endpoint?: string;
+  data?: GaleriaPayload; 
+  endpoint: string;
 }
 
 function normalizeGalleryJson(json: unknown): GaleriaPayload | null {
   if (!json || typeof json !== "object") return null;
   const o = json as Record<string, unknown>;
 
+  const texts = (o.textContent as GaleriaPayload["textContent"]) || {};
+
   if (Array.isArray(o.data)) {
-    return {
-      data: o.data as GalleryItem[],
-      textContent: (o.textContent as GaleriaPayload["textContent"]) || {},
-    };
+    return { data: o.data as GalleryItem[], textContent: texts };
   }
 
   if (Array.isArray(o.values)) {
@@ -51,290 +66,147 @@ function normalizeGalleryJson(json: unknown): GaleriaPayload | null {
         image: String(v.image ?? v.url ?? v.src ?? ""),
       })
     ).filter((item) => item.image);
-    return {
-      data: items,
-      textContent: (o.textContent as GaleriaPayload["textContent"]) || {},
-    };
+    return { data: items, textContent: texts };
   }
 
   return null;
 }
 
-// --- COMPONENTE DE CARD INDIVIDUAL ---
-function MobileStackCard({
-  img,
-  index,
-  totalCards,
-  scrollYProgress,
-}: {
-  img: GalleryItem;
-  index: number;
-  totalCards: number;
-  scrollYProgress: any;
-}) {
-  const startRange = index / totalCards;
-  const endRange = (index + 1) / totalCards;
-
-  // Calcula a posição final ideal (centralizada com espaçamento)
-  let finalY = (index - (totalCards - 1) / 2) * CARD_GAP;
-
-  // Limita o deslocamento máximo para não ultrapassar a viewport
-  // 35vh é um valor empírico; ajuste conforme necessário
-  const MAX_DISPLACEMENT = 35; // em vh
-  finalY = Math.min(finalY, MAX_DISPLACEMENT);
-  finalY = Math.max(finalY, -MAX_DISPLACEMENT);
-
-  const y = useTransform(scrollYProgress, [startRange, endRange], [600, finalY]);
-  const scale = useTransform(
-    scrollYProgress,
-    [endRange, 1],
-    [1, 1 - (totalCards - 1 - index) * 0.025]
-  );
-  const opacity = useTransform(scrollYProgress, [startRange, startRange + 0.03], [0, 1]);
-
+// --- MOBILE STACK (Totalmente Refatorado para CSS Sticky Nativo) ---
+function MobileStack({ images, onLoadMore, hasMore, texts }: { images: GalleryItem[]; onLoadMore: () => void; hasMore: boolean; texts: any }) {
   return (
-    <motion.div
-      style={{
-        y,
-        scale,
-        opacity,
-        position: "absolute",
-        left: "50%",
-        x: "-50%",
-        zIndex: index,
-      }}
-      className="w-full max-w-[350px] px-4"
-    >
-      <div
-        className="relative rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden bg-zinc-900"
-        style={{ height: CARD_HEIGHT }}
-      >
-        <Image src={img.image} alt={img.alt} fill className="object-cover" sizes="100vw" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent flex items-end p-8">
-          <span className="text-white font-bold text-lg uppercase tracking-widest">
-            {img.alt}
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+    <div className="flex flex-col items-center pb-12 w-full relative z-20">
+      
+      {/* CAMADA DAS CARTAS: Usando sticky nativo para empilhar sem quebrar o layout */}
+      {images.map((img, i) => (
+        <motion.div
+          key={img.id}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          className="sticky w-full max-w-[350px] rounded-[2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden bg-zinc-900"
+          style={{
+            height: CARD_HEIGHT,
+            // Cada carta trava um pouquinho mais para baixo que a anterior, criando o efeito baralho
+            top: `calc(12vh + ${i * 16}px)`, 
+            marginBottom: '3rem', // Dá espaço para o scroll natural acontecer
+            zIndex: i,
+          }}
+        >
+          <Image src={img.image} alt={img.alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 350px" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end p-8">
+            <span className="text-white font-bold text-lg uppercase tracking-widest">{img.alt}</span>
+          </div>
+        </motion.div>
+      ))}
 
-// --- COMPONENTE MOBILE: STICKY STACK (COM OFFSET AJUSTADO) ---
-// --- COMPONENTE MOBILE: STICKY STACK (COM FADE SUAVE NO FINAL E BOTÃO CONTROLADO) ---
-// --- COMPONENTE MOBILE: STICKY STACK (COM SAÍDA ANTECIPADA E SEM INVASÃO) ---
-// --- COMPONENTE MOBILE: STICKY STACK (COM FADE ANTECIPADO) ---
-function MobileStack({ images, onLoadMore, hasMore }: { images: GalleryItem[]; onLoadMore: () => void; hasMore: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const totalCards = images.length;
-
-  // Opacidade do container fixo: começa a desaparecer em 50% e atinge ZERO em 85% do progresso
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.9, 0.85, 1],
-    [1, 1, 0, 0] // de 85% a 100% permanece 0
-  );
-
-  // Opacidade do botão: aparece entre 40% e 50%, desaparece entre 75% e 90%
-  const buttonOpacity = useTransform(
-    scrollYProgress,
-    [0.4, 0.5, 0.85, 0.9],
-    [0, 1, 1, 0]
-  );
-
-  // Pointer events: só quando opacidade > 0.1
-  const pointerEvents = useTransform(opacity, (v) => (v > 0.1 ? "auto" : "none"));
-
-  // Escala sutil (opcional)
-  const scale = useTransform(
-    scrollYProgress,
-    [0.7, 0.9],
-    [1, 0.95]
-  );
-
-  return (
-    <div ref={containerRef} className="relative" style={{ height: `${totalCards * 100}vh` }}>
-      <motion.div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          pointerEvents,
-          opacity,
-          scale,
-        }}
-        className="flex items-center justify-center"
-      >
-        {images.map((img, index) => (
-          <MobileStackCard
-            key={img.id}
-            img={img}
-            index={index}
-            totalCards={totalCards}
-            scrollYProgress={scrollYProgress}
-          />
-        ))}
-
-        {hasMore && (
-          <motion.div
-            style={{ opacity: buttonOpacity }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50"
-          >
-            <button
-              onClick={onLoadMore}
-              className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#FFD700]/30 bg-black text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-all duration-300 shadow-lg"
+      {/* BOTÃO CTA: No fluxo normal da página. Nunca vai bugar ou sobrepor. */}
+      {hasMore && (
+         <motion.div 
+           initial={{ opacity: 0 }} 
+           whileInView={{ opacity: 1 }} 
+           className="relative z-50 w-full flex justify-center mt-8 px-4"
+         >
+            <Button 
+               onClick={onLoadMore} 
+               // Design corrigido: Fundo escuro com texto branco. Amarelo apenas nos detalhes/hover.
+               className="w-full max-w-[350px] py-7 rounded-full bg-zinc-900 border border-zinc-700 text-white hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] font-bold tracking-widest uppercase transition-all duration-300 shadow-xl"
             >
-              <Icon icon="ph:plus-circle-fill" className="text-xl group-hover:rotate-90 transition-transform" />
-              VER MAIS FOTOS
-            </button>
-          </motion.div>
-        )}
-      </motion.div>
+              {texts?.button?.icon && <Icon icon={texts.button.icon} className="mr-3 text-2xl" />}
+              {texts?.button?.label || "Carregar Mais Fotos"}
+            </Button>
+         </motion.div>
+      )}
     </div>
   );
 }
 
-type GaleriaScrollBodyProps = {
-  visibleImages: GalleryItem[];
-  hasMore: boolean;
-  texts: GaleriaPayload["textContent"];
-  mounted: boolean;
-  isMobile: boolean;
-  imagesLength: number;
-  visibleCount: number;
-  onLoadMore: () => void;
-};
-
-/** Só monta depois que há imagens — evita useScroll com ref sem elemento no DOM (Motion). */
-function GaleriaFotosScrollBody({
-  visibleImages,
-  hasMore,
-  texts,
-  mounted,
-  isMobile,
-  imagesLength,
-  visibleCount,
-  onLoadMore,
-}: GaleriaScrollBodyProps) {
+// --- DESKTOP GRID COM INFINITE SCROLL ---
+function GaleriaFotosScrollBody({ visibleImages, hasMore, texts, mounted, isMobile, onLoadMore }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+  const triggerRef = useRef<HTMLDivElement>(null); 
 
+  const isBottomVisible = useInView(triggerRef, { margin: "0px 0px 400px 0px" });
+
+  useEffect(() => {
+    if (isBottomVisible && hasMore && !isMobile) {
+      onLoadMore();
+    }
+  }, [isBottomVisible, hasMore, onLoadMore, isMobile]);
+
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -180]);
 
-  const renderTitle = () => {
-    const { line1, line2, highlightWords } = texts.title || {};
-    if (!line2 || !highlightWords) return <>{line1} <br /> {line2}</>;
-    const wordsArray = highlightWords.split(",").map((w) => w.trim());
-    const regex = new RegExp(`(${wordsArray.join("|")})`, "gi");
-    return (
-      <>
-        {line1} <br />
-        {line2.split(regex).map((part, i) =>
-          wordsArray.some((w) => part.toLowerCase() === w.toLowerCase()) ? (
-            <span
-              key={i}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-[#DBB46C] via-[#FFD700] to-[#B8860B]"
-            >
-              {part}
-            </span>
-          ) : (
-            part
-          )
-        )}
-      </>
-    );
-  };
-
   return (
-    <section ref={containerRef} className="bg-[#020202] relative">
+    <section ref={containerRef} className="bg-[#020202] relative overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
 
       <div className="container px-4 md:px-6 relative z-10 mx-auto py-12 md:py-24">
-        {/* HEADER COM MARGEM INFERIOR REDUZIDA */}
-        <div className="flex flex-col items-center text-center mb-8 md:mb-16 max-w-3xl mx-auto">
-          {texts.badge?.text && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-6">
-              <Icon icon={texts.badge.icon || "ph:camera-fill"} className="text-[#FFD700] w-4 h-4" />
-              <span className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
-                {texts.badge.text}
-              </span>
+        
+        {/* TEXTOS */}
+        <div className="flex flex-col items-center text-center mb-16 max-w-4xl mx-auto z-20 relative">
+          {texts?.badge && texts.badge.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 backdrop-blur-md mb-8">
+              <Icon icon="ph:camera-fill" className="text-[#FFD700] w-4 h-4" />
+              <div className="text-[10px] font-bold tracking-[0.2em] text-[#FFD700] uppercase">
+                <RichText content={texts.badge} />
+              </div>
+            </motion.div>
+          )}
+          
+          {texts?.title && texts.title.length > 0 && (
+            <div className="text-white mb-6 text-4xl md:text-5xl font-bold">
+              <RichText content={texts.title}/>
             </div>
           )}
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-6">
-            {renderTitle()}
-          </h2>
-          <p className="text-gray-400 text-lg font-light">{texts.description}</p>
+
+          {texts?.description && texts.description.length > 0 && (
+            <div className="text-gray-400 max-w-2xl text-lg">
+              <RichText content={texts.description} />
+            </div>
+          )}
         </div>
 
         {mounted && (
           <>
             {isMobile ? (
-              // MOBILE: STICKY STACK (ativado mais cedo)
-              <MobileStack
-                images={visibleImages}
-                onLoadMore={onLoadMore}
-                hasMore={hasMore}
-              />
+              // Mobile stack atualizado para usar CSS nativo e não quebrar com cliques
+              <MobileStack images={visibleImages} onLoadMore={onLoadMore} hasMore={hasMore} texts={texts} />
             ) : (
-              // DESKTOP: GRID COM PARALLAX
-              <>
-                <div className="grid grid-cols-3 gap-8 mb-32">
-                  {[0, 1, 2].map((colIdx) => (
-                    <motion.div
-                      key={colIdx}
-                      style={{ y: colIdx === 0 ? y1 : colIdx === 1 ? y2 : y3 }}
-                      className={`flex flex-col gap-8 ${colIdx === 1 ? 'pt-24' : ''}`}
-                    >
-                      <AnimatePresence mode="popLayout">
-                        {visibleImages.filter((_, i) => i % 3 === colIdx).map((img) => (
-                          <motion.div
-                            layout
-                            key={img.id}
-                            className="relative rounded-3xl overflow-hidden group border border-white/5 h-[400px]"
-                          >
-                            <Image
-                              src={img.image}
-                              alt={img.alt}
-                              fill
-                              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
-                              <span className="text-[#FFD700] text-xs font-bold tracking-widest uppercase">
-                                {img.alt}
-                              </span>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Botão "Ver mais" no desktop */}
-                {hasMore && (
-                  <div className="flex justify-center mt-10">
-                    <button
-                      onClick={onLoadMore}
-                      className="group flex items-center gap-3 px-8 py-4 rounded-full border border-[#FFD700]/30 bg-black text-[#FFD700] font-bold hover:bg-[#FFD700] hover:text-black transition-all duration-300"
-                    >
-                      <Icon icon="ph:plus-circle-fill" className="text-xl group-hover:rotate-90 transition-transform" />
-                      VER MAIS FOTOS ({hasMore ? imagesLength - visibleCount : 0} restantes)
-                    </button>
-                  </div>
-                )}
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-32">
+                {[0, 1, 2].map((colIdx) => (
+                  <motion.div key={colIdx} style={{ y: colIdx === 0 ? y1 : colIdx === 1 ? y2 : y3 }} className={`flex flex-col gap-8 ${colIdx === 1 ? 'md:pt-24' : ''}`}>
+                    <AnimatePresence>
+                      {visibleImages.filter((_: any, i: number) => i % 3 === colIdx).map((img: any) => (
+                        <motion.div
+                          variants={itemVariants}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          key={img.id}
+                          className="relative rounded-[2rem] overflow-hidden group border border-white/5 h-[450px] cursor-pointer bg-zinc-900"
+                        >
+                          <Image src={img.image} alt={img.alt} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" sizes="(max-width: 768px) 100vw, 33vw"/>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-8">
+                            <span className="text-[#FFD700] text-sm font-bold tracking-[0.2em] uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                              {img.alt}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+            
+            {/* SENTINELA DO DESKTOP */}
+            {hasMore && !isMobile && (
+              <div ref={triggerRef} className="w-full h-20 flex items-center justify-center">
+                 <Icon icon="eos-icons:loading" className="text-[#FFD700] text-4xl animate-spin opacity-50" />
+              </div>
             )}
           </>
         )}
@@ -343,52 +215,52 @@ function GaleriaFotosScrollBody({
   );
 }
 
+// --- COMPONENTE PRINCIPAL ---
 export default function GaleriaFotos({ data: dataProp, endpoint }: GaleriaFotosProps) {
   const [mounted, setMounted] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleCount, setVisibleCount] = useState(6); 
   const [fetched, setFetched] = useState<GaleriaPayload | null>(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!endpoint) {
-      setFetched(null);
-      return;
-    }
+    if (!endpoint) return;
     const url = resolveApiUrl(endpoint);
-    if (!url) {
-      setFetched(null);
-      return;
-    }
+    if (!url) return;
+    
     let cancelled = false;
     fetch(url)
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
-        if (cancelled || !json) return;
-        setFetched(normalizeGalleryJson(json));
+        if (!cancelled && json) setFetched(normalizeGalleryJson(json));
       })
-      .catch(() => {
-        if (!cancelled) setFetched(null);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .catch(() => !cancelled && setFetched(null));
+      
+    return () => { cancelled = true; };
   }, [endpoint]);
 
-  const data = fetched ?? dataProp ?? null;
+  const data = useMemo(() => {
+    if (fetched) return fetched;
+    if (dataProp) return normalizeGalleryJson(dataProp);
+    return null;
+  }, [fetched, dataProp]);
 
   const { images, texts } = useMemo(() => {
-    if (!data) return { images: [] as GalleryItem[], texts: {} as GaleriaPayload["textContent"] };
+    if (!data) return { images: [], texts: {} as GaleriaPayload["textContent"] };
     return { images: data.data || [], texts: data.textContent || {} };
   }, [data]);
 
-  const visibleImages = images.slice(0, visibleCount);
+  const visibleImages = useMemo(() => {
+    if (!mounted) return [];
+    return images.slice(0, visibleCount);
+  }, [images, visibleCount, mounted]);
+
   const hasMore = visibleCount < images.length;
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     setVisibleCount((prev) => Math.min(prev + 6, images.length));
-  };
+  }, [images.length]);
 
   if (!images.length) return null;
 
@@ -399,8 +271,6 @@ export default function GaleriaFotos({ data: dataProp, endpoint }: GaleriaFotosP
       texts={texts}
       mounted={mounted}
       isMobile={isMobile}
-      imagesLength={images.length}
-      visibleCount={visibleCount}
       onLoadMore={handleLoadMore}
     />
   );
