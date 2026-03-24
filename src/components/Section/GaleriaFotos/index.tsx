@@ -343,7 +343,6 @@ function GaleriaFotosScrollBody({
   );
 }
 
-// --- COMPONENTE PRINCIPAL ---
 export default function GaleriaFotos({ data: dataProp, endpoint }: GaleriaFotosProps) {
   const [mounted, setMounted] = useState(false);
   const [visibleCount, setVisibleCount] = useState(9);

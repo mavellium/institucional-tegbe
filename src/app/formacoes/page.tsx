@@ -93,7 +93,7 @@ export default function FormacoesPage() {
         />
         <Formacoes />
         <CasesCarousel />
-        <GaleriaFotos endpoint="form/gallery" />
+        <GaleriaFotos endpoint="gallery" />
         <Expertise variant="cursos" />
         <Localizacao2 />
         <ComparacaoConcorrentes endpoint="json/comparison" />
