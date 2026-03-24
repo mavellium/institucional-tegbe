@@ -56,7 +56,7 @@ export default function Solucoes() {
         <div className="mb-20 text-center lg:text-left">
           {data.header.subtitle && (
             <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Paragrafo className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4">
+              <Paragrafo color="#fff" className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4">
                 <RichText content={data.header.subtitle} />
               </Paragrafo>
             </motion.div>
@@ -108,7 +108,7 @@ export default function Solucoes() {
                         </div>
                       )}
 
-                      <Heading as="h3" size="md" className="text-xl font-medium">
+                      <Heading  as="h3" size="md" className="text-xl font-medium">
                         <span className={`transition-colors duration-300 ${isActive ? "!text-white" : "!text-white/60 group-hover:!text-white"}`}>
                           <RichText content={item.title} />
                         </span>
@@ -133,7 +133,7 @@ export default function Solucoes() {
                         className="overflow-hidden"
                       >
                         <div className="pl-16 pt-2 pb-1">
-                          <Paragrafo className="text-white/60 text-base leading-relaxed pr-4">
+                          <Paragrafo  color="#fff" className="text-white/60 text-base leading-relaxed pr-4">
                             <RichText content={item.description} />
                           </Paragrafo>
                         </div>

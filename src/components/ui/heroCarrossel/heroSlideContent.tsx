@@ -59,7 +59,7 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <Paragrafo className="text-gray-200 text-2xl lg:text-3xl font-light leading-snug">
+          <Paragrafo  color="#fff" className="text-gray-200 text-2xl lg:text-3xl font-light leading-snug">
             {slide.description}
           </Paragrafo>
         </motion.div>

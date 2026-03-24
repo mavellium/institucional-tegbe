@@ -94,7 +94,7 @@ export default function FormacoesPage() {
         <Formacoes />
         <CasesCarousel />
         <GaleriaFotos endpoint="galeria-formacoes" />
-        <Expertise variant="cursos" />
+        <Expertise endpoint={"porque-fazer-o-curso"}/>
         <Localizacao2 />
         <ComparacaoConcorrentes endpoint="json/comparison" />
         <Preco />

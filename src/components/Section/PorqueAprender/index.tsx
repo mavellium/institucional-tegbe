@@ -123,6 +123,7 @@ export default function PorqueAprender() {
                 <div className="reveal-text-p max-w-3xl space-y-4 sm:space-y-6 mb-12">
                     {data.paragraphs.map((paragraph, i) => (
                         <Paragrafo
+                            color="#fff"
                             key={i}
                             className="text-gray-400 text-[15px] sm:text-[16px] md:text-[19px] font-light"
                             align="center"

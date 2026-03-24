@@ -91,6 +91,7 @@ export function OQueSomos() {
     <div className="space-y-4 sm:space-y-6">
       {data.paragraphs.map((paragraph, i) => (
         <Paragrafo
+         color="#fff"
           key={i}
           className="manifesto-item text-[#FFFFFF] text-[15px] sm:text-[16px] md:text-[19px] font-light"
           align="center"
