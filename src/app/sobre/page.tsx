@@ -1,13 +1,13 @@
-import { Header } from "@/components/Section/Header";
-import { Footer } from "@/components/web/footer";
-import Schema from "@/components/Section/Schema";
-import { QuemSomos } from "@/components/web/quemSomos";
-import { OQueSomos } from "@/components/web/oQueSomos";
-import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
-import Hero from "@/components/web/hero";
-import Localizacao from "@/components/web/localizacao";
-import Meta from "@/components/web/generics/meta";
-import Carrossel from "@/components/web/generics/carrosselEspecialistas";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import Schema from "@/components/layout/Schema";
+import { QuemSomos } from "@/components/sections/QuemSomos";
+import { OQueSomos } from "@/components/sections/OQueSomos";
+import { SideBySideSection } from "@/components/sections/SideBySide";
+import Hero from "@/components/sections/Hero";
+import Localizacao from "@/components/sections/LocalizacaoSobre";
+import Meta from "@/components/sections/Meta";
+import Carrossel from "@/components/sections/CarrosselEspecialistas";
 
 export default async function SobrePage() {
 

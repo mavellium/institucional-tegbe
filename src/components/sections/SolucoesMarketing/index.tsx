@@ -3,36 +3,35 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Icon } from "@iconify/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useApi } from "@/hooks/useApi"
+import Heading from "@/components/ui/heading"
 import { FeatureSectionData } from "@/interface/feature/IFeatureSection"
-import Textura from "../ui/textura"
-import Paragrafo from "../ui/paragrafo"
-import RichText from "../ui/rich/richText"
-import Heading from "../ui/heading"
-import CTAButton from "../ui/button/ctaButton"
+import { mockData } from "@/mock/feature.mock"
+import Paragrafo from "@/components/ui/paragrafo"
+import { motion, AnimatePresence } from "framer-motion"
+import CTAButton from "@/components/ui/button/ctaButton"
+import RichText from "@/components/ui/rich/richText"
+import Textura from "@/components/ui/textura"
+import { useApi } from "@/hooks/useApi"
 
 export default function Solucoes() {
   const { data: apiData, loading } = useApi<FeatureSectionData>("solucoes")
+  const [data, setData] = useState<FeatureSectionData>(mockData)
+  const [active, setActive] = useState(0)
 
-const [data, setData] = useState<FeatureSectionData | null>(null)
-const [active, setActive] = useState(0)
+  useEffect(() => {
+    if (loading) return
+    if (!apiData) {
+      console.log("Não carregou!")
+    } else {
+      setData(apiData)
+    }
+  }, [apiData, loading])
 
-useEffect(() => {
-  if (!loading && apiData) {
-    setData(apiData)
-  }
-}, [apiData, loading])
+  useEffect(() => {
+    setActive(0)
+  }, [data])
 
-useEffect(() => {
-  if (data) setActive(0)
-}, [data])
-
-if (loading || !data) {
-  return
-}
-
-const feature = data.items[active]
+  const feature = data.items[active]
 
   if (loading) {
     return (

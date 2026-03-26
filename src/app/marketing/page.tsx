@@ -1,15 +1,15 @@
-import Schema from "@/components/Section/Schema";
-import { Footer } from "@/components/web/footer";
-import Navbar from "@/components/web/navbar";
-import Parceiro from "@/components/web/parceiro";
-import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
-import PorqueATegbe from "@/components/web/porqueATegbe";
-import MarketingInteligente from "@/components/web/marketingInteligente";
-import Meta from "@/components/web/generics/meta";
-import Carrossel from "@/components/web/generics/carrosselEspecialistas";
-import HeroCarrossel from "@/components/web/generics/heroCarrossel";
-import Video from "@/components/Wrapper/Video";
-import Solucoes from "@/components/web/solucoes";
+import Schema from "@/components/layout/Schema";
+import { Footer } from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
+import Parceiro from "@/components/sections/Parceiro";
+import { SideBySideSection } from "@/components/sections/SideBySide";
+import PorqueATegbe from "@/components/sections/PorqueATegbe";
+import MarketingInteligente from "@/components/sections/MarketingInteligente";
+import Meta from "@/components/sections/Meta";
+import Carrossel from "@/components/sections/CarrosselEspecialistas";
+import HeroCarrossel from "@/components/sections/HeroCarrossel";
+import Video from "@/components/sections/VideoAdaptivo";
+import Solucoes from "@/components/sections/SolucoesMarketing";
 
 export default async function MarketingPage() {
     return (

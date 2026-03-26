@@ -1,25 +1,25 @@
-import { Header } from "@/components/Section/Header";
-import { Footer } from "@/components/web/footer";
-import Schema from "@/components/Section/Schema";
-import Dores from "@/components/Section/Dores";
-import ComoFazemos from "@/components/Section/ComoFazemos";
-import Solucoes from "@/components/Section/Solucoes";
-import Metricas from "@/components/Section/Metricas";
-import RedirectEcommerce from "@/components/Section/RedirectEcommerce";
-import RedirectMarketing from "@/components/Section/RedirectMarketing";
-import RedirectTegpro from "@/components/Section/RedirectTegpro";
-import Resultados from "@/components/Section/Resultados";
-import RedirectSobre from "@/components/Section/RedirectSobre";
-import FaqHome from "@/components/Section/FaqHome";
-import UltimaChamadaAcao from "@/components/Section/UltimaChamadaAcao";
-import Headline from "@/components/Wrapper/Headline";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import Schema from "@/components/layout/Schema";
+import Dores from "@/components/sections/Dores";
+import ComoFazemos from "@/components/sections/ComoFazemos";
+import Solucoes from "@/components/sections/Solucoes";
+import Metricas from "@/components/sections/Metricas";
+import RedirectEcommerce from "@/components/sections/RedirectEcommerce";
+import RedirectMarketing from "@/components/sections/RedirectMarketing";
+import RedirectTegpro from "@/components/sections/RedirectTegpro";
+import Resultados from "@/components/sections/Resultados";
+import RedirectSobre from "@/components/sections/RedirectSobre";
+import FaqHome from "@/components/sections/FaqHome";
+import UltimaChamadaAcao from "@/components/sections/UltimaChamadaAcao";
+import Headline from "@/components/sections/HeadlineServer";
 import { HeroSlide } from "@/types/heroSlide.type";
-import HeroCarousel from "@/components/web/generics/heroCarrossel";
-import HomeCards from "@/components/Section/HomeCards";
-import SectionMarketing from "@/components/Section/SectionMarketing";
-import SectionEcommerce from "@/components/Section/SectionEcommerce";
-import SectionFormacoes from "@/components/Section/SectionFormacoes";
-import SectionFerramentas from "@/components/Section/SectionFerramentas";
+import HeroCarousel from "@/components/sections/HeroCarrossel";
+import HomeCards from "@/components/sections/HomeCards";
+import SectionMarketing from "@/components/sections/BannerMarketing";
+import SectionEcommerce from "@/components/sections/BannerEcommerce";
+import SectionFormacoes from "@/components/sections/BannerFormacoes";
+import SectionFerramentas from "@/components/sections/Ferramentas";
 
 export default async function Home() {
   const mockSlides: HeroSlide[] = [

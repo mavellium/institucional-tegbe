@@ -1,17 +1,17 @@
-import { Header } from "@/components/Section/Header";
-import { Footer } from "@/components/web/footer";
-import Schema from "@/components/Section/Schema";
-import { Equipe } from "@/components/Section/Equipe";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import Schema from "@/components/layout/Schema";
+import { Equipe } from "@/components/sections/Equipe";
 import { fetchComponentData } from "@/lib/api";
-import Passos from "@/components/Section/Passos";
-import ConsultorOficial from "@/components/Section/ServiceFlow/CertifiedSection";
-import Video from "@/components/Wrapper/Video";
-import HeroCarrossel from "@/components/web/generics/heroCarrossel";
-import Logos from "@/components/web/logos";
-import { Imagem } from "@/components/Section/SectionImage";
-import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
-import { Clientes } from "@/components/web/clientes";
-import Carrossel from "@/components/web/carrossel";
+import Passos from "@/components/sections/Passos";
+import ConsultorOficial from "@/components/sections/ServiceFlow/CertifiedSection";
+import Video from "@/components/sections/VideoAdaptivo";
+import HeroCarrossel from "@/components/sections/HeroCarrossel";
+import Logos from "@/components/sections/Logos";
+import { Imagem } from "@/components/sections/Imagem";
+import { SideBySideSection } from "@/components/sections/SideBySide";
+import { Clientes } from "@/components/sections/Clientes";
+import Carrossel from "@/components/sections/CarrosselServicos";
 
 async function getSafeData(slug: string) {
     try {

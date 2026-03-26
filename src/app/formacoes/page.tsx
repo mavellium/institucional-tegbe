@@ -1,19 +1,19 @@
-import { Header } from "@/components/Section/Header";
-import Schema from "@/components/Section/Schema";
-import { Footer } from "@/components/web/footer";
-import HomeFormacoes from "@/components/web/homeFormacoes";
-import PorqueAprender from "@/components/Section/PorqueAprender";
-import Formacoes from "@/components/web/formacoes";
-import CasesCarousel from "@/components/Section/Carrossel";
-import GaleriaFotos from "@/components/Section/GaleriaFotos";
-import Expertise from "@/components/Section/Expertise";
-import ComparacaoConcorrentes from "@/components/Section/ComparacaoConcorrentes";
-import Faq from "@/components/Section/Faq";
-import Localizacao2 from "@/components/Section/Localizacao2";
-import Preco from "@/components/Section/Preco";
-import Meta from "@/components/web/generics/meta";
-import { SideBySideSection } from "@/components/web/generics/sideBySideSection";
-import Video from "@/components/Wrapper/Video";
+import { Header } from "@/components/layout/Header";
+import Schema from "@/components/layout/Schema";
+import { Footer } from "@/components/layout/Footer";
+import HomeFormacoes from "@/components/sections/HomeFormacoes";
+import PorqueAprender from "@/components/sections/PorqueAprender";
+import Formacoes from "@/components/sections/ListaFormacoes";
+import CasesCarousel from "@/components/sections/CarrosselCases";
+import GaleriaFotos from "@/components/sections/GaleriaFotos";
+import Expertise from "@/components/sections/Expertise";
+import ComparacaoConcorrentes from "@/components/sections/ComparacaoConcorrentes";
+import Faq from "@/components/sections/Faq";
+import Localizacao2 from "@/components/sections/LocalizacaoCursos";
+import Preco from "@/components/sections/Preco";
+import Meta from "@/components/sections/Meta";
+import { SideBySideSection } from "@/components/sections/SideBySide";
+import Video from "@/components/sections/VideoAdaptivo";
 
 
 export default function FormacoesPage() {

@@ -6,7 +6,7 @@ import Heading from "./heading";
 import RichText from "./rich/richText";
 import Paragrafo from "./paragrafo";
 import { Icon } from "@iconify/react";
-import { CourseModule } from "../web/formacoes";
+import { CourseModule } from "../sections/ListaFormacoes";
 
 interface Props {
   module: CourseModule;
