@@ -13,18 +13,29 @@ const fonts = {
   black: "font-black",
 };
 
-export default function RichText({ content }: { content?: any }) {
+function normalizeRichTextItems(
+  content: RichTextItem | RichTextItem[] | string | null | undefined
+): RichTextItem[] {
+  if (!content) return [];
+  if (Array.isArray(content)) return content;
+  if (typeof content === "object" && content !== null && "type" in content) {
+    return [content];
+  }
+  return [{ type: "text", value: String(content) }];
+}
 
-  // normaliza conteúdo
+export default function RichText({
+  content,
+}: {
+  content?: RichTextItem | RichTextItem[] | string | null;
+}) {
   if (!content) return null;
 
-  if (!Array.isArray(content)) {
-    content = [{ type: "text", value: String(content) }];
-  }
+  const items = normalizeRichTextItems(content);
 
   return (
     <>
-      {content.map((item: RichTextItem, i: number) => {
+      {items.map((item: RichTextItem, i: number) => {
         switch (item.type) {
 
           case "text":

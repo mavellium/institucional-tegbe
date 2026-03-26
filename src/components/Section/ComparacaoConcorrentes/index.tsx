@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Icon } from "@iconify/react";
-import { resolveApiUrl } from "@/hooks/useApi";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 
-// --- TIPAGEM DOS DADOS (com suporte a modal) ---
+import { useApi } from "@/hooks/useApi";
+import Heading from "@/components/ui/heading";
+import Paragrafo from "@/components/ui/paragrafo";
+import { IButton } from "@/interface/button/IButton";
+
 export interface ComparisonFeature {
   label: string;
   competitor: string;
@@ -23,285 +26,249 @@ export interface ComparisonData {
   columns: {
     competitor: string;
     us: string;
+    competitorImage?: string;
+    usImage?: string;
   };
   features: ComparisonFeature[];
-  cta?: {
-    text: string;
-    url?: string;
-    variant?: 'default' | 'outline' | 'gradient' | 'ghost';
-    icon?: string;
-    target?: '_self' | '_blank';
-    use_form?: boolean;   // Indica se deve abrir modal
-    form_html?: string;   // HTML do formulário (quando use_form = true)
-  };
+  button?: IButton;
 }
 
-interface ComparisonTableProps {
-  data?: ComparisonData | null;
-  /** Ex.: `/api-tegbe/tegbe-institucional/json/comparison` */
-  endpoint?: string;
-}
-
-export default function ComparacaoConcorrentes({
-  data: dataProp,
-  endpoint,
-}: ComparisonTableProps) {
+export default function ComparacaoConcorrentes() {
+  const { data, loading } = useApi<ComparisonData>("comparison");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [fetched, setFetched] = useState<ComparisonData | null>(null);
 
-  useEffect(() => {
-    if (!endpoint) {
-      setFetched(null);
-      return;
-    }
-    const url = resolveApiUrl(endpoint);
-    if (!url) {
-      setFetched(null);
-      return;
-    }
-    let cancelled = false;
-    fetch(url)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((json) => {
-        if (cancelled || !json) return;
-        setFetched(json as ComparisonData);
-      })
-      .catch(() => {
-        if (!cancelled) setFetched(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [endpoint]);
-
-  const data = fetched ?? dataProp ?? null;
-
-  // Segurança: Se não houver dados ou se a estrutura estiver errada (sem features), não renderiza
-  if (!data || !data.features) return null;
-
-  // Configurações padrão para o CTA
-  const ctaConfig = data.cta || {
-    text: "Escolher TegPro",
-    url: "#",
-    variant: "default",
-    target: "_self",
-    use_form: false,
-    form_html: "",
-  };
-
-  // Classes de variante para o botão
-  const buttonVariants = {
-    default: "bg-[#FFD700] hover:bg-[#E5C100] text-black shadow-lg",
-    outline: "bg-transparent border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700]/10",
-    gradient: "bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#E5C100] hover:to-[#FF8C00] text-black",
-    ghost: "bg-transparent text-[#FFD700] hover:bg-[#FFD700]/10"
-  };
+  if (loading || !data || !data.features) return null;
 
   const handleCtaClick = (e: React.MouseEvent) => {
-    if (ctaConfig.use_form) {
+    if (data.button?.action === "form") {
       e.preventDefault();
-      console.log("🔍 form_html:", ctaConfig.form_html);
       setIsModalOpen(true);
     }
   };
 
-  // Função para renderizar o botão
-  const renderButton = () => {
-    const buttonClasses = `
-      w-full py-3 rounded-lg font-bold text-sm uppercase tracking-wide transition-colors 
-      flex items-center justify-center gap-2
-      ${buttonVariants[ctaConfig.variant || 'default']}
-    `;
+  const buttonVariants = {
+    default: "bg-[#FFD700] hover:bg-[#F2C900] text-black font-bold shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]",
+    outline: "border-2 border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black",
+    gradient: "bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:scale-[1.02] text-black shadow-xl",
+    ghost: "text-[#FFD700] hover:bg-[#FFD700]/10",
+  };
 
-    const buttonContent = (
+  const renderButton = () => {
+    if (!data.button) return null;
+    const variantClass = buttonVariants[data.button.variant as keyof typeof buttonVariants] ?? buttonVariants.default;
+    const classes = `w-full py-4 rounded-xl text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${variantClass}`;
+
+    const content = (
       <>
-        {ctaConfig.icon && <Icon icon={ctaConfig.icon} className="w-5 h-5" />}
-        {ctaConfig.text}
+        {data.button.icon && <Icon icon={data.button.icon} className="w-5 h-5" />}
+        {data.button.label}
       </>
     );
 
-    // Se usar formulário, renderiza um button
-    if (ctaConfig.use_form) {
-      return (
-        <button
-          onClick={handleCtaClick}
-          className={buttonClasses + " cursor-pointer"}
-        >
-          {buttonContent}
-        </button>
-      );
-    }
-
-    // Se não usar formulário, mantém o comportamento original
-    if (ctaConfig.url) {
-      if (ctaConfig.url.startsWith('/')) {
-        return (
-          <Link 
-            href={ctaConfig.url} 
-            target={ctaConfig.target || '_self'}
-            className={buttonClasses}
-          >
-            {buttonContent}
-          </Link>
-        );
-      } else {
-        return (
-          <Link 
-            href={ctaConfig.url} 
-            target={ctaConfig.target || '_self'}
-            rel={ctaConfig.target === '_blank' ? 'noopener noreferrer' : undefined}
-            className={buttonClasses}
-          >
-            {buttonContent}
-          </Link>
-        );
-      }
-    }
-
-    // Fallback (sem URL e sem formulário) - botão inerte
-    return (
-      <button className={buttonClasses} disabled>
-        {buttonContent}
-      </button>
+    return data.button.action === "link" ? (
+      <Link href={data.button.link || "#"} target={data.button.target || "_self"} className={classes}>
+        {content}
+      </Link>
+    ) : (
+      <button onClick={handleCtaClick} className={classes}>{content}</button>
     );
   };
 
   return (
     <>
-      <section className="py-24 bg-[#020202] relative overflow-hidden font-sans">
-        
-        {/* Background Ambience */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-        
-        {/* Luz de Fundo focada na coluna da TegPro */}
-        <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[400px] h-[800px] bg-[#FFD700]/5 rounded-full blur-[120px] pointer-events-none" />
+      <section className="py-24 bg-[#050505] relative overflow-hidden">
+        {/* Background Gradients & Effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#FFD700]/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
 
-        <div className="container px-4 md:px-6 relative z-10 max-w-5xl mx-auto">
+        <div className="container px-4 max-w-6xl mx-auto relative z-10">
           
-          {/* HEADER */}
-          <div className="text-center mb-16 space-y-4">
-             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-                <Icon icon="ph:scales-bold" className="text-gray-400 w-4 h-4" />
-                <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-gray-400 uppercase">
-                  {data.header.badge}
-                </span>
-             </div>
-             <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-               {data.header.title}
-             </h2>
-             <p className="text-gray-400 max-w-xl mx-auto">
-               {data.header.subtitle}
-             </p>
+          {/* Section Header */}
+          <div className="text-center mb-16 md:mb-24">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="px-4 py-1.5 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/[0.03] text-[#FFD700] text-[10px] font-bold tracking-[0.3em] uppercase mb-6 inline-block shadow-[0_0_20px_rgba(255,215,0,0.1)]"
+            >
+              {data.header.badge}
+            </motion.div>
+            <Heading size="lg" color="#fff" align="center" className="mb-4">
+              {data.header.title}
+            </Heading>
+            <Paragrafo color="#A1A1AA" align="center" className="max-w-2xl mx-auto text-lg">
+              {data.header.subtitle}
+            </Paragrafo>
           </div>
 
-          {/* TABELA */}
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-8 items-center">
+          {/* =========================================
+              DESKTOP VIEW (Unified Glassmorphic Table)
+              ========================================= */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="hidden lg:block relative bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-4 shadow-2xl backdrop-blur-sm"
+          >
+            {/* Structural Background Highlight for "Tegbe" Column */}
+            <div className="absolute inset-y-4 right-4 w-[calc(33.33%-1rem)] bg-gradient-to-b from-[#FFD700]/[0.08] to-[#FFD700]/[0.02] border border-[#FFD700]/20 rounded-[2rem] shadow-[0_0_40px_rgba(255,215,0,0.05)] pointer-events-none z-0" />
+
+            <div className="grid grid-cols-3 relative z-10">
               
-              {/* COLUNA 1: LABELS (Escondida no Mobile) */}
-              <div className="hidden md:flex flex-col gap-6 py-8">
-                  <div className="h-16"></div> 
-                  {data.features.map((feature, i) => (
-                      <div key={i} className="h-16 flex items-center text-gray-400 font-medium text-sm border-b border-white/5">
-                          {feature.label}
-                      </div>
-                  ))}
+              {/* --- HEADERS --- */}
+              <div className="p-8" /> {/* Empty Label Header */}
+              
+              {/* Competitor Header */}
+              <div className="p-8 flex flex-col items-center text-center">
+                <div className="w-full h-28 rounded-2xl overflow-hidden mb-5 relative bg-zinc-900 border border-white/5">
+                  <img src={data.columns.competitorImage || "https://images.unsplash.com/photo-1551288049-bbbda5366392?q=80&w=500"} className="w-full h-full object-cover grayscale opacity-30" alt="Competitor" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
+                </div>
+                <h3 className="text-xl font-semibold text-zinc-500">{data.columns.competitor}</h3>
               </div>
 
-              {/* COLUNA 2: CONCORRÊNCIA */}
-              <div className="flex flex-col gap-6 p-8 rounded-2xl border border-white/5 bg-[#0A0A0A]/50 grayscale opacity-70">
-                  <div className="h-16 flex flex-col justify-center border-b border-white/5">
-                      <h3 className="text-xl font-bold text-gray-500">{data.columns.competitor}</h3>
-                  </div>
-                  {data.features.map((feature, i) => (
-                      <div key={i} className="h-auto md:h-16 flex flex-col justify-center border-b border-white/5 py-4 md:py-0">
-                          <span className="md:hidden text-[10px] uppercase text-gray-600 font-bold mb-1">{feature.label}</span>
-                          <div className="flex items-center gap-3">
-                              <Icon icon="ph:x-circle-bold" className="text-gray-600 w-5 h-5 flex-shrink-0" />
-                              <span className="text-sm text-gray-500">{feature.competitor}</span>
-                          </div>
-                      </div>
-                  ))}
+              {/* Us Header */}
+              <div className="p-8 flex flex-col items-center text-center relative">
+                <div className="absolute top-4 right-4 bg-[#FFD700] text-black text-[10px] font-black px-3 py-1 rounded-md shadow-lg z-20 uppercase tracking-wider">
+                  Sua Escolha
+                </div>
+                <div className="w-full h-28 rounded-2xl overflow-hidden mb-5 relative border border-[#FFD700]/30 shadow-[0_0_20px_rgba(255,215,0,0.15)]">
+                  <img src={data.columns.usImage || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500"} className="w-full h-full object-cover" alt="Tegbe" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent" />
+                </div>
+                <h3 className="text-2xl font-black text-white">{data.columns.us}</h3>
               </div>
 
-              {/* COLUNA 3: TEGPRO (Destaque) */}
-              <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.6 }}
-                  className="relative flex flex-col gap-6 p-8 rounded-2xl border border-[#FFD700]/30 bg-[#0F0F0F] shadow-[0_0_50px_rgba(255,215,0,0.1)] overflow-hidden group mt-8 md:mt-0"
-              >
-                  <div className="absolute inset-0 bg-gradient-to-b from-[#FFD700]/5 to-transparent pointer-events-none" />
-                  
-                  <div className="h-16 flex flex-col justify-center border-b border-[#FFD700]/10 relative z-10">
-                      <div className="absolute top-0 right-0 bg-[#FFD700] text-black text-[9px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                          RECOMENDADO
-                      </div>
-                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                          {data.columns.us}
-                      </h3>
+              {/* --- FEATURES ROWS --- */}
+              {data.features.map((f, i) => (
+                <React.Fragment key={i}>
+                  {/* Label */}
+                  <div className="flex items-center px-8 py-5 border-t border-white/5 text-sm font-medium text-zinc-400">
+                    {f.label}
                   </div>
+                  {/* Competitor Value */}
+                  <div className="flex items-center gap-3 px-8 py-5 border-t border-white/5 text-zinc-500">
+                    <Icon icon="ph:minus-circle" className="w-5 h-5 shrink-0 opacity-60" />
+                    <span className="text-sm">{f.competitor}</span>
+                  </div>
+                  {/* Us Value */}
+                  <div className="flex items-center gap-3 px-8 py-5 border-t border-[#FFD700]/10 text-white">
+                    <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]" />
+                    <span className="text-sm font-semibold">{f.us}</span>
+                  </div>
+                </React.Fragment>
+              ))}
 
-                  {data.features.map((feature, i) => (
-                      <div key={i} className="h-auto md:h-16 flex flex-col justify-center border-b border-[#FFD700]/10 py-4 md:py-0 relative z-10">
-                          <span className="md:hidden text-[10px] uppercase text-[#FFD700]/50 font-bold mb-1">{feature.label}</span>
-                          <div className="flex items-center gap-3">
-                              <div className="w-5 h-5 rounded-full bg-[#FFD700]/20 flex items-center justify-center flex-shrink-0">
-                                  <Icon icon="ph:check-bold" className="text-[#FFD700] w-3 h-3" />
-                              </div>
-                              <span className="text-sm text-white font-medium">{feature.us}</span>
-                          </div>
-                      </div>
-                  ))}
-                  
-                  {/* BOTÃO DINÂMICO */}
-                  <div className="mt-4 pt-4">
-                    {renderButton()}
+              {/* --- CTA FOOTER --- */}
+              <div className="p-8" />
+              <div className="p-8" />
+              <div className="px-8 pb-8 pt-6 border-t border-[#FFD700]/10">
+                {renderButton()}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* =========================================
+              MOBILE VIEW (Stacked Cards)
+              ========================================= */}
+          <div className="lg:hidden flex flex-col gap-8 max-w-md mx-auto">
+            
+            {/* Competitor Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden"
+            >
+              <div className="h-32 relative overflow-hidden">
+                <img src={data.columns.competitorImage || "https://images.unsplash.com/photo-1551288049-bbbda5366392?q=80&w=500"} className="w-full h-full object-cover grayscale opacity-30" alt="Competitor" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
+                <h3 className="absolute bottom-4 left-6 text-xl font-bold text-zinc-500">{data.columns.competitor}</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                {data.features.map((f, i) => (
+                  <div key={i} className="flex flex-col gap-1 pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                    <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{f.label}</span>
+                    <div className="flex items-center gap-2 text-zinc-400">
+                      <Icon icon="ph:minus-circle" className="w-4 h-4 shrink-0" />
+                      <span className="text-sm">{f.competitor}</span>
+                    </div>
                   </div>
-              </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Us Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-[#111] border border-[#FFD700]/30 rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(255,215,0,0.1)] relative"
+            >
+              <div className="absolute top-4 right-4 bg-[#FFD700] text-black text-[10px] font-black px-3 py-1 rounded-md z-20 uppercase tracking-wider">
+                Recomendado
+              </div>
+              <div className="h-32 relative overflow-hidden">
+                <img src={data.columns.usImage || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500"} className="w-full h-full object-cover opacity-80" alt="Tegbe" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent" />
+                <h3 className="absolute bottom-4 left-6 text-2xl font-black text-white">{data.columns.us}</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                {data.features.map((f, i) => (
+                  <div key={i} className="flex flex-col gap-1 pb-4 border-b border-[#FFD700]/10 last:border-0 last:pb-0">
+                    <span className="text-[10px] text-[#FFD700]/60 uppercase tracking-widest">{f.label}</span>
+                    <div className="flex items-center gap-2 text-white">
+                      <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-4 h-4 shrink-0" />
+                      <span className="text-sm font-medium">{f.us}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-6 pt-2">
+                {renderButton()}
+              </div>
+            </motion.div>
 
           </div>
-
         </div>
       </section>
 
-      {/* Modal com formulário - renderizado no body via portal */}
-      {typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          {isModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsModalOpen(false)}
-            >
+      {/* MODAL FORM */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {data.button?.action === "form" && isModalOpen && data.button.form_html && (
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[200px]"
-                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                onClick={() => setIsModalOpen(false)}
               >
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                <motion.div
+                  initial={{ scale: 0.95, y: 20 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.95, y: 20 }}
+                  className="bg-zinc-950 border border-white/10 shadow-2xl p-6 rounded-2xl max-w-lg w-full relative"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <Icon icon="solar:close-circle-linear" className="w-5 h-5 text-gray-600" />
-                </button>
-                <div className="p-6">
-                  {ctaConfig.form_html ? (
-                    <div dangerouslySetInnerHTML={{ __html: ctaConfig.form_html }} />
-                  ) : (
-                    <p className="text-gray-500">Formulário não disponível.</p>
-                  )}
-                </div>
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                  >
+                    <Icon icon="ph:x-bold" className="w-5 h-5" />
+                  </button>
+                  <div
+                    className="prose prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: data.button.form_html }}
+                  />
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </>
   );
 }

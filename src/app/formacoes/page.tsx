@@ -96,13 +96,13 @@ export default function FormacoesPage() {
         <GaleriaFotos endpoint="galeria-formacoes" />
         <Expertise endpoint={"porque-fazer-o-curso"}/>
         <Localizacao2 />
-        <ComparacaoConcorrentes endpoint="json/comparison" />
+        {/* <ComparacaoConcorrentes /> */}
         <Preco />
-        <Faq endpoint="json/faq-curso" />
-        <SideBySideSection
+        {/* <Faq endpoint="json/faq-curso" /> */}
+        {/* <SideBySideSection
           type="AgendarReuniao"
           endpoint={`agendar-reuniao-cursos`}
-        />
+        /> */}
       </main>
       <Footer variant="cursos" />
     </>
