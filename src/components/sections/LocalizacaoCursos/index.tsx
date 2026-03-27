@@ -98,7 +98,7 @@ export default function LocationsSection() {
               </span>
             </motion.div>
 
-            <Heading color="#FFF" align="center" size="xl" className="text-white mb-4">
+            <Heading color="#FFF" align="center" size="lg" className="text-white mb-4">
               <RichText content={data.header.title} />
             </Heading>
 

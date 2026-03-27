@@ -1,15 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { createPortal } from "react-dom";
 
 import { useApi } from "@/hooks/useApi";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
+import { Button } from "@/components/ui/button/button";
 import { IButton } from "@/interface/button/IButton";
+import { IImage } from "@/interface/imagem/IImage";
+import { RichTextItem } from "@/types/richText.type";
+import RichText from "@/components/ui/rich/richText";
 
 export interface ComparisonFeature {
   label: string;
@@ -20,21 +24,29 @@ export interface ComparisonFeature {
 export interface ComparisonData {
   header: {
     badge: string;
-    title: string;
-    subtitle: string;
+    title: RichTextItem[];
+    subtitle: RichTextItem[];
   };
   columns: {
     competitor: string;
     us: string;
-    competitorImage?: string;
-    usImage?: string;
   };
   features: ComparisonFeature[];
   button?: IButton;
 }
 
-export default function ComparacaoConcorrentes() {
-  const { data, loading } = useApi<ComparisonData>("comparison");
+interface Props {
+  endpoint?: string;
+}
+
+function mapVariant(v?: string): "default" | "outline" | "ghost" {
+  if (v === "outline") return "outline";
+  if (v === "ghost") return "ghost";
+  return "default";
+}
+
+export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Props) {
+  const { data, loading } = useApi<ComparisonData>(endpoint);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (loading || !data || !data.features) return null;
@@ -46,112 +58,99 @@ export default function ComparacaoConcorrentes() {
     }
   };
 
-  const buttonVariants = {
-    default: "bg-[#FFD700] hover:bg-[#F2C900] text-black font-bold shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]",
-    outline: "border-2 border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-black",
-    gradient: "bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:scale-[1.02] text-black shadow-xl",
-    ghost: "text-[#FFD700] hover:bg-[#FFD700]/10",
-  };
-
   const renderButton = () => {
-    if (!data.button) return null;
-    const variantClass = buttonVariants[data.button.variant as keyof typeof buttonVariants] ?? buttonVariants.default;
-    const classes = `w-full py-4 rounded-xl text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${variantClass}`;
+    if (!data.button || !data.button.variant) return null;
+    const variant = mapVariant(data.button.variant);
 
-    const content = (
-      <>
+    if (data.button.action === "link") {
+      return (
+        <Button
+          href={data.button.link}
+          target={data.button.target}
+          variant={variant}
+          size="pill"
+          className="w-full"
+        >
+          {data.button.icon && <Icon icon={data.button.icon} className="w-5 h-5" />}
+          {data.button.label}
+        </Button>
+      );
+    }
+
+    return (
+      <Button variant={variant} size="pill" className="w-full" onClick={handleCtaClick}>
         {data.button.icon && <Icon icon={data.button.icon} className="w-5 h-5" />}
         {data.button.label}
-      </>
-    );
-
-    return data.button.action === "link" ? (
-      <Link href={data.button.link || "#"} target={data.button.target || "_self"} className={classes}>
-        {content}
-      </Link>
-    ) : (
-      <button onClick={handleCtaClick} className={classes}>{content}</button>
+      </Button>
     );
   };
 
   return (
     <>
-      <section className="py-24 bg-[#050505] relative overflow-hidden">
-        {/* Background Gradients & Effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#FFD700]/5 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
+      <section className="py-20 md:py-24 bg-[#050505] relative overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] md:w-[800px] h-[300px] md:h-[400px] bg-[#FFD700]/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container px-4 max-w-6xl mx-auto relative z-10">
-          
+
           {/* Section Header */}
-          <div className="text-center mb-16 md:mb-24">
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="px-4 py-1.5 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/[0.03] text-[#FFD700] text-[10px] font-bold tracking-[0.3em] uppercase mb-6 inline-block shadow-[0_0_20px_rgba(255,215,0,0.1)]"
-            >
-              {data.header.badge}
-            </motion.div>
+          <div className="text-center mb-12 md:mb-20">
+            {data.header.badge && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="px-4 py-1.5 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/[0.03] text-[#FFD700] text-[10px] font-bold tracking-[0.3em] uppercase mb-6 inline-block shadow-[0_0_20px_rgba(255,215,0,0.1)]"
+              >
+                {data.header.badge}
+              </motion.div>
+            )}
             <Heading size="lg" color="#fff" align="center" className="mb-4">
-              {data.header.title}
+              <RichText content={data.header.title}/>
             </Heading>
             <Paragrafo color="#A1A1AA" align="center" className="max-w-2xl mx-auto text-lg">
-              {data.header.subtitle}
+              <RichText content={data.header.subtitle}/>
             </Paragrafo>
           </div>
 
-          {/* =========================================
-              DESKTOP VIEW (Unified Glassmorphic Table)
-              ========================================= */}
-          <motion.div 
+          {/* DESKTOP VIEW */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="hidden lg:block relative bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-4 shadow-2xl backdrop-blur-sm"
           >
-            {/* Structural Background Highlight for "Tegbe" Column */}
+            {/* Highlight for "Tegbe" Column */}
             <div className="absolute inset-y-4 right-4 w-[calc(33.33%-1rem)] bg-gradient-to-b from-[#FFD700]/[0.08] to-[#FFD700]/[0.02] border border-[#FFD700]/20 rounded-[2rem] shadow-[0_0_40px_rgba(255,215,0,0.05)] pointer-events-none z-0" />
 
             <div className="grid grid-cols-3 relative z-10">
-              
-              {/* --- HEADERS --- */}
-              <div className="p-8" /> {/* Empty Label Header */}
-              
+
+              {/* Headers */}
+              <div className="p-8" />
+
               {/* Competitor Header */}
               <div className="p-8 flex flex-col items-center text-center">
-                <div className="w-full h-28 rounded-2xl overflow-hidden mb-5 relative bg-zinc-900 border border-white/5">
-                  <img src={data.columns.competitorImage || "https://images.unsplash.com/photo-1551288049-bbbda5366392?q=80&w=500"} className="w-full h-full object-cover grayscale opacity-30" alt="Competitor" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
-                </div>
+                
                 <h3 className="text-xl font-semibold text-zinc-500">{data.columns.competitor}</h3>
               </div>
 
               {/* Us Header */}
               <div className="p-8 flex flex-col items-center text-center relative">
-                <div className="absolute top-4 right-4 bg-[#FFD700] text-black text-[10px] font-black px-3 py-1 rounded-md shadow-lg z-20 uppercase tracking-wider">
-                  Sua Escolha
-                </div>
-                <div className="w-full h-28 rounded-2xl overflow-hidden mb-5 relative border border-[#FFD700]/30 shadow-[0_0_20px_rgba(255,215,0,0.15)]">
-                  <img src={data.columns.usImage || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500"} className="w-full h-full object-cover" alt="Tegbe" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent" />
-                </div>
+  
+                
                 <h3 className="text-2xl font-black text-white">{data.columns.us}</h3>
               </div>
 
-              {/* --- FEATURES ROWS --- */}
+              {/* Feature Rows */}
               {data.features.map((f, i) => (
                 <React.Fragment key={i}>
-                  {/* Label */}
                   <div className="flex items-center px-8 py-5 border-t border-white/5 text-sm font-medium text-zinc-400">
                     {f.label}
                   </div>
-                  {/* Competitor Value */}
                   <div className="flex items-center gap-3 px-8 py-5 border-t border-white/5 text-zinc-500">
                     <Icon icon="ph:minus-circle" className="w-5 h-5 shrink-0 opacity-60" />
                     <span className="text-sm">{f.competitor}</span>
                   </div>
-                  {/* Us Value */}
                   <div className="flex items-center gap-3 px-8 py-5 border-t border-[#FFD700]/10 text-white">
                     <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]" />
                     <span className="text-sm font-semibold">{f.us}</span>
@@ -159,7 +158,7 @@ export default function ComparacaoConcorrentes() {
                 </React.Fragment>
               ))}
 
-              {/* --- CTA FOOTER --- */}
+              {/* CTA Footer */}
               <div className="p-8" />
               <div className="p-8" />
               <div className="px-8 pb-8 pt-6 border-t border-[#FFD700]/10">
@@ -168,26 +167,24 @@ export default function ComparacaoConcorrentes() {
             </div>
           </motion.div>
 
-          {/* =========================================
-              MOBILE VIEW (Stacked Cards)
-              ========================================= */}
-          <div className="lg:hidden flex flex-col gap-8 max-w-md mx-auto">
-            
+          {/* MOBILE VIEW */}
+          <div className="lg:hidden flex flex-col gap-6 max-w-md mx-auto">
+
             {/* Competitor Card */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden"
             >
-              <div className="h-32 relative overflow-hidden">
-                <img src={data.columns.competitorImage || "https://images.unsplash.com/photo-1551288049-bbbda5366392?q=80&w=500"} className="w-full h-full object-cover grayscale opacity-30" alt="Competitor" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
+              <div className="h-28 relative overflow-hidden bg-zinc-900">
+                
+                
                 <h3 className="absolute bottom-4 left-6 text-xl font-bold text-zinc-500">{data.columns.competitor}</h3>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-5 space-y-3">
                 {data.features.map((f, i) => (
-                  <div key={i} className="flex flex-col gap-1 pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                  <div key={i} className="flex flex-col gap-1 pb-3 border-b border-white/5 last:border-0 last:pb-0">
                     <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{f.label}</span>
                     <div className="flex items-center gap-2 text-zinc-400">
                       <Icon icon="ph:minus-circle" className="w-4 h-4 shrink-0" />
@@ -199,7 +196,7 @@ export default function ComparacaoConcorrentes() {
             </motion.div>
 
             {/* Us Card */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -209,14 +206,13 @@ export default function ComparacaoConcorrentes() {
               <div className="absolute top-4 right-4 bg-[#FFD700] text-black text-[10px] font-black px-3 py-1 rounded-md z-20 uppercase tracking-wider">
                 Recomendado
               </div>
-              <div className="h-32 relative overflow-hidden">
-                <img src={data.columns.usImage || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=500"} className="w-full h-full object-cover opacity-80" alt="Tegbe" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent" />
+              <div className="h-28 relative overflow-hidden">
+                
                 <h3 className="absolute bottom-4 left-6 text-2xl font-black text-white">{data.columns.us}</h3>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-5 space-y-3">
                 {data.features.map((f, i) => (
-                  <div key={i} className="flex flex-col gap-1 pb-4 border-b border-[#FFD700]/10 last:border-0 last:pb-0">
+                  <div key={i} className="flex flex-col gap-1 pb-3 border-b border-[#FFD700]/10 last:border-0 last:pb-0">
                     <span className="text-[10px] text-[#FFD700]/60 uppercase tracking-widest">{f.label}</span>
                     <div className="flex items-center gap-2 text-white">
                       <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-4 h-4 shrink-0" />
@@ -225,7 +221,7 @@ export default function ComparacaoConcorrentes() {
                   </div>
                 ))}
               </div>
-              <div className="p-6 pt-2">
+              <div className="p-5 pt-2">
                 {renderButton()}
               </div>
             </motion.div>
@@ -253,7 +249,7 @@ export default function ComparacaoConcorrentes() {
                   className="bg-zinc-950 border border-white/10 shadow-2xl p-6 rounded-2xl max-w-lg w-full relative"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button 
+                  <button
                     onClick={() => setIsModalOpen(false)}
                     className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
                   >

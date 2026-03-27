@@ -1,5 +1,5 @@
 export interface IImage {
-  imagem: string; // Corrigir para src depois
+  src: string; 
   alt: string;
 
   width?: number;

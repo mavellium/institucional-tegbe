@@ -1,15 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { createPortal } from "react-dom";
 
 import { useApi } from "@/hooks/useApi";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
+import { Button } from "@/components/ui/button/button";
 import { IButton } from "@/interface/button/IButton";
+import { IImage } from "@/interface/imagem/IImage";
+import { RichTextItem } from "@/types/richText.type";
+import RichText from "@/components/ui/rich/richText";
 
 // --- TIPAGENS ---
 export interface PricingFeature {
@@ -29,19 +33,15 @@ export interface PricingPlan {
   features: PricingFeature[];
   button: IButton;
   highlight: boolean;
-  // Nova propriedade adicionada
-  coverImage?: {
-    url: string;
-    alt?: string;
-  };
+  coverImage?: IImage;
 }
 
 export interface PricingData {
-  ativo: boolean,
+  ativo: boolean;
   header: {
     badge: string;
-    title: string;
-    subtitle: string;
+    title: RichTextItem[];
+    subtitle: RichTextItem[];
   };
   plans: PricingPlan[];
   guarantee: {
@@ -51,11 +51,16 @@ export interface PricingData {
   };
 }
 
+function mapVariant(v?: string | null): "default" | "outline" | "ghost" {
+  if (v === "outline") return "outline";
+  if (v === "ghost") return "ghost";
+  return "default";
+}
+
 export default function Preco() {
   const { data, loading } = useApi<PricingData>("preco-formacoes");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFormHtml, setActiveFormHtml] = useState<string | null>(null);
-
 
   if (loading || !data || !data.plans || !data.ativo) return null;
 
@@ -67,11 +72,22 @@ export default function Preco() {
     }
   };
 
-  const buttonVariants = {
-    default: "bg-[#FFD700] hover:bg-[#F2C900] text-black font-bold shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]",
-    outline: "border-2 border-[#FFD700]/50 text-[#FFD700] hover:bg-[#FFD700] hover:text-black",
-    gradient: "bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:scale-[1.02] text-black shadow-xl",
-    ghost: "text-[#FFD700] hover:bg-[#FFD700]/10",
+  const renderButton = (plan: PricingPlan) => {
+    const variant = mapVariant(plan.button.variant);
+    if (plan.button.action === "link") {
+      return (
+        <Button href={plan.button.link} target={plan.button.target} variant={variant} size="pill" className="w-full">
+          {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
+          {plan.button.label}
+        </Button>
+      );
+    }
+    return (
+      <Button variant={variant} size="pill" className="w-full" onClick={(e) => handleCtaClick(e, plan.button)}>
+        {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
+        {plan.button.label}
+      </Button>
+    );
   };
 
   return (
@@ -79,13 +95,12 @@ export default function Preco() {
       <section className="py-24 bg-[#050505] relative overflow-hidden" id="planos">
         {/* Efeitos de Fundo */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#FFD700]/5 blur-[150px] rounded-full pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
 
         <div className="container px-4 max-w-7xl mx-auto relative z-10">
-          
+
           {/* Cabeçalho */}
           <div className="text-center mb-16 md:mb-24">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -94,123 +109,110 @@ export default function Preco() {
               {data.header.badge}
             </motion.div>
             <Heading size="lg" color="#fff" align="center" className="mb-4">
-              {data.header.title}
+              <RichText content={data.header.title} />
             </Heading>
             <Paragrafo color="#A1A1AA" align="center" className="max-w-2xl mx-auto text-lg">
-              {data.header.subtitle}
+              <RichText content={data.header.subtitle} />
             </Paragrafo>
           </div>
 
           {/* Grid de Planos */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+          {/* items-stretch + py-6 garantem altura uniforme e espaço para o card escalado */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch py-6 max-w-6xl mx-auto">
             {data.plans.map((plan, index) => {
-              const variantClass = buttonVariants[plan.button.variant as keyof typeof buttonVariants] ?? buttonVariants.default;
               const isHighlight = plan.highlight;
 
               return (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  // Adicionado 'group' e ajustado padding (pb-8 px-8) para acomodar a imagem no topo
-                  className={`relative flex flex-col pb-8 px-8 rounded-[2rem] transition-all duration-300 group overflow-hidden ${
-                    isHighlight 
-                      ? "bg-[#111] border border-[#FFD700]/40 shadow-[0_0_40px_rgba(255,215,0,0.1)] md:scale-105 z-20" 
-                      : "bg-[#0A0A0A] border border-white/10 z-10 hover:border-white/20"
-                  }`}
-                >
-                  {/* Badge de Destaque - Aumentado z-index para ficar sobre a imagem */}
+                // Wrapper relativo para o badge flutuar sem ser cortado pelo overflow-hidden do card
+                <div key={plan.id} className="relative flex flex-col">
+                  {/* Badge fora do card para não ser clipado pelo overflow-hidden */}
                   {plan.badge && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider z-30">
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider whitespace-nowrap">
                       {plan.badge}
                     </div>
                   )}
 
-                  {/* --- NOVA SEÇÃO: Imagem de Capa do Card --- */}
-                  {plan.coverImage?.url && (
-                    <div className="relative aspect-[16/9] w-[calc(100%+4rem)] -ml-8 mb-8 overflow-hidden border-b border-white/5 z-10">
-                      <img 
-                        src={plan.coverImage.url} 
-                        alt={plan.coverImage.alt || plan.name} 
-                        // Efeito de zoom suave no hover do card
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      {/* Gradiente sutil na base da imagem para transição */}
-                      <div className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent ${isHighlight ? 'from-[#111]' : 'from-[#0A0A0A]'}`} />
-                    </div>
-                  )}
-                  {/* Espaçador caso NÃO haja imagem para manter padding superior */}
-                  {!plan.coverImage?.url && <div className="pt-8" />}
-
-
-                  {/* Contêiner do Conteúdo - z-20 para garantir que fique sobre o gradiente da imagem se necessário */}
-                  <div className="relative z-20 flex flex-col flex-1">
-                    {/* Info do Plano */}
-                    <div className="mb-8">
-                      <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                      <p className="text-sm text-zinc-400 min-h-[40px]">{plan.description}</p>
-                    </div>
-
-                    {/* Preço */}
-                    <div className="mb-8">
-                      <div className="flex items-start gap-1">
-                        <span className="text-xl font-bold text-zinc-500 mt-2">{plan.currency}</span>
-                        <span className="text-5xl lg:text-6xl font-black text-white tracking-tighter">{plan.price}</span>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`relative flex flex-col flex-1 pb-8 px-8 rounded-[2rem] transition-all duration-300 group overflow-hidden ${
+                      isHighlight
+                        ? "bg-[#111] border border-[#FFD700]/40 shadow-[0_0_40px_rgba(255,215,0,0.1)] md:scale-105 z-20"
+                        : "bg-[#0A0A0A] border border-white/10 z-10 hover:border-white/20"
+                    }`}
+                  >
+                    {/* Imagem de Capa */}
+                    {plan.coverImage?.src ? (
+                      <div className="relative aspect-[16/9] w-[calc(100%+4rem)] -ml-8 mb-8 overflow-hidden border-b border-white/5">
+                        <Image
+                          src={plan.coverImage.src}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          alt={plan.coverImage.alt || plan.name}
+                        />
+                        <div className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent ${isHighlight ? "from-[#111]" : "from-[#0A0A0A]"}`} />
                       </div>
-                      <div className="flex flex-col mt-2">
-                        <span className="text-sm text-zinc-500">{plan.period}</span>
-                        {plan.installments && (
-                          <span className="text-[#FFD700] font-medium text-sm mt-1">{plan.installments}</span>
-                        )}
+                    ) : (
+                      <div className={`pt-8 ${plan.badge ? "pt-10" : ""}`} />
+                    )}
+
+                    {/* Conteúdo do card */}
+                    <div className="flex flex-col flex-1">
+                      {/* Info do Plano */}
+                      <div className="mb-6">
+                        <Heading size="sm" color="#fff" className="mb-2">
+                          {plan.name}
+                        </Heading>
+                        <Paragrafo color="#71717A" className="text-sm">
+                          {plan.description}
+                        </Paragrafo>
                       </div>
-                    </div>
 
-                    {/* Botão Dinâmico */}
-                    <div className="mb-8 mt-auto"> {/* mt-auto para empurrar botão e features para baixo */}
-                      {plan.button.action === "link" ? (
-                        <Link 
-                          href={plan.button.link || "#"} 
-                          className={`w-full py-4 rounded-xl text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${variantClass}`}
-                        >
-                          {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
-                          {plan.button.label}
-                        </Link>
-                      ) : (
-                        <button 
-                          onClick={(e) => handleCtaClick(e, plan.button)} 
-                          className={`w-full py-4 rounded-xl text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${variantClass}`}
-                        >
-                          {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
-                          {plan.button.label}
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Features */}
-                    <div className="space-y-4">
-                      {plan.features.map((feature, idx) => (
-                        <div key={idx} className={`flex items-start gap-3 ${feature.included ? 'text-zinc-200' : 'text-zinc-600'}`}>
-                          <Icon 
-                            icon={feature.included ? "ph:check-circle-fill" : "ph:minus-circle"} 
-                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.included ? 'text-[#FFD700]' : 'text-zinc-700'}`} 
-                          />
-                          <span className={`text-sm ${feature.included ? 'font-medium' : 'line-through opacity-60'}`}>
-                            {feature.text}
-                          </span>
+                      {/* Preço */}
+                      <div className="mb-8">
+                        <div className="flex items-start gap-1">
+                          <span className="text-xl font-bold text-zinc-500 mt-2">{plan.currency}</span>
+                          <span className="text-5xl lg:text-6xl font-black text-white tracking-tighter">{plan.price}</span>
                         </div>
-                      ))}
+                        <div className="flex flex-col mt-2">
+                          <span className="text-sm text-zinc-500">{plan.period}</span>
+                          {plan.installments && (
+                            <span className="text-[#FFD700] font-medium text-sm mt-1">{plan.installments}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Botão */}
+                      <div className="mb-8">
+                        {renderButton(plan)}
+                      </div>
+
+                      {/* Features — mt-auto empurra para o fundo do card quando há espaço */}
+                      <div className="mt-auto space-y-4">
+                        {plan.features.map((feature, idx) => (
+                          <div key={idx} className={`flex items-start gap-3 ${feature.included ? "text-zinc-200" : "text-zinc-600"}`}>
+                            <Icon
+                              icon={feature.included ? "ph:check-circle-fill" : "ph:minus-circle"}
+                              className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.included ? "text-[#FFD700]" : "text-zinc-700"}`}
+                            />
+                            <span className={`text-sm ${feature.included ? "font-medium" : "line-through opacity-60"}`}>
+                              {feature.text}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               );
             })}
           </div>
 
           {/* Garantia */}
           {data.guarantee && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -220,8 +222,12 @@ export default function Preco() {
                 <Icon icon={data.guarantee.icon || "ph:shield-check-fill"} className="w-8 h-8 text-[#FFD700]" />
               </div>
               <div className="text-center md:text-left">
-                <h4 className="text-xl font-bold text-white mb-2">{data.guarantee.title}</h4>
-                <p className="text-zinc-400 text-sm leading-relaxed">{data.guarantee.text}</p>
+                <Heading size="sm" color="#fff" className="mb-2">
+                  {data.guarantee.title}
+                </Heading>
+                <Paragrafo color="#71717A" className="text-sm leading-relaxed">
+                  {data.guarantee.text}
+                </Paragrafo>
               </div>
             </motion.div>
           )}
@@ -229,7 +235,7 @@ export default function Preco() {
         </div>
       </section>
 
-      {/* Modal para Planos com action "form" (ex: Mentoria) */}
+      {/* Modal */}
       {typeof document !== "undefined" &&
         createPortal(
           <AnimatePresence>
@@ -248,7 +254,7 @@ export default function Preco() {
                   className="bg-[#0A0A0A] border border-[#FFD700]/20 shadow-2xl p-6 md:p-8 rounded-2xl max-w-lg w-full relative"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button 
+                  <button
                     onClick={() => setIsModalOpen(false)}
                     className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors bg-white/5 p-2 rounded-full"
                   >

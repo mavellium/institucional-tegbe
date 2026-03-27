@@ -8,7 +8,8 @@ import { useApi } from "@/hooks/useApi";
 import { IButton } from "@/interface/button/IButton";
 import RichText from "@/components/ui/rich/richText";
 import { RichTextItem } from "@/types/richText.type";
-import { motion, Variants  } from "framer-motion";
+import { motion, Variants } from "framer-motion";
+import { IImage } from "@/interface/imagem/IImage";
 
 /* =========================
    INTERFACE DA API
@@ -17,6 +18,7 @@ import { motion, Variants  } from "framer-motion";
 interface homeFormacoesData {
   heading: RichTextItem[];
   button: IButton;
+  image: IImage;
 }
 
 /* =========================
@@ -78,13 +80,15 @@ export default function HomeFormacoes() {
     <section className="relative w-full h-[90vh] overflow-hidden flex items-center">
 
       {/* BACKGROUND */}
-      <Image
-        src="/fundo_formacoes.jpg"
-        alt="Fundo"
-        fill
-        className="object-cover scale-100 grayscale"
-        priority
-      />
+      <div className="absolute inset-0 grayscale">
+        <Image
+          src={data.image.src}
+          alt="Fundo"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
       {/* OVERLAY */}
       <div
