@@ -94,7 +94,7 @@ export default function ConsultorOficial() {
           <div ref={imageRef} className="relative w-full lg:w-1/2 group">
             <div className="relative z-10 w-full aspect-[4/5] max-w-[500px] mx-auto rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
               <Image
-                src={data.imagens.consultor.imagem}
+                src={data.imagens.consultor.src}
                 alt="Consultoria"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -104,7 +104,7 @@ export default function ConsultorOficial() {
 
             <div className="badge-float absolute -bottom-6 -right-6 md:right-0 z-20 w-32 h-32 md:w-44 md:h-44 bg-white p-4 rounded-full shadow-2xl flex items-center justify-center border-4 border-[#0071E3]">
               <Image
-                src={data.imagens.selo.imagem}
+                src={data.imagens.selo.src}
                 width={120}
                 height={120}
                 alt="Selo"

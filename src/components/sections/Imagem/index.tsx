@@ -48,7 +48,7 @@ export function Imagem({
     >
       <div className="absolute inset-0 z-0">
         <Image
-          src={image.imagem}
+          src={image.src}
           alt={image.alt}
           fill={image.fill ?? true}
           sizes={image.sizes || "100vw"}

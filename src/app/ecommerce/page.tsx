@@ -163,7 +163,7 @@ export default async function EcommercePage() {
                         },
                     },
                     imagem: {
-                        imagem: "/doni.jpg",
+                        src: "/doni.jpg",
                         alt: "Equipe Tegbe",
                     },
                     social: {

@@ -54,7 +54,7 @@ export function SideBySideSection({
 
   const { hero, social, imagem } = content;
 
-  const hasImage = imagem && imagem.imagem;
+  const hasImage = imagem && imagem.src;
 
   return (
     <section className="bg-[#F7F6F3] py-16 lg:py-24">
@@ -93,7 +93,7 @@ export function SideBySideSection({
           {hasImage && (
             <div className="relative w-full h-[260px] sm:h-[300px] lg:h-[340px] rounded-xl overflow-hidden order-1 lg:order-2">
               <Image
-                src={imagem.imagem}
+                src={imagem.src}
                 alt={imagem.alt || ""}
                 fill
                 className="object-cover"

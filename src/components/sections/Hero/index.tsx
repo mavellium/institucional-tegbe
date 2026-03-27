@@ -1,17 +1,13 @@
 "use client";
 
 import { useApi } from "@/hooks/useApi";
+import { IImage } from "@/interface/imagem/IImage";
 import { RichTextItem } from "@/types/richText.type";
 import { TextItem } from "@/types/textType";
 import Image from "next/image";
 
 interface HeroData {
-  logo: {
-    imagem: string;
-    alt: string;
-    width?: number;
-    height?: number;
-  };
+  logo: IImage;
   tagline: TextItem[];
   backgroundText: TextItem[];
   theme?: {
@@ -50,7 +46,7 @@ const Hero = () => {
       {/* Conteúdo */}
       <div className="relative z-10 flex flex-col items-center text-center gap-8 px-6">
         <Image
-          src={data.logo.imagem}
+          src={data.logo.src}
           alt={data.logo.alt}
           width={data.logo.width || 320}
           height={data.logo.height || 150}

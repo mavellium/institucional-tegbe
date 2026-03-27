@@ -121,7 +121,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       if (isExternal) {
         return (
-          <a
+          <Link
             ref={ref as React.Ref<HTMLAnchorElement>}
             href={trimmed}
             className={classes}
@@ -132,7 +132,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {...(rest as React.ComponentPropsWithoutRef<"a">)}
           >
             {content}
-          </a>
+          </Link>
         );
       }
 
