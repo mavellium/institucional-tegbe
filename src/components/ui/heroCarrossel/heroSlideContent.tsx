@@ -72,7 +72,7 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <Text variant="muted" className="text-sm lg:text-base max-w-lg">
+          <Text color="#fff" variant="muted" className="text-sm lg:text-base max-w-lg">
             {slide.subtext}
           </Text>
         </motion.div>
