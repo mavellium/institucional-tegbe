@@ -1,49 +1,16 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
-import Dores from "@/components/sections/Dores";
-import ComoFazemos from "@/components/sections/ComoFazemos";
-import Solucoes from "@/components/sections/Solucoes";
-import Metricas from "@/components/sections/Metricas";
-import RedirectEcommerce from "@/components/sections/RedirectEcommerce";
-import RedirectMarketing from "@/components/sections/RedirectMarketing";
-import RedirectTegpro from "@/components/sections/RedirectTegpro";
-import Resultados from "@/components/sections/Resultados";
-import RedirectSobre from "@/components/sections/RedirectSobre";
-import FaqHome from "@/components/sections/FaqHome";
-import UltimaChamadaAcao from "@/components/sections/UltimaChamadaAcao";
-import Headline from "@/components/sections/HeadlineServer";
-import { HeroSlide } from "@/types/heroSlide.type";
 import HeroCarousel from "@/components/sections/HeroCarrossel";
-import HomeCards from "@/components/sections/HomeCards";
 import SectionMarketing from "@/components/sections/BannerMarketing";
-import SectionEcommerce from "@/components/sections/BannerEcommerce";
-import SectionFormacoes from "@/components/sections/BannerFormacoes";
-import SectionFerramentas from "@/components/sections/Ferramentas";
+import MostrarSolucoes from "@/components/sections/HomeCards";
+import Marketplaces from "@/components/web/marketplaces";
+import SectionFormacoes from "@/components/sections/SectionFormacoes";
+import Ferramentas from "@/components/web/ferramentas";
+import CtaDuvidas from "@/components/web/ctaDuvidas";
+import FaqHome from "@/components/sections/FaqHome";
 
 export default async function Home() {
-  const mockSlides: HeroSlide[] = [
-    {
-      id: 1,
-      tag: "SOLUÇÕES INTEGRADAS",
-      title: "Transforme sua empresa com a Tegbe",
-      description: "Estratégia, tecnologia e performance para escalar negócios.",
-      subtext: "Mais de 10 anos de experiência no mercado digital.",
-      ctaText: "Conheça nossas soluções",
-      ctaLink: "/solucoes",
-      image: "/home-hero-1.jpg", // substitua pela imagem desejada
-    },
-    {
-      id: 2,
-      tag: "SOLUÇÕES INTEGRADAS",
-      title: "Sua solução completa em vendas",
-      description: "Estratégia, tecnologia e performance para escalar negócios.",
-      subtext: "Mais de 10 anos de experiência no mercado digital.",
-      ctaText: "Fale com um especialista",
-      ctaLink: "/contato",
-      image: "/home-hero-2.jpg",
-    },
-  ];
   return (
     <>
       <Schema
@@ -121,23 +88,13 @@ export default async function Home() {
           loop={true}
           autoplayDelay={6000}
         />
-        <HomeCards />
-        <SectionEcommerce />
-        <SectionMarketing />
+        <MostrarSolucoes endpoint={"solucoes-home"} />
+        <Marketplaces endpoint={"marketplaces"} />
+        <SectionMarketing endpoint={"redes-sociais"} />
         <SectionFormacoes />
-        <SectionFerramentas />
-        {/* <ComoFazemos />
-        <Solucoes />
-        <Metricas />
-
-        <RedirectEcommerce />
-        <RedirectMarketing />
-        <RedirectTegpro />
-
-        <Resultados />
-        <RedirectSobre />
+        <Ferramentas />
+        <CtaDuvidas/>
         <FaqHome />
-        <UltimaChamadaAcao /> */}
       </main>
 
       <Footer />

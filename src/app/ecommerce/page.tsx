@@ -141,44 +141,7 @@ export default async function EcommercePage() {
 
             <Equipe />
             <SideBySideSection
-                type={"AgendarReuniao"}
-                data={{
-                    hero: {
-                        tag: "Ficou com dúvida?",
-                        title: [
-                            { type: "text", value: "Agende uma reunião" }
-                        ],
-                        description: [
-                            {
-                                type: "text",
-                                value: "Ainda restou alguma dúvida agende já uma reunião com um de nossos consultores.",
-                            },
-                        ],
-                        button: {
-                            label: "Agendar Reunião",
-                            link: "/reuniao",
-                            target: "_blank",
-                            variant: "default",
-                            action: "link"
-                        },
-                    },
-                    imagem: {
-                        src: "/doni.jpg",
-                        alt: "Equipe Tegbe",
-                    },
-                    social: {
-                        tag: "Mantenha-se atualizado",
-                        title: [
-                            { type: "text", value: "Acompanhe nossas mídias" }
-                        ],
-                        items: [
-                            { icon: "mdi:youtube", link: "#" },
-                            { icon: "mdi:facebook", link: "#" },
-                            { icon: "mdi:instagram", link: "#" },
-                            { icon: "mdi:linkedin", link: "#" },
-                        ],
-                    },
-                }} endpoint={"agendar-reuniao-ecommerce"}
+                type={"AgendarReuniao"} endpoint={"agendar-reuniao-ecommerce"}
             />
 
             <Footer />

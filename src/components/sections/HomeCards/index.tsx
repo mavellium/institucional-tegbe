@@ -1,138 +1,124 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion, Variants, Easing } from 'framer-motion';
-import { ShoppingCart, Megaphone, GraduationCap, Wrench, ArrowDown } from 'lucide-react';
+import React from "react";
+import { motion, Variants } from "framer-motion";
 
-// Dados estáticos movidos para fora do componente
-const CARDS = [
-  {
-    id: 'ecommerce',
-    icon: ShoppingCart,
-    title: 'E-commerce',
-    description: 'Venda nos maiores marketplaces do Brasil',
-    gradient: 'from-blue-600 to-indigo-700',
-  },
-  {
-    id: 'marketing',
-    icon: Megaphone,
-    title: 'Marketing',
-    description: 'Domine as redes sociais e conquiste clientes',
-    gradient: 'from-amber-500 to-orange-600',
-  },
-  {
-    id: 'formacoes',
-    icon: GraduationCap,
-    title: 'Formações',
-    description: 'Aprenda presencialmente com especialistas',
-    gradient: 'from-emerald-500 to-teal-600',
-  },
-  {
-    id: 'ferramentas',
-    icon: Wrench,
-    title: 'Ferramentas',
-    description: 'Tecnologia para alavancar suas vendas',
-    gradient: 'from-violet-500 to-purple-700',
-  },
-];
+import Heading from "@/components/ui/heading";
+import Paragrafo from "@/components/ui/paragrafo";
+import RichText from "@/components/ui/rich/richText";
+import Textura from "@/components/ui/textura"; // Importado para manter o padrão sutil de ruído
+import { useApi } from "@/hooks/useApi";
+import { RichTextItem } from "@/types/richText.type";
 
-// Define a curva de easing customizada
-const customEasing: Easing = [0.22, 1, 0.36, 1];
+import ServiceCard from "@/components/ui/serviceCard";
+import { ServiceA, ServiceTheme } from "@/types/service.type";
 
-// Variantes de animação com tipagem correta
+// Tipagem
+interface IHero {
+  header: {
+    badge?: string;
+    title: RichTextItem[];
+    subtitle: RichTextItem[];
+  };
+  services: ServiceA[];
+}
+
+// Animações Spring (Mais fluidas, padrão Apple/Stripe)
 const containerVariants: Variants = {
-  hidden: {},
+  hidden: { opacity: 0 },
   show: {
-    transition: {
-      staggerChildren: 0.12,
-    },
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: customEasing,
-    },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { type: "spring", stiffness: 100, damping: 20 } 
   },
 };
 
-export default function HeroSection() {
+export default function MostrarSolucoes({ endpoint }: { endpoint: string }) {
+  const { data } = useApi<IHero>(endpoint);
+
+  if (!data) return null;
+
+  const { header, services } = data;
+
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (element) element.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const theme: ServiceTheme = {
+    badge: {
+      background: "bg-neutral-100 text-neutral-800 border border-neutral-200" // Ajustado para ornar com o fundo clean
     }
   };
 
   return (
-    <section
-      className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 py-20 overflow-hidden"
-      aria-label="Seção principal de soluções"
-    >
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-primary opacity-[0.03]" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+    // FUNDO PADRONIZADO COM A SEÇÃO DE MARKETING
+    <section className="relative py-32 bg-[#F8F9FA] selection:bg-neutral-900 selection:text-white">
+      
+      {/* TEXTURA SUTIL PARA QUEBRAR O BRANCO ABSOLUTO */}
+      <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
-      {/* Texto principal */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-14 relative z-10"
-      >
-        <span className="inline-block px-4 py-1.5 rounded-full bg-secondary/15 text-secondary-foreground text-sm font-medium mb-6 border border-secondary/20">
-          Soluções Completas para o Seu Negócio
-        </span>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight max-w-3xl mx-auto">
-          Cresça no{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
-            Digital
-          </span>{' '}
-          com Estratégia
-        </h1>
-        <p className="mt-5 text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Escolha a área que deseja explorar e descubra como podemos transformar os seus resultados.
-        </p>
-      </motion.div>
-
-      {/* Grid de cards */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl w-full relative z-10"
-      >
-        {CARDS.map((card) => (
-          <motion.button
-            key={card.id}
-            variants={itemVariants}
-            onClick={() => scrollTo(card.id)}
-            whileHover={{ y: -6, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="group relative bg-card rounded-xl p-6 text-left shadow-sm border border-border/60 hover:shadow-xl hover:border-border transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
-            aria-label={`Explorar ${card.title}`}
-          >
-            <div
-              className={`w-12 h-12 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-4 shadow-lg`}
-              aria-hidden="true"
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        
+        {/* HEADER PADRONIZADO */}
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
+          {header.badge && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 text-primary mb-6 border border-primary/10"
             >
-              <card.icon className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-bold text-foreground mb-1">{card.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
-            <ArrowDown
-              className="w-4 h-4 text-muted-foreground/40 absolute bottom-4 right-4 group-hover:text-foreground/60 group-hover:translate-y-1 transition-all duration-300"
-              aria-hidden="true"
-            />
-          </motion.button>
-        ))}
-      </motion.div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-widest">
+                {header.badge}
+              </span>
+            </motion.div>
+          )}
+
+          <Heading align="center" as="h2" className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight">
+            <RichText content={header.title} />
+          </Heading>
+
+          <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
+            <RichText content={header.subtitle} />
+          </div>
+        </div>
+
+        {/* GRID COM SERVICE CARD */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10"
+        >
+          {services.map((service) => (
+            <motion.div
+              key={service.id}
+              variants={itemVariants}
+              onClick={() => scrollTo(service.id)}
+              // O WRAPPER ASSUME O COMPORTAMENTO 3D FLUTUANTE
+              className="group relative cursor-pointer bg-white rounded-[1.5rem] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden hover:z-50"
+            >
+              <ServiceCard
+                service={service}
+                theme={theme}
+                variant="hero"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+        
+      </div>
     </section>
   );
 }
