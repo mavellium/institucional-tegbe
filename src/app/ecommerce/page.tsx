@@ -93,46 +93,48 @@ export default async function EcommercePage() {
       />
 
       <Header />
-      <HeroCarrossel
-        slides={heroSlidesData ?? []}
-        corFundo="#020202"
-        corDestaque="#FFCC00"
-        textoFundo="ECOMMERCE"
-        navGradienteFrom="#FFCC00"
-        navGradienteTo="#FFB800"
-        navAccent="#FFDB4D"
-        corIcone="black"
-      />
-      <Logos data={logosData as any} />
-      <Carrossel data={servicosData as any} />
-      <Video
-        data={videoData as any}
-        theme={{
-          backgroundColor: "#FFFFFF",
-          textColor: "#020202",
-          accentColor: "#FFD700",
-          badgeBg: "rgba(255,215,0,0.1)",
-          badgeBorder: "rgba(255,215,0,0.3)",
-          badgeText: "#B8860B",
-        }}
-        showTexture={true}
-        textureOpacity={0.05}
-        textureSrc="/textura.svg"
-      />
-      <Logos data={logosData as any} />
-      <Passos data={passosData as any} />
-      <Clientes data={clientesData as any} />
-      <Carrossel
-        data={plataformasData as any}
-        showTexture
-        textureOpacity={0.5}
-        textureSrc="/textura.svg"
-        backgroundColor="#0a0a0a"
-      />
-      <ConsultorOficial data={consultorData as any} />
-      <Imagem variant="ecommerce" data={imagemData as any} />
-      <Equipe data={equipeData as any} />
-      <SideBySideSection data={sideBySideData as any} />
+      <main>
+        <HeroCarrossel
+          slides={heroSlidesData ?? []}
+          corFundo="#020202"
+          corDestaque="#FFCC00"
+          textoFundo="ECOMMERCE"
+          navGradienteFrom="#FFCC00"
+          navGradienteTo="#FFB800"
+          navAccent="#FFDB4D"
+          corIcone="black"
+        />
+        <Logos data={logosData as any} />
+        <Carrossel data={servicosData as any} />
+        <Video
+          data={videoData as any}
+          theme={{
+            backgroundColor: "#FFFFFF",
+            textColor: "#020202",
+            accentColor: "#FFD700",
+            badgeBg: "rgba(255,215,0,0.1)",
+            badgeBorder: "rgba(255,215,0,0.3)",
+            badgeText: "#B8860B",
+          }}
+          showTexture={true}
+          textureOpacity={0.05}
+          textureSrc="/textura.svg"
+        />
+        <Logos data={logosData as any} />
+        <Passos data={passosData as any} />
+        <Clientes data={clientesData as any} />
+        <Carrossel
+          data={plataformasData as any}
+          showTexture
+          textureOpacity={0.5}
+          textureSrc="/textura.svg"
+          backgroundColor="#0a0a0a"
+        />
+        <ConsultorOficial data={consultorData as any} />
+        <Imagem variant="ecommerce" data={imagemData as any} />
+        <Equipe data={equipeData as any} />
+        <SideBySideSection data={sideBySideData as any} />
+      </main>
 
       <Footer />
     </>

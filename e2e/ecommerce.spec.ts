@@ -39,8 +39,9 @@ test.describe("E-commerce — estrutura e fluxo crítico", () => {
   test("deve conter pelo menos um CTA (WhatsApp ou contato)", async ({
     page,
   }) => {
+    // Alguns CTAs podem estar hidden em mobile (ex: header CTA com "hidden sm:block")
     const ctaLinks = page.locator(
-      'a[href*="whatsapp"], a[href*="wa.me"], a[href*="contato"], a[href*="mailto"]'
+      'a[href*="whatsapp"]:visible, a[href*="wa.me"]:visible, a[href*="contato"]:visible, a[href*="mailto"]:visible'
     );
     await expect(ctaLinks.first()).toBeVisible();
   });
