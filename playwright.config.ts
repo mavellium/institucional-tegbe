@@ -18,8 +18,6 @@ export default defineConfig({
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
-    // Desabilita animações para evitar flakiness (ver skills/visual-testing/SKILL.md)
-    reducedMotion: "reduce",
   },
 
   projects: [

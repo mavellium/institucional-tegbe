@@ -4,7 +4,7 @@ import DOMPurify from "isomorphic-dompurify";
  * Tags e atributos permitidos para rich text do CMS (títulos, badges, subtítulos).
  * Foco: inline formatting — sem blocos estruturais pesados.
  */
-const RICH_TEXT_CONFIG: DOMPurify.Config = {
+const RICH_TEXT_CONFIG = {
   ALLOWED_TAGS: [
     "span",
     "strong",
@@ -40,7 +40,7 @@ const RICH_TEXT_CONFIG: DOMPurify.Config = {
  * Tags e atributos permitidos para formulários do CMS (form_html).
  * Mais permissivo: precisa de form, input, button, etc.
  */
-const FORM_HTML_CONFIG: DOMPurify.Config = {
+const FORM_HTML_CONFIG = {
   ALLOWED_TAGS: [
     // form elements
     "form",
