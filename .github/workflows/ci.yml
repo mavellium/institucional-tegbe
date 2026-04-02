@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://tegbe-dashboard.vercel.app/api/tegbe-institucional' }}
+
 jobs:
   # ─── Job 1: Lint ──────────────────────────────────────────────────────────
   lint:
@@ -51,8 +54,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     needs: test
-    env:
-      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -68,21 +69,11 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: nextjs-build
-          path: .next/
-          retention-days: 1
-
   # ─── Job 4: E2E tests (Playwright) ───────────────────────────────────────
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: build
-    env:
-      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-      CI: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -98,16 +89,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: .next/
-
       - name: Run E2E tests
         run: npm run test:e2e
-        env:
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
 
       - name: Upload Playwright report
         if: always()
