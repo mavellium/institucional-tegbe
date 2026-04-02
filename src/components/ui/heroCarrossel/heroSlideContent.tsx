@@ -17,14 +17,13 @@ interface HeroSlideContentProps {
   corDestaque?: string;
 }
 
-export default function HeroSlideContent({ 
-  slide, 
-  isActive, 
-  corDestaque = "#F9265E" // Valor original como fallback
+export default function HeroSlideContent({
+  slide,
+  isActive,
+  corDestaque = "#F9265E", // Valor original como fallback
 }: HeroSlideContentProps) {
   return (
     <div className="z-10 flex flex-col items-center lg:items-start gap-6">
-
       {/* Tag / Highlight */}
       {slide.tag && (
         <motion.div
@@ -46,7 +45,7 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Heading size="xl" className="text-white" color="white">
+          <Heading size="xl" className="text-center md:text-left" color="white">
             {slide.title}
           </Heading>
         </motion.div>
@@ -59,7 +58,11 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <Paragrafo  color="#fff" className="text-gray-200 text-2xl lg:text-3xl font-light leading-snug">
+          <Paragrafo
+            align="center"
+            color="#fff"
+            className="text-gray-200 text-2xl lg:text-3xl font-light leading-snug md:text-left"
+          >
             {slide.description}
           </Paragrafo>
         </motion.div>
@@ -85,14 +88,13 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-
-          <Button 
-            asChild 
-            variant="marketing" 
-            style={{ 
-                backgroundColor: corDestaque,
-                borderColor: corDestaque,
-                color: corDestaque === "#FFCC00" ? "#000" : "#fff" // Ajuste de contraste para o amarelo
+          <Button
+            asChild
+            variant="marketing"
+            style={{
+              backgroundColor: corDestaque,
+              borderColor: corDestaque,
+              color: corDestaque === "#FFCC00" ? "#000" : "#fff", // Ajuste de contraste para o amarelo
             }}
           >
             <Link href={slide.ctaLink} target="_blank">

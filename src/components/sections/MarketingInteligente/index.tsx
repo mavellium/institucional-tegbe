@@ -46,41 +46,62 @@ export default function MarketingInteligente({ data: dataProp }: { data: Content
         <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-[#FF0F43]/6 blur-[140px] rounded-full" />
 
         <div className="relative max-w-7xl mx-auto px-6 w-full">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                <Sparkles className="w-4 h-4 text-[#E31B63]" />
-                <span className="text-xs text-gray-600 font-bold tracking-widest uppercase">
-                  <RichText content={badge} />
-                </span>
+          <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
+            {/* LEFT */}
+            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+              {/* badge */}
+              <div className="flex justify-center lg:justify-start">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                  <Sparkles className="w-4 h-4 text-[#E31B63]" />
+                  <span className="text-xs text-gray-600 font-bold tracking-widest uppercase">
+                    <RichText content={badge} />
+                  </span>
+                </div>
               </div>
 
-              <Heading as="h1" size="xl" font="black" className="text-[#0a0a0a] max-w-xl">
+              {/* heading */}
+              <Heading
+                as="h1"
+                size="xl"
+                font="black"
+                className="text-[#0a0a0a] max-w-xl mx-auto lg:mx-0"
+              >
                 <RichText content={title} />
               </Heading>
 
-              <Paragrafo className="text-gray-600 max-w-lg text-lg">
+              {/* description */}
+              <Paragrafo className="text-gray-600 max-w-lg mx-auto lg:mx-0 text-base md:text-lg">
                 <RichText content={description} />
               </Paragrafo>
 
-              <div className="flex flex-wrap gap-12 pt-4">
+              {/* stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
                 {stats.map((stat, i) => (
-                  <div key={i}>
-                    <Heading as="h3" size="lg" font="bold" className="text-[#0a0a0a]">
+                  <div key={i} className="text-center lg:text-left space-y-1">
+                    <Heading
+                      as="h3"
+                      size="lg"
+                      font="bold"
+                      align="center"
+                      className="md:text-left text-[#0a0a0a] leading-none"
+                    >
                       {stat.value}
                     </Heading>
-                    <span className="text-[10px] text-[#E31B63] uppercase tracking-[0.2em] font-bold mt-1 block">
+
+                    <span className="text-xs text-[#E31B63] uppercase tracking-[0.18em] font-semibold block">
                       <RichText content={stat.label} />
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-6">
+              {/* CTA */}
+              <div className="pt-6 flex justify-center lg:justify-start">
                 <CTAButton button={button} onOpenForm={() => setIsModalOpen(true)} />
               </div>
             </div>
 
+            {/* RIGHT */}
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 bg-[#E31B63]/10 blur-[120px] rounded-full animate-pulse" />
               <Flywheel />

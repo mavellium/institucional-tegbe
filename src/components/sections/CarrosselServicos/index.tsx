@@ -77,8 +77,9 @@ export default function Carrossel({
 
         {header.title && (
           <Heading
+            align="center"
             as="h2"
-            className="mb-4"
+            className="mb-4 md:text-left"
             color={header.colorTitle ? header.colorTitle : "#0a0a0a"}
           >
             <RichText content={header.title} />

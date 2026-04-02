@@ -48,7 +48,7 @@ export default function Carrossel({ data }: CarrosselProps) {
           <Heading
             as="h2"
             size="p"
-            className="text-xl sm:text-2xl md:text-4xl"
+            className="text-2xl sm:text-2xl md:text-4xl"
             color="#FFFFFF"
             align="center"
           >

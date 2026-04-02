@@ -23,7 +23,7 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
   const feature = data.items[active];
 
   return (
-    <section className="relative z-0 py-24 bg-[#0A0A0A] px-6 text-white overflow-hidden">
+    <section className="relative z-0 py-16 md:py-24 bg-[#0A0A0A] px-6 text-white overflow-hidden">
       <Textura misturar opacity={0.1} src="/textura.svg" className="z-0" />
 
       <div className="max-w-[1200px] mx-auto relative z-10">
@@ -37,7 +37,8 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
             >
               <Paragrafo
                 color="#fff"
-                className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4"
+                align="center"
+                className="md:text-left text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4"
               >
                 <RichText content={data.header.subtitle} />
               </Paragrafo>
@@ -51,7 +52,8 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
           >
             <Heading
               as="h2"
-              className="text-4xl md:text-5xl font-medium tracking-tight"
+              align="center"
+              className="md:text-left text-4xl md:text-5xl font-medium tracking-tight"
               color="white"
             >
               <RichText content={data.header.title} />
@@ -60,7 +62,7 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
         </div>
 
         {/* GRID */}
-        <div className="grid lg:grid-cols-12 gap-16 items-start relative">
+        <div className="grid lg:grid-cols-12 gap-10 md:gap-16 items-start relative">
           {/* LISTA CLEAN */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             {data.items.map((item, index) => {
@@ -149,7 +151,7 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
           </div>
 
           {/* IMAGEM COM CROSSFADE BLUR */}
-          <div className="lg:col-span-7 relative min-h-[500px] h-full">
+          <div className="lg:col-span-7 relative h-full">
             <div className="sticky top-32 w-full aspect-[4/3] rounded-[2rem] overflow-hidden bg-white/5 border border-white/5 ring-1 ring-white/10 shadow-2xl backdrop-blur-sm">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -176,7 +178,7 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
 
         {/* CTA */}
         {data.button && (
-          <div className="flex justify-center mt-24">
+          <div className="flex justify-center mt-12 md:mt-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

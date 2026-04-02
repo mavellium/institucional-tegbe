@@ -111,26 +111,33 @@ export default function ConsultorOficial({ data }: { data: IConsultorOficial | n
 
           {/* TEXTO */}
           <div ref={cardRef} className="w-full lg:w-1/2 flex flex-col gap-8">
-            <div className="space-y-4">
-              <span className="inline-block px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
+            <div className="space-y-4 flex flex-col items-center md:items-start">
+              <span className="px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
                 {data.badge}
               </span>
 
-              <Heading as="h2" size="xl" className="text-4xl md:text-6xl leading-[1.1]">
+              <Heading
+                align="center"
+                as="h2"
+                size="xl"
+                className="md:text-left text-4xl md:text-6xl leading-[1.1]"
+              >
                 <RichText content={data.title} />
               </Heading>
             </div>
 
             {data.description.map((paragraph, i) => (
-              <Paragrafo key={i} className="space-y-4 max-w-lg">
+              <Paragrafo align="center" key={i} className="md:text-left space-y-4 max-w-lg">
                 <RichText content={paragraph} />
               </Paragrafo>
             ))}
 
-            <div className="pt-4">
+            <div className="pt-4 flex flex-col items-center md:items-start">
               {data.button?.action === "link" && (
                 <Link href={data.button.link} target={data.button.target} className="w-fit">
-                  <Button variant="secondary">{data.button.label}</Button>
+                  <Button variant="secondary" size="pill">
+                    {data.button.label}
+                  </Button>
                 </Link>
               )}
             </div>

@@ -54,14 +54,14 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
 
       {/* CONTEÚDO */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 lg:py-40 flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-[55%] lg:w-[50%] flex flex-col items-start text-left">
+        <div className="w-full md:w-[55%] lg:w-[50%] flex flex-col items-center md:items-start text-left">
           {/* TITLE */}
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-5xl md:text-6xl lg:text-[72px] font-semibold text-white tracking-tight leading-[1.05] mb-6 text-balance"
+            className="text-5xl md:text-6xl lg:text-[72px] font-semibold text-white tracking-tight leading-[1.05] mb-6 text-balance text-center md:text-left"
           >
             <RichText content={cta.title} />
           </motion.h2>
@@ -72,7 +72,7 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg md:text-xl text-neutral-400 font-medium max-w-md mb-10 leading-relaxed"
+            className="text-lg md:text-xl text-neutral-400 font-medium max-w-md mb-10 leading-relaxed text-center md:text-left"
           >
             <RichText content={cta.description} />
           </motion.p>

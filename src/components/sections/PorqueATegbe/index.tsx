@@ -40,7 +40,7 @@ export default function PorqueATegbe({ data }: { data: PorqueATegbeData | null }
   if (!data) return null;
 
   return (
-    <section ref={sectionRef} className="relative bg-white py-32 px-6 overflow-hidden">
+    <section ref={sectionRef} className="relative bg-white py-32 px-6 overflow-hidden ">
       <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.svg')] pointer-events-none" />
 
       <div className="max-w-5xl mx-auto text-center space-y-10">
