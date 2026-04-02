@@ -5,13 +5,13 @@
 
 ## Status das fases
 
-| Fase | Documento                                                          | Foco                        | Status       |
-| ---- | ------------------------------------------------------------------ | --------------------------- | ------------ |
-| 1    | [phase-01-lcp-hero-fix.md](./phase-01-lcp-hero-fix.md)             | LCP: hero image             | não iniciado |
-| 2    | [phase-02-critical-path.md](./phase-02-critical-path.md)           | FCP: preconnect, fonts, GTM | não iniciado |
-| 3    | [phase-03-lazy-loading.md](./phase-03-lazy-loading.md)             | FCP/JS: lazy load seções    | não iniciado |
-| 4    | [phase-04-image-optimization.md](./phase-04-image-optimization.md) | Imagens: Next Image + AVIF  | não iniciado |
-| 5    | [phase-05-iconify-bundle.md](./phase-05-iconify-bundle.md)         | Ícones: bundlar above-fold  | não iniciado |
+| Fase | Documento                                                          | Foco                        | Status    |
+| ---- | ------------------------------------------------------------------ | --------------------------- | --------- |
+| 1    | [phase-01-lcp-hero-fix.md](./phase-01-lcp-hero-fix.md)             | LCP: hero image             | concluído |
+| 2    | [phase-02-critical-path.md](./phase-02-critical-path.md)           | FCP: preconnect, fonts, GTM | concluído |
+| 3    | [phase-03-lazy-loading.md](./phase-03-lazy-loading.md)             | FCP/JS: lazy load seções    | concluído |
+| 4    | [phase-04-image-optimization.md](./phase-04-image-optimization.md) | Imagens: Next Image + AVIF  | concluído |
+| 5    | [phase-05-iconify-bundle.md](./phase-05-iconify-bundle.md)         | Ícones: bundlar above-fold  | concluído |
 
 ## Ordem de execução
 

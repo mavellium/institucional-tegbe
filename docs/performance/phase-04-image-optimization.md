@@ -136,12 +136,12 @@ Estes podem ser convertidos na mesma fase ou deixados para depois — impacto me
 
 ## Checklist
 
-- [ ] `next.config.ts` — AVIF + qualities
-- [ ] `serviceCard.tsx` — Next.js Image
-- [ ] `marketplaces.tsx` — Next.js Image
-- [ ] `companyCard.tsx` — Next.js Image (opcional)
-- [ ] `richBlock.tsx` — Next.js Image (opcional)
-- [ ] Build passa
-- [ ] E2E passa
-- [ ] Visual check das imagens
-- [ ] DevTools confirma AVIF/WebP
+- [x] `next.config.ts` — `formats: ['image/avif', 'image/webp']` e `qualities: [75, 90]`
+- [x] `serviceCard.tsx` — `<img>` → `<Image fill sizes="(min-width: 768px) 33vw, 100vw" loading="lazy">`
+- [x] `marketplaces.tsx` — `<img>` → `<Image fill sizes="(min-width: 640px) 280px, 100vw" loading="lazy">`
+- [ ] `companyCard.tsx` — não feito (opcional, menor impacto)
+- [ ] `richBlock.tsx` — não feito (opcional, menor impacto)
+- [x] Build passa
+- [x] E2E passa (20/20)
+- [ ] Visual check das imagens — pendente (requer browser)
+- [ ] DevTools confirma AVIF/WebP — pendente (requer deploy)

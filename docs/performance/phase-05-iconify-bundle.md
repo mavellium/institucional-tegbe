@@ -95,11 +95,15 @@ Os 40+ outros componentes podem continuar usando strings (`"icon-name"`) com run
 
 ## Checklist
 
-- [ ] Grep ícones usados no Header, AnnouncementBar, Footer
-- [ ] Instalar pacotes `@iconify/icons-*` necessários
-- [ ] Header — migrar para imports estáticos
-- [ ] AnnouncementBar — migrar para imports estáticos
-- [ ] Footer — migrar para imports estáticos
-- [ ] Build passa
-- [ ] E2E passa
-- [ ] DevTools confirma zero requests para `api.iconify.design` no load inicial
+- [x] Grep ícones usados: Header usa `"ph:x-light"` e `"ph:list-light"`; AnnouncementBar e Footer recebem `icon` como prop dinâmica (não podem ser bundlados)
+- [x] Instalado `@iconify/icons-ph` (apenas Phosphor é necessário para o Header)
+- [x] Header — `phXLight` e `phListLight` importados estaticamente; `<Icon icon={menuOpen ? phXLight : phListLight}>`
+- [ ] AnnouncementBar — ícone vem como prop do CMS, não é possível bundlar sem mudar a API
+- [ ] Footer — ícones `mdi:instagram`, `solar:*` etc. são passados como strings via props; deixados para fase futura
+- [x] Build passa
+- [x] E2E passa (20/20)
+- [ ] DevTools confirma ausência de request para `api.iconify.design` no load do Header — pendente (requer browser)
+
+### Observação sobre AnnouncementBar e Footer
+
+Esses componentes recebem `icon` como `string` via props do CMS. Para bundlá-los completamente seria necessário criar um mapa estático de ícones ou mudar a interface da API. Isso é escopo de uma fase futura se necessário.

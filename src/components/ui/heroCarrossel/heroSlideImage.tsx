@@ -16,6 +16,22 @@ export default function HeroSlideImage({
   isActive,
   priority = false,
 }: HeroSlideImageProps) {
+  // Slide 0 (priority): renderiza instantaneamente sem animação para otimizar LCP
+  if (priority) {
+    return (
+      <div className="w-full h-full relative">
+        <Image
+          src={image}
+          alt={title ?? "Hero Slide"}
+          fill
+          sizes="(min-width: 1024px) 60vw, 100vw"
+          className="object-contain object-bottom"
+          priority
+        />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, x: 20 }}
@@ -27,8 +43,9 @@ export default function HeroSlideImage({
         src={image}
         alt={title ?? "Hero Slide"}
         fill
-        className="object-contain object-bottom drop-shadow-2xl"
-        priority={priority}
+        sizes="(min-width: 1024px) 60vw, 100vw"
+        className="object-contain object-bottom"
+        priority={false}
       />
     </motion.div>
   );

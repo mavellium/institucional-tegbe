@@ -81,12 +81,12 @@ Para:
 
 ## Checklist
 
-- [ ] `preload-resources.tsx` — preconnect `tegbe-cdn.b-cdn.net`
-- [ ] `preload-resources.tsx` — preconnect `api.iconify.design`
-- [ ] `preload-resources.tsx` — dns-prefetch `tegbe-dashboard.vercel.app`
-- [ ] `layout.tsx` — Geist imports removidos
-- [ ] `layout.tsx` — body className limpo
-- [ ] `layout.tsx` — GTM `strategy="lazyOnload"`
-- [ ] Grep confirma zero uso de `--font-geist` no codebase
-- [ ] Build passa
-- [ ] E2E passa
+- [x] `preload-resources.tsx` — preconnect `tegbe-cdn.b-cdn.net`
+- [x] `preload-resources.tsx` — preconnect `api.iconify.design` (crossOrigin="anonymous")
+- [x] `preload-resources.tsx` — dns-prefetch `tegbe-dashboard.vercel.app`
+- [x] `layout.tsx` — imports `Geist` e `Geist_Mono` removidos
+- [x] `layout.tsx` — body className sem `${geistSans.variable} ${geistMono.variable}`
+- [x] `layout.tsx` — GTM `strategy="lazyOnload"`
+- [x] Grep confirma zero uso de `--font-geist` no codebase (só estava em layout.tsx)
+- [x] Build passa
+- [x] E2E passa (20/20)

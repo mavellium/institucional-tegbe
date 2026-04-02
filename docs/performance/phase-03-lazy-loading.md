@@ -104,12 +104,13 @@ Lazy load tudo abaixo do Hero: QuemSomos, OQueSomos, Meta, Carrossel, Localizaca
 
 ## Checklist
 
-- [ ] `page.tsx` (home) — lazy load seções
-- [ ] `page.tsx` (ecommerce) — lazy load seções
-- [ ] `page.tsx` (marketing) — lazy load seções
-- [ ] `page.tsx` (formacoes) — lazy load seções
-- [ ] `page.tsx` (sobre) — lazy load seções
-- [ ] Verificar named vs default exports em cada componente
-- [ ] Build passa (verificar first-load JS diminuiu)
-- [ ] E2E passa
-- [ ] Visual check em mobile
+- [x] `page.tsx` (home) — 7 seções com `next/dynamic`: MostrarSolucoes, Marketplaces, SectionMarketing, SectionFormacoes, Ferramentas, CtaDuvidas, FaqHome
+- [x] `page.tsx` (ecommerce) — 9 seções com `next/dynamic`: Logos, Carrossel, Video, Passos, Clientes, ConsultorOficial, Imagem, Equipe, SideBySideSection
+- [x] `page.tsx` (marketing) — 8 seções com `next/dynamic`; adicionado `<main>` (estava faltando)
+- [x] `page.tsx` (formacoes) — 11 seções com `next/dynamic`; HomeFormacoes estático (acima do fold)
+- [x] `page.tsx` (sobre) — 6 seções com `next/dynamic`; Hero estático
+- [x] Named exports tratados com `.then(mod => ({ default: mod.Name }))`: Clientes, Imagem, Equipe, SideBySideSection, QuemSomos, OQueSomos
+- [x] `ssr: false` removido (não permitido em Server Components no App Router — `dynamic()` sem opções ainda code-splita)
+- [x] Build passa
+- [x] E2E passa (20/20)
+- [ ] Visual check em mobile — pendente (requer dispositivo real ou emulação)

@@ -126,10 +126,13 @@ export default function Marketplaces({ data }: { data: IEcommerce | null }) {
                 {/* 1. IMAGEM DE FUNDO */}
                 <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-900">
                   {mp.src && (
-                    <img
+                    <Image
                       src={mp.src}
                       alt={`${mp.name} background`}
-                      className="w-full h-full object-cover object-bottom transition-transform duration-700 ease-out group-hover:scale-105 opacity-60 group-hover:opacity-80"
+                      fill
+                      sizes="(min-width: 640px) 280px, 100vw"
+                      className="object-cover object-bottom transition-transform duration-700 ease-out group-hover:scale-105 opacity-60 group-hover:opacity-80"
+                      loading="lazy"
                     />
                   )}
                 </div>

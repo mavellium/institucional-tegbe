@@ -1,6 +1,11 @@
 export function PreloadResources() {
   return (
     <>
+      {/* Preconnect a origens externas críticas */}
+      <link rel="preconnect" href="https://tegbe-cdn.b-cdn.net" />
+      <link rel="preconnect" href="https://api.iconify.design" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://tegbe-dashboard.vercel.app" />
+
       {/* Preload fontes críticas */}
       <link
         rel="preload"

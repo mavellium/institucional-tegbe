@@ -1,17 +1,27 @@
+import dynamic from "next/dynamic";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { getSafeData } from "@/core/api/getSafeData";
 import HeroCarrossel from "@/features/home-hero-carousel/components/HeroCarrossel";
-import PorqueATegbe from "@/components/sections/PorqueATegbe";
-import Video from "@/components/sections/VideoAdaptivo";
-import MarketingInteligente from "@/components/sections/MarketingInteligente";
-import Solucoes from "@/components/sections/SolucoesMarketing";
-import Parceiro from "@/components/sections/Parceiro";
-import Meta from "@/components/sections/Meta";
-import Carrossel from "@/components/sections/CarrosselEspecialistas";
-import { SideBySideSection } from "@/components/sections/SideBySide";
 import type { HeroSlide } from "@/types/heroSlide.type";
+
+// Seções below-the-fold — lazy loaded para otimizar FCP
+const PorqueATegbe = dynamic(() => import("@/components/sections/PorqueATegbe"), {});
+const Video = dynamic(() => import("@/components/sections/VideoAdaptivo"), {});
+const MarketingInteligente = dynamic(
+  () => import("@/components/sections/MarketingInteligente"),
+  {}
+);
+const Solucoes = dynamic(() => import("@/components/sections/SolucoesMarketing"), {});
+const Parceiro = dynamic(() => import("@/components/sections/Parceiro"), {});
+const Meta = dynamic(() => import("@/components/sections/Meta"), {});
+const Carrossel = dynamic(() => import("@/components/sections/CarrosselEspecialistas"), {});
+const SideBySideSection = dynamic(
+  () =>
+    import("@/components/sections/SideBySide").then((mod) => ({ default: mod.SideBySideSection })),
+  {}
+);
 
 export default async function MarketingPage() {
   const [
@@ -87,25 +97,27 @@ export default async function MarketingPage() {
         }}
       />
       <Navbar variant="marketing" />
-      <HeroCarrossel slides={heroSlidesData ?? []} corDestaque="#f9265e" textoFundo="MARKETING" />
-      <PorqueATegbe data={porqueATegbeData as any} />
-      <Video
-        data={videoData as any}
-        viewVariant="hero"
-        theme={{
-          accentColor: "#f9265e",
-          gradientFrom: "#ff0400",
-          gradientTo: "#f9396f",
-          videoOpacity: 0.8,
-          startMuted: true,
-        }}
-      />
-      <MarketingInteligente data={marketingInteligenteData as any} />
-      <Solucoes data={solucoesData as any} />
-      <Parceiro data={parceiroData as any} />
-      <Meta data={metaData as any} />
-      <Carrossel data={carrosselData as any} />
-      <SideBySideSection data={sideBySideData as any} />
+      <main>
+        <HeroCarrossel slides={heroSlidesData ?? []} corDestaque="#f9265e" textoFundo="MARKETING" />
+        <PorqueATegbe data={porqueATegbeData as any} />
+        <Video
+          data={videoData as any}
+          viewVariant="hero"
+          theme={{
+            accentColor: "#f9265e",
+            gradientFrom: "#ff0400",
+            gradientTo: "#f9396f",
+            videoOpacity: 0.8,
+            startMuted: true,
+          }}
+        />
+        <MarketingInteligente data={marketingInteligenteData as any} />
+        <Solucoes data={solucoesData as any} />
+        <Parceiro data={parceiroData as any} />
+        <Meta data={metaData as any} />
+        <Carrossel data={carrosselData as any} />
+        <SideBySideSection data={sideBySideData as any} />
+      </main>
       <Footer variant="marketing" />
     </>
   );

@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@iconify/icons-ph": "^1.2.5",
     "@iconify/react": "^6.0.2",
     "@loadable/component": "^5.16.7",
     "@radix-ui/react-avatar": "^1.1.11",

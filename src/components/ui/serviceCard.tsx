@@ -1,6 +1,7 @@
 "use client";
 
-import { ServiceA, ServiceTheme } from '../../types/service.type';
+import Image from "next/image";
+import { ServiceA, ServiceTheme } from "../../types/service.type";
 
 interface ServiceCardProps {
   service: ServiceA;
@@ -25,18 +26,18 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
     >
       {/* 1. Imagem de Fundo Preenchendo o Card */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        {/* Se quiser usar o Next Image depois, é só trocar a tag */}
-        <img
-          src={service.image} // Vai vir do seu JSON
+        <Image
+          src={service.image}
           alt={service.title}
-          // object-bottom joga a imagem pra baixo (como o iPhone na foto da Apple)
-          className="w-full h-full object-cover object-bottom transition-transform duration-700 ease-out group-hover:scale-105"
+          fill
+          sizes="(min-width: 768px) 33vw, 100vw"
+          className="object-cover object-bottom transition-transform duration-700 ease-out group-hover:scale-105"
+          loading="lazy"
         />
       </div>
 
       {/* 2. Conteúdo de Texto (Sobreposto) */}
       <div className="relative z-10 flex flex-col p-8 md:p-10 pointer-events-none">
-
         {/* Tag do Passo */}
         <span
           className="mb-2 text-[10px] font-bold uppercase tracking-widest"
@@ -60,7 +61,6 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
         >
           {service.description}
         </p>
-
       </div>
     </div>
   );

@@ -1,14 +1,27 @@
+import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import { getSafeData } from "@/core/api/getSafeData";
-import { QuemSomos } from "@/components/sections/QuemSomos";
-import { OQueSomos } from "@/components/sections/OQueSomos";
-import { SideBySideSection } from "@/components/sections/SideBySide";
 import Hero from "@/components/sections/Hero";
-import Localizacao from "@/components/sections/LocalizacaoSobre";
-import Meta from "@/components/sections/Meta";
-import Carrossel from "@/components/sections/CarrosselEspecialistas";
+
+// Seções below-the-fold — lazy loaded para otimizar FCP
+const QuemSomos = dynamic(
+  () => import("@/components/sections/QuemSomos").then((mod) => ({ default: mod.QuemSomos })),
+  {}
+);
+const OQueSomos = dynamic(
+  () => import("@/components/sections/OQueSomos").then((mod) => ({ default: mod.OQueSomos })),
+  {}
+);
+const Meta = dynamic(() => import("@/components/sections/Meta"), {});
+const Carrossel = dynamic(() => import("@/components/sections/CarrosselEspecialistas"), {});
+const Localizacao = dynamic(() => import("@/components/sections/LocalizacaoSobre"), {});
+const SideBySideSection = dynamic(
+  () =>
+    import("@/components/sections/SideBySide").then((mod) => ({ default: mod.SideBySideSection })),
+  {}
+);
 
 export default async function SobrePage() {
   const [

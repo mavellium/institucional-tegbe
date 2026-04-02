@@ -1,19 +1,25 @@
+import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
 import { getSafeData } from "@/core/api/getSafeData";
 import HomeFormacoes from "@/components/sections/HomeFormacoes";
-import PorqueAprender from "@/components/sections/PorqueAprender";
-import Formacoes from "@/components/sections/ListaFormacoes";
-import CasesCarousel from "@/components/sections/CarrosselCases";
-import GaleriaFotos from "@/components/sections/GaleriaFotos";
-import Expertise from "@/components/sections/Expertise";
-import ComparacaoConcorrentes from "@/components/sections/ComparacaoConcorrentes";
-import Faq from "@/components/sections/Faq";
-import Localizacao2 from "@/components/sections/LocalizacaoCursos";
-import Preco from "@/components/sections/Preco";
-import Meta from "@/components/sections/Meta";
-import Video from "@/components/sections/VideoAdaptivo";
+
+// Seções below-the-fold — lazy loaded para otimizar FCP
+const PorqueAprender = dynamic(() => import("@/components/sections/PorqueAprender"), {});
+const Video = dynamic(() => import("@/components/sections/VideoAdaptivo"), {});
+const Meta = dynamic(() => import("@/components/sections/Meta"), {});
+const Formacoes = dynamic(() => import("@/components/sections/ListaFormacoes"), {});
+const CasesCarousel = dynamic(() => import("@/components/sections/CarrosselCases"), {});
+const GaleriaFotos = dynamic(() => import("@/components/sections/GaleriaFotos"), {});
+const Expertise = dynamic(() => import("@/components/sections/Expertise"), {});
+const Localizacao2 = dynamic(() => import("@/components/sections/LocalizacaoCursos"), {});
+const ComparacaoConcorrentes = dynamic(
+  () => import("@/components/sections/ComparacaoConcorrentes"),
+  {}
+);
+const Preco = dynamic(() => import("@/components/sections/Preco"), {});
+const Faq = dynamic(() => import("@/components/sections/Faq"), {});
 
 export default async function FormacoesPage() {
   const [

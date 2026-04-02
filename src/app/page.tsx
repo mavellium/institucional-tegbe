@@ -1,16 +1,19 @@
+import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import HeroCarousel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import { fetchHeroSlides } from "@/features/home-hero-carousel/services";
-import SectionMarketing from "@/components/sections/BannerMarketing";
-import MostrarSolucoes from "@/components/sections/HomeCards";
-import Marketplaces from "@/components/web/marketplaces";
-import SectionFormacoes from "@/components/sections/SectionFormacoes";
-import Ferramentas from "@/components/web/ferramentas";
-import CtaDuvidas from "@/components/web/ctaDuvidas";
-import FaqHome from "@/components/sections/FaqHome";
 import { getSafeData } from "@/core/api/getSafeData";
+
+// Seções below-the-fold — lazy loaded para otimizar FCP
+const MostrarSolucoes = dynamic(() => import("@/components/sections/HomeCards"), {});
+const Marketplaces = dynamic(() => import("@/components/web/marketplaces"), {});
+const SectionMarketing = dynamic(() => import("@/components/sections/BannerMarketing"), {});
+const SectionFormacoes = dynamic(() => import("@/components/sections/SectionFormacoes"), {});
+const Ferramentas = dynamic(() => import("@/components/web/ferramentas"), {});
+const CtaDuvidas = dynamic(() => import("@/components/web/ctaDuvidas"), {});
+const FaqHome = dynamic(() => import("@/components/sections/FaqHome"), {});
 
 export default async function Home() {
   const [
@@ -33,8 +36,12 @@ export default async function Home() {
     getSafeData("faq-home"),
   ]);
 
+  // Preload da imagem LCP (primeiro slide do hero)
+  const lcpImageUrl = heroSlides?.[0]?.image;
+
   return (
     <>
+      {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} fetchPriority="high" />}
       <Schema
         data={{
           "@context": "https://schema.org",

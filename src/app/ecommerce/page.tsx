@@ -1,18 +1,37 @@
+import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import { getSafeData } from "@/core/api/getSafeData";
 import HeroCarrossel from "@/features/home-hero-carousel/components/HeroCarrossel";
-import Logos from "@/components/sections/Logos";
-import Carrossel from "@/components/sections/CarrosselServicos";
-import Video from "@/components/sections/VideoAdaptivo";
-import Passos from "@/components/sections/Passos";
-import { Clientes } from "@/components/sections/Clientes";
-import ConsultorOficial from "@/components/sections/ServiceFlow/CertifiedSection";
-import { Imagem } from "@/components/sections/Imagem";
-import { Equipe } from "@/components/sections/Equipe";
-import { SideBySideSection } from "@/components/sections/SideBySide";
 import type { HeroSlide } from "@/types/heroSlide.type";
+
+// Seções below-the-fold — lazy loaded para otimizar FCP
+const Logos = dynamic(() => import("@/components/sections/Logos"), {});
+const Carrossel = dynamic(() => import("@/components/sections/CarrosselServicos"), {});
+const Video = dynamic(() => import("@/components/sections/VideoAdaptivo"), {});
+const Passos = dynamic(() => import("@/components/sections/Passos"), {});
+const Clientes = dynamic(
+  () => import("@/components/sections/Clientes").then((mod) => ({ default: mod.Clientes })),
+  {}
+);
+const ConsultorOficial = dynamic(
+  () => import("@/components/sections/ServiceFlow/CertifiedSection"),
+  {}
+);
+const Imagem = dynamic(
+  () => import("@/components/sections/Imagem").then((mod) => ({ default: mod.Imagem })),
+  {}
+);
+const Equipe = dynamic(
+  () => import("@/components/sections/Equipe").then((mod) => ({ default: mod.Equipe })),
+  {}
+);
+const SideBySideSection = dynamic(
+  () =>
+    import("@/components/sections/SideBySide").then((mod) => ({ default: mod.SideBySideSection })),
+  {}
+);
 
 export default async function EcommercePage() {
   const [
@@ -41,8 +60,12 @@ export default async function EcommercePage() {
     getSafeData("agendar-reuniao-ecommerce"),
   ]);
 
+  // Preload da imagem LCP (primeiro slide do hero)
+  const lcpImageUrl = (heroSlidesData as HeroSlide[] | null)?.[0]?.image;
+
   return (
     <>
+      {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} fetchPriority="high" />}
       <Schema
         data={{
           "@context": "https://schema.org",

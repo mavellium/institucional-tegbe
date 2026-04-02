@@ -1,25 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-import { PreloadResources } from './preload-resources';
-
+import { PreloadResources } from "./preload-resources";
 
 import WebVitals from "./web-vitals";
 
-
 const GTM_ID = "GTM-5W7HPPVZ";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const viewport: Viewport = {
   themeColor: "#FFCC00",
@@ -58,7 +45,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Tegbe | Escale suas vendas no Mercado Livre e Shopee",
-    description: "Sua operação travou? Nós assumimos o operacional e destravamos seu lucro. Consultoria Oficial Certificada.",
+    description:
+      "Sua operação travou? Nós assumimos o operacional e destravamos seu lucro. Consultoria Oficial Certificada.",
     url: "https://tegbe.com.br",
     siteName: "Tegbe Consultoria",
     locale: "pt_BR",
@@ -71,7 +59,7 @@ export const metadata: Metadata = {
         alt: "Tegbe Consultoria Oficial",
       },
     ],
-  }, 
+  },
   twitter: {
     card: "summary_large_image",
     title: "Tegbe | Consultoria Oficial de E-commerce",
@@ -103,43 +91,35 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService", // Ou 'Consulting'
-    "name": "Tegbe | Agência de Marketing e Cursos",
-    "image": "https://tegbe.com.br/logo-tegbe-header.svg",
-    "description": "Consultoria Oficial Mercado Livre e Shopee focada em gestão operacional e escala de vendas.",
-    "url": "https://tegbe.com.br",
-    "telephone": "+5514991779502", // Telefone do Doni/Comercial
-    "address": {
+    name: "Tegbe | Agência de Marketing e Cursos",
+    image: "https://tegbe.com.br/logo-tegbe-header.svg",
+    description:
+      "Consultoria Oficial Mercado Livre e Shopee focada em gestão operacional e escala de vendas.",
+    url: "https://tegbe.com.br",
+    telephone: "+5514991779502", // Telefone do Doni/Comercial
+    address: {
       "@type": "PostalAddress",
-      "addressLocality": "Garça", // Ou Garça, se preferir focar no local da sede
-      "addressRegion": "SP",
-      "addressCountry": "BR"
+      addressLocality: "Garça", // Ou Garça, se preferir focar no local da sede
+      addressRegion: "SP",
+      addressCountry: "BR",
     },
-    "geo": {
+    geo: {
       "@type": "GeoCoordinates",
-      "latitude": "-22.2167", // Coordenadas aproximadas de Garça/SP (ajuste se tiver endereço exato)
-      "longitude": "-49.6500"
+      latitude: "-22.2167", // Coordenadas aproximadas de Garça/SP (ajuste se tiver endereço exato)
+      longitude: "-49.6500",
     },
-    "openingHoursSpecification": {
+    openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ],
-      "opens": "08:00",
-      "closes": "18:00"
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "08:00",
+      closes: "18:00",
     },
-    "sameAs": [
-      "https://www.instagram.com/agenciategbe",
-      "https://www.linkedin.com/company/tegbe"
-    ],
-    "priceRange": "$$$",
-    "founder": {
+    sameAs: ["https://www.instagram.com/agenciategbe", "https://www.linkedin.com/company/tegbe"],
+    priceRange: "$$$",
+    founder: {
       "@type": "Person",
-      "name": "Doni"
-    }
+      name: "Doni",
+    },
   };
 
   return (
@@ -147,9 +127,7 @@ export default function RootLayout({
       <head>
         <PreloadResources />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black`}
-      >
+      <body className="antialiased bg-black text-white selection:bg-[#FFCC00] selection:text-black">
         <WebVitals />
         {/* Injeção do Schema Markup */}
         <Script
@@ -159,7 +137,7 @@ export default function RootLayout({
         />
 
         {/* GTM Head */}
-        <Script id="gtm-script" strategy="afterInteractive">
+        <Script id="gtm-script" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){
               w[l]=w[l]||[];
@@ -183,7 +161,7 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           ></iframe>
         </noscript>
-        
+
         {children}
       </body>
     </html>

@@ -77,11 +77,11 @@ Aplicar também em `src/app/ecommerce/page.tsx` (usa o mesmo HeroCarrossel).
 
 ## Checklist
 
-- [ ] `heroSlideImage.tsx` — slide 0 sem motion.div
-- [ ] `heroSlideImage.tsx` — `sizes` adicionado ao Image
-- [ ] `heroSlideImage.tsx` — `drop-shadow-2xl` removido
-- [ ] `page.tsx` (home) — preload link injetado
-- [ ] `page.tsx` (ecommerce) — preload link injetado
-- [ ] Build passa
-- [ ] E2E passa
-- [ ] LCP medido antes/depois
+- [x] `heroSlideImage.tsx` — slide 0 sem motion.div (renderiza em `<div>` simples)
+- [x] `heroSlideImage.tsx` — `sizes="(min-width: 1024px) 60vw, 100vw"` adicionado ao Image
+- [x] `heroSlideImage.tsx` — `drop-shadow-2xl` removido
+- [x] `page.tsx` (home) — `<link rel="preload" as="image" fetchPriority="high">` injetado com `heroSlides?.[0]?.image`
+- [x] `page.tsx` (ecommerce) — mesmo preload injetado com `heroSlidesData?.[0]?.image`
+- [x] Build passa
+- [x] E2E passa (20/20)
+- [ ] LCP medido antes/depois — pendente (requer deploy + PageSpeed)
