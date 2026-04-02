@@ -8,11 +8,7 @@ import { useEffect, useState } from "react";
  */
 export function resolveApiUrl(slug: string): string {
   if (!slug) return "";
-  if (
-    slug.startsWith("http://") ||
-    slug.startsWith("https://") ||
-    slug.startsWith("/")
-  ) {
+  if (slug.startsWith("http://") || slug.startsWith("https://") || slug.startsWith("/")) {
     return slug;
   }
   const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
@@ -40,6 +36,10 @@ function isDataEnabled(data: unknown): boolean {
 }
 
 /**
+ * @deprecated Substituído por fetch server-side via `getSafeData` (Phase 5).
+ * Todos os componentes devem receber `data` como prop a partir da page.
+ * Este hook será removido na Phase 6.
+ *
  * Hook com estratégia Stale-While-Revalidate:
  * - Serve o cache imediatamente (sem flash de loading em revisitas)
  * - Revalida em background e atualiza os dados silenciosamente

@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
+import { getSafeData } from "@/core/api/getSafeData";
 import HomeFormacoes from "@/components/sections/HomeFormacoes";
 import PorqueAprender from "@/components/sections/PorqueAprender";
 import Formacoes from "@/components/sections/ListaFormacoes";
@@ -12,11 +13,37 @@ import Faq from "@/components/sections/Faq";
 import Localizacao2 from "@/components/sections/LocalizacaoCursos";
 import Preco from "@/components/sections/Preco";
 import Meta from "@/components/sections/Meta";
-import { SideBySideSection } from "@/components/sections/SideBySide";
 import Video from "@/components/sections/VideoAdaptivo";
 
+export default async function FormacoesPage() {
+  const [
+    homeFormacoesData,
+    porqueAprenderData,
+    videoData,
+    metaData,
+    formacoesData,
+    casesData,
+    galeriaData,
+    expertiseData,
+    localizacaoData,
+    comparacaoData,
+    precoData,
+    faqData,
+  ] = await Promise.all([
+    getSafeData("headline-formacoes"),
+    getSafeData("porque-aprender"),
+    getSafeData("video-formacoes"),
+    getSafeData("meta-alunos"),
+    getSafeData("formacoes"),
+    getSafeData("cases-alunos"),
+    getSafeData("galeria-formacoes"),
+    getSafeData("porque-fazer-o-curso"),
+    getSafeData("localizacoes"),
+    getSafeData("comparacao"),
+    getSafeData("preco-formacoes"),
+    getSafeData("faq-formacoes"),
+  ]);
 
-export default function FormacoesPage() {
   return (
     <>
       <Schema
@@ -70,9 +97,10 @@ export default function FormacoesPage() {
 
       <Header />
       <main>
-        <HomeFormacoes />
-        <PorqueAprender />
-        <Video endpoint="video-formacoes"
+        <HomeFormacoes data={homeFormacoesData as any} />
+        <PorqueAprender data={porqueAprenderData as any} />
+        <Video
+          data={videoData as any}
           theme={{
             backgroundColor: "#020202",
             textColor: "#fff",
@@ -80,25 +108,25 @@ export default function FormacoesPage() {
             badgeBg: "rgba(255,215,0,0.1)",
             badgeBorder: "rgba(255,215,0,0.3)",
             badgeText: "#B8860B",
-          }} />
+          }}
+        />
         <Meta
+          data={metaData as any}
           type="Meta de Formações"
-          endpoint={`meta-alunos`}
           theme={{
             background: "#0a0a0a",
             primary: "#FFD700",
             text: "#fafafa",
-          }
-          }
+          }}
         />
-        <Formacoes />
-        <CasesCarousel />
-        <GaleriaFotos endpoint="galeria-formacoes" />
-        <Expertise endpoint={"porque-fazer-o-curso"}/>
-        <Localizacao2 />
-        <ComparacaoConcorrentes />
-        <Preco />
-        <Faq endpoint="faq-formacoes" />
+        <Formacoes data={formacoesData as any} />
+        <CasesCarousel data={casesData as any} />
+        <GaleriaFotos data={galeriaData as any} />
+        <Expertise data={expertiseData as any} />
+        <Localizacao2 data={localizacaoData as any} />
+        <ComparacaoConcorrentes data={comparacaoData as any} />
+        <Preco data={precoData as any} />
+        <Faq data={faqData as any} />
       </main>
       <Footer variant="cursos" />
     </>

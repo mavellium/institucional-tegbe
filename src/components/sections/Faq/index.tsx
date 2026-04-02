@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Icon } from "@iconify/react";
-import { useApi } from "@/hooks/useApi";
 import { motion, AnimatePresence } from "framer-motion";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
@@ -24,14 +23,13 @@ export interface FaqData {
 }
 
 interface FaqProps {
-  endpoint?: string;
+  data: FaqData | null;
 }
 
-export default function FaqSection({ endpoint = "" }: FaqProps) {
-  const { data, loading } = useApi<FaqData>(endpoint);
+export default function FaqSection({ data }: FaqProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  if (loading || !data || !data.questions) return null;
+  if (!data || !data.questions) return null;
 
   const toggleIndex = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -40,7 +38,6 @@ export default function FaqSection({ endpoint = "" }: FaqProps) {
   return (
     <section className="py-20 md:py-24 bg-[#020202] relative font-sans border-t border-white/5">
       <div className="container px-4 md:px-6 max-w-3xl mx-auto relative z-10">
-
         {/* Header */}
         <div className="text-center mb-10 md:mb-14">
           {data.header.badge && (
@@ -87,10 +84,15 @@ export default function FaqSection({ endpoint = "" }: FaqProps) {
                   >
                     <RichText content={item.question} />
                   </Heading>
-                  <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300
+                  <div
+                    className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300
                     ${isOpen ? "bg-[#FFD700] border-[#FFD700] rotate-45" : "border-white/10 bg-white/5"}
-                  `}>
-                    <Icon icon="ph:plus-bold" className={`w-4 h-4 ${isOpen ? "text-black" : "text-gray-400"}`} />
+                  `}
+                  >
+                    <Icon
+                      icon="ph:plus-bold"
+                      className={`w-4 h-4 ${isOpen ? "text-black" : "text-gray-400"}`}
+                    />
                   </div>
                 </div>
 
@@ -104,7 +106,6 @@ export default function FaqSection({ endpoint = "" }: FaqProps) {
                     >
                       <div className="px-5 md:px-6 pb-5 md:pb-6 border-t border-white/5">
                         <Paragrafo color="#9CA3AF" className="pt-4 leading-relaxed">
-
                           <RichText content={item.answer} />
                         </Paragrafo>
                       </div>
@@ -115,7 +116,6 @@ export default function FaqSection({ endpoint = "" }: FaqProps) {
             );
           })}
         </div>
-
       </div>
     </section>
   );

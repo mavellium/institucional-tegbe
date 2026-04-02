@@ -1,0 +1,51 @@
+# Template de SPEC — copiar para src/features/<feature>/specs/ ou docs/specs/ até existir features/
+# Convenção de nome: <feature-slug>.spec.yaml
+
+feature: nome_da_feature
+
+context: |
+  Breve contexto de negócio e usuário.
+
+ui_contract:
+  type: strict
+  reference: current_layout
+
+component_state: stable # stable | inconsistent | broken | legacy
+
+data_contract:
+  source: cms
+  slug_or_endpoint: ""
+  normalized_shape: {}
+  error_handling: null_safe
+
+ui_states:
+  - loading
+  - success
+  - empty
+  - error
+
+# Critérios de teste ANTES da implementação (TDD)
+acceptance_criteria:
+  - critério observável 1
+  - critério observável 2
+
+test_cases:
+  - id: TC-01
+    description: Comportamento esperado
+    type: unit # unit | integration | e2e | visual
+  - id: TC-02
+    description: Caso de borda
+    type: integration
+
+# Cada slug corresponde a skills/<slug>/SKILL.md na raiz do repositório (ver skills/README.md)
+skills:
+  - testing
+  - performance
+  - data-fetching
+  - responsiveness
+  - ui-preservation
+
+dependencies:
+  phases: [] # ex.: [3, 4] — fases do roadmap que esta feature pressupõe
+
+notes: |

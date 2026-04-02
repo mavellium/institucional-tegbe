@@ -2,11 +2,10 @@
 
 import AnimationVideoView from "@/components/sections/AnimationVideoView";
 import { HeroVideoView } from "@/components/sections/HeroVideoView";
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 
 interface Props {
-  endpoint: string;
+  data: IResponse | null;
   theme: any;
   viewVariant?: "animation" | "hero";
   showTexture?: boolean;
@@ -27,23 +26,20 @@ interface IResponse {
 }
 
 export default function AnimationVideoWrapper({
-  endpoint,
+  data,
   theme,
   viewVariant,
   showTexture,
   textureOpacity,
   textureSrc,
 }: Props) {
-  const { data, loading } = useApi<IResponse>(endpoint);
-
-  if (loading || !data?.video) return null;
+  if (!data?.video) return null;
 
   const video = data.video;
 
   const videoUrl = video.videoSrc;
   const activeVariant = viewVariant || video.type || "animation";
 
-  
   if (!videoUrl) return null;
 
   if (activeVariant === "hero") {

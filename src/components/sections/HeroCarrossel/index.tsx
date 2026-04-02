@@ -8,11 +8,9 @@ import HeroSlideImage from "@/components/ui/heroCarrossel/heroSlideImage";
 import HeroCarouselNavigation from "@/components/ui/heroCarrossel/heroCarrosselNavigation";
 import Textura from "@/components/ui/textura";
 import { HeroSlide } from "@/types/heroSlide.type";
-import { useApi } from "@/hooks/useApi";
 
 interface HeroCarrosselProps {
-  endpoint: string;
-  type: string;
+  slides: HeroSlide[];
   loop?: boolean;
   autoplayDelay?: number;
   corFundo?: string;
@@ -26,8 +24,7 @@ interface HeroCarrosselProps {
 }
 
 export default function HeroCarrossel({
-  endpoint,
-  type,
+  slides,
   loop = true,
   autoplayDelay = 6000,
   corFundo = "#0A0A0A",
@@ -36,14 +33,11 @@ export default function HeroCarrossel({
   navGradienteFrom = "#ff0400",
   navGradienteTo = "#f9396f",
   navAccent = "#f9265e",
-  corIcone = "white"
+  corIcone = "white",
 }: HeroCarrosselProps) {
-  const { data } = useApi<HeroSlide[]>(endpoint);
-  const slides = data ?? [];
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop },
-    [Autoplay({ delay: autoplayDelay, stopOnInteraction: true })]
-  );
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop }, [
+    Autoplay({ delay: autoplayDelay, stopOnInteraction: true }),
+  ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
@@ -79,33 +73,37 @@ export default function HeroCarrossel({
       {/* --- Carousel --- */}
       <div className="overflow-hidden relative z-10" ref={emblaRef}>
         <div className="flex touch-pan-y">
-          {slides.length > 0 ? slides.map((slide, index) => {
-            const isActive = index === selectedIndex;
-            return (
-              <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
-                <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
-                  <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
-                    <HeroSlideContent
-                      slide={slide}
-                      isActive={isActive}
-                      corDestaque={corDestaque} // Adicione esta linha
-                    />
-                  </div>
-                  {slide.image && (
-                    <div className="w-full lg:w-[60%] flex items-end h-full lg:pr-0">
-                      <HeroSlideImage
-                        image={slide.image}
-                        title={slide.title}
+          {slides.length > 0 ? (
+            slides.map((slide, index) => {
+              const isActive = index === selectedIndex;
+              return (
+                <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
+                  <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
+                    <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
+                      <HeroSlideContent
+                        slide={slide}
                         isActive={isActive}
-                        priority={index === 0}
+                        corDestaque={corDestaque} // Adicione esta linha
                       />
                     </div>
-                  )}
+                    {slide.image && (
+                      <div className="w-full lg:w-[60%] flex items-end h-full lg:pr-0">
+                        <HeroSlideImage
+                          image={slide.image}
+                          title={slide.title}
+                          isActive={isActive}
+                          priority={index === 0}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          }) : (
-            <div className="flex justify-center w-full py-40 text-gray-500">Nenhum slide disponível</div>
+              );
+            })
+          ) : (
+            <div className="flex justify-center w-full py-40 text-gray-500">
+              Nenhum slide disponível
+            </div>
           )}
         </div>
       </div>

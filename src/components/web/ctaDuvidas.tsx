@@ -3,13 +3,12 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import Link from "next/link";
 
 // ================== TIPAGEM ==================
-interface CtaDuvidasData {
+export interface CtaDuvidasData {
   title: RichTextItem[];
   description: RichTextItem[];
   button: {
@@ -19,18 +18,13 @@ interface CtaDuvidasData {
 }
 
 // ================== COMPONENT ==================
-export default function CtaDuvidas() {
-  const { data } = useApi<CtaDuvidasData>("duvida-cta");
-
+export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
   const cta = data;
-  console.log("CTA + ",cta);
-  
 
   if (!cta) return null;
 
   return (
     <section className="relative w-full bg-neutral-950 overflow-hidden selection:bg-white selection:text-neutral-950">
-
       {/* SVG */}
       <div className="absolute top-0 right-0 bottom-0 w-[55%] md:w-[45%] lg:w-[40%] pointer-events-none z-0 hidden md:block">
         <svg
@@ -60,9 +54,7 @@ export default function CtaDuvidas() {
 
       {/* CONTEÚDO */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 lg:py-40 flex flex-col md:flex-row items-center">
-
         <div className="w-full md:w-[55%] lg:w-[50%] flex flex-col items-start text-left">
-
           {/* TITLE */}
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
@@ -102,7 +94,6 @@ export default function CtaDuvidas() {
               </Link>
             </motion.div>
           )}
-
         </div>
       </div>
     </section>

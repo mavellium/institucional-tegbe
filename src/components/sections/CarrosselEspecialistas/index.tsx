@@ -13,7 +13,6 @@ import { RichTextItem } from "@/types/richText.type";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useApi } from "@/hooks/useApi";
 
 /* ---------------- TYPES ---------------- */
 
@@ -32,23 +31,18 @@ export interface CarrosselEspecialistasData {
   especialistas: EspecialistaItem[];
 }
 
-interface CarrosselProps{
-  type: string;
-  endpoint: string;
+interface CarrosselProps {
+  data: CarrosselEspecialistasData | null;
 }
 
 /* ---------------- COMPONENT ---------------- */
 
-export default function Carrossel({endpoint,
-}: CarrosselProps) {
-
-  const { data } = useApi<CarrosselEspecialistasData>(endpoint);
+export default function Carrossel({ data }: CarrosselProps) {
   if (!data) return null;
 
   return (
     <section className="bg-[#0A0A0A] py-16 overflow-hidden selection:bg-[#B38E5D]/30">
       <div className="max-w-7xl mx-auto px-5 md:px-12 lg:px-8 xl:px-16">
-        
         {/* HEADER */}
         <div className="text-center mb-10 md:mb-16">
           <Heading
@@ -72,17 +66,17 @@ export default function Carrossel({endpoint,
             autoplay={{ delay: 5000 }}
             navigation={{
               nextEl: ".especialistas-next",
-              prevEl: ".especialistas-prev"
+              prevEl: ".especialistas-prev",
             }}
             pagination={{
               clickable: true,
-              el: ".especialistas-pagination"
+              el: ".especialistas-pagination",
             }}
             breakpoints={{
               640: { slidesPerView: 1.6, centeredSlides: true },
               768: { slidesPerView: 2.3, centeredSlides: true },
               1024: { slidesPerView: 3, centeredSlides: true },
-              1280: { slidesPerView: 4, centeredSlides: false }
+              1280: { slidesPerView: 4, centeredSlides: false },
             }}
           >
             {data.especialistas.map((esp, i) => (
@@ -92,7 +86,7 @@ export default function Carrossel({endpoint,
                   sobrenome={esp.sobrenome}
                   imagem={esp.imagem}
                   cargo={esp.cargo}
-                  corSobrenome={esp.corSobrenome? esp.corSobrenome : "#F1D95D"}
+                  corSobrenome={esp.corSobrenome ? esp.corSobrenome : "#F1D95D"}
                 />
               </SwiperSlide>
             ))}
@@ -121,7 +115,7 @@ export default function Carrossel({endpoint,
         }
         .swiper-pagination-bullet-active {
           opacity: 1 !important;
-          background: #C5A47E !important;
+          background: #c5a47e !important;
           transform: scale(1.4);
         }
       `}</style>

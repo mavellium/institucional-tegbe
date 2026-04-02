@@ -7,17 +7,15 @@ import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import ServiceCard from "@/components/ui/serviceCard";
 import { ServiceA, ServiceTheme } from "@/types/service.type";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import Textura from "@/components/ui/textura";
-import { useApi } from "@/hooks/useApi";
 import { IButton } from "@/interface/button/IButton";
 
 export interface ServiceProps {
-  endpoint: string;
+  data: IService | null;
   backgroundColor?: string;
   backgroundImage?: string;
-
   showTexture?: boolean;
   textureOpacity?: number;
   textureSrc?: string;
@@ -31,26 +29,24 @@ interface IService {
     colorTitle?: string;
   };
   services: ServiceA[];
-  button?: IButton
+  button?: IButton;
 }
 
-
 export default function Carrossel({
-  endpoint,
+  data,
   backgroundColor,
   backgroundImage,
   showTexture,
   textureOpacity = 0.08,
-  textureSrc
+  textureSrc,
 }: ServiceProps) {
-  const { data } = useApi<IService>(endpoint);
   if (!data) return null;
   const { header, services, button } = data;
   const shouldCenter = services.length <= 3;
   const theme: ServiceTheme = {
     badge: {
-      background: "bg-gray-100"
-    }
+      background: "bg-gray-100",
+    },
   };
 
   return (
@@ -61,7 +57,6 @@ export default function Carrossel({
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
-
       }}
     >
       {/* TEXTURA */}
@@ -77,21 +72,21 @@ export default function Carrossel({
       {/* HEADER */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center mb-16">
         {header.preTitle && (
-          <p className="text-sm font-medium text-muted-foreground mb-4">
-            {header.preTitle}
-          </p>
+          <p className="text-sm font-medium text-muted-foreground mb-4">{header.preTitle}</p>
         )}
 
         {header.title && (
-          <Heading as="h2" className="mb-4" color={header.colorTitle ? header.colorTitle : "#0a0a0a"}>
+          <Heading
+            as="h2"
+            className="mb-4"
+            color={header.colorTitle ? header.colorTitle : "#0a0a0a"}
+          >
             <RichText content={header.title} />
           </Heading>
         )}
 
         {header.subtitle && (
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            {header.subtitle}
-          </p>
+          <p className="text-muted-foreground max-w-2xl mx-auto">{header.subtitle}</p>
         )}
       </div>
 
@@ -105,15 +100,11 @@ export default function Carrossel({
             1024: { slidesPerView: 3.5 },
             1280: { slidesPerView: 4.2 },
           }}
-          className={`mySwiper ${shouldCenter ? 'is-centered' : ''} !overflow-visible !pt-8 !pb-16 `}
+          className={`mySwiper ${shouldCenter ? "is-centered" : ""} !overflow-visible !pt-8 !pb-16 `}
         >
           {services.map((service) => (
             <SwiperSlide key={service.id} className="h-auto">
-              <ServiceCard
-                service={service}
-                theme={theme}
-                variant="ecommerce"
-              />
+              <ServiceCard service={service} theme={theme} variant="ecommerce" />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -123,9 +114,7 @@ export default function Carrossel({
       {button && button.action === "link" && (
         <div className="relative z-10 flex justify-center mt-12">
           <Link href={button.link} target={button.target ?? "_self"}>
-            <Button>
-              {button.label}
-            </Button>
+            <Button>{button.label}</Button>
           </Link>
         </div>
       )}

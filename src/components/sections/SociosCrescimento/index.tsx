@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
+import { sanitizeHtml } from "@/core/security";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -41,10 +42,10 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
   return result
     ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16),
-    }
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
     : null;
 }
 
@@ -78,72 +79,82 @@ export function SociosCrescimento({
     fetchData();
   }, [endpoint, variant]);
 
-  useGSAP(() => {
-    if (loading || !data) return;
+  useGSAP(
+    () => {
+      if (loading || !data) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 80%",
-        toggleActions: "play none none reverse",
-      }
-    });
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      });
 
-    tl.fromTo(".reveal-header",
-      { y: 30, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
-    );
+      tl.fromTo(
+        ".reveal-header",
+        { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
+      );
 
-    tl.fromTo(".reveal-card",
-      { y: 40, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out", stagger: 0.1 },
-      "-=0.5"
-    );
-  }, { scope: containerRef, dependencies: [data, loading] });
+      tl.fromTo(
+        ".reveal-card",
+        { y: 40, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.7, ease: "power3.out", stagger: 0.1 },
+        "-=0.5"
+      );
+    },
+    { scope: containerRef, dependencies: [data, loading] }
+  );
 
   if (loading || !data) {
     return (
       <div className="h-[500px] bg-[#020202] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: `${primaryColor}`, borderTopColor: 'transparent' }}
+        <div
+          className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+          style={{ borderColor: `${primaryColor}`, borderTopColor: "transparent" }}
         />
       </div>
     );
   }
 
   return (
-    <section className={`relative w-full pt-35 pb-20 flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-[${primaryColor}]/30`}
+    <section
+      className={`relative w-full pt-35 pb-20 flex flex-col justify-center items-center overflow-hidden bg-[#020202] selection:bg-[${primaryColor}]/30`}
       // Define a variável CSS --primary para uso em estilos inline (opcional)
-      style={{ '--primary': primaryColor } as any}
+      style={{ "--primary": primaryColor } as any}
     >
       {/* FX sutil */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[100px] opacity-30 pointer-events-none"
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[100px] opacity-30 pointer-events-none"
         style={{ backgroundColor: `rgba(${primaryRgb}, 0.05)` }}
       />
 
       <div ref={containerRef} className="relative z-10 w-full max-w-7xl mx-auto px-6">
-
         {/* HEADER COM DUAS COLUNAS: ESQUERDA (TEXTO) + DIREITA (IMAGEM/LOGOTIPO) */}
         <div className="flex flex-col lg:flex-row justify-between items-center gap-10 mb-16">
-
           {/* LADO ESQUERDO: TEXTO */}
           <div className="flex-1 text-left">
-            <div className={`reveal-header opacity-0 mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full border backdrop-blur-sm`}
+            <div
+              className={`reveal-header opacity-0 mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full border backdrop-blur-sm`}
               style={{
                 borderColor: `rgba(${primaryRgb}, 0.2)`,
-                backgroundColor: `rgba(${primaryRgb}, 0.05)`
+                backgroundColor: `rgba(${primaryRgb}, 0.05)`,
               }}
             >
               <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                <span
+                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                   style={{ backgroundColor: primaryColor }}
                 />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5"
+                <span
+                  className="relative inline-flex rounded-full h-1.5 w-1.5"
                   style={{ backgroundColor: primaryColor }}
                 />
               </span>
-              <span className="text-[10px] font-bold tracking-[0.2em] uppercase font-mono"
+              <span
+                className="text-[10px] font-bold tracking-[0.2em] uppercase font-mono"
                 style={{ color: primaryColor }}
               >
                 {data.header.preTitle}
@@ -152,7 +163,7 @@ export function SociosCrescimento({
 
             <h2
               className="reveal-header opacity-0 text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 leading-[1.1] max-w-4xl"
-              dangerouslySetInnerHTML={{ __html: data.header.title }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.header.title) }}
             />
 
             <p className="reveal-header opacity-0 text-base md:text-lg text-gray-500 max-w-2xl font-light leading-relaxed">
@@ -173,13 +184,20 @@ export function SociosCrescimento({
               */}
 
               {/* Imagem (foto) sobreposta */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-124 h-124 rounded-full border-2 overflow-hidden backdrop-blur-sm"
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-124 h-124 rounded-full border-2 overflow-hidden backdrop-blur-sm"
                 style={{
                   borderColor: `rgba(${primaryRgb}, 0.3)`,
-                  backgroundColor: `rgba(${primaryRgb}, 0.05)`
+                  backgroundColor: `rgba(${primaryRgb}, 0.05)`,
                 }}
               >
-                <Image src='/doni.jpg' width={500} height={500} className="w-full h-full object-cover" alt={""} />
+                <Image
+                  src="/doni.jpg"
+                  width={500}
+                  height={500}
+                  className="w-full h-full object-cover"
+                  alt={""}
+                />
               </div>
             </div>
           </div>
@@ -189,7 +207,7 @@ export function SociosCrescimento({
         <div
           className="grid gap-4 md:gap-5 w-full"
           style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           }}
         >
           {data.values.map((value, index) => (
@@ -203,7 +221,7 @@ export function SociosCrescimento({
                 e.currentTarget.style.borderColor = `rgba(${primaryRgb}, 0.3)`;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
               }}
             >
               {/* SVG Icon com hover effect */}
@@ -215,7 +233,7 @@ export function SociosCrescimento({
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = primaryColor;
-                  e.currentTarget.style.color = '#000';
+                  e.currentTarget.style.color = "#000";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = `rgba(${primaryRgb}, 0.1)`;
@@ -250,9 +268,7 @@ export function SociosCrescimento({
                 </svg>
               </div>
 
-              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">
-                {value.title}
-              </h3>
+              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{value.title}</h3>
 
               <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light opacity-80 group-hover:opacity-100 transition-opacity">
                 {value.description}
@@ -260,7 +276,13 @@ export function SociosCrescimento({
 
               {/* Detalhe técnico discreto - opcionalmente também usa o SVG */}
               <div className="absolute bottom-4 right-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500">
-                <svg width="48" height="48" viewBox="0 0 260 113" fill="none" className="text-white opacity-30">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 260 113"
+                  fill="none"
+                  className="text-white opacity-30"
+                >
                   <use href="#socio-svg" /> {/* Referência ao SVG principal, ou repete o path */}
                 </svg>
               </div>

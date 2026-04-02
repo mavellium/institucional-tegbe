@@ -1,41 +1,36 @@
 "use client";
 import Image from "next/image";
 import { IImage } from "@/interface/imagem/IImage";
-import { useApi } from "@/hooks/useApi";
 
 type ImageVariant = "home" | "ecommerce" | "marketing";
 
 interface ImagemProps {
   variant: ImageVariant;
-  endpoint: string;
-  customImage?: IImage;
+  data: ImagemData | null;
 }
 
-interface ImagemData{
-  imagem: IImage
+interface ImagemData {
+  imagem: IImage;
 }
 
 const styleConfig = {
   gradient: {
     home: "absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/40 to-transparent sm:from-black/70 sm:via-black/30 sm:to-transparent md:from-black/60 md:via-black/20 md:to-transparent lg:from-black/60 lg:via-transparent lg:to-transparent",
-    ecommerce: "absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent sm:from-black/70 sm:via-black/40 sm:to-transparent md:from-black/60 md:via-black/30 md:to-transparent",
-    marketing: "absolute inset-0 z-10 bg-gradient-to-t from-black/75 via-black/45 to-transparent sm:from-black/70 sm:via-black/35 sm:to-transparent md:from-black/65 md:via-black/25 md:to-transparent"
+    ecommerce:
+      "absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent sm:from-black/70 sm:via-black/40 sm:to-transparent md:from-black/60 md:via-black/30 md:to-transparent",
+    marketing:
+      "absolute inset-0 z-10 bg-gradient-to-t from-black/75 via-black/45 to-transparent sm:from-black/70 sm:via-black/35 sm:to-transparent md:from-black/65 md:via-black/25 md:to-transparent",
   },
   height: {
     home: "min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] 2xl:min-h-[900px]",
-    ecommerce: "min-h-[350px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[650px] xl:min-h-[750px] 2xl:min-h-[850px]",
-    marketing: "min-h-[380px] sm:min-h-[480px] md:min-h-[580px] lg:min-h-[680px] xl:min-h-[780px] 2xl:min-h-[880px]"
-  }
+    ecommerce:
+      "min-h-[350px] sm:min-h-[450px] md:min-h-[550px] lg:min-h-[650px] xl:min-h-[750px] 2xl:min-h-[850px]",
+    marketing:
+      "min-h-[380px] sm:min-h-[480px] md:min-h-[580px] lg:min-h-[680px] xl:min-h-[780px] 2xl:min-h-[880px]",
+  },
 };
 
-export function Imagem({
-  variant = "home",
-  endpoint,
-  customImage,
-}: ImagemProps) {
-
-  const { data } = useApi<ImagemData>(endpoint ?? "");
-
+export function Imagem({ variant = "home", data }: ImagemProps) {
   const image = data?.imagem;
 
   if (!image) return null;

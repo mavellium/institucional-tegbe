@@ -11,7 +11,6 @@ import { IButton } from "@/interface/button/IButton";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import Paragrafo from "@/components/ui/paragrafo";
-import { useApi } from "@/hooks/useApi";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -25,23 +24,25 @@ export interface IEquipe {
   buttonSubtitle: string;
 }
 
-export function Equipe() {
-  const { data } = useApi<IEquipe>("equipe");
+export function Equipe({ data }: { data: IEquipe | null }) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useGSAP(() => {
-    gsap.from(".reveal-text", {
-      y: 30,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 80%",
-      },
-    });
-  }, { scope: sectionRef });
+  useGSAP(
+    () => {
+      gsap.from(".reveal-text", {
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        },
+      });
+    },
+    { scope: sectionRef }
+  );
 
   if (!data) return null;
 
@@ -55,7 +56,6 @@ export function Equipe() {
 
       <div className="container max-w-5xl relative z-10">
         <div className="flex flex-col items-center text-center w-full">
-
           {/* Badge */}
           <div className="reveal-text mb-6 flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700] animate-pulse" />
@@ -86,14 +86,8 @@ export function Equipe() {
                   asChild
                   className="group px-8 py-4 rounded-full font-bold bg-white text-black hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]"
                 >
-                  <Link
-                    href={data.button.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span className="flex items-center gap-3">
-                      {data.button.label}
-                    </span>
+                  <Link href={data.button.link} target="_blank" rel="noopener noreferrer">
+                    <span className="flex items-center gap-3">{data.button.label}</span>
                   </Link>
                 </Button>
               )}

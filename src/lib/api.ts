@@ -1,31 +1,23 @@
+import { fetchCms } from "@/core/api/client";
+
 interface ApiResponse {
   success: boolean;
   data?: any;
   error?: string;
 }
 
+/**
+ * @deprecated Delega para `fetchCms` de `@/core/api/client`.
+ * Migre chamadas diretas para `fetchCms` ou `getSafeData` conforme SPEC de cada feature.
+ * Mantido por compatibilidade com páginas legadas (ex.: ecommerce/page.tsx).
+ */
 export async function fetchComponentData(componentName: string): Promise<ApiResponse> {
-  try {
-    const response = await fetch(
-      `https://tegbe-dashboard.vercel.app/api/tegbe-institucional/${componentName}`,
-      {
-        next: { revalidate: 10 } // Cache de 1 hora
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return { success: true, data };
-  } catch (error) {
-    console.error(`Error fetching data for ${componentName}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
+  const { data, error } = await fetchCms(componentName);
+  if (error) {
+    console.error(`[fetchComponentData] ${componentName}:`, error);
+    return { success: false, error };
   }
+  return { success: true, data };
 }
 
 // Tipos para os componentes

@@ -1,6 +1,5 @@
 "use client";
 
-import { useApi } from "@/hooks/useApi";
 import { IImage } from "@/interface/imagem/IImage";
 import { RichTextItem } from "@/types/richText.type";
 import { TextItem } from "@/types/textType";
@@ -16,9 +15,7 @@ interface HeroData {
   };
 }
 
-const Hero = () => {
-  const { data } = useApi<HeroData>("inicio");
-
+const Hero = ({ data }: { data: HeroData | null }) => {
   if (!data) return null;
 
   return (
@@ -60,13 +57,13 @@ const Hero = () => {
         className="absolute bottom-10 px-6 z-10 text-xl sm:text-2xl md:text-4xl italic font-medium tracking-wide font-serif text-center"
         style={{ color: data.theme?.accentColor || "#F1D95D" }}
       >
-        {data.tagline.map(item => item.value).join("")}
+        {data.tagline.map((item) => item.value).join("")}
       </p>
 
       {/* Background Text */}
       <div className="absolute right-[-40px] md:right-[-30px] bottom-[-80px] md:bottom-[-130px] whitespace-nowrap opacity-[0.025] select-none pointer-events-none">
         <span className="text-white text-[120px] md:text-[260px] font-medium tracking-[-0.04em] uppercase">
-          {data.backgroundText.map(item => item.value).join("")}
+          {data.backgroundText.map((item) => item.value).join("")}
         </span>
       </div>
 

@@ -15,16 +15,13 @@ export default function Highlight({
   color,
   withSerif = true,
   withItalic = true,
-  size
+  size,
 }: HighlightProps) {
-  let serif = withSerif ? "font-serif" : "";
-  let italic = withItalic ? "italic" : "";
+  const serif = withSerif ? "font-serif" : "";
+  const italic = withItalic ? "italic" : "";
 
   return (
-    <span
-      className={cn(serif, italic, className)}
-      style={{ color, fontSize: `${size}px` }}
-    >
+    <span className={cn(serif, italic, className)} style={{ color, fontSize: `${size}px` }}>
       {children}
     </span>
   );

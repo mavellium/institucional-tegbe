@@ -6,7 +6,6 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
-import { useApi } from "@/hooks/useApi";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
 import { Button } from "@/components/ui/button/button";
@@ -14,6 +13,7 @@ import { IButton } from "@/interface/button/IButton";
 import { IImage } from "@/interface/imagem/IImage";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
+import { sanitizeFormHtml } from "@/core/security";
 
 export interface ComparisonFeature {
   label: string;
@@ -36,7 +36,7 @@ export interface ComparisonData {
 }
 
 interface Props {
-  endpoint?: string;
+  data: ComparisonData | null;
 }
 
 function mapVariant(v?: string): "default" | "outline" | "ghost" {
@@ -45,11 +45,10 @@ function mapVariant(v?: string): "default" | "outline" | "ghost" {
   return "default";
 }
 
-export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Props) {
-  const { data, loading } = useApi<ComparisonData>(endpoint);
+export default function ComparacaoConcorrentes({ data }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (loading || !data || !data.features) return null;
+  if (!data || !data.features) return null;
 
   const handleCtaClick = (e: React.MouseEvent) => {
     if (data.button?.action === "form") {
@@ -92,7 +91,6 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] md:w-[800px] h-[300px] md:h-[400px] bg-[#FFD700]/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container px-4 max-w-6xl mx-auto relative z-10">
-
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-20">
             {data.header.badge && (
@@ -106,10 +104,10 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
               </motion.div>
             )}
             <Heading size="lg" color="#fff" align="center" className="mb-4">
-              <RichText content={data.header.title}/>
+              <RichText content={data.header.title} />
             </Heading>
             <Paragrafo color="#A1A1AA" align="center" className="max-w-2xl mx-auto text-lg">
-              <RichText content={data.header.subtitle}/>
+              <RichText content={data.header.subtitle} />
             </Paragrafo>
           </div>
 
@@ -124,20 +122,16 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
             <div className="absolute inset-y-4 right-4 w-[calc(33.33%-1rem)] bg-gradient-to-b from-[#FFD700]/[0.08] to-[#FFD700]/[0.02] border border-[#FFD700]/20 rounded-[2rem] shadow-[0_0_40px_rgba(255,215,0,0.05)] pointer-events-none z-0" />
 
             <div className="grid grid-cols-3 relative z-10">
-
               {/* Headers */}
               <div className="p-8" />
 
               {/* Competitor Header */}
               <div className="p-8 flex flex-col items-center text-center">
-                
                 <h3 className="text-xl font-semibold text-zinc-500">{data.columns.competitor}</h3>
               </div>
 
               {/* Us Header */}
               <div className="p-8 flex flex-col items-center text-center relative">
-  
-                
                 <h3 className="text-2xl font-black text-white">{data.columns.us}</h3>
               </div>
 
@@ -152,7 +146,10 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
                     <span className="text-sm">{f.competitor}</span>
                   </div>
                   <div className="flex items-center gap-3 px-8 py-5 border-t border-[#FFD700]/10 text-white">
-                    <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]" />
+                    <Icon
+                      icon="ph:check-circle-fill"
+                      className="text-[#FFD700] w-5 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]"
+                    />
                     <span className="text-sm font-semibold">{f.us}</span>
                   </div>
                 </React.Fragment>
@@ -161,15 +158,12 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
               {/* CTA Footer */}
               <div className="p-8" />
               <div className="p-8" />
-              <div className="px-8 pb-8 pt-6 border-t border-[#FFD700]/10">
-                {renderButton()}
-              </div>
+              <div className="px-8 pb-8 pt-6 border-t border-[#FFD700]/10">{renderButton()}</div>
             </div>
           </motion.div>
 
           {/* MOBILE VIEW */}
           <div className="lg:hidden flex flex-col gap-6 max-w-md mx-auto">
-
             {/* Competitor Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -178,14 +172,19 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
               className="bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden"
             >
               <div className="h-28 relative overflow-hidden bg-zinc-900">
-                
-                
-                <h3 className="absolute bottom-4 left-6 text-xl font-bold text-zinc-500">{data.columns.competitor}</h3>
+                <h3 className="absolute bottom-4 left-6 text-xl font-bold text-zinc-500">
+                  {data.columns.competitor}
+                </h3>
               </div>
               <div className="p-5 space-y-3">
                 {data.features.map((f, i) => (
-                  <div key={i} className="flex flex-col gap-1 pb-3 border-b border-white/5 last:border-0 last:pb-0">
-                    <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{f.label}</span>
+                  <div
+                    key={i}
+                    className="flex flex-col gap-1 pb-3 border-b border-white/5 last:border-0 last:pb-0"
+                  >
+                    <span className="text-[10px] text-zinc-600 uppercase tracking-widest">
+                      {f.label}
+                    </span>
                     <div className="flex items-center gap-2 text-zinc-400">
                       <Icon icon="ph:minus-circle" className="w-4 h-4 shrink-0" />
                       <span className="text-sm">{f.competitor}</span>
@@ -207,25 +206,31 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
                 Recomendado
               </div>
               <div className="h-28 relative overflow-hidden">
-                
-                <h3 className="absolute bottom-4 left-6 text-2xl font-black text-white">{data.columns.us}</h3>
+                <h3 className="absolute bottom-4 left-6 text-2xl font-black text-white">
+                  {data.columns.us}
+                </h3>
               </div>
               <div className="p-5 space-y-3">
                 {data.features.map((f, i) => (
-                  <div key={i} className="flex flex-col gap-1 pb-3 border-b border-[#FFD700]/10 last:border-0 last:pb-0">
-                    <span className="text-[10px] text-[#FFD700]/60 uppercase tracking-widest">{f.label}</span>
+                  <div
+                    key={i}
+                    className="flex flex-col gap-1 pb-3 border-b border-[#FFD700]/10 last:border-0 last:pb-0"
+                  >
+                    <span className="text-[10px] text-[#FFD700]/60 uppercase tracking-widest">
+                      {f.label}
+                    </span>
                     <div className="flex items-center gap-2 text-white">
-                      <Icon icon="ph:check-circle-fill" className="text-[#FFD700] w-4 h-4 shrink-0" />
+                      <Icon
+                        icon="ph:check-circle-fill"
+                        className="text-[#FFD700] w-4 h-4 shrink-0"
+                      />
                       <span className="text-sm font-medium">{f.us}</span>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="p-5 pt-2">
-                {renderButton()}
-              </div>
+              <div className="p-5 pt-2">{renderButton()}</div>
             </motion.div>
-
           </div>
         </div>
       </section>
@@ -257,7 +262,7 @@ export default function ComparacaoConcorrentes({ endpoint = "comparacao" }: Prop
                   </button>
                   <div
                     className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: data.button.form_html }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeFormHtml(data.button.form_html) }}
                   />
                 </motion.div>
               </motion.div>

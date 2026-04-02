@@ -6,7 +6,6 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
-import { useApi } from "@/hooks/useApi";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
 import { Button } from "@/components/ui/button/button";
@@ -14,6 +13,7 @@ import { IButton } from "@/interface/button/IButton";
 import { IImage } from "@/interface/imagem/IImage";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
+import { sanitizeFormHtml } from "@/core/security";
 
 // --- TIPAGENS ---
 export interface PricingFeature {
@@ -57,12 +57,11 @@ function mapVariant(v?: string | null): "default" | "outline" | "ghost" {
   return "default";
 }
 
-export default function Preco() {
-  const { data, loading } = useApi<PricingData>("preco-formacoes");
+export default function Preco({ data }: { data: PricingData | null }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFormHtml, setActiveFormHtml] = useState<string | null>(null);
 
-  if (loading || !data || !data.plans || !data.ativo) return null;
+  if (!data || !data.plans || !data.ativo) return null;
 
   const handleCtaClick = (e: React.MouseEvent, button: IButton) => {
     if (button.action === "form" && button.form_html) {
@@ -76,14 +75,25 @@ export default function Preco() {
     const variant = mapVariant(plan.button.variant);
     if (plan.button.action === "link") {
       return (
-        <Button href={plan.button.link} target={plan.button.target} variant={variant} size="pill" className="w-full">
+        <Button
+          href={plan.button.link}
+          target={plan.button.target}
+          variant={variant}
+          size="pill"
+          className="w-full"
+        >
           {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
           {plan.button.label}
         </Button>
       );
     }
     return (
-      <Button variant={variant} size="pill" className="w-full" onClick={(e) => handleCtaClick(e, plan.button)}>
+      <Button
+        variant={variant}
+        size="pill"
+        className="w-full"
+        onClick={(e) => handleCtaClick(e, plan.button)}
+      >
         {plan.button.icon && <Icon icon={plan.button.icon} className="w-5 h-5" />}
         {plan.button.label}
       </Button>
@@ -97,7 +107,6 @@ export default function Preco() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#FFD700]/5 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="container px-4 max-w-7xl mx-auto relative z-10">
-
           {/* Cabeçalho */}
           <div className="text-center mb-16 md:mb-24">
             <motion.div
@@ -152,7 +161,9 @@ export default function Preco() {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                           alt={plan.coverImage.alt || plan.name}
                         />
-                        <div className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent ${isHighlight ? "from-[#111]" : "from-[#0A0A0A]"}`} />
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent ${isHighlight ? "from-[#111]" : "from-[#0A0A0A]"}`}
+                        />
                       </div>
                     ) : (
                       <div className={`pt-8 ${plan.badge ? "pt-10" : ""}`} />
@@ -173,31 +184,40 @@ export default function Preco() {
                       {/* Preço */}
                       <div className="mb-8">
                         <div className="flex items-start gap-1">
-                          <span className="text-xl font-bold text-zinc-500 mt-2">{plan.currency}</span>
-                          <span className="text-5xl lg:text-6xl font-black text-white tracking-tighter">{plan.price}</span>
+                          <span className="text-xl font-bold text-zinc-500 mt-2">
+                            {plan.currency}
+                          </span>
+                          <span className="text-5xl lg:text-6xl font-black text-white tracking-tighter">
+                            {plan.price}
+                          </span>
                         </div>
                         <div className="flex flex-col mt-2">
                           <span className="text-sm text-zinc-500">{plan.period}</span>
                           {plan.installments && (
-                            <span className="text-[#FFD700] font-medium text-sm mt-1">{plan.installments}</span>
+                            <span className="text-[#FFD700] font-medium text-sm mt-1">
+                              {plan.installments}
+                            </span>
                           )}
                         </div>
                       </div>
 
                       {/* Botão */}
-                      <div className="mb-8">
-                        {renderButton(plan)}
-                      </div>
+                      <div className="mb-8">{renderButton(plan)}</div>
 
                       {/* Features — mt-auto empurra para o fundo do card quando há espaço */}
                       <div className="mt-auto space-y-4">
                         {plan.features.map((feature, idx) => (
-                          <div key={idx} className={`flex items-start gap-3 ${feature.included ? "text-zinc-200" : "text-zinc-600"}`}>
+                          <div
+                            key={idx}
+                            className={`flex items-start gap-3 ${feature.included ? "text-zinc-200" : "text-zinc-600"}`}
+                          >
                             <Icon
                               icon={feature.included ? "ph:check-circle-fill" : "ph:minus-circle"}
                               className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.included ? "text-[#FFD700]" : "text-zinc-700"}`}
                             />
-                            <span className={`text-sm ${feature.included ? "font-medium" : "line-through opacity-60"}`}>
+                            <span
+                              className={`text-sm ${feature.included ? "font-medium" : "line-through opacity-60"}`}
+                            >
                               {feature.text}
                             </span>
                           </div>
@@ -219,7 +239,10 @@ export default function Preco() {
               className="mt-20 max-w-4xl mx-auto bg-white/[0.02] border border-white/10 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-8 backdrop-blur-sm"
             >
               <div className="w-16 h-16 rounded-2xl bg-[#FFD700]/10 flex items-center justify-center flex-shrink-0 border border-[#FFD700]/20">
-                <Icon icon={data.guarantee.icon || "ph:shield-check-fill"} className="w-8 h-8 text-[#FFD700]" />
+                <Icon
+                  icon={data.guarantee.icon || "ph:shield-check-fill"}
+                  className="w-8 h-8 text-[#FFD700]"
+                />
               </div>
               <div className="text-center md:text-left">
                 <Heading size="sm" color="#fff" className="mb-2">
@@ -231,7 +254,6 @@ export default function Preco() {
               </div>
             </motion.div>
           )}
-
         </div>
       </section>
 
@@ -262,7 +284,7 @@ export default function Preco() {
                   </button>
                   <div
                     className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: activeFormHtml }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeFormHtml(activeFormHtml) }}
                   />
                 </motion.div>
               </motion.div>

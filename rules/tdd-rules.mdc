@@ -1,0 +1,28 @@
+---
+description: TDD obrigatório — testes antes do código para trabalho com SPEC ou nova feature
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# TDD (Tegbe)
+
+## Regra
+
+Para **nova feature**, **mudança de comportamento** ou **refatoração** guiada por SPEC: **escrever ou ajustar testes primeiro**, depois implementar até passar (red → green → refactor).
+
+Leia [docs/tdd-guidelines.md](../docs/tdd-guidelines.md) para ciclo completo, exceções e ordem de testes.
+
+## Quando aplicar
+
+- Tarefa menciona SPEC, critérios de aceite, skills `testing`, ou migração de fase do [ROADMAP-PLAN.md](../docs/migration/ROADMAP-PLAN.md).
+- Qualquer implementação que não seja explicitamente trivial (ver guidelines).
+
+## Quando relaxar
+
+- Typos, rename sem mudança de comportamento, ajuste de comentário — desde que não alterem contratos públicos.
+- Hotfix com acordo do time + retrospectiva documentada.
+
+## Roteamento
+
+- Plano global e fases: [docs/migration/ROADMAP-PLAN.md](../docs/migration/ROADMAP-PLAN.md) e [rules/documentation-routing.mdc](./documentation-routing.mdc).
+- Arquitetura e regra suprema: [rules/architecture-rules.mdc](./architecture-rules.mdc).

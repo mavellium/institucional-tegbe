@@ -1,0 +1,108 @@
+# SPEC — Home Hero Carousel
+# Convenção: <feature-slug>.spec.yaml
+# Localização até existir src/features/: docs/specs/
+
+feature: home-hero-carousel
+
+context: |
+  Carrossel principal da Home page (rota `/`). É o primeiro elemento visível após o Header,
+  responsável por comunicar as principais soluções da Tegbe com slides compostos por
+  título, descrição, CTA e imagem. Consome o endpoint `hero-carrossel-home` do CMS.
+  Hoje implementado em `src/components/sections/HeroCarrossel/` com `useApi` (client-side).
+  No estado-alvo, o fetch deve migrar para o servidor (data layer — Fase 3/4).
+
+ui_contract:
+  type: strict
+  reference: current_layout
+  notes: |
+    Preservar layout atual: fundo escuro (#0A0A0A), texto de fundo sutil ("TEGBE"),
+    destaque amarelo (#cfba19), navegação com gradiente #f5df36.
+    Não redesenhar; corrigir apenas quebras de responsividade e acessibilidade.
+
+component_state: legacy
+# Legacy: usa useApi (fetch client-side para conteúdo de página).
+# Deve ser migrado para server-side na Fase 3/4, sem redesenho visual.
+
+data_contract:
+  source: cms
+  slug_or_endpoint: "hero-carrossel-home"
+  normalized_shape:
+    id: "string | number"
+    tag: "string (opcional)"
+    title: "string (opcional)"
+    description: "string (opcional)"
+    subtext: "string (opcional)"
+    ctaText: "string (opcional)"
+    ctaLink: "string (opcional)"
+    image: "string URL (opcional)"
+    richContent: "any (opcional)"
+  error_handling: null_safe
+  notes: |
+    Hoje: `useApi<HeroSlide[]>(endpoint)` retorna `data ?? []`.
+    Alvo (Fase 3+): dados normalizados passados via props pelo Server Component da página.
+
+ui_states:
+  - loading # slides ainda não carregaram (useApi); exibir skeleton ou nada
+  - success # slides presentes; carrossel funcional com autoplay e navegação
+  - empty # array vazio retornado pelo CMS; não quebrar — ocultar seção graciosamente
+  - error # fetch falhou; não quebrar página — ocultar seção graciosamente
+
+# Critérios de teste ANTES da implementação (TDD — Fase 2+)
+acceptance_criteria:
+  - Renderiza todos os slides retornados pelo CMS sem erro visual
+  - Autoplay avança para o próximo slide após `autoplayDelay` ms
+  - Navegação (prev/next) altera o slide ativo corretamente
+  - Indicadores de posição refletem o slide atual
+  - Quando o array de slides está vazio, a seção não renderiza conteúdo quebrado
+  - Quando o fetch falha, a página continua funcionando (sem crash)
+  - Layout é responsivo: mobile, tablet e desktop preservam a intenção visual
+  - Imagens usam `next/image` (ou equivalente otimizado)
+  - CTA redireciona para `ctaLink` corretamente
+
+test_cases:
+  - id: TC-01
+    description: Renderiza slides com dados válidos do CMS
+    type: integration
+  - id: TC-02
+    description: Autoplay avança o índice do slide após o delay configurado
+    type: unit
+  - id: TC-03
+    description: Botão "next" avança para o próximo slide; "prev" retrocede
+    type: unit
+  - id: TC-04
+    description: Array vazio retornado — componente não lança erro e não renderiza slides
+    type: unit
+  - id: TC-05
+    description: Fetch com erro — página não crasha; seção omitida ou em fallback
+    type: integration
+  - id: TC-06
+    description: Layout responsivo — snapshot visual mobile (375px) e desktop (1280px)
+    type: visual
+  - id: TC-07
+    description: CTA com link externo abre URL correta
+    type: unit
+
+# Cada slug corresponde a skills/<slug>/SKILL.md na raiz (ver skills/README.md)
+skills:
+  - data-fetching # migrar fetch para server (Fase 3/4); normalizar contrato
+  - ui-preservation # preservar layout atual; não redesenhar
+  - responsiveness # verificar/corrigir quebras em mobile
+  - performance # next/image, autoplay lazy, bundle client mínimo
+  - testing # unit + integration (Fase 2+); visual (Fase 6)
+  - accessibility # aria-label nos botões de nav; roles de carrossel
+
+dependencies:
+  phases: []
+  # Implementação atual pode ser analisada e testada já na Fase 2.
+  # Migração do fetch para server depende da Fase 3 (data layer) e Fase 4 (features/).
+  notes: |
+    Esta SPEC documenta o componente legado e define o caminho de migração.
+    Testes podem ser escritos na Fase 2 contra a implementação atual (useApi).
+    Refatoração server-first ocorre nas Fases 3-4.
+
+notes: |
+  Arquivo-fonte atual: src/components/sections/HeroCarrossel/index.tsx
+  Tipo dos dados: src/types/heroSlide.type.ts (interface HeroSlide)
+  Chamado em: src/app/page.tsx com endpoint="hero-carrossel-home", type="HeroHome"
+  Props visuais passadas pela página: corDestaque, textoFundo, navGradienteFrom,
+  navGradienteTo, navAccent, corIcone, loop, autoplayDelay.

@@ -4,22 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { LogosApiData, LogosProps, VARIANT_CONFIGS } from "@/types/logos.type";
 import LogoItem from "@/components/ui/logoItem";
-import { useApi } from "@/hooks/useApi";
 import { ILogo } from "@/interface/imagem/ILogo";
 
-export default function Logos({ variant = "default", endpoint }: LogosProps) {
+export default function Logos({
+  variant = "default",
+  data,
+}: Omit<LogosProps, "endpoint"> & { data: LogosApiData | null }) {
   const config = VARIANT_CONFIGS[variant];
   const singleSetRef = useRef<HTMLDivElement>(null);
   const [setWidth, setSetWidth] = useState(0);
 
-  // 🔹 Pega os dados da API
-  const { data, loading } = useApi<LogosApiData>(endpoint);
-
   // 🔹 Garante que sempre teremos um array de logos
-  const logos: ILogo[] = data?.values?.map((item) => ({
-    ...item,
-    alt: item.alt || item.name || item.description || "Logo",
-  })) ?? [];
+  const logos: ILogo[] =
+    data?.values?.map((item) => ({
+      ...item,
+      alt: item.alt || item.name || item.description || "Logo",
+    })) ?? [];
 
   // 🔹 Calcula a largura do conjunto de logos (para animação)
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
     return () => clearTimeout(timer);
   }, [logos]);
 
-  if (loading || !logos.length) return null;
+  if (!logos.length) return null;
 
   const duration = setWidth / config.speed || 20;
 
@@ -50,11 +50,7 @@ export default function Logos({ variant = "default", endpoint }: LogosProps) {
 
       <div className="relative overflow-hidden">
         {/* Medição da largura real */}
-        <div
-          ref={singleSetRef}
-          className="flex items-center invisible absolute"
-          aria-hidden="true"
-        >
+        <div ref={singleSetRef} className="flex items-center invisible absolute" aria-hidden="true">
           {logos.map((logo: ILogo, i: number) => (
             <LogoItem key={`measure-${i}`} logo={logo} config={config} />
           ))}

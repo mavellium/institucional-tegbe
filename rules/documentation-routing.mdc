@@ -1,0 +1,31 @@
+---
+description: Quando ler qual documento — roadmap, fases, TDD, skills
+alwaysApply: true
+---
+
+# Roteamento de documentação (Tegbe)
+
+Antes de implementar mudanças de arquitetura ou features com SPEC, abra os documentos indicados.
+
+## Tabela gatilho → documento
+
+| Situação | Ler |
+|----------|-----|
+| Visão global do plano, fases, TDD, dependências | [docs/migration/ROADMAP-PLAN.md](../docs/migration/ROADMAP-PLAN.md) |
+| Status das fases e links | [docs/migration/README.md](../docs/migration/README.md) |
+| Implementação com SPEC, nova feature ou mudança de comportamento | [docs/tdd-guidelines.md](../docs/tdd-guidelines.md) + [rules/tdd-rules.mdc](./tdd-rules.mdc) |
+| Decisões de arquitetura, SDD, skills, princípios | [docs/architecture-guidelines.md](../docs/architecture-guidelines.md) |
+| Trabalho na **Fase N** do roadmap | `docs/migration/phase-0N-*.md` + README da migration |
+| SPEC nova ou revisão SDD | [docs/specs/TEMPLATE.spec.yaml](../docs/specs/TEMPLATE.spec.yaml) + [phase-01-governance-and-specs.md](../docs/migration/phase-01-governance-and-specs.md) |
+| Testes / runner / CI inicial | [phase-02-quality-tooling.md](../docs/migration/phase-02-quality-tooling.md) + [skills/testing/SKILL.md](../skills/testing/SKILL.md) (+ phase-06 se E2E/visual) |
+| Fetch / CMS / cache / data layer | [phase-03-core-data-layer.md](../docs/migration/phase-03-core-data-layer.md) + [skills/data-fetching/SKILL.md](../skills/data-fetching/SKILL.md) |
+| `features/` piloto, `shared/` | [phase-04-features-and-shared.md](../docs/migration/phase-04-features-and-shared.md) |
+| Remover `useApi` / props server | [phase-05-remove-client-cms-fetch.md](../docs/migration/phase-05-remove-client-cms-fetch.md) + [skills/data-fetching/SKILL.md](../skills/data-fetching/SKILL.md) |
+| Playwright / Lighthouse / pipeline | [phase-06-visual-observability-ci.md](../docs/migration/phase-06-visual-observability-ci.md) + [skills/visual-testing/SKILL.md](../skills/visual-testing/SKILL.md) |
+| Sanitização / payloads | [phase-07-security.md](../docs/migration/phase-07-security.md) + [skills/security/SKILL.md](../skills/security/SKILL.md) |
+| UI sem mudar identidade | [skills/ui-preservation/SKILL.md](../skills/ui-preservation/SKILL.md) + classificação stable/broken/… no guia |
+| Índice de skills (`SKILL.md` por pasta) | [skills/README.md](../skills/README.md) |
+
+## Regra de execução
+
+Em tarefas de **migração** ou **feature**: abrir o doc da **fase ativa** (se aplicável); para cada slug em `skills:` na SPEC, abrir `skills/<slug>/SKILL.md`; seguir **TDD** quando houver entrega de comportamento novo.

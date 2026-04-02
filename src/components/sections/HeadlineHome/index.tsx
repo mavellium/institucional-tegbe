@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button/button";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { sanitizeHtml } from "@/core/security";
 
 interface HeadlineHomeProps {
   content: any;
@@ -20,6 +21,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
   const h1Ref = useRef<HTMLHeadingElement>(null);
 
   // Otimização: Carregar animações após hidratação
+
   useEffect(() => {
     setIsVisible(true);
     setHasHydrated(true);
@@ -73,9 +75,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
           <div
             className="mb-8 xl:mb-10 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-lg opacity-0 md:opacity-100"
             style={{
-              animation: hasHydrated
-                ? "fadeIn 0.5s ease-out 0.1s forwards"
-                : "none",
+              animation: hasHydrated ? "fadeIn 0.5s ease-out 0.1s forwards" : "none",
             }}
           >
             <Icon
@@ -134,7 +134,7 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
               animation: "none",
               willChange: "transform",
             }}
-            dangerouslySetInnerHTML={{ __html: content.titulo?.tituloPrincipal }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.titulo?.tituloPrincipal) }}
           />
         </div>
 
@@ -142,20 +142,16 @@ export function HeadlineHome({ content, theme }: HeadlineHomeProps) {
         <div
           className="max-w-3xl xl:max-w-4xl mx-auto text-lg sm:text-xl xl:text-2xl text-gray-400 font-light leading-relaxed mb-12 xl:mb-16 opacity-0 md:opacity-100"
           style={{
-            animation: hasHydrated
-              ? "fadeIn 0.6s ease-out 0.2s forwards"
-              : "none",
+            animation: hasHydrated ? "fadeIn 0.6s ease-out 0.2s forwards" : "none",
           }}
-          dangerouslySetInnerHTML={{ __html: content.subtitulo }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.subtitulo) }}
         />
 
         {/* BOTÕES */}
         <div
           className="flex flex-col sm:flex-row items-center gap-5 xl:gap-8 opacity-0 md:opacity-100"
           style={{
-            animation: hasHydrated
-              ? "fadeIn 0.6s ease-out 0.3s forwards"
-              : "none",
+            animation: hasHydrated ? "fadeIn 0.6s ease-out 0.3s forwards" : "none",
           }}
         >
           {content.botao?.visivel && (

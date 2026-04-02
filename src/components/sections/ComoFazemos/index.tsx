@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { sanitizeFormHtml } from "@/core/security";
 
 // Interfaces
 interface Cta {
@@ -44,7 +45,7 @@ export default function MethodSectionPremium() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('/api-tegbe/tegbe-institucional/como-fazemos');
+        const response = await fetch("/api-tegbe/tegbe-institucional/como-fazemos");
         const result = await response.json();
         if (result.methodology) setData(result.methodology);
       } catch (error) {
@@ -82,7 +83,8 @@ export default function MethodSectionPremium() {
               className="h-1 bg-yellow-400 mb-6"
             />
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.05]">
-              {data.section_header.title_main}<br />
+              {data.section_header.title_main}
+              <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400">
                 {data.section_header.title_highlight}
               </span>
@@ -118,7 +120,10 @@ export default function MethodSectionPremium() {
             className="group flex items-center gap-3 px-8 py-4 bg-[#0A0A0A] text-white rounded-full font-bold uppercase tracking-wider text-sm hover:bg-yellow-400 hover:text-black hover:shadow-xl hover:shadow-yellow-400/20 transition-all duration-300 cursor-pointer border-none"
           >
             <span>{data.cta.text}</span>
-            <Icon icon={data.cta.icon} className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <Icon
+              icon={data.cta.icon}
+              className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+            />
           </motion.button>
         </div>
       </div>
@@ -151,9 +156,7 @@ export default function MethodSectionPremium() {
                 </button>
 
                 {/* Formulário injetado */}
-                <div
-                  dangerouslySetInnerHTML={{ __html: data.cta.form_html }}
-                />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeFormHtml(data.cta.form_html) }} />
               </motion.div>
             </motion.div>
           )}
@@ -182,7 +185,10 @@ function StepCard({ data, index, totalSteps }: { data: Step; index: number; tota
               <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1px] h-50 bg-gradient-to-b from-transparent via-yellow-300/40 to-yellow-400" />
             )}
             <div className="w-16 h-16 rounded-2xl bg-white border border-gray-100 shadow-[0_8px_20px_-6px_rgba(0,0,0,0.05)] flex items-center justify-center relative z-20 group-hover:border-yellow-400 group-hover:shadow-[0_12px_30px_-10px_rgba(234,179,8,0.2)] transition-all duration-500">
-              <Icon icon={data.icon} className="w-7 h-7 text-gray-400 group-hover:text-yellow-600 transition-colors duration-300" />
+              <Icon
+                icon={data.icon}
+                className="w-7 h-7 text-gray-400 group-hover:text-yellow-600 transition-colors duration-300"
+              />
               <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold font-mono border-2 border-white group-hover:bg-yellow-400 group-hover:text-black transition-colors">
                 {data.id}
               </div>
@@ -197,7 +203,8 @@ function StepCard({ data, index, totalSteps }: { data: Step; index: number; tota
           <div className="flex-1 pt-2">
             <div className="mb-3">
               <span className="px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-yellow-600 group-hover:bg-yellow-50 group-hover:border-yellow-100 transition-all duration-300">
-                // {data.label}
+                {"// "}
+                {data.label}
               </span>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors duration-300">
@@ -216,7 +223,10 @@ function StepCard({ data, index, totalSteps }: { data: Step; index: number; tota
             whileHover={{ scale: 1.1, rotate: 5 }}
             className="w-24 h-24 rounded-[2rem] bg-white border border-gray-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] flex items-center justify-center relative z-20 group-hover:border-yellow-400 group-hover:shadow-[0_20px_40px_-15px_rgba(234,179,8,0.2)] transition-all duration-500"
           >
-            <Icon icon={data.icon} className="w-10 h-10 text-gray-400 group-hover:text-yellow-600 transition-colors duration-300" />
+            <Icon
+              icon={data.icon}
+              className="w-10 h-10 text-gray-400 group-hover:text-yellow-600 transition-colors duration-300"
+            />
             <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold font-mono border-4 border-white group-hover:bg-yellow-400 group-hover:text-black transition-colors">
               {data.id}
             </div>
@@ -225,7 +235,8 @@ function StepCard({ data, index, totalSteps }: { data: Step; index: number; tota
         <div className="text-center relative">
           <div className="inline-block mb-3">
             <span className="px-3 py-1 rounded-full bg-gray-50 border border-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-yellow-600 group-hover:bg-yellow-50 group-hover:border-yellow-100 transition-all duration-300">
-              // {data.label}
+              {"// "}
+              {data.label}
             </span>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-yellow-600 transition-colors duration-300">

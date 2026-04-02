@@ -1,69 +1,57 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Icon } from "@iconify/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useApi } from "@/hooks/useApi"
-import { FeatureSectionData } from "@/interface/feature/IFeatureSection"
-import Textura from "../ui/textura"
-import Paragrafo from "../ui/paragrafo"
-import RichText from "../ui/rich/richText"
-import Heading from "../ui/heading"
-import CTAButton from "../ui/button/ctaButton"
+import { useState } from "react";
+import Image from "next/image";
+import { Icon } from "@iconify/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FeatureSectionData } from "@/interface/feature/IFeatureSection";
+import Textura from "../ui/textura";
+import Paragrafo from "../ui/paragrafo";
+import RichText from "../ui/rich/richText";
+import Heading from "../ui/heading";
+import CTAButton from "../ui/button/ctaButton";
 
-export default function Solucoes() {
-  const { data: apiData, loading } = useApi<FeatureSectionData>("solucoes")
+export default function Solucoes({ data }: { data: FeatureSectionData | null }) {
+  const [active, setActive] = useState(0);
 
-const [data, setData] = useState<FeatureSectionData | null>(null)
-const [active, setActive] = useState(0)
-
-useEffect(() => {
-  if (!loading && apiData) {
-    setData(apiData)
+  if (!data) {
+    return null;
   }
-}, [apiData, loading])
 
-useEffect(() => {
-  if (data) setActive(0)
-}, [data])
-
-if (loading || !data) {
-  return
-}
-
-const feature = data.items[active]
-
-  if (loading) {
-    return (
-      <section className="relative z-0 py-24 bg-[#0A0A0A] px-6 text-white flex items-center justify-center min-h-[400px]">
-        <div className="w-10 h-10 border-4 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
-      </section>
-    )
-  }
+  const feature = data.items[active];
 
   return (
     <section className="relative z-0 py-24 bg-[#0A0A0A] px-6 text-white overflow-hidden">
-      <Textura
-        misturar
-        opacity={0.1}
-        src="/textura.svg"
-        className="z-0"
-      />
+      <Textura misturar opacity={0.1} src="/textura.svg" className="z-0" />
 
       <div className="max-w-[1200px] mx-auto relative z-10">
-
         {/* HEADER */}
         <div className="mb-20 text-center lg:text-left">
           {data.header.subtitle && (
-            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Paragrafo color="#fff" className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Paragrafo
+                color="#fff"
+                className="text-[#E31B63] text-sm font-bold uppercase tracking-[0.2em] mb-4"
+              >
                 <RichText content={data.header.subtitle} />
               </Paragrafo>
             </motion.div>
           )}
-          <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-            <Heading as="h2" className="text-4xl md:text-5xl font-medium tracking-tight" color="white">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <Heading
+              as="h2"
+              className="text-4xl md:text-5xl font-medium tracking-tight"
+              color="white"
+            >
               <RichText content={data.header.title} />
             </Heading>
           </motion.div>
@@ -71,7 +59,6 @@ const feature = data.items[active]
 
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-16 items-start relative">
-
           {/* LISTA CLEAN */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             {data.items.map((item, index) => {
@@ -83,9 +70,11 @@ const feature = data.items[active]
                   onClick={() => setActive(index)}
                   className={`
                     relative w-full text-left p-5 rounded-2xl transition-all duration-300 ease-out group border
-                    ${isActive
-                      ? "bg-white/[0.04] border-white/10 shadow-lg"
-                      : "bg-transparent border-transparent hover:bg-white/[0.02] hover:border-white/5"}
+                    ${
+                      isActive
+                        ? "bg-white/[0.04] border-white/10 shadow-lg"
+                        : "bg-transparent border-transparent hover:bg-white/[0.02] hover:border-white/5"
+                    }
                   `}
                 >
                   {isActive && (
@@ -99,27 +88,35 @@ const feature = data.items[active]
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       {item.icon && (
-                        <div className={`
+                        <div
+                          className={`
                           p-3 rounded-xl transition-all duration-300 flex items-center justify-center
-                          ${isActive
-                            ? "bg-[#E31B63]/10 text-[#E31B63]"
-                            : "bg-white/[0.03] text-white/40 group-hover:bg-white/[0.06] group-hover:text-white/70"}
-                        `}>
+                          ${
+                            isActive
+                              ? "bg-[#E31B63]/10 text-[#E31B63]"
+                              : "bg-white/[0.03] text-white/40 group-hover:bg-white/[0.06] group-hover:text-white/70"
+                          }
+                        `}
+                        >
                           <Icon icon={item.icon} className="w-6 h-6" />
                         </div>
                       )}
 
-                      <Heading  as="h3" size="md" className="text-xl font-medium">
-                        <span className={`transition-colors duration-300 ${isActive ? "!text-white" : "!text-white/60 group-hover:!text-white"}`}>
+                      <Heading as="h3" size="md" className="text-xl font-medium">
+                        <span
+                          className={`transition-colors duration-300 ${isActive ? "!text-white" : "!text-white/60 group-hover:!text-white"}`}
+                        >
                           <RichText content={item.title} />
                         </span>
                       </Heading>
                     </div>
 
-                    <div className={`
+                    <div
+                      className={`
                       transition-transform duration-300 flex-shrink-0
                       ${isActive ? "rotate-180 text-[#E31B63]" : "text-white/20 group-hover:text-white/50"}
-                    `}>
+                    `}
+                    >
                       <Icon icon="lucide:chevron-down" className="w-5 h-5" />
                     </div>
                   </div>
@@ -134,7 +131,10 @@ const feature = data.items[active]
                         className="overflow-hidden"
                       >
                         <div className="pl-16 pt-2 pb-1">
-                          <Paragrafo  color="#fff" className="text-white/60 text-base leading-relaxed pr-4">
+                          <Paragrafo
+                            color="#fff"
+                            className="text-white/60 text-base leading-relaxed pr-4"
+                          >
                             <RichText content={item.description} />
                           </Paragrafo>
                         </div>
@@ -142,7 +142,7 @@ const feature = data.items[active]
                     )}
                   </AnimatePresence>
                 </button>
-              )
+              );
             })}
           </div>
 
@@ -170,7 +170,6 @@ const feature = data.items[active]
               </AnimatePresence>
             </div>
           </div>
-
         </div>
 
         {/* CTA */}
@@ -186,8 +185,7 @@ const feature = data.items[active]
             </motion.div>
           </div>
         )}
-
       </div>
     </section>
-  )
+  );
 }

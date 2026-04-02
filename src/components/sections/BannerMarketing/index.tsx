@@ -9,19 +9,18 @@ import Paragrafo from "@/components/ui/paragrafo";
 import RichText from "@/components/ui/rich/richText";
 import Textura from "@/components/ui/textura";
 import { Button } from "@/components/ui/button/button";
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import { IButton } from "@/interface/button/IButton";
 
-import { 
-  FaInstagram, 
-  FaTiktok, 
-  FaFacebookF, 
-  FaYoutube, 
-  FaLinkedinIn, 
-  FaPinterestP, 
-  FaWhatsapp, 
-  FaXTwitter 
+import {
+  FaInstagram,
+  FaTiktok,
+  FaFacebookF,
+  FaYoutube,
+  FaLinkedinIn,
+  FaPinterestP,
+  FaWhatsapp,
+  FaXTwitter,
 } from "react-icons/fa6";
 import { FiArrowUpRight } from "react-icons/fi";
 
@@ -64,10 +63,11 @@ interface IMarketing {
 
 const getCssGradient = (tailwindString: string) => {
   if (!tailwindString) return "none";
-  const hexColors = [...tailwindString.matchAll(/\[#([a-fA-F0-9]+)\]/g)].map(m => `#${m[1]}`);
-  
+  const hexColors = [...tailwindString.matchAll(/\[#([a-fA-F0-9]+)\]/g)].map((m) => `#${m[1]}`);
+
   if (hexColors.length === 2) return `linear-gradient(135deg, ${hexColors[0]}, ${hexColors[1]})`;
-  if (hexColors.length >= 3) return `linear-gradient(135deg, ${hexColors[0]}, ${hexColors[1]}, ${hexColors[2]})`;
+  if (hexColors.length >= 3)
+    return `linear-gradient(135deg, ${hexColors[0]}, ${hexColors[1]}, ${hexColors[2]})`;
   return "#e5e5e5";
 };
 
@@ -81,16 +81,14 @@ const container: Variants = {
 
 const item: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { type: "spring", stiffness: 100, damping: 20 } 
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 },
   },
 };
 
-export default function MarketingSection({ endpoint }: { endpoint: string }) {
-  const { data } = useApi<IMarketing>(endpoint);
-
+export default function MarketingSection({ data }: { data: IMarketing | null }) {
   if (!data) return null;
 
   const { header, socials, button } = data;
@@ -101,27 +99,28 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
       <Textura opacity={0.03} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        
         {/* HEADER */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
           {header.preTitle && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 text-primary mb-6 border border-primary/10"
             >
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-widest">
-                {header.preTitle}
-              </span>
+              <span className="text-xs font-bold uppercase tracking-widest">{header.preTitle}</span>
             </motion.div>
           )}
-          
-          <Heading align="center" as="h2" className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight">
+
+          <Heading
+            align="center"
+            as="h2"
+            className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight"
+          >
             <RichText content={header.title} />
           </Heading>
-          
+
           <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
             <RichText content={header.subtitle} />
           </div>
@@ -142,21 +141,20 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
 
             return (
               <motion.div key={s.name} variants={item}>
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   // AQUI ESTÁ A MÁGICA: Borda mais visível (neutral-200) e uma Sombra real e espalhada (shadow-lg customizada)
                   className="group block relative bg-white rounded-[1.5rem] p-8 border border-neutral-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-2 overflow-hidden"
                 >
-                  
                   {/* LINHA DE COR NO TOPO */}
-                  <div 
+                  <div
                     className="absolute top-0 left-0 right-0 h-1.5 opacity-40 group-hover:opacity-100 transition-opacity duration-300"
                     style={{ background: dynamicGradient }}
                   />
 
                   {/* HEADER DO CARD */}
                   <div className="flex justify-between items-start mb-12 relative z-10">
-                    <div 
+                    <div
                       className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white shadow-sm border border-neutral-100 group-hover:scale-110 transition-all duration-500"
                       style={{ color: brandColor }}
                     >
@@ -164,7 +162,10 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
                     </div>
 
                     <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300 border border-neutral-100">
-                      <FiArrowUpRight size={18} className="text-neutral-600 group-hover:text-neutral-900" />
+                      <FiArrowUpRight
+                        size={18}
+                        className="text-neutral-600 group-hover:text-neutral-900"
+                      />
                     </div>
                   </div>
 
@@ -173,20 +174,19 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
                     <h3 className="text-xl font-bold text-neutral-800 group-hover:text-neutral-950 transition-colors">
                       {s.name}
                     </h3>
-                    
+
                     <span className="block text-sm font-medium text-neutral-400 mt-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                       Explorar rede &rarr;
                     </span>
                   </div>
 
                   {/* FANTASMA DOMADO NO FUNDO */}
-                  <div 
+                  <div
                     className="absolute -right-6 -bottom-6 z-0 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-6 pointer-events-none"
                     style={{ color: brandColor }}
                   >
                     <IconComponent size={130} />
                   </div>
-
                 </a>
               </motion.div>
             );
@@ -195,7 +195,7 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
 
         {/* CTA */}
         {button && button.action === "link" && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -203,7 +203,10 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
             className="flex justify-center mt-24 relative z-10"
           >
             <Link href={button.link} target={button.target ?? "_self"}>
-              <Button variant={button.variant} className="h-14 px-10 text-base font-medium shadow-lg hover:shadow-primary/20 transition-all hover:-translate-y-0.5">
+              <Button
+                variant={button.variant}
+                className="h-14 px-10 text-base font-medium shadow-lg hover:shadow-primary/20 transition-all hover:-translate-y-0.5"
+              >
                 {button.label}
               </Button>
             </Link>

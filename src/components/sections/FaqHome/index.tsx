@@ -5,7 +5,6 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Textura from "@/components/ui/textura";
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 
@@ -30,9 +29,7 @@ interface FAQData {
 }
 
 // ================== COMPONENT ==================
-export default function FaqSection() {
-  const { data } = useApi<FAQData>("faq-home");
-
+export default function FaqSection({ data }: { data: FAQData | null }) {
   const faq = data?.faq;
 
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -43,14 +40,9 @@ export default function FaqSection() {
 
   return (
     <section className="relative py-32 bg-[#F8F9FA] selection:bg-neutral-900 selection:text-white">
-      
-      <Textura
-        opacity={0.02}
-        className="absolute inset-0 pointer-events-none mix-blend-multiply"
-      />
+      <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6">
-        
         {/* HEADER */}
         <div className="flex flex-col items-center text-center mb-20">
           <motion.div
@@ -108,9 +100,7 @@ export default function FaqSection() {
                 >
                   <span
                     className={`text-lg md:text-xl font-semibold tracking-tight transition-colors duration-300 pr-6 ${
-                      isOpen
-                        ? "text-neutral-950"
-                        : "text-neutral-600 group-hover:text-neutral-900"
+                      isOpen ? "text-neutral-950" : "text-neutral-600 group-hover:text-neutral-900"
                     }`}
                   >
                     <RichText content={item.question} />
@@ -126,10 +116,7 @@ export default function FaqSection() {
                     }
                   `}
                   >
-                    <Icon
-                      icon="solar:alt-arrow-down-linear"
-                      className="w-5 h-5"
-                    />
+                    <Icon icon="solar:alt-arrow-down-linear" className="w-5 h-5" />
                   </div>
                 </button>
 

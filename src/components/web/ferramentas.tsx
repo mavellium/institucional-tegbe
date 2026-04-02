@@ -2,18 +2,9 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import {
-  Bot,
-  Users,
-  Globe,
-  BarChart3,
-  Mail,
-  Layers,
-  ArrowUpRight,
-} from "lucide-react";
+import { Bot, Users, Globe, BarChart3, Mail, Layers, ArrowUpRight } from "lucide-react";
 
 import Textura from "@/components/ui/textura";
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 
@@ -71,9 +62,7 @@ const itemVariants: Variants = {
 };
 
 // ================== COMPONENT ==================
-export default function Ferramentas() {
-  const { data } = useApi<FerramentasData>("ferramentas");
-
+export default function Ferramentas({ data }: { data: FerramentasData | null }) {
   const ferramentas = data?.ferramentas;
 
   if (!ferramentas || !ferramentas.tools?.length) return null;
@@ -85,10 +74,7 @@ export default function Ferramentas() {
       id="ferramentas"
       className="relative py-32 bg-[#F8F9FA] selection:bg-neutral-900 selection:text-white overflow-hidden"
     >
-      <Textura
-        opacity={0.02}
-        className="absolute inset-0 pointer-events-none mix-blend-multiply"
-      />
+      <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* HEADER */}
@@ -126,13 +112,8 @@ export default function Ferramentas() {
             const Icon = iconMap[tool.icon];
 
             return (
-              <motion.div
-                key={tool.icon}
-                variants={itemVariants}
-                className="relative group h-full"
-              >
+              <motion.div key={tool.icon} variants={itemVariants} className="relative group h-full">
                 <div className="relative flex flex-col h-full bg-white rounded-[1.5rem] p-8 border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1.5 overflow-hidden z-10">
-                  
                   <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 bg-gradient-to-br ${tool.gradient}`}
                   />
@@ -142,12 +123,7 @@ export default function Ferramentas() {
                     <div
                       className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tool.gradient} shadow-lg ${tool.shadow} flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}
                     >
-                      {Icon && (
-                        <Icon
-                          className="w-6 h-6 text-white"
-                          strokeWidth={1.5}
-                        />
-                      )}
+                      {Icon && <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />}
                     </div>
 
                     <div className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
@@ -168,12 +144,7 @@ export default function Ferramentas() {
 
                   {/* FUNDO */}
                   <div className="absolute -right-6 -bottom-6 opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-12 pointer-events-none z-0">
-                    {Icon && (
-                      <Icon
-                        className="w-40 h-40 text-neutral-900"
-                        strokeWidth={1}
-                      />
-                    )}
+                    {Icon && <Icon className="w-40 h-40 text-neutral-900" strokeWidth={1} />}
                   </div>
                 </div>
               </motion.div>

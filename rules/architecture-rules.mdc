@@ -1,0 +1,63 @@
+---
+description: Governança Tegbe — SDD, Skills, TDD, arquitetura-alvo e preservação de UI
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# Regras de arquitetura (Tegbe)
+
+## Regra suprema
+
+**Sem SPEC → sem SKILL aplicável → sem TESTE → sem CÓDIGO.**
+
+(Exceção: correções triviais acordadas ou hotfix com retrospectiva.)
+
+## TDD e documentação
+
+- **Teste antes do código** para trabalho com SPEC ou mudança de comportamento: [docs/tdd-guidelines.md](../docs/tdd-guidelines.md) e [rules/tdd-rules.mdc](./tdd-rules.mdc).
+- **Plano mestre (fases):** [docs/migration/ROADMAP-PLAN.md](../docs/migration/ROADMAP-PLAN.md).
+- **Quando ler qual arquivo:** [rules/documentation-routing.mdc](./documentation-routing.mdc).
+
+## Quando ler `docs/architecture-guidelines.md`
+
+Abra `docs/architecture-guidelines.md` **antes** de implementar ou responder em profundidade quando:
+
+- Escrever ou revisar uma **SPEC** (feature, contrato de dados, skills, UI contract).
+- Planejar ou executar **migração** (pastas `features/`, `shared/`, `core/`, data layer).
+- Trabalhar com **dados do CMS**, cache, normalização ou política server vs client.
+- Classificar ou alterar **UI** (stable / inconsistent / broken / legacy) ou responsividade.
+- Definir ou rodar **testes** (unit, integração, E2E, visual, performance).
+- Mudar **`next.config.ts`**, imagens remotas, SEO/Schema, pipeline ou ferramentas de qualidade.
+- **Onboarding**, revisão de arquitetura ou perguntas “como o projeto deve funcionar”.
+
+Para typos ou um import isolado em arquivo já em contexto, reler o guia completo é opcional.
+
+## Processo (SDD + agentes)
+
+1. SPEC com `feature`, `ui_contract`, `component_state`, `skills` e critérios de teste.
+2. Para cada slug em `skills:` na SPEC, abrir `skills/<slug>/SKILL.md` (índice: `skills/README.md`) e aplicar as regras.
+3. Fluxo: **SPEC → Skills → testes (TDD) → implementação → refatoração**.
+
+## Preservação de UI
+
+Antes de editar: classificar componente como **stable**, **inconsistent**, **broken** ou **legacy**.
+
+- Preservar intenção visual; corrigir responsividade e inconsistências; melhorar a11y quando necessário.
+- Não redesenhar; não mudar hierarquia de conteúdo nem identidade visual sem justificativa.
+- **Broken** pode ser reestruturado; demais casos, mudança mínima e validação visual.
+
+## Arquitetura-alvo (resumo)
+
+- **Server-first**; UI não acessa API do CMS diretamente — dados via **data layer** (serviços, normalização, erros).
+- Pastas-alvo: `src/features/<feature>/{components,services,types,specs}`, `src/shared/{ui,hooks,utils}`, `src/core/{api,config,security}`.
+- O repositório ainda pode usar `components/sections`, `web`, `lib`, `useApi`: tratar como **legado** a migrar conforme SPEC.
+
+## Stack e qualidade (alvo)
+
+- Next.js App Router, TypeScript strict, Tailwind, testes com Vitest / Testing Library / Playwright, ESLint + Prettier + Husky quando adotados.
+- Performance: `next/image`, bundle e RSC; metas: LCP/CLS/TBT conforme guia.
+
+## Referência rápida legada (até migração)
+
+- Rotas: `src/app/`. Env: `NEXT_PUBLIC_API_URL` (sem `/` final). Rewrite: `/api-tegbe/*` em `next.config.ts`.
+- Hoje: `fetchComponentData` / `getSafeData` no servidor; `useApi` ainda existe no client — **novas features** devem seguir o guia (data layer, sem fetch de CMS na UI).

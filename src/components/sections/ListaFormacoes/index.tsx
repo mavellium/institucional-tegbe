@@ -5,7 +5,6 @@ import { motion, useInView, Variants } from "framer-motion";
 import Link from "next/link";
 import ModuleCard from "@/components/ui/moduleCard";
 import { RichTextItem } from "@/types/richText.type";
-import { useApi } from "@/hooks/useApi";
 import { IButton } from "@/interface/button/IButton";
 import { Button } from "@/components/ui/button/button";
 import Heading from "@/components/ui/heading";
@@ -38,13 +37,12 @@ interface ConfigData {
 /* =========================
    COMPONENT
 ========================= */
-export default function CourseModules() {
-  const { data, loading } = useApi<ConfigData>("formacoes");
+export default function CourseModules({ data }: { data: ConfigData | null }) {
   const ref = useRef(null);
 
   const isInView = useInView(ref, { once: true, margin: "200px" });
 
-  if (loading || !data) {
+  if (!data) {
     return (
       <section
         ref={ref}
@@ -66,7 +64,6 @@ export default function CourseModules() {
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
 
       <div className="container px-4 md:px-6 relative z-10 max-w-5xl mx-auto">
-
         {/* HEADER */}
         <div className="text-center mb-20 space-y-6">
           <div
@@ -123,12 +120,7 @@ export default function CourseModules() {
           {/* MODULES */}
           <div className="space-y-16">
             {data.modules.map((module, index) => (
-              <ModuleCard
-                key={module.id}
-                module={module}
-                index={index}
-                accent={accent}
-              />
+              <ModuleCard key={module.id} module={module} index={index} accent={accent} />
             ))}
           </div>
         </motion.div>
@@ -137,9 +129,7 @@ export default function CourseModules() {
         <div className="flex justify-center mt-24">
           {data.button.action === "link" && (
             <Button className="px-8 py-4 uppercase tracking-widest text-xs font-bold w-fit">
-              <Link href={data.button.link}>
-                {data.button.label}
-              </Link>
+              <Link href={data.button.link}>{data.button.label}</Link>
             </Button>
           )}
         </div>

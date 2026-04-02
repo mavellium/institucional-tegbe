@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
 
 import Textura from "@/components/ui/textura";
-import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 
@@ -34,8 +33,7 @@ interface FormacoesData {
 }
 
 // ================== COMPONENT ==================
-export default function FormacoesSection() {
-  const { data } = useApi<FormacoesData>("formacoes-home");
+export default function FormacoesSection({ data }: { data: FormacoesData | null }) {
   const [current, setCurrent] = useState(0);
 
   const formacoes = data?.formacoes;
@@ -52,10 +50,7 @@ export default function FormacoesSection() {
       id="formacoes"
       className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950"
     >
-      <Textura
-        opacity={0.04}
-        className="absolute inset-0 pointer-events-none mix-blend-screen"
-      />
+      <Textura opacity={0.04} className="absolute inset-0 pointer-events-none mix-blend-screen" />
 
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[128px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 blur-[128px] rounded-full pointer-events-none" />
@@ -87,7 +82,6 @@ export default function FormacoesSection() {
         {/* PAINEL */}
         <div className="relative max-w-4xl mx-auto">
           <div className="relative bg-white/[0.02] backdrop-blur-md rounded-[2rem] border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-500">
-
             <div
               className={`absolute inset-0 bg-gradient-to-br ${courses[current].accent} to-transparent transition-colors duration-700 pointer-events-none opacity-60`}
             />
@@ -133,10 +127,9 @@ export default function FormacoesSection() {
                   <button
                     key={i}
                     onClick={() => setCurrent(i)}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${i === current
-                        ? "w-8 bg-white"
-                        : "w-2 bg-white/20 hover:bg-white/40"
-                      }`}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      i === current ? "w-8 bg-white" : "w-2 bg-white/20 hover:bg-white/40"
+                    }`}
                   />
                 ))}
               </div>
