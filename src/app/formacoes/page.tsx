@@ -59,8 +59,8 @@ export default async function FormacoesPage() {
         <link
           rel="preload"
           as="image"
-          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1920&q=75`}
-          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75 640w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=750&q=75 750w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75 828w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1080&q=75 1080w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1920&q=75 1920w`}
+          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1080&q=60`}
+          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=60 640w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=750&q=60 750w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=60 828w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1080&q=60 1080w`}
           imageSizes="100vw"
           fetchPriority="high"
         />

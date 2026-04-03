@@ -37,16 +37,14 @@ const reveal: Variants = {
     opacity: 0,
     y: 20,
     scale: 0.96,
-    filter: "blur(8px)",
   },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: {
       duration: 0.9,
-      ease: [0.16, 1, 0.3, 1], // easing premium
+      ease: [0.16, 1, 0.3, 1],
     },
   },
 };
@@ -82,6 +80,7 @@ export default function HomeFormacoes({ data }: { data: homeFormacoesData | null
           alt="Fundo"
           fill
           sizes="100vw"
+          quality={60}
           className="object-cover"
           priority
         />
