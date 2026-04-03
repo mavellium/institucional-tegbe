@@ -42,8 +42,21 @@ export default async function SobrePage() {
     getSafeData("trabalhar-conosco"),
   ]);
 
+  // Preload da imagem LCP (logo do hero sobre)
+  const lcpImageUrl = (heroData as any)?.logo?.src;
+
   return (
     <>
+      {lcpImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75`}
+          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=256&q=75 256w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=384&q=75 384w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75 640w`}
+          imageSizes="(min-width: 768px) 420px, (min-width: 640px) 280px, 220px"
+          fetchPriority="high"
+        />
+      )}
       <Schema
         data={{
           "@context": "https://schema.org",

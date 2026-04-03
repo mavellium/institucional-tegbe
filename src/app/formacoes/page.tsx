@@ -50,8 +50,21 @@ export default async function FormacoesPage() {
     getSafeData("faq-formacoes"),
   ]);
 
+  // Preload da imagem LCP (background do hero formações)
+  const lcpImageUrl = (homeFormacoesData as any)?.image?.src;
+
   return (
     <>
+      {lcpImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1920&q=75`}
+          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75 640w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=750&q=75 750w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75 828w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1080&q=75 1080w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1920&q=75 1920w`}
+          imageSizes="100vw"
+          fetchPriority="high"
+        />
+      )}
       <Schema
         data={{
           "@context": "https://schema.org",

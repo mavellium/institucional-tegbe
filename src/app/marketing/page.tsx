@@ -46,8 +46,21 @@ export default async function MarketingPage() {
     getSafeData("agendar-reuniao-marketing"),
   ]);
 
+  // Preload da imagem LCP (primeiro slide do hero)
+  const lcpImageUrl = (heroSlidesData as HeroSlide[] | null)?.[0]?.image;
+
   return (
     <>
+      {lcpImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75`}
+          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=384&q=75 384w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75 640w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=750&q=75 750w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75 828w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=1080&q=75 1080w`}
+          imageSizes="(min-width: 1024px) 60vw, 100vw"
+          fetchPriority="high"
+        />
+      )}
       <Schema
         data={{
           "@context": "https://schema.org",

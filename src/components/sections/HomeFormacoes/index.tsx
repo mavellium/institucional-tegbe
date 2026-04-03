@@ -77,7 +77,14 @@ export default function HomeFormacoes({ data }: { data: homeFormacoesData | null
     <section className="relative w-full h-[90vh] overflow-hidden flex items-center">
       {/* BACKGROUND */}
       <div className="absolute inset-0 grayscale">
-        <Image src={data.image.src} alt="Fundo" fill className="object-cover" priority />
+        <Image
+          src={data.image.src}
+          alt="Fundo"
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
       </div>
 
       {/* OVERLAY */}

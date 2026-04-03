@@ -48,7 +48,8 @@ const Hero = ({ data }: { data: HeroData | null }) => {
           width={data.logo.width || 320}
           height={data.logo.height || 150}
           priority
-          className="w-[220px] sm:w-[280px] md:w-[420px] object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
+          sizes="(min-width: 768px) 420px, (min-width: 640px) 280px, 220px"
+          className="w-[220px] sm:w-[280px] md:w-[420px] object-contain"
         />
       </div>
 
