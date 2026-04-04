@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue, animate, PanInfo } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { motion, useMotionValue, animate, PanInfo } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TestimonialItem } from "@/types/testimonial.type";
 import CompanyCard from "./companyCard";
 
@@ -16,17 +16,19 @@ export default function CompanyCarousel({ items }: Props) {
   const [containerWidth, setContainerWidth] = useState(0);
   const x = useMotionValue(0);
 
-  // Cálculos dinâmicos de largura baseados na tela para alinhar a matemática do arraste
-  const getCardWidth = () => {
-    if (containerWidth < 640) return containerWidth - 48; // Mobile: tela cheia menos margem
+  // Calcula largura dinamicamente (garantindo valores seguros mesmo antes do primeiro render completo)
+  const getCardWidth = useCallback(() => {
+    if (containerWidth === 0) return 300; // Valor fallback temporário
+    if (containerWidth < 640) return containerWidth - 32; // Mobile: tela cheia descontando margens laterais com sobra para gap
     if (containerWidth < 1024) return 340; // Tablet
     return 380; // Desktop
-  };
+  }, [containerWidth]);
 
-  const getCardGap = () => {
-    if (containerWidth < 640) return 16;
+  const getCardGap = useCallback(() => {
+    if (containerWidth === 0) return 16;
+    if (containerWidth < 640) return 16; // Mantém um gap constante de 16px no mobile
     return 32;
-  };
+  }, [containerWidth]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -34,24 +36,39 @@ export default function CompanyCarousel({ items }: Props) {
         setContainerWidth(containerRef.current.offsetWidth);
       }
     };
-    
+
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    // Pequeno delay para garantir que a DOM calculou as margens do pai
+    const timeoutId = setTimeout(updateWidth, 50);
+    window.addEventListener("resize", updateWidth);
+    return () => {
+      window.removeEventListener("resize", updateWidth);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const cardWidth = getCardWidth();
   const cardGap = getCardGap();
-  const visibleCards = containerWidth < 640 ? 1 : 
-                       containerWidth < 1024 ? 2 : 
-                       Math.floor(containerWidth / (cardWidth + cardGap));
+
+  // Calcula maxIndex baseado no tamanho real da tela
+  const visibleCards =
+    containerWidth === 0
+      ? 1
+      : containerWidth < 640
+        ? 1
+        : containerWidth < 1024
+          ? 2
+          : Math.floor(containerWidth / (cardWidth + cardGap));
   const maxIndex = Math.max(0, items.length - visibleCards);
 
-  // Reajusta o limite caso a tela seja redimensionada
   useEffect(() => {
     if (currentIndex > maxIndex && maxIndex >= 0) {
       setCurrentIndex(maxIndex);
-      animate(x, -maxIndex * (cardWidth + cardGap), { type: "spring", stiffness: 200, damping: 25 });
+      animate(x, -maxIndex * (cardWidth + cardGap), {
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+      });
     }
   }, [maxIndex, currentIndex, x, cardWidth, cardGap]);
 
@@ -84,13 +101,12 @@ export default function CompanyCarousel({ items }: Props) {
     animate(x, -newIndex * (cardWidth + cardGap), {
       type: "spring",
       stiffness: 200,
-      damping: 25
+      damping: 25,
     });
   };
 
   return (
     <div className="relative mt-8 sm:mt-12 w-full" ref={containerRef}>
-      
       {/* BOTÕES DESKTOP - Posicionados à direita acima dos cards */}
       <div className="hidden sm:flex justify-end gap-3 mb-6">
         <motion.button
@@ -112,20 +128,24 @@ export default function CompanyCarousel({ items }: Props) {
       </div>
 
       {/* ÁREA DE ARRASTE DOS CARDS */}
-      <div className="overflow-hidden px-2 py-4 -mx-2 -my-4">
+      {/* AQUI: Removidas as margens negativas agressivas e ajustado o padding */}
+      <div className="overflow-hidden py-4 w-full">
         <motion.div
           className="flex cursor-grab active:cursor-grabbing"
-          style={{ x, gap: `${cardGap}px` }}
+          style={{
+            x,
+            gap: `${cardGap}px`,
+            paddingRight: `${cardGap}px`, // Garante que o último card não fique colado na borda direita
+          }}
           drag="x"
           dragConstraints={{ left: -maxIndex * (cardWidth + cardGap), right: 0 }}
           dragElastic={0.1}
           onDragEnd={handleDragEnd}
         >
           {items.map((item) => (
-            <div 
-              key={item.id} 
-              style={{ width: containerWidth === 0 ? 'auto' : cardWidth }} 
-              // AQUI FOI ADICIONADO O 'flex' PARA ESTICAR O CARD FILHO:
+            <div
+              key={item.id}
+              style={{ width: cardWidth }}
               className="flex-shrink-0 flex items-stretch"
             >
               <CompanyCard item={item} />
@@ -144,12 +164,12 @@ export default function CompanyCarousel({ items }: Props) {
               animate(x, -index * (cardWidth + cardGap), {
                 type: "spring",
                 stiffness: 200,
-                damping: 25
+                damping: 25,
               });
             }}
             className={`h-1.5 rounded-full transition-all duration-300 ${
-              index === currentIndex 
-                ? "w-8 bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]" 
+              index === currentIndex
+                ? "w-8 bg-[#FFCC00] shadow-[0_0_10px_#FFCC00]"
                 : "w-2 bg-gray-700 hover:bg-gray-500"
             }`}
             whileTap={{ scale: 0.9 }}
@@ -159,22 +179,21 @@ export default function CompanyCarousel({ items }: Props) {
 
       {/* BOTÕES MOBILE */}
       <div className="flex sm:hidden justify-center gap-4 mt-6">
-        <button 
-          onClick={handlePrev} 
-          disabled={currentIndex === 0} 
+        <button
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
           className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30 transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <button 
-          onClick={handleNext} 
-          disabled={currentIndex >= maxIndex} 
+        <button
+          onClick={handleNext}
+          disabled={currentIndex >= maxIndex}
           className="p-3 rounded-full bg-white/5 border border-white/10 text-white disabled:opacity-30 transition-colors"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
-
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
   return (
     <div
       className={`
-        group relative flex flex-col w-full aspect-[3/4] overflow-hidden rounded-[18px] 
+        group relative flex flex-col w-full aspect-[2/3] overflow-hidden rounded-[18px] 
         transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
         shadow-[0_2px_8px_rgba(0,0,0,0.04),_0_1px_32px_rgba(0,0,0,0.04)]
         hover:shadow-[0_2px_10px_rgba(0,0,0,0.20)] hover:-translate-y-1 cursor-pointer

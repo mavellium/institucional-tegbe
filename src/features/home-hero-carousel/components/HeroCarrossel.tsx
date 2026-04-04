@@ -75,8 +75,8 @@ export default function HeroCarrossel({
               const isActive = index === selectedIndex;
               return (
                 <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
-                  <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
-                    <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
+                  <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 h-screen lg:h-[calc(100vh-120px)] min-h-[600px]">
+                    <div className="w-full lg:w-[50%] flex flex-col justify-center text-center lg:text-left z-20 px-4 lg:px-0">
                       <HeroSlideContent
                         slide={slide}
                         isActive={isActive}

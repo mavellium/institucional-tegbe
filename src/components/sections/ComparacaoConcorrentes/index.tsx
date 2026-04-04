@@ -10,7 +10,6 @@ import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
 import { Button } from "@/components/ui/button/button";
 import { IButton } from "@/interface/button/IButton";
-import { IImage } from "@/interface/imagem/IImage";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import { sanitizeFormHtml } from "@/core/security";

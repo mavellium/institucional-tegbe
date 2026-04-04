@@ -15,7 +15,7 @@ export default function CartaoParceiro({
   return (
     <div className="flex flex-col md:flex-row w-full max-w-[850px] bg-white/[0.03] border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-md shadow-2xl transition-colors duration-300 hover:bg-white/[0.05] group font-sans">
       {/* IMAGEM */}
-      <div className="relative w-full md:w-[35%] aspect-[3/4] md:aspect-auto md:min-w-[250px] overflow-hidden">
+      <div className="relative w-full md:w-[35%] aspect-[3/3] md:aspect-auto md:min-w-[250px] overflow-hidden">
         <Image
           src={img_principal}
           alt={nome}

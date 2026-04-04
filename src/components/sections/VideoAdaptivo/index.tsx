@@ -62,7 +62,6 @@ export default function AnimationVideoWrapper({
         badge={video.badge || ""}
         title={video.title || ""}
         videoSrc={videoUrl}
-        startMuted={false}
         variant="sobre"
         theme={theme}
         showTexture={showTexture}

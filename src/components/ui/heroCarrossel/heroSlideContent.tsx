@@ -13,25 +13,25 @@ import Link from "next/link";
 interface HeroSlideContentProps {
   slide: HeroSlide;
   isActive: boolean;
-  // Adicionando a prop para controle de cor
   corDestaque?: string;
 }
 
 export default function HeroSlideContent({
   slide,
   isActive,
-  corDestaque = "#F9265E", // Valor original como fallback
+  corDestaque = "#F9265E",
 }: HeroSlideContentProps) {
   return (
-    <div className="z-10 flex flex-col items-center lg:items-start gap-6">
+    // 1. Aumentamos o max-w para o texto ter mais espaço horizontal e preencher a tela
+    <div className="z-10 flex flex-col items-center lg:items-start gap-5 lg:gap-8 w-full max-w-2xl mx-auto lg:mx-0 px-2 lg:px-0">
       {/* Tag / Highlight */}
       {slide.tag && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-2"
         >
-          {/* Injetando a cor dinâmica no Highlight */}
           <Highlight color={corDestaque} withSerif withItalic>
             {slide.tag}
           </Highlight>
@@ -44,8 +44,14 @@ export default function HeroSlideContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full"
         >
-          <Heading size="xl" className="text-center md:text-left" color="white">
+          {/* 2. Ajuste na altura da linha (leading-tight) para o título ficar bem agrupado e legível */}
+          <Heading
+            size="xl"
+            className="text-center lg:text-left w-full leading-[1.15] tracking-tight font-bold"
+            color="white"
+          >
             {slide.title}
           </Heading>
         </motion.div>
@@ -57,11 +63,13 @@ export default function HeroSlideContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.4 }}
+          className="w-full"
         >
           <Paragrafo
             align="center"
             color="#fff"
-            className="text-gray-200 text-2xl lg:text-3xl font-light leading-snug md:text-left"
+            // 3. Aumentamos levemente o tamanho da fonte no mobile e melhoramos o espaçamento (leading-relaxed)
+            className="text-gray-200 text-lg md:text-xl lg:text-2xl font-light leading-relaxed text-center lg:text-left px-2 lg:px-0"
           >
             {slide.description}
           </Paragrafo>
@@ -75,7 +83,11 @@ export default function HeroSlideContent({
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <Text color="#fff" variant="muted" className="text-sm lg:text-base max-w-lg">
+          <Text
+            color="#fff"
+            variant="muted"
+            className="text-sm lg:text-base max-w-lg text-center lg:text-left"
+          >
             {slide.subtext}
           </Text>
         </motion.div>
@@ -87,17 +99,19 @@ export default function HeroSlideContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}
+          // 4. Container do botão com largura total no mobile para dar o efeito "block" do G4
+          className="w-full sm:w-auto mt-4"
         >
           <Button
             asChild
-            variant="marketing"
+            // Removemos a variant padrão caso ela force um tamanho pequeno, e aplicamos classes utilitárias
+            className="w-full lg:w-auto px-8 py-6 text-base font-bold uppercase tracking-wider rounded-lg border-2 bg-transparent hover:bg-white/10 transition-all flex items-center justify-center"
             style={{
-              backgroundColor: corDestaque,
               borderColor: corDestaque,
-              color: corDestaque === "#FFCC00" ? "#000" : "#fff", // Ajuste de contraste para o amarelo
+              color: corDestaque,
             }}
           >
-            <Link href={slide.ctaLink} target="_blank">
+            <Link href={slide.ctaLink} target="_blank" className="w-full text-center">
               {slide.ctaText}
             </Link>
           </Button>
@@ -110,6 +124,7 @@ export default function HeroSlideContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: isActive ? 1 : 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
+          className="w-full"
         >
           <RichText content={slide.richContent} />
         </motion.div>

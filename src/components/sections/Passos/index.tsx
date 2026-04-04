@@ -90,13 +90,17 @@ export default function Steps({ data }: { data: ApiResponse | null }) {
 
   const handleStepChange = (step: Passos) => {
     if (!activeStep || step.id === activeStep.id || !data) return;
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActiveStep(step);
-        setImageLoaded(false);
-      },
-    });
-    tl.to(imageContainerRef.current, { opacity: 0, scale: 0.95, duration: 0.25 });
+
+    setActiveStep(step);
+    setImageLoaded(false);
+
+    if (imageContainerRef.current) {
+      gsap.to(imageContainerRef.current, {
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.2,
+      });
+    }
   };
 
   const handleImageLoad = () => {
@@ -121,47 +125,59 @@ export default function Steps({ data }: { data: ApiResponse | null }) {
   return (
     <section ref={sectionRef} className="w-full py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* CARD */}
         <div
           className="
-      relative rounded-3xl 
-      bg-white/80 backdrop-blur-xl 
-      border border-slate-200/60
-      shadow-[0_20px_60px_rgba(0,0,0,0.08)]
-      p-8 md:p-12 lg:p-16
-      overflow-hidden
-    "
+            relative 
+            lg:rounded-3xl 
+            lg:bg-white/80 lg:backdrop-blur-xl 
+            lg:border lg:border-slate-200/60
+            lg:shadow-[0_20px_60px_rgba(0,0,0,0.08)]
+            lg:overflow-hidden
+            lg:p-12 xl:p-16 /* <-- Ajuste de padding para não espremer tanto */
+          "
         >
-          {/* Glow sutil (Apple touch) */}
           <div
-            className="pointer-events-none absolute inset-0 rounded-3xl 
-        bg-gradient-to-br from-yellow-100/40 via-transparent to-transparent opacity-60"
+            className="hidden lg:block pointer-events-none absolute inset-0 rounded-3xl 
+              bg-gradient-to-br from-yellow-100/40 via-transparent to-transparent opacity-60"
           />
 
           {/* Conteúdo */}
-          <div className="relative z-10 flex flex-col gap-16">
-            <div className="flex flex-col lg:flex-row gap-16 items-center">
-              <StepsList
-                type={"E-commerce"}
-                subtype={data.subtype}
-                steps={data.values}
-                activeStep={activeStep}
-                onStepChange={handleStepChange}
-                containerRef={leftColumnRef}
-                registerButtonRef={(el, index) => {
-                  stepButtonsRef.current[index] = el;
-                }}
-              />
+          <div className="relative z-10 flex flex-col gap-8 lg:gap-16">
+            {/* AQUI: Aumentei o gap entre as colunas no desktop para dar aquele respiro da imagem 1 */}
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-24 xl:gap-32 items-start lg:items-center">
+              {/* Coluna da Esquerda (Textos e Botões) */}
+              <div className="w-full lg:w-[45%] xl:w-1/2">
+                <StepsList
+                  type={"E-commerce"}
+                  subtype={data.subtype}
+                  steps={data.values}
+                  activeStep={activeStep}
+                  onStepChange={handleStepChange}
+                  containerRef={leftColumnRef}
+                  registerButtonRef={(el, index) => {
+                    if (stepButtonsRef.current) {
+                      stepButtonsRef.current[index] = el;
+                    }
+                  }}
+                />
+              </div>
 
-              <StepVisualizer
-                activeStep={activeStep}
-                containerRef={rightColumnRef}
-                imageContainerRef={imageContainerRef}
-                onImageLoad={handleImageLoad}
-              />
+              {/* Coluna da Direita (Imagem Desktop) */}
+              <div className="hidden lg:flex w-full lg:w-[55%] xl:w-1/2 justify-end">
+                <StepVisualizer
+                  activeStep={activeStep}
+                  containerRef={rightColumnRef}
+                  imageContainerRef={imageContainerRef}
+                  onImageLoad={handleImageLoad}
+                />
+              </div>
             </div>
 
-            {data.button && <StepCTA buttonData={data.button} containerRef={ctaRef} />}
+            {data.button && (
+              <div className="mt-4 lg:mt-0 w-full flex justify-center lg:justify-start">
+                <StepCTA buttonData={data.button} containerRef={ctaRef} />
+              </div>
+            )}
           </div>
         </div>
       </div>

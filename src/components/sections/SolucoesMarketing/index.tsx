@@ -63,7 +63,7 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
 
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-10 md:gap-16 items-start relative">
-          {/* LISTA CLEAN */}
+          {/* LISTA SANFONA */}
           <div className="lg:col-span-5 flex flex-col gap-3">
             {data.items.map((item, index) => {
               const isActive = active === index;
@@ -108,7 +108,9 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
 
                       <Heading as="h3" size="md" className="text-xl font-medium">
                         <span
-                          className={`transition-colors duration-300 ${isActive ? "!text-white" : "!text-white/60 group-hover:!text-white"}`}
+                          className={`transition-colors duration-300 ${
+                            isActive ? "!text-white" : "!text-white/60 group-hover:!text-white"
+                          }`}
                         >
                           <RichText content={item.title} />
                         </span>
@@ -134,7 +136,17 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
                         transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                         className="overflow-hidden"
                       >
-                        <div className="pl-16 pt-2 pb-1">
+                        <div className="pt-4 pb-2 lg:pl-16 lg:pt-2">
+                          {/* 🔹 IMAGEM MOBILE (Aparece apenas no mobile) */}
+                          <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-4 lg:hidden border border-white/5 shadow-md">
+                            <Image
+                              src={item.image}
+                              alt={typeof item.title === "string" ? item.title : "Solução Tegbe"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+
                           <Paragrafo
                             color="#fff"
                             className="text-white/60 text-base leading-relaxed pr-4"
@@ -150,8 +162,8 @@ export default function Solucoes({ data: dataProp }: { data: FeatureSectionData 
             })}
           </div>
 
-          {/* IMAGEM COM CROSSFADE BLUR */}
-          <div className="lg:col-span-7 relative h-full">
+          {/* 🔹 IMAGEM DESKTOP COM CROSSFADE BLUR (Escondida no mobile com 'hidden lg:block') */}
+          <div className="hidden lg:block lg:col-span-7 relative h-full">
             <div className="sticky top-32 w-full aspect-[4/3] rounded-[2rem] overflow-hidden bg-white/5 border border-white/5 ring-1 ring-white/10 shadow-2xl backdrop-blur-sm">
               <AnimatePresence mode="wait">
                 <motion.div

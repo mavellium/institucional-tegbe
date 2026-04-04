@@ -4,10 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, useState, useEffect } from "react";
-import {
-  DEFAULT_ANIMATION_VIDEO_THEME,
-  AnimationVideoTheme,
-} from "./theme";
+import { DEFAULT_ANIMATION_VIDEO_THEME, AnimationVideoTheme } from "./theme";
 import { VideoPlayer } from "@/components/ui/videoplayer";
 
 // Importando seus componentes de UI
@@ -39,7 +36,7 @@ export const AnimationVideoView = ({
   videoSrc,
   variant = "cursos",
   theme,
-  startMuted = true,
+  startMuted = false,
   showTexture = false,
   textureOpacity = 0.1,
   textureSrc = "/textura.svg",
@@ -49,14 +46,7 @@ export const AnimationVideoView = ({
     ...theme,
   };
 
-  const {
-    backgroundColor,
-    textColor,
-    badgeBg,
-    badgeBorder,
-    badgeText,
-    accentColor,
-  } = mergedTheme;
+  const { backgroundColor, textColor, badgeBg, badgeBorder, badgeText, accentColor } = mergedTheme;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoWrapperRef = useRef<HTMLDivElement>(null);
@@ -70,67 +60,74 @@ export const AnimationVideoView = ({
   }, []);
 
   // 🎬 GSAP – INTACTO (Não mexi em nada aqui)
-  useGSAP(() => {
-    if (!containerRef.current || !videoWrapperRef.current) return;
+  useGSAP(
+    () => {
+      if (!containerRef.current || !videoWrapperRef.current) return;
 
-    ScrollTrigger.getAll()
-      .filter(st => st.trigger === containerRef.current)
-      .forEach(st => st.kill());
+      ScrollTrigger.getAll()
+        .filter((st) => st.trigger === containerRef.current)
+        .forEach((st) => st.kill());
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom top",
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    });
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
 
-    tl.to(".section-header", {
-      y: -80,
-      autoAlpha: 0,
-      duration: 0.3,
-      ease: "power2.inOut",
-    }, 0);
+      tl.to(
+        ".section-header",
+        {
+          y: -80,
+          autoAlpha: 0,
+          duration: 0.3,
+          ease: "power2.inOut",
+        },
+        0
+      );
 
-    tl.fromTo(
-      videoWrapperRef.current,
-      {
-        width: isMobile ? "90%" : "60%",
-        height: "55vh",
-        top: "35%",
-        borderRadius: "32px",
-        xPercent: -50,
-        boxShadow:
-          backgroundColor === "#FFFFFF"
-            ? "0 25px 50px -12px rgba(0, 0, 0, 0.2)"
-            : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
-      },
-      {
-        width: "100.1%",
-        height: "100.1%",
-        top: "0%",
-        xPercent: -50,
-        borderRadius: "0px",
-        boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
-        duration: 1,
-        ease: "none",
-      },
-      0
-    );
+      tl.fromTo(
+        videoWrapperRef.current,
+        {
+          width: isMobile ? "90%" : "60%",
+          height: "55vh",
+          top: "35%",
+          borderRadius: "32px",
+          xPercent: -50,
+          boxShadow:
+            backgroundColor === "#FFFFFF"
+              ? "0 25px 50px -12px rgba(0, 0, 0, 0.2)"
+              : "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+        },
+        {
+          width: "100.1%",
+          height: "100.1%",
+          top: "0%",
+          xPercent: -50,
+          borderRadius: "0px",
+          boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+          duration: 1,
+          ease: "none",
+        },
+        0
+      );
 
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
 
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
-  }, { scope: containerRef, dependencies: [isMobile, backgroundColor] });
+      return () => {
+        tl.scrollTrigger?.kill();
+        tl.kill();
+      };
+    },
+    { scope: containerRef, dependencies: [isMobile, backgroundColor] }
+  );
 
   useEffect(() => {
     const handleRefresh = () => ScrollTrigger.refresh();
@@ -160,7 +157,6 @@ export const AnimationVideoView = ({
 
       {/* 🔹 HEADER COM RICHTEXT E HEADING (Z-10) */}
       <div className="section-header absolute top-[12%] w-full text-center z-10 px-6">
-        
         {/* Badge protegido por condicional caso não exista */}
         {badge && (
           <div
@@ -180,17 +176,8 @@ export const AnimationVideoView = ({
           </div>
         )}
 
-        <Heading 
-          as="h2" 
-          className="max-w-4xl mx-auto" 
-          color={textColor}
-          align="center"
-        >
-          {typeof title === 'string' ? (
-            title
-          ) : (
-            <RichText content={title} />
-          )}
+        <Heading as="h2" className="max-w-4xl mx-auto" color={textColor} align="center">
+          {typeof title === "string" ? title : <RichText content={title} />}
         </Heading>
       </div>
 
@@ -207,7 +194,7 @@ export const AnimationVideoView = ({
         <VideoPlayer
           src={videoSrc}
           accentColor={accentColor}
-          startMuted={startMuted}
+          startMuted={false}
           showVolumeControl={false}
         />
       </div>

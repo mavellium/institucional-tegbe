@@ -72,7 +72,14 @@ export default function Localizacao({ data }: { data: LocalizacaoItem[] | null }
           {/* TEXTO */}
 
           <div className="loc-left w-full lg:w-1/2 space-y-8 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-            <Heading as="h2" size="lg" className="max-w-[720px]" color="#FFFFFF" font="regular">
+            <Heading
+              align="center"
+              as="h2"
+              size="lg"
+              className="md:text-left max-w-[720px]"
+              color="#FFFFFF"
+              font="regular"
+            >
               <RichText content={main.title} />
             </Heading>
 

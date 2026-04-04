@@ -70,10 +70,12 @@ export default function Expertise({ data }: ExpertiseProps) {
   return (
     <>
       <section className="relative py-24 px-4 sm:px-8 lg:px-10 bg-[#020202] flex justify-center items-center border-t border-white/5 overflow-hidden font-sans">
+        {/* TEXTURA NOISE */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
 
+        {/* GLOW DE FUNDO: 'hidden md:block' garante que no mobile fique apenas a cor sólida */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-10 transition-colors duration-1000"
+          className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-10 transition-colors duration-1000"
           style={{ backgroundColor: theme.accentColor }}
         />
 
@@ -115,8 +117,10 @@ export default function Expertise({ data }: ExpertiseProps) {
               className="w-full h-auto object-cover"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-70" />
+            {/* DEGRADÊ DA FOTO: 'hidden sm:block' remove a mancha preta no mobile */}
+            <div className="hidden sm:block absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-[#020202] via-[#020202]/50 to-transparent pointer-events-none" />
 
+            {/* CARD FLUTUANTE (Desktop apenas) */}
             <div
               className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-md border border-white/10 p-4 rounded-xl hidden sm:flex items-center gap-4"
               style={{ borderColor: `${theme.accentColor}33` }}
