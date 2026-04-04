@@ -24,7 +24,7 @@ export interface HeaderData {
     href: string;
   }>;
   announcementBar?: {
-    enabled: boolean; // NOVO: Controla ativação/desativação
+    enabled: boolean;
     styles: {
       variant: "default" | "warning";
       position: string;
@@ -59,6 +59,14 @@ export function Header({ variant = "default" }: HeaderProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+  }, [pathname]);
 
   // 1. INTEGRAÇÃO COM O ENDPOINT
   useEffect(() => {
@@ -141,7 +149,6 @@ export function Header({ variant = "default" }: HeaderProps) {
     }
   }, [menuOpen]);
 
-  // 3. CORES FIXAS (Bilateral Tegbe/Marketing - Padrão Mavellium)
   const theme = useMemo(() => {
     if (variant === "marketing") {
       return {
@@ -164,8 +171,9 @@ export function Header({ variant = "default" }: HeaderProps) {
 
   const headerStyles = useMemo(() => {
     if (menuOpen) return "bg-[#050505] py-5 border-b border-white/10";
+
     return scrolled
-      ? "bg-black/20 backdrop-blur-2xl backdrop-saturate-[1.5] bg-gradient-to-b from-white/[0.08] via-transparent to-white/[0.03] border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3),inset_0_1px_1px_0_rgba(255,255,255,0.15),inset_0_-1px_1px_0_rgba(255,255,255,0.1)] py-3"
+      ? "bg-black/80 backdrop-blur-xl backdrop-saturate-[1.5] border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-3"
       : "bg-transparent border-b border-transparent py-6";
   }, [scrolled, menuOpen]);
 

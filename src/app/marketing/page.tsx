@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import { getSafeData } from "@/core/api/getSafeData";
 import HeroCarrossel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import type { HeroSlide } from "@/types/heroSlide.type";
+import ScrollReset from "@/utils/scrollReset";
+import { Header } from "@/components/layout/Header";
 
 // Seções below-the-fold — lazy loaded para otimizar FCP
 const PorqueATegbe = dynamic(() => import("@/components/sections/PorqueATegbe"), {});
@@ -51,6 +53,8 @@ export default async function MarketingPage() {
 
   return (
     <>
+      <ScrollReset />
+
       {lcpImageUrl && (
         <link
           rel="preload"
@@ -109,7 +113,7 @@ export default async function MarketingPage() {
           },
         }}
       />
-      <Navbar variant="marketing" />
+      <Header variant="marketing" />
       <main>
         <HeroCarrossel slides={heroSlidesData ?? []} corDestaque="#f9265e" textoFundo="MARKETING" />
         <PorqueATegbe data={porqueATegbeData as any} />
