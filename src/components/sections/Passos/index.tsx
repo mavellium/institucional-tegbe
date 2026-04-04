@@ -174,7 +174,7 @@ export default function Steps({ data }: { data: ApiResponse | null }) {
             </div>
 
             {data.button && (
-              <div className="mt-4 lg:mt-0 w-full flex justify-center lg:justify-start">
+              <div className="mt-4 lg:mt-0 w-full flex justify-center">
                 <StepCTA buttonData={data.button} containerRef={ctaRef} />
               </div>
             )}

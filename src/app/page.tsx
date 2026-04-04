@@ -6,7 +6,6 @@ import HeroCarousel from "@/features/home-hero-carousel/components/HeroCarrossel
 import { fetchHeroSlides } from "@/features/home-hero-carousel/services";
 import { getSafeData } from "@/core/api/getSafeData";
 
-// Seções below-the-fold — lazy loaded para otimizar FCP
 const MostrarSolucoes = dynamic(() => import("@/components/sections/HomeCards"), {});
 const Marketplaces = dynamic(() => import("@/components/web/marketplaces"), {});
 const SectionMarketing = dynamic(() => import("@/components/sections/BannerMarketing"), {});

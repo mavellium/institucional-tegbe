@@ -1,18 +1,14 @@
 "use client";
 
-import React from "react";
 import { motion, Variants } from "framer-motion";
-
 import Heading from "@/components/ui/heading";
-import Paragrafo from "@/components/ui/paragrafo";
 import RichText from "@/components/ui/rich/richText";
-import Textura from "@/components/ui/textura"; // Importado para manter o padrão sutil de ruído
+import Textura from "@/components/ui/textura";
 import { RichTextItem } from "@/types/richText.type";
 
 import ServiceCard from "@/components/ui/serviceCard";
 import { ServiceA, ServiceTheme } from "@/types/service.type";
 
-// Tipagem
 interface IHero {
   header: {
     badge?: string;
@@ -20,9 +16,9 @@ interface IHero {
     subtitle: RichTextItem[];
   };
   services: ServiceA[];
+  src: string;
 }
 
-// Animações Spring (Mais fluidas, padrão Apple/Stripe)
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -90,7 +86,6 @@ export default function MostrarSolucoes({ data }: { data: IHero | null }) {
           </div>
         </div>
 
-        {/* GRID COM SERVICE CARD */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -103,7 +98,6 @@ export default function MostrarSolucoes({ data }: { data: IHero | null }) {
               key={service.id}
               variants={itemVariants}
               onClick={() => scrollTo(service.id)}
-              // O WRAPPER ASSUME O COMPORTAMENTO 3D FLUTUANTE
               className="group relative cursor-pointer bg-white rounded-[1.5rem] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden hover:z-50"
             >
               <ServiceCard service={service} theme={theme} variant="hero" />

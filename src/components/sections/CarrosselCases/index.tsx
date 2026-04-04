@@ -20,10 +20,13 @@ export default function CasesCarousel({ data: apiRaw }: { data: any }) {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
 
-  // Inicializa o primeiro vídeo como ativo
+  // Inicializa o primeiro vídeo como ativo APENAS no mobile
   useEffect(() => {
     if (data?.testimonials?.length > 0 && !activeVideoId) {
-      setActiveVideoId(data.testimonials[0].id);
+      // Verifica se a tela é menor que 768px (Mobile)
+      if (window.innerWidth < 768) {
+        setActiveVideoId(data.testimonials[0].id);
+      }
     }
   }, [data, activeVideoId]);
 
@@ -153,19 +156,22 @@ export default function CasesCarousel({ data: apiRaw }: { data: any }) {
               const isThisActive = activeVideoId === item.id;
               // Regra: Ativo E Não pausado manualmente E Seção visível na tela
               const isPlaying = isThisActive && !isManuallyPaused && isSectionInView;
-              const isDimmed = !isThisActive;
+
+              // Só escurece o vídeo se já existir um vídeo ativo e NÃO for este.
+              const isDimmed = activeVideoId !== null && !isThisActive;
+              // Mantém o tamanho original se nenhum estiver ativo ainda.
+              const cardScale = activeVideoId === null || isThisActive ? "scale(1)" : "scale(0.96)";
 
               return (
                 <div
                   key={item.id}
                   data-id={item.id}
-                  // Adicionado onClick aqui para clicar em qualquer lugar do card
                   onClick={(e) => toggleVideo(item.id, e)}
                   className="carousel-card snap-center shrink-0 w-[80vw] sm:w-[350px] transition-all duration-500 ease-out cursor-pointer"
                 >
                   <div
                     style={{
-                      transform: isThisActive ? "scale(1)" : "scale(0.96)",
+                      transform: cardScale,
                       opacity: isDimmed ? 0.4 : 1,
                       filter: isDimmed ? "grayscale(80%)" : "grayscale(0%)",
                     }}

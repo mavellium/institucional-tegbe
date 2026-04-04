@@ -1,14 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import {
-  useScroll,
-  useTransform,
-  motion,
-  AnimatePresence,
-  Variants,
-  useInView,
-} from "framer-motion";
+import { useScroll, useTransform, motion, AnimatePresence, Variants } from "framer-motion";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { useMediaQuery } from "react-responsive";
@@ -77,7 +70,7 @@ function normalizeGalleryJson(json: unknown): GaleriaPayload | null {
   return null;
 }
 
-// --- MOBILE STACK (Totalmente Refatorado para CSS Sticky Nativo) ---
+// --- MOBILE STACK ---
 function MobileStack({
   images,
   onLoadMore,
@@ -91,7 +84,6 @@ function MobileStack({
 }) {
   return (
     <div className="flex flex-col items-center pb-12 w-full relative z-20">
-      {/* CAMADA DAS CARTAS: Usando sticky nativo para empilhar sem quebrar o layout */}
       {images.map((img, i) => (
         <motion.div
           key={img.id}
@@ -101,9 +93,8 @@ function MobileStack({
           className="sticky w-full max-w-[350px] rounded-[2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden bg-zinc-900"
           style={{
             height: CARD_HEIGHT,
-            // Cada carta trava um pouquinho mais para baixo que a anterior, criando o efeito baralho
             top: `calc(12vh + ${i * 16}px)`,
-            marginBottom: "3rem", // Dá espaço para o scroll natural acontecer
+            marginBottom: "3rem",
             zIndex: i,
           }}
         >
@@ -122,7 +113,6 @@ function MobileStack({
         </motion.div>
       ))}
 
-      {/* BOTÃO CTA: No fluxo normal da página. Nunca vai bugar ou sobrepor. */}
       {hasMore && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -131,7 +121,6 @@ function MobileStack({
         >
           <Button
             onClick={onLoadMore}
-            // Design corrigido: Fundo escuro com texto branco. Amarelo apenas nos detalhes/hover.
             className="w-full max-w-[350px] py-7 rounded-full bg-zinc-900 border border-zinc-700 text-white hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] font-bold tracking-widest uppercase transition-all duration-300 shadow-xl"
           >
             {texts?.button?.icon && <Icon icon={texts.button.icon} className="mr-3 text-2xl" />}
@@ -143,7 +132,7 @@ function MobileStack({
   );
 }
 
-// --- DESKTOP GRID COM INFINITE SCROLL ---
+// --- DESKTOP GRID ---
 function GaleriaFotosScrollBody({
   visibleImages,
   hasMore,
@@ -153,15 +142,6 @@ function GaleriaFotosScrollBody({
   onLoadMore,
 }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
-
-  const isBottomVisible = useInView(triggerRef, { margin: "0px 0px 400px 0px" });
-
-  useEffect(() => {
-    if (isBottomVisible && hasMore && !isMobile) {
-      onLoadMore();
-    }
-  }, [isBottomVisible, hasMore, onLoadMore, isMobile]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -207,7 +187,6 @@ function GaleriaFotosScrollBody({
         {mounted && (
           <>
             {isMobile ? (
-              // Mobile stack atualizado para usar CSS nativo e não quebrar com cliques
               <MobileStack
                 images={visibleImages}
                 onLoadMore={onLoadMore}
@@ -215,53 +194,64 @@ function GaleriaFotosScrollBody({
                 texts={texts}
               />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-32">
-                {[0, 1, 2].map((colIdx) => (
-                  <motion.div
-                    key={colIdx}
-                    style={{ y: colIdx === 0 ? y1 : colIdx === 1 ? y2 : y3 }}
-                    className={`flex flex-col gap-8 ${colIdx === 1 ? "md:pt-24" : ""}`}
-                  >
-                    <AnimatePresence>
-                      {visibleImages
-                        .filter((_: any, i: number) => i % 3 === colIdx)
-                        .map((img: any) => (
-                          <motion.div
-                            variants={itemVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true }}
-                            key={img.id}
-                            className="relative rounded-[2rem] overflow-hidden group border border-white/5 h-[450px] cursor-pointer bg-zinc-900"
-                          >
-                            <Image
-                              src={img.image}
-                              alt={img.alt}
-                              fill
-                              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
-                              sizes="(max-width: 768px) 100vw, 33vw"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-8">
-                              <span className="text-[#FFD700] text-sm font-bold tracking-[0.2em] uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                {img.alt}
-                              </span>
-                            </div>
-                          </motion.div>
-                        ))}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
+                  {[0, 1, 2].map((colIdx) => (
+                    <motion.div
+                      key={colIdx}
+                      style={{ y: colIdx === 0 ? y1 : colIdx === 1 ? y2 : y3 }}
+                      className={`flex flex-col gap-8 ${colIdx === 1 ? "md:pt-24" : ""}`}
+                    >
+                      <AnimatePresence>
+                        {visibleImages
+                          .filter((_: any, i: number) => i % 3 === colIdx)
+                          .map((img: any) => (
+                            <motion.div
+                              variants={itemVariants}
+                              initial="hidden"
+                              whileInView="visible"
+                              viewport={{ once: true }}
+                              key={img.id}
+                              className="relative rounded-[2rem] overflow-hidden group border border-white/5 h-[450px] cursor-pointer bg-zinc-900"
+                            >
+                              <Image
+                                src={img.image}
+                                alt={img.alt}
+                                fill
+                                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-8">
+                                <span className="text-[#FFD700] text-sm font-bold tracking-[0.2em] uppercase translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                  {img.alt}
+                                </span>
+                              </div>
+                            </motion.div>
+                          ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  ))}
+                </div>
 
-            {/* SENTINELA DO DESKTOP */}
-            {hasMore && !isMobile && (
-              <div ref={triggerRef} className="w-full h-20 flex items-center justify-center">
-                <Icon
-                  icon="eos-icons:loading"
-                  className="text-[#FFD700] text-4xl animate-spin opacity-50"
-                />
-              </div>
+                {/* BOTÃO CTA DESKTOP */}
+                {hasMore && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    className="relative z-50 w-full flex justify-center mt-12 pb-16 px-4"
+                  >
+                    <Button
+                      onClick={onLoadMore}
+                      className="w-full max-w-[350px] py-7 rounded-full bg-zinc-900 border border-zinc-700 text-white hover:bg-[#FFD700] hover:text-black hover:border-[#FFD700] font-bold tracking-widest uppercase transition-all duration-300 shadow-xl"
+                    >
+                      {texts?.button?.icon && (
+                        <Icon icon={texts.button.icon} className="mr-3 text-2xl" />
+                      )}
+                      {texts?.button?.label || "Carregar Mais Fotos"}
+                    </Button>
+                  </motion.div>
+                )}
+              </>
             )}
           </>
         )}
