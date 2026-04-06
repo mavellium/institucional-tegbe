@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: "https",
+        hostname: "tegbe-cdn.b-cdn.net",
+        pathname: "/**",
+      },
     ],
   },
   async rewrites() {
