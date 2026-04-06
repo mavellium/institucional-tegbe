@@ -16,16 +16,18 @@ const FaqHome = dynamic(() => import("@/components/sections/FaqHome"), {});
 
 export default async function Home() {
   const [
-    heroSlides,
-    solucoesData,
-    marketplacesData,
-    redesSociaisData,
-    formacoesHomeData,
-    ferramentasData,
-    ctaDuvidasData,
-    faqHomeData,
+    heroSlides, // fetchHeroSlides()
+    heroCarrosselData, // getSafeData("hero-carrossel-home") <- ADICIONADO
+    solucoesData, // getSafeData("solucoes-home")
+    marketplacesData, // getSafeData("marketplaces")
+    redesSociaisData, // getSafeData("redes-sociais")
+    formacoesHomeData, // getSafeData("formacoes-home")
+    ferramentasData, // getSafeData("ferramentas")
+    ctaDuvidasData, // getSafeData("duvida-cta")
+    faqHomeData, // getSafeData("faq-home")
   ] = await Promise.all([
     fetchHeroSlides(),
+    getSafeData("hero-carrossel-home"),
     getSafeData("solucoes-home"),
     getSafeData("marketplaces"),
     getSafeData("redes-sociais"),

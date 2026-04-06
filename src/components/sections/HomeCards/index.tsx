@@ -37,9 +37,10 @@ const itemVariants: Variants = {
 };
 
 export default function MostrarSolucoes({ data }: { data: IHero | null }) {
-  if (!data) return null;
+  // Verificação robusta: Se data ou data.header não existirem, não renderiza para evitar o crash
+  if (!data || !data.header) return null;
 
-  const { header, services } = data;
+  const { header, services = [] } = data; // Default array para services
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
@@ -48,20 +49,18 @@ export default function MostrarSolucoes({ data }: { data: IHero | null }) {
 
   const theme: ServiceTheme = {
     badge: {
-      background: "bg-neutral-100 text-neutral-800 border border-neutral-200", // Ajustado para ornar com o fundo clean
+      background: "bg-neutral-100 text-neutral-800 border border-neutral-200",
     },
   };
 
   return (
-    // FUNDO PADRONIZADO COM A SEÇÃO DE MARKETING
     <section className="relative py-32 bg-[#F8F9FA] selection:bg-neutral-900 selection:text-white">
-      {/* TEXTURA SUTIL PARA QUEBRAR O BRANCO ABSOLUTO */}
       <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        {/* HEADER PADRONIZADO */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
-          {header.badge && (
+          {/* Uso de Optional Chaining para segurança adicional */}
+          {header?.badge && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -73,17 +72,21 @@ export default function MostrarSolucoes({ data }: { data: IHero | null }) {
             </motion.div>
           )}
 
-          <Heading
-            align="center"
-            as="h2"
-            className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight"
-          >
-            <RichText content={header.title} />
-          </Heading>
+          {header?.title && (
+            <Heading
+              align="center"
+              as="h2"
+              className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight"
+            >
+              <RichText content={header.title} />
+            </Heading>
+          )}
 
-          <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
-            <RichText content={header.subtitle} />
-          </div>
+          {header?.subtitle && (
+            <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
+              <RichText content={header.subtitle} />
+            </div>
+          )}
         </div>
 
         <motion.div

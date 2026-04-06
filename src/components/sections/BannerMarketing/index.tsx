@@ -5,7 +5,6 @@ import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 
 import Heading from "@/components/ui/heading";
-import Paragrafo from "@/components/ui/paragrafo";
 import RichText from "@/components/ui/rich/richText";
 import Textura from "@/components/ui/textura";
 import { Button } from "@/components/ui/button/button";
@@ -89,19 +88,21 @@ const item: Variants = {
 };
 
 export default function MarketingSection({ data }: { data: IMarketing | null }) {
+  // 1. PRIMEIRA TRAVA: Se data for nulo, não renderiza nada
   if (!data) return null;
 
-  const { header, socials, button } = data;
+  // 2. SEGUNDA TRAVA: Desestruturação com valores padrão (default values)
+  // Se socials for undefined, ele assume um array vazio [] evitando erro no .map
+  const { header, socials = [], button } = data;
 
   return (
-    // MUDEI O FUNDO PARA UM CINZA UM POUQUINHO MAIS ESCURO (bg-neutral-50) PARA O BRANCO DO CARD GRITAR
     <section className="relative py-32 bg-neutral-50 selection:bg-neutral-900 selection:text-white">
       <Textura opacity={0.03} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        {/* HEADER */}
+        {/* HEADER - Usando optional chaining (?.) por segurança */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
-          {header.preTitle && (
+          {header?.preTitle && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -113,88 +114,92 @@ export default function MarketingSection({ data }: { data: IMarketing | null }) 
             </motion.div>
           )}
 
-          <Heading
-            align="center"
-            as="h2"
-            className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight"
-          >
-            <RichText content={header.title} />
-          </Heading>
+          {header?.title && (
+            <Heading
+              align="center"
+              as="h2"
+              className="text-5xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6 leading-tight"
+            >
+              <RichText content={header.title} />
+            </Heading>
+          )}
 
-          <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
-            <RichText content={header.subtitle} />
-          </div>
+          {header?.subtitle && (
+            <div className="text-lg md:text-xl text-neutral-500 font-normal max-w-2xl leading-relaxed">
+              <RichText content={header.subtitle} />
+            </div>
+          )}
         </div>
 
         {/* GRID DE REDES SOCIAIS */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {socials.map((s) => {
-            const IconComponent = ICON_MAP[s.name] || FaInstagram;
-            const dynamicGradient = getCssGradient(s.gradient);
-            const brandColor = BRAND_COLORS[s.name] || "#000000";
+        {socials.length > 0 && (
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {socials.map((s) => {
+              // Verificação extra se s existe
+              if (!s) return null;
 
-            return (
-              <motion.div key={s.name} variants={item}>
-                <a
-                  href="#"
-                  // AQUI ESTÁ A MÁGICA: Borda mais visível (neutral-200) e uma Sombra real e espalhada (shadow-lg customizada)
-                  className="group block relative bg-white rounded-[1.5rem] p-8 border border-neutral-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-2 overflow-hidden"
-                >
-                  {/* LINHA DE COR NO TOPO */}
-                  <div
-                    className="absolute top-0 left-0 right-0 h-1.5 opacity-40 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: dynamicGradient }}
-                  />
+              const IconComponent = ICON_MAP[s.name] || FaInstagram;
+              const dynamicGradient = getCssGradient(s.gradient);
+              const brandColor = BRAND_COLORS[s.name] || "#000000";
 
-                  {/* HEADER DO CARD */}
-                  <div className="flex justify-between items-start mb-12 relative z-10">
+              return (
+                <motion.div key={s.name} variants={item}>
+                  <a
+                    href="#"
+                    className="group block relative bg-white rounded-[1.5rem] p-8 border border-neutral-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+                  >
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white shadow-sm border border-neutral-100 group-hover:scale-110 transition-all duration-500"
+                      className="absolute top-0 left-0 right-0 h-1.5 opacity-40 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{ background: dynamicGradient }}
+                    />
+
+                    <div className="flex justify-between items-start mb-12 relative z-10">
+                      <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white shadow-sm border border-neutral-100 group-hover:scale-110 transition-all duration-500"
+                        style={{ color: brandColor }}
+                      >
+                        <IconComponent size={26} />
+                      </div>
+
+                      <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300 border border-neutral-100">
+                        <FiArrowUpRight
+                          size={18}
+                          className="text-neutral-600 group-hover:text-neutral-900"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="relative z-10">
+                      <h3 className="text-xl font-bold text-neutral-800 group-hover:text-neutral-950 transition-colors">
+                        {s.name}
+                      </h3>
+
+                      <span className="block text-sm font-medium text-neutral-400 mt-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                        Explorar rede &rarr;
+                      </span>
+                    </div>
+
+                    <div
+                      className="absolute -right-6 -bottom-6 z-0 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-6 pointer-events-none"
                       style={{ color: brandColor }}
                     >
-                      <IconComponent size={26} />
+                      <IconComponent size={130} />
                     </div>
-
-                    <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300 border border-neutral-100">
-                      <FiArrowUpRight
-                        size={18}
-                        className="text-neutral-600 group-hover:text-neutral-900"
-                      />
-                    </div>
-                  </div>
-
-                  {/* TEXTOS */}
-                  <div className="relative z-10">
-                    <h3 className="text-xl font-bold text-neutral-800 group-hover:text-neutral-950 transition-colors">
-                      {s.name}
-                    </h3>
-
-                    <span className="block text-sm font-medium text-neutral-400 mt-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                      Explorar rede &rarr;
-                    </span>
-                  </div>
-
-                  {/* FANTASMA DOMADO NO FUNDO */}
-                  <div
-                    className="absolute -right-6 -bottom-6 z-0 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-6 pointer-events-none"
-                    style={{ color: brandColor }}
-                  >
-                    <IconComponent size={130} />
-                  </div>
-                </a>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                  </a>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
 
         {/* CTA */}
-        {button && button.action === "link" && (
+        {button && button.action === "link" && button.link && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
