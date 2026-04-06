@@ -139,7 +139,6 @@ export default async function Home() {
         <CtaDuvidas data={ctaDuvidasData as any} />
         <FaqHome data={faqHomeData as any} />
       </main>
-
       <Footer />
     </>
   );
