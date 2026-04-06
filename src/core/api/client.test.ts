@@ -91,10 +91,10 @@ describe("fetchCms", () => {
       json: async () => ({}),
     });
     vi.stubGlobal("fetch", mockFetch);
-    await fetchCms("slug", { revalidate: 60 });
+    await fetchCms("slug", { revalidate: 10 });
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({ next: { revalidate: 60 } })
+      expect.objectContaining({ next: { revalidate: 10 } })
     );
   });
 });
