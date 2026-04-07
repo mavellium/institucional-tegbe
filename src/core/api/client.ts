@@ -8,7 +8,11 @@ import { API_BASE_URL, REVALIDATE_SECONDS } from "@/core/config";
  *
  * O parâmetro `baseUrl` existe para facilitar testes sem depender de env vars.
  */
-export function buildUrl(slug: string, baseUrl: string = API_BASE_URL): string {
+export function buildUrl(
+  slug: string,
+  baseUrl: string = API_BASE_URL,
+  params?: { lead: string; source: string }
+): string {
   if (!slug) return "";
   if (slug.startsWith("http://") || slug.startsWith("https://") || slug.startsWith("/")) {
     return slug;

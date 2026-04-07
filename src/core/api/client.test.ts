@@ -1,99 +1,51 @@
-/**
- * Cliente de API para o CMS
- * Configurado para garantir dados frescos e facilitar a conversão.
- */
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { buildUrl, fetchCms } from "./client";
 
-// Movido para uma constante que pode ser injetada ou vir de env
-const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.example.com/tegbe";
+describe("API Client Utility", () => {
+  const BASE_URL = "https://api.example.com/tegbe";
 
-interface FetchOptions extends RequestInit {
-  revalidate?: number;
-  params?: Record<string, string>;
-}
+  it("deve construir a URL corretamente com cache busting", () => {
+    const url = buildUrl("vendas", BASE_URL);
+    expect(url).toContain("https://api.example.com/tegbe/vendas");
+    expect(url).toContain("t="); // nosso novo parâmetro de cache busting
+  });
 
-interface FetchResponse<T> {
-  data: T | null;
-  error: string | null;
-}
+  it("deve lidar com URLs absolutas ignorando a base", () => {
+    const externalUrl = "https://outro-site.com/api";
+    const url = buildUrl(externalUrl, BASE_URL);
+    expect(url).toContain(externalUrl);
+    expect(url).not.toContain(BASE_URL);
+  });
 
-/**
- * Constrói a URL de forma robusta e gerencia o cache busting
- */
-export function buildUrl(
-  slug: string,
-  baseUrl: string = DEFAULT_BASE_URL,
-  params?: Record<string, string>
-): string {
-  if (!slug) return "";
+  it("deve adicionar parâmetros de busca extras corretamente", () => {
+    const params = { lead: "true", source: "instagram" };
+    const url = buildUrl("contato", BASE_URL, params);
+    expect(url).toContain("lead=true");
+    expect(url).toContain("source=instagram");
+  });
+});
 
-  let finalUrl = "";
+describe("fetchCms", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
 
-  if (/^https?:\/\//.test(slug)) {
-    finalUrl = slug;
-  } else {
-    const cleanBase = baseUrl.replace(/\/+$/, "");
-    const cleanSlug = slug.startsWith("/") ? slug : `/${slug}`;
-    finalUrl = `${cleanBase}${cleanSlug}`;
-  }
+  it("deve retornar erro se o slug estiver vazio", async () => {
+    const result = await fetchCms("");
+    expect(result.data).toBeNull();
+    expect(result.error).toBe("Slug is required");
+  });
 
-  const urlObj = new URL(finalUrl);
+  it("deve retornar dados quando o fetch for bem sucedido", async () => {
+    const mockData = { success: true };
 
-  // Adiciona parâmetros de busca se existirem
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      urlObj.searchParams.append(key, value);
-    });
-  }
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    } as Response);
 
-  // Cache busting: Força dados novos para garantir que a oferta atualizada
-  // (estratégia Tegbe) chegue sempre ao cliente.
-  urlObj.searchParams.append("t", Date.now().toString());
-
-  return urlObj.toString();
-}
-
-/**
- * Busca dados do CMS com política rigorosa de No-Cache
- */
-export async function fetchCms<T>(
-  slug: string,
-  options: FetchOptions = {}
-): Promise<FetchResponse<T>> {
-  if (!slug) {
-    return { data: null, error: "Slug is required" };
-  }
-
-  const { revalidate = 0, params, ...restOptions } = options;
-
-  try {
-    const url = buildUrl(slug, DEFAULT_BASE_URL, params);
-
-    const response = await fetch(url, {
-      cache: "no-store",
-      ...restOptions,
-      next: {
-        revalidate: revalidate,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-        ...restOptions.headers,
-      },
-    });
-
-    if (!response.ok) {
-      return {
-        data: null,
-        error: `Falha na requisição CMS: ${response.status} ${response.statusText}`,
-      };
-    }
-
-    const data = await response.json();
-    return { data, error: null };
-  } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Erro desconhecido ao buscar dados";
-    return { data: null, error: errorMessage };
-  }
-}
+    const result = await fetchCms("test-slug");
+    expect(result.data).toEqual(mockData);
+    expect(result.error).toBeNull();
+  });
+});
