@@ -16,10 +16,9 @@ export default function HeroSlideImage({
   isActive,
   priority = false,
 }: HeroSlideImageProps) {
-  // Slide 0 (priority): renderiza instantaneamente sem animação para otimizar LCP
   if (priority) {
     return (
-      <div className="w-full h-full relative">
+      <div className="w-full aspect-video relative">
         <Image
           src={image}
           alt={title ?? "Hero Slide"}
@@ -44,7 +43,7 @@ export default function HeroSlideImage({
         alt={title ?? "Hero Slide"}
         fill
         sizes="(min-width: 1024px) 60vw, 100vw"
-        className="object-contain object-bottom"
+        className="object-contain  object-bottom"
         priority={false}
       />
     </motion.div>

@@ -105,7 +105,7 @@ export default function HeroSlideContent({
           <Button
             asChild
             // Removemos a variant padrão caso ela force um tamanho pequeno, e aplicamos classes utilitárias
-            className="w-full lg:w-auto px-8 py-6 text-base font-bold uppercase tracking-wider rounded-lg border-2 bg-transparent hover:bg-white/10 transition-all flex items-center justify-center"
+            className="w-full lg:w-auto px-8 py-6 text-base font-bold uppercase tracking-wider rounded-lg border-2 bg-transparent hover:bg-white/10 transition-all flex items-center justify-center mb-10 lg:mb-0"
             style={{
               borderColor: corDestaque,
               color: corDestaque,
