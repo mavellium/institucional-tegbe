@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     // 1. SEGURANÇA: Agora olhamos o Header em vez da URL!
     const token = req.headers.get("x-webhook-secret");
 
-    if (token !== process.env.REVALIDATION_SECRET) {
+    if (token !== process.env.REVALIDATE_SECRET) {
       console.warn("Tentativa não autorizada de revalidação.");
       return Response.json({ error: "Não autorizado" }, { status: 401 });
     }
