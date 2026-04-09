@@ -10,6 +10,11 @@ import { fetchCms } from "@/core/api/client";
  * const headline = await getSafeData<HeadlineData>("headline");
  */
 export async function getSafeData<T>(slug: string): Promise<T | null> {
-  const { data } = await fetchCms<T>(slug);
-  return data;
+  try {
+    const { data } = await fetchCms<T>(slug);
+    return data;
+  } catch (e) {
+    console.error("Erro em", slug);
+    return null;
+  }
 }
