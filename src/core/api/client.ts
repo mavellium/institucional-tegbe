@@ -32,9 +32,6 @@ export function buildUrl(
     });
   }
 
-  // Cache Busting: t= timestamp (Requisito do teste)
-  urlObj.searchParams.append("t", Date.now().toString());
-
   return urlObj.toString();
 }
 
@@ -57,12 +54,12 @@ export async function fetchCms<T>(
 
   try {
     const res = await fetch(url, {
-      // Força no-store para garantir que o Next.js não cacheie o fetch antigo
-      cache: "no-store",
-      next: { revalidate: options?.revalidate ?? REVALIDATE_SECONDS },
+      next: {
+        tags: [`cms:${slug}`],
+        revalidate: options?.revalidate ?? REVALIDATE_SECONDS,
+      },
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
       },
     });
 
