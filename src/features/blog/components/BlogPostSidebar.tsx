@@ -1,46 +1,19 @@
 import Link from "next/link";
 import type { IBlogPost } from "@/interface/blog/IBlogPost";
+import { extractHeadings } from "@/features/blog/utils/toc";
+import BlogToc from "./BlogToc";
 
 interface BlogPostSidebarProps {
   post: IBlogPost;
 }
 
 export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
+  const tocItems = extractHeadings(post.body ?? "");
+
   return (
     <aside className="hidden lg:block">
       <div className="sticky top-28 space-y-5">
-        {post.category?.name && (
-          <div className="p-5 rounded-2xl border border-gray-100 bg-white shadow-sm">
-            <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-gray-400 mb-3">
-              Categoria
-            </p>
-            <Link
-              href={`/blog?category=${post.category.id}`}
-              className="inline-flex items-center gap-1.5 font-semibold text-[#856a00] bg-[#FFCC00]/15 px-3 py-1.5 rounded-full text-sm hover:bg-[#FFCC00]/25 transition-colors"
-            >
-              {post.category.name}
-            </Link>
-          </div>
-        )}
-
-        {post.tags?.length > 0 && (
-          <div className="p-5 rounded-2xl border border-gray-100 bg-white shadow-sm">
-            <p className="text-[10px] font-bold tracking-[0.25em] uppercase text-gray-400 mb-3">
-              Tags
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <Link
-                  key={tag.id}
-                  href={`/blog?tag=${tag.id}`}
-                  className="text-xs px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-gray-600 hover:border-[#0071e3]/40 hover:text-[#0071e3] hover:bg-[#0071e3]/5 transition-colors"
-                >
-                  #{tag.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {tocItems.length > 0 && <BlogToc items={tocItems} />}
 
         {/* CTA — Gradiente Amarelo Atualizado */}
         <div

@@ -10,7 +10,6 @@ import phXLight from "@iconify/icons-ph/x-light";
 import phListLight from "@iconify/icons-ph/list-light";
 import AnnouncementBar from "../AnnouncementBar";
 
-// --- TIPAGEM ATUALIZADA ---
 export interface HeaderData {
   general: {
     logo: string;
@@ -56,19 +55,17 @@ export function Header({ variant = "default" }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  // DETECTA SE ESTÁ NA PÁGINA DE BLOG
+  const isBlogPage = pathname.startsWith("/blog");
+
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "instant",
-    });
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname]);
 
-  // 1. INTEGRAÇÃO COM O ENDPOINT
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,23 +73,10 @@ export function Header({ variant = "default" }: HeaderProps) {
           "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header"
         );
         const result = await response.json();
-
-        // Validação para garantir estrutura correta
-        if (result.announcementBar) {
-          // Garante que 'enabled' existe (default para true se não definido)
-          if (result.announcementBar.enabled === undefined) {
-            result.announcementBar.enabled = true;
-          }
-
-          // Garante que 'behavior' existe
-          if (!result.announcementBar.behavior) {
-            result.announcementBar.behavior = {
-              autoClose: 0,
-              persistent: false,
-            };
-          }
+        // Injeta o link do Blog caso o CMS ainda não o tenha
+        if (result?.links && !result.links.some((l: { href: string }) => l.href === "/blog")) {
+          result.links = [...result.links, { name: "Blog", href: "/blog" }];
         }
-
         setData(result);
       } catch (error) {
         console.error("Erro ao carregar dados do Header:", error);
@@ -101,91 +85,49 @@ export function Header({ variant = "default" }: HeaderProps) {
     fetchData();
   }, []);
 
-  // 2. CONTROLE DE ESTADOS
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fecha o menu ao pressionar ESC
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && menuOpen) {
-        setMenuOpen(false);
-        menuButtonRef.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [menuOpen]);
+  // Fundo branco = topo do blog sem menu aberto
+  const isWhiteHeader = isBlogPage && !scrolled && !menuOpen;
 
-  // Foco no primeiro item do menu quando aberto
-  useEffect(() => {
-    if (menuOpen && firstMenuItemRef.current) {
-      // Pequeno delay para garantir a renderização
-      setTimeout(() => {
-        firstMenuItemRef.current?.focus();
-      }, 100);
-    }
-  }, [menuOpen]);
-
-  // Fecha o menu ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target as Node) &&
-        menuButtonRef.current &&
-        !menuButtonRef.current.contains(e.target as Node)
-      ) {
-        setMenuOpen(false);
-      }
-    };
-
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [menuOpen]);
-
+  // LÓGICA DE TEMAS E CORES
   const theme = useMemo(() => {
-    if (variant === "marketing") {
-      return {
-        primary: "bg-[#E31B63]",
-        hoverBg: "hover:bg-[#FF1758]",
-        textOnPrimary: "text-white",
-        underline: "bg-[#E31B63]",
-        logoFilter: "brightness-0 invert",
-      };
-    }
-    // Default / Ecommerce
     return {
-      primary: "bg-[#FFCC00]",
-      hoverBg: "hover:bg-[#FFDB15]",
-      textOnPrimary: "text-black",
-      underline: "bg-[#FFCC00]",
-      logoFilter: "",
+      primary: variant === "marketing" ? "bg-[#E31B63]" : "bg-[#FFCC00]",
+      hoverBg: variant === "marketing" ? "hover:bg-[#FF1758]" : "hover:bg-[#FFDB15]",
+      textOnPrimary: variant === "marketing" ? "text-white" : "text-black",
+      underline: variant === "marketing" ? "bg-[#E31B63]" : "bg-[#FFCC00]",
+
+      // Cor do texto dos links: cinza escuro no header branco, cinza claro no dark
+      textColor: isWhiteHeader ? "text-gray-500" : "text-white/70",
+      textActive: isWhiteHeader ? "text-gray-900" : "text-white",
+      textHover: isWhiteHeader ? "hover:text-gray-900" : "hover:text-white",
+
+      // Hover do botão mobile: escuro no branco, claro no dark
+      iconHoverBg: isWhiteHeader ? "hover:bg-black/5" : "hover:bg-white/5",
+
+      // Logo: mantém original no dark; adiciona brightness(0) no branco para logo clara ficar visível
+      logoFilter: isWhiteHeader ? "brightness-0" : "",
     };
-  }, [variant]);
+  }, [variant, isWhiteHeader]);
 
   const headerStyles = useMemo(() => {
     if (menuOpen) return "bg-[#050505] py-5 border-b border-white/10";
 
+    if (isBlogPage && !scrolled) {
+      return "bg-white py-6 border-b border-white/80 shadow-sm";
+    }
+
     return scrolled
-      ? "bg-black/80 backdrop-blur-xl backdrop-saturate-[1.5] border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] py-3"
-      : "bg-transparent border-b border-transparent py-6";
-  }, [scrolled, menuOpen]);
+      ? "bg-black/80 backdrop-blur-xl border-b border-white/10 py-3 shadow-lg"
+      : "bg-transparent py-6 border-b border-transparent";
+  }, [scrolled, menuOpen, isBlogPage]);
 
   if (!data) return null;
-
-  const handleMenuToggle = () => {
-    const newState = !menuOpen;
-    setMenuOpen(newState);
-    if (!newState) {
-      menuButtonRef.current?.focus();
-    }
-  };
 
   return (
     <>
@@ -200,7 +142,6 @@ export function Header({ variant = "default" }: HeaderProps) {
                 href="/"
                 className="flex items-center group transition-transform active:scale-95"
                 onClick={() => setMenuOpen(false)}
-                aria-label={`Ir para página inicial - ${data.general.logoAlt}`}
               >
                 <Image
                   src={data.general.logo}
@@ -208,62 +149,60 @@ export function Header({ variant = "default" }: HeaderProps) {
                   width={160}
                   height={40}
                   priority
-                  className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${theme.logoFilter}`}
+                  className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 ${theme.logoFilter}`}
                 />
               </Link>
             </div>
 
             {/* NAVEGAÇÃO DESKTOP */}
-            <nav aria-label="Menu principal" className="hidden xl:flex items-center gap-x-8">
-              {data.links.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`text-sm font-medium tracking-tight transition-all duration-300 relative group ${pathname === link.href ? "text-white" : "text-gray-400 hover:text-white"}`}
-                  aria-current={pathname === link.href ? "page" : undefined}
-                >
-                  {link.name}
-                  <span
-                    className={`absolute -bottom-1 left-0 w-0 h-[1.5px] ${theme.underline} transition-all duration-300 group-hover:w-full`}
-                  ></span>
-                </Link>
-              ))}
+            <nav className="hidden xl:flex items-center gap-x-8">
+              {data.links.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`text-sm font-medium tracking-tight transition-all duration-300 relative group 
+                      ${isActive ? theme.textActive : theme.textColor} ${theme.textHover}`}
+                  >
+                    {link.name}
+                    <span
+                      className={`absolute -bottom-1 left-0 w-0 h-[1.5px] ${theme.underline} transition-all duration-300 group-hover:w-full ${isActive ? "w-full" : ""}`}
+                    />
+                  </Link>
+                );
+              })}
             </nav>
 
-            {/* AÇÕES (CTA FIXO COM CORES DAS VARIANTES) */}
+            {/* AÇÕES */}
             <div className="flex items-center gap-3 sm:gap-6">
               <Link
                 href={data.general.ctaLink}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="hidden sm:block group relative"
-                aria-label={data.general.ctaText}
               >
                 <div
                   className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}
-                ></div>
+                />
                 <button
-                  className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
+                  className={`relative inline-flex h-9 lg:h-11 items-center justify-center rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
                 >
-                  <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
                   <span className="relative z-20 uppercase">{data.general.ctaText}</span>
                 </button>
               </Link>
 
-              {/* BOTÃO MENU MOBILE COM ARIA-LABEL CORRETO */}
+              {/* MENU MOBILE */}
               <Button
                 ref={menuButtonRef}
                 size="icon"
                 variant="ghost"
-                className="xl:hidden text-white hover:bg-white/5 rounded-full z-[110]"
-                onClick={handleMenuToggle}
-                aria-label={menuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
-                aria-expanded={menuOpen}
-                aria-controls="mobile-menu"
+                className={`xl:hidden rounded-full z-[110] transition-colors ${theme.iconHoverBg}`}
+                onClick={() => setMenuOpen(!menuOpen)}
               >
+                {/* Cor aplicada direto no Icon para não ser sobrescrita pelo variant ghost */}
                 <Icon
                   icon={menuOpen ? phXLight : phListLight}
-                  className="size-8 transition-all duration-300"
+                  className={`size-8 transition-colors ${isWhiteHeader ? "text-gray-800" : "text-white"}`}
                 />
               </Button>
             </div>
@@ -272,72 +211,34 @@ export function Header({ variant = "default" }: HeaderProps) {
 
         {/* MENU MOBILE OVERLAY */}
         {menuOpen && (
-          <div
-            className="fixed inset-0 xl:hidden z-[99]"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="mobile-menu-title"
-          >
-            {/* Backdrop escurecido */}
+          <div className="fixed inset-0 xl:hidden z-[99]">
             <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-500"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setMenuOpen(false)}
-              aria-hidden="true"
             />
-
-            {/* Conteúdo do menu */}
             <div
               ref={menuRef}
-              id="mobile-menu"
-              className={`absolute top-0 left-0 right-0 w-full h-screen bg-[#050505] overflow-y-auto overscroll-contain flex flex-col items-center pt-24 pb-12 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${menuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`}
+              className="absolute top-0 left-0 right-0 w-full h-screen bg-[#050505] flex flex-col items-center pt-24 pb-12"
             >
-              <h2 id="mobile-menu-title" className="sr-only">
-                Menu de navegação
-              </h2>
-
-              <nav
-                className="flex flex-col items-center space-y-8 px-6 w-full"
-                aria-label="Navegação principal mobile"
-              >
-                {data.links.map((link, i) => (
+              <nav className="flex flex-col items-center space-y-8 px-6 w-full">
+                {data.links.map((link) => (
                   <Link
                     key={link.name}
-                    ref={i === 0 ? firstMenuItemRef : undefined}
                     href={link.href}
-                    style={{ transitionDelay: menuOpen ? `${i * 70}ms` : "0ms" }}
-                    className={`text-3xl font-light tracking-tighter text-white/70 transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/30 focus:rounded-lg ${menuOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+                    className="text-3xl font-light tracking-tighter text-white/70 hover:text-white transition-all"
                     onClick={() => setMenuOpen(false)}
-                    aria-current={pathname === link.href ? "page" : undefined}
                   >
                     {link.name}
                   </Link>
                 ))}
-
-                <div
-                  className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-                >
-                  <div className="h-[1px] w-12 bg-white/20" aria-hidden="true" />
+                <div className="pt-10 flex flex-col items-center gap-8 w-full max-w-xs">
+                  <div className="h-[1px] w-12 bg-white/20" />
                   <Link
                     href={data.general.ctaLink}
-                    className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm border border-white/10 shadow-2xl shadow-white/5 focus:outline-none focus:ring-2 focus:ring-white/30 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
+                    className={`w-full text-center py-4 rounded-full font-bold uppercase tracking-widest text-sm ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
                     onClick={() => setMenuOpen(false)}
-                    aria-label={data.general.ctaText}
                   >
                     {data.general.ctaText}
-                  </Link>
-                  <Link
-                    href="/consultor-oficial"
-                    onClick={() => setMenuOpen(false)}
-                    aria-label="Ver badge de consultor oficial"
-                    className="focus:outline-none focus:ring-2 focus:ring-white/30 focus:rounded-lg"
-                  >
-                    <Image
-                      src={data.general.consultantBadge}
-                      alt="Badge de Consultor Oficial Tegbe"
-                      width={40}
-                      height={40}
-                      className={`opacity-40 hover:opacity-100 transition-opacity`}
-                    />
                   </Link>
                 </div>
               </nav>
@@ -346,21 +247,14 @@ export function Header({ variant = "default" }: HeaderProps) {
         )}
       </header>
 
-      {/* Announcement Bar - APENAS SE ESTIVER HABILITADO */}
+      {/* Announcement Bar */}
       {data.announcementBar?.enabled && (
         <AnnouncementBar
           text={data.announcementBar.content.text}
           linkText={data.announcementBar.content.linkText}
           linkUrl={data.announcementBar.content.linkUrl}
-          icon={data.announcementBar.content.icon}
-          showIcon={data.announcementBar.content.showIcon}
           variant={data.announcementBar.styles.variant}
-          fullWidth={data.announcementBar.styles.fullWidth}
-          backgroundColor={data.announcementBar.styles.customBackgroundColor ?? undefined}
-          textColor={data.announcementBar.styles.customTextColor ?? undefined}
           className={`${data.announcementBar.styles.className || "top-20"} ${data.announcementBar.styles.position === "fixed" ? "fixed" : "absolute"}`}
-          autoClose={data.announcementBar.behavior?.autoClose ?? 0}
-          persistent={data.announcementBar.behavior?.persistent ?? false}
         />
       )}
     </>

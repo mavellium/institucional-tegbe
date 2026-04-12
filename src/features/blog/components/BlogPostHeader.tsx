@@ -43,12 +43,12 @@ export default function BlogPostHeader({ post }: BlogPostHeaderProps) {
           </span>
         )}
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-[1.05] max-w-4xl">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-[1.05] max-w-full">
           {post.title}
         </h1>
 
         {post.subtitle && (
-          <p className="mt-4 text-xl text-[#86868b] max-w-2xl leading-relaxed">{post.subtitle}</p>
+          <p className="mt-4 text-xl text-[#86868b] max-w-full leading-relaxed">{post.subtitle}</p>
         )}
 
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-400">

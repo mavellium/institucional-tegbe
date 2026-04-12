@@ -4,19 +4,27 @@ import type { IBlogPaginationMeta } from "@/interface/blog/IBlogPaginatedRespons
 interface BlogPaginationProps {
   meta: IBlogPaginationMeta;
   currentPage: number;
-  category?: string;
-  tag?: string;
+  categories?: string;
+  tags?: string;
+  search?: string;
 }
 
-function buildUrl(page: number, category?: string, tag?: string): string {
+function buildUrl(page: number, categories?: string, tags?: string, search?: string): string {
   const params = new URLSearchParams();
   params.set("page", String(page));
-  if (category) params.set("category", category);
-  if (tag) params.set("tag", tag);
+  if (categories) params.set("categories", categories);
+  if (tags) params.set("tags", tags);
+  if (search) params.set("search", search);
   return `/blog?${params.toString()}`;
 }
 
-export default function BlogPagination({ meta, currentPage, category, tag }: BlogPaginationProps) {
+export default function BlogPagination({
+  meta,
+  currentPage,
+  categories,
+  tags,
+  search,
+}: BlogPaginationProps) {
   if (meta.totalPages <= 1) return null;
 
   const pages = Array.from({ length: meta.totalPages }, (_, i) => i + 1);
@@ -28,7 +36,7 @@ export default function BlogPagination({ meta, currentPage, category, tag }: Blo
     >
       {meta.hasPrev && (
         <Link
-          href={buildUrl(currentPage - 1, category, tag)}
+          href={buildUrl(currentPage - 1, categories, tags, search)}
           className="px-4 py-2 rounded-xl text-sm text-gray-500 border border-gray-200 bg-white hover:border-[#0071e3]/50 hover:text-[#0071e3] transition-colors shadow-sm"
         >
           ← Anterior
@@ -38,7 +46,7 @@ export default function BlogPagination({ meta, currentPage, category, tag }: Blo
       {pages.map((p) => (
         <Link
           key={p}
-          href={buildUrl(p, category, tag)}
+          href={buildUrl(p, categories, tags, search)}
           aria-current={p === currentPage ? "page" : undefined}
           className={
             p === currentPage
@@ -52,7 +60,7 @@ export default function BlogPagination({ meta, currentPage, category, tag }: Blo
 
       {meta.hasNext && (
         <Link
-          href={buildUrl(currentPage + 1, category, tag)}
+          href={buildUrl(currentPage + 1, categories, tags, search)}
           className="px-4 py-2 rounded-xl text-sm text-gray-500 border border-gray-200 bg-white hover:border-[#0071e3]/50 hover:text-[#0071e3] transition-colors shadow-sm"
         >
           Próxima →

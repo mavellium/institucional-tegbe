@@ -23,25 +23,14 @@ export default function BlogPostCard({ post }: BlogPostCardProps) {
           />
         )}
         {post.featured && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase bg-[#FFCC00] text-black shadow-sm">
+          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-medium tracking-widest uppercase bg-[#FFCC00] text-black shadow-sm">
             Destaque
           </span>
         )}
       </div>
 
       <div className="flex flex-col flex-1 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          {post.category?.name && (
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase px-2 py-0.5 rounded-full bg-[#FFCC00]/15 text-[#856a00]">
-              {post.category.name}
-            </span>
-          )}
-          {post.readingTime > 0 && (
-            <span className="text-[10px] text-gray-400 ml-auto">{post.readingTime} min</span>
-          )}
-        </div>
-
-        <h3 className="text-gray-900 font-bold text-[1rem] leading-snug tracking-tight group-hover:text-[#0071e3] transition-colors duration-200 line-clamp-2">
+        <h3 className="text-gray-900 font-bold text-[1rem] leading-snug tracking-tight group-hover:text-[#FFCC00] transition-colors duration-200 line-clamp-2">
           {post.title}
         </h3>
 
@@ -50,7 +39,15 @@ export default function BlogPostCard({ post }: BlogPostCardProps) {
         )}
 
         <div className="mt-auto pt-4 flex items-center justify-between">
-          <span className="text-xs text-gray-400">{post.authorName}</span>
+          <span className="text-xs text-gray-400 flex items-center gap-1.5">
+            {post.authorName}
+            {post.readingTime > 0 && (
+              <>
+                <span className="text-gray-300">·</span>
+                <span>{post.readingTime}min de leitura</span>
+              </>
+            )}
+          </span>
           <span className="text-xs font-semibold text-[#0071e3] group-hover:underline">
             Ler mais →
           </span>
