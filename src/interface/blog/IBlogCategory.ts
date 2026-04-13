@@ -1,0 +1,6 @@
+export interface IBlogCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
