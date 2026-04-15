@@ -129,7 +129,7 @@ export default async function Home() {
           navAccent="#f5df36"
           corIcone="white"
           loop={true}
-          autoplayDelay={6000}
+          autoplayDelay={9000}
         />
         <MostrarSolucoes data={solucoesData as any} />
         <Marketplaces data={marketplacesData as any} />

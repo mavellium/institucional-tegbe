@@ -115,7 +115,12 @@ export default async function MarketingPage() {
       />
       <Header variant="marketing" />
       <main>
-        <HeroCarrossel slides={heroSlidesData ?? []} corDestaque="#f9265e" textoFundo="MARKETING" />
+        <HeroCarrossel
+          slides={heroSlidesData ?? []}
+          corDestaque="#f9265e"
+          autoplayDelay={9000}
+          textoFundo="MARKETING"
+        />
         <PorqueATegbe data={porqueATegbeData as any} />
         <Video
           data={videoData as any}

@@ -135,6 +135,7 @@ export default async function EcommercePage() {
           navGradienteTo="#FFB800"
           navAccent="#FFDB4D"
           corIcone="black"
+          autoplayDelay={9000}
         />
         <Logos data={logosData as any} />
         <Carrossel data={servicosData as any} />

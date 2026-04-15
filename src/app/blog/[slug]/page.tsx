@@ -75,7 +75,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
     <>
       <Schema data={jsonLd} />
       <Header />
-      <main className="min-h-screen bg-[#f6f6f6]">
+      <main className="min-h-screen px-20 lg:px-40 bg-[#fff]">
         {post.image && (
           <link
             rel="preload"
