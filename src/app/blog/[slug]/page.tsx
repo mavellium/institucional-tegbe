@@ -85,7 +85,7 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         )}
         <BlogPostHeader post={post} />
         <div className="bg-white border-b border-gray-100">
-          <div className="container mx-auto px-4 md:px-8 py-14 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12 xl:gap-16">
+          <div className="container mx-auto px-6 md:px-12 xl:px-20 py-14 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12 xl:gap-16">
             <BlogPostBody body={post.body} />
             <BlogPostSidebar post={post} />
           </div>

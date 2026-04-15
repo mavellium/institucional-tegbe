@@ -22,15 +22,16 @@ export default function HeroSlideContent({
   corDestaque = "#F9265E",
 }: HeroSlideContentProps) {
   return (
-    // 1. Aumentamos o max-w para o texto ter mais espaço horizontal e preencher a tela
-    <div className="z-10 flex flex-col items-center lg:items-start gap-5 lg:gap-8 w-full max-w-2xl mx-auto lg:mx-0 px-2 lg:px-0">
+    // 1. Removido o padding lateral (px-2) pois o componente pai já faz o controle de margem.
+    // Adicionado md:gap-6 para uma transição mais suave entre celular e PC.
+    <div className="z-10 flex flex-col items-center lg:items-start gap-4 sm:gap-6 lg:gap-5 w-full max-w-full sm:max-w-xl md:max-w-2xl mx-auto lg:mx-0">
       {/* Tag / Highlight */}
       {slide.tag && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-2"
+          className="mb-1 sm:mb-2"
         >
           <Highlight color={corDestaque} withSerif withItalic>
             {slide.tag}
@@ -46,10 +47,10 @@ export default function HeroSlideContent({
           transition={{ duration: 0.5, delay: 0.2 }}
           className="w-full"
         >
-          {/* 2. Ajuste na altura da linha (leading-tight) para o título ficar bem agrupado e legível */}
+          {/* 2. Ajuste na altura da linha dependendo do tamanho da tela */}
           <Heading
             size="xl"
-            className="text-center lg:text-left w-full leading-[1.15] tracking-tight font-bold"
+            className="text-[24px] sm:text-[30px] md:text-[36px] lg:text-[30px] xl:text-[42px] text-center lg:text-left w-full leading-[1.2] tracking-tight font-bold break-words hyphens-auto"
             color="white"
           >
             {slide.title}
@@ -65,11 +66,11 @@ export default function HeroSlideContent({
           transition={{ duration: 0.5, delay: 0.4 }}
           className="w-full"
         >
+          {/* 3. Escala fluida de texto: text-base (celular) -> text-lg (tablet) -> text-xl/2xl (desktop) */}
           <Paragrafo
             align="center"
             color="#fff"
-            // 3. Aumentamos levemente o tamanho da fonte no mobile e melhoramos o espaçamento (leading-relaxed)
-            className="text-gray-200 text-lg md:text-xl lg:text-2xl font-light leading-relaxed text-center lg:text-left px-2 lg:px-0"
+            className="text-gray-200 text-sm sm:text-base md:text-lg lg:text-xl font-light leading-relaxed text-center lg:text-left break-words"
           >
             {slide.description}
           </Paragrafo>
@@ -86,7 +87,7 @@ export default function HeroSlideContent({
           <Text
             color="#fff"
             variant="muted"
-            className="text-sm lg:text-base max-w-lg text-center lg:text-left"
+            className="text-xs sm:text-sm lg:text-base max-w-lg text-center lg:text-left opacity-80"
           >
             {slide.subtext}
           </Text>
@@ -99,13 +100,13 @@ export default function HeroSlideContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          // 4. Container do botão com largura total no mobile para dar o efeito "block" do G4
-          className="w-full sm:w-auto mt-4"
+          // 4. Largura total no celular (w-full), mas ajustada para o conteúdo em telas maiores (sm:w-auto)
+          className="w-full sm:w-auto mt-2 sm:mt-4 mb-6 lg:mb-0"
         >
           <Button
             asChild
-            // Removemos a variant padrão caso ela force um tamanho pequeno, e aplicamos classes utilitárias
-            className="w-full lg:w-auto px-8 py-6 text-base font-bold uppercase tracking-wider rounded-lg border-2 bg-transparent hover:bg-white/10 transition-all flex items-center justify-center mb-10 lg:mb-0"
+            // 5. Padding e fonte reduzidos no mobile (py-4, text-sm) e aumentados no desktop (lg:py-6, lg:text-base)
+            className="w-full sm:w-max px-6 sm:px-8 py-4 lg:py-6 text-sm lg:text-base font-bold uppercase tracking-wider rounded-lg border-2 bg-transparent hover:bg-white/10 transition-all flex items-center justify-center"
             style={{
               borderColor: corDestaque,
               color: corDestaque,
@@ -124,7 +125,7 @@ export default function HeroSlideContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: isActive ? 1 : 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="w-full"
+          className="w-full mt-4"
         >
           <RichText content={slide.richContent} />
         </motion.div>

@@ -25,7 +25,7 @@ interface HeroCarrosselProps {
 export default function HeroCarrossel({
   slides,
   loop = true,
-  autoplayDelay = 6000,
+  autoplayDelay = 8000,
   corFundo = "#0A0A0A",
   corDestaque = "#f9265e",
   textoFundo = "MARKETING",
@@ -75,8 +75,8 @@ export default function HeroCarrossel({
               const isActive = index === selectedIndex;
               return (
                 <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
-                  <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-4 h-screen lg:h-[calc(100vh-120px)] min-h-[600px]">
-                    <div className="w-full lg:w-auto lg:min-w-[30vw] flex flex-col justify-center text-center lg:text-left z-20 px-4 lg:px-0">
+                  <div className="w-full pt-20 lg:pt-0 lg:pl-32 flex flex-col lg:flex-row items-center lg:gap-10 min-h-screen lg:h-screen">
+                    <div className="w-full lg:w-[42%] lg:min-w-[30vw] flex flex-col justify-center text-center lg:text-left z-20 px-6 lg:px-0 py-10 lg:self-center">
                       <HeroSlideContent
                         slide={slide}
                         isActive={isActive}
@@ -84,7 +84,7 @@ export default function HeroCarrossel({
                       />
                     </div>
                     {slide.image && (
-                      <div className="w-full lg:w-full flex items-end h-full lg:pr-0">
+                      <div className="w-full lg:flex-1 flex items-end h-[62vw] max-h-[400px] lg:max-h-none lg:h-full">
                         <HeroSlideImage
                           image={slide.image}
                           title={slide.title}

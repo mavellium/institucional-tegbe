@@ -16,14 +16,17 @@ export default function HeroSlideImage({
   isActive,
   priority = false,
 }: HeroSlideImageProps) {
+  // Condição para o LCP (Largest Contentful Paint) - Slide Inicial
   if (priority) {
     return (
-      <div className="w-full aspect-video relative">
+      // Removido o 'aspect-video' para respeitar a altura dinâmica (dvh) do pai
+      <div className="w-full h-full relative">
         <Image
           src={image}
           alt={title ?? "Hero Slide"}
           fill
-          sizes="(min-width: 1024px) 60vw, 100vw"
+          // Sizes atualizado para melhorar a performance de carregamento baseada na tela
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 60vw"
           className="object-contain object-bottom"
           priority
         />
@@ -31,6 +34,7 @@ export default function HeroSlideImage({
     );
   }
 
+  // Condição para os demais slides (Animados)
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, x: 20 }}
@@ -42,8 +46,8 @@ export default function HeroSlideImage({
         src={image}
         alt={title ?? "Hero Slide"}
         fill
-        sizes="(min-width: 1024px) 60vw, 100vw"
-        className="object-contain  object-bottom"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 60vw"
+        className="object-contain object-bottom"
         priority={false}
       />
     </motion.div>
