@@ -5,29 +5,32 @@ import Schema from "@/components/layout/Schema";
 import HeroCarousel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import { fetchHeroSlides } from "@/features/home-hero-carousel/services";
 import { getSafeData } from "@/core/api/getSafeData";
+import { fetchBlogPosts } from "@/features/blog/services";
 
-const MostrarSolucoes = dynamic(() => import("@/components/sections/HomeCards"), {});
-const Marketplaces = dynamic(() => import("@/components/web/marketplaces"), {});
-const SectionMarketing = dynamic(() => import("@/components/sections/BannerMarketing"), {});
-const SectionFormacoes = dynamic(() => import("@/components/sections/SectionFormacoes"), {});
-const Ferramentas = dynamic(() => import("@/components/web/ferramentas"), {});
-const CtaDuvidas = dynamic(() => import("@/components/web/ctaDuvidas"), {});
-const FaqHome = dynamic(() => import("@/components/sections/FaqHome"), {});
+// Imports Dinâmicos
+const MostrarSolucoes = dynamic(() => import("@/components/sections/HomeCards"));
+const Marketplaces = dynamic(() => import("@/components/web/marketplaces"));
+const SectionMarketing = dynamic(() => import("@/components/sections/BannerMarketing"));
+const SectionFormacoes = dynamic(() => import("@/components/sections/SectionFormacoes"));
+const Ferramentas = dynamic(() => import("@/components/web/ferramentas"));
+const CtaDuvidas = dynamic(() => import("@/components/web/ctaDuvidas"));
+const FaqHome = dynamic(() => import("@/components/sections/FaqHome"));
+const HomeBlog = dynamic(() => import("@/components/sections/HomeBlog"));
 
 export default async function Home() {
+  // Fetch paralelo de todos os recursos do CMS
   const [
-    heroSlides, // fetchHeroSlides()
-    heroCarrosselData, // getSafeData("hero-carrossel-home") <- ADICIONADO
-    solucoesData, // getSafeData("solucoes-home")
-    marketplacesData, // getSafeData("marketplaces")
-    redesSociaisData, // getSafeData("redes-sociais")
-    formacoesHomeData, // getSafeData("formacoes-home")
-    ferramentasData, // getSafeData("ferramentas")
-    ctaDuvidasData, // getSafeData("duvida-cta")
-    faqHomeData, // getSafeData("faq-home")
+    heroSlides,
+    solucoesData,
+    marketplacesData,
+    redesSociaisData,
+    formacoesHomeData,
+    ferramentasData,
+    ctaDuvidasData,
+    faqHomeData,
+    blogPostsResult,
   ] = await Promise.all([
     fetchHeroSlides(),
-    getSafeData("hero-carrossel-home"),
     getSafeData("solucoes-home"),
     getSafeData("marketplaces"),
     getSafeData("redes-sociais"),
@@ -35,9 +38,29 @@ export default async function Home() {
     getSafeData("ferramentas"),
     getSafeData("duvida-cta"),
     getSafeData("faq-home"),
+    fetchBlogPosts({ limit: "12", status: "PUBLISHED" }),
   ]);
 
-  // Preload da imagem LCP (primeiro slide do hero)
+  const blogPosts = blogPostsResult?.data ?? [];
+
+  // Fetch direto com URL absoluta — evita qualquer variação do API_BASE_URL no ambiente
+  const homeBlogRaw = await fetch(
+    "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/home-blog",
+    { next: { revalidate: 10, tags: ["cms:home-blog"] } }
+  )
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null);
+
+  const blogSection = (homeBlogRaw?.["blog texto"] ?? undefined) as
+    | {
+        label?: string;
+        titulo?: string;
+        descricao?: string;
+        textoBotao?: string;
+      }
+    | undefined;
+
+  // Otimização LCP: Preload da imagem do primeiro slide
   const lcpImageUrl = heroSlides?.[0]?.image;
 
   return (
@@ -52,67 +75,19 @@ export default async function Home() {
           fetchPriority="high"
         />
       )}
+
       <Schema
         data={{
           "@context": "https://schema.org",
           "@type": "Service",
           name: "Sua solução completa em vendas",
           description:
-            "Serviços especializados em consultoria de e-commerce, gestão de marketplaces como Mercado Livre e Shopee, tráfego pago, CRM e estratégias digitais para aumentar vendas online, oferecidos pela agência Tegbe.",
-          serviceType: [
-            "Consultoria e Gestão de Marketplaces",
-            "Gestão de Tráfego Pago",
-            "Estratégias de Marketing Digital",
-          ],
+            "Serviços especializados em consultoria de e-commerce e marketing digital pela agência Tegbe.",
           provider: {
             "@type": "Organization",
             name: "Tegbe",
-            description:
-              "Agência de marketing digital e consultoria especializada em transformar presença online em resultados reais de vendas, especializada em e-commerce e performance digital.",
             url: "https://tegbe.com.br",
             logo: "https://tegbe.com.br/logo.png",
-            contactPoint: [
-              {
-                "@type": "ContactPoint",
-                contactType: "customer support",
-                telephone: "+55 14 98828-1001",
-                email: "contato@tegbe.com.br",
-                availableLanguage: "Portuguese",
-              },
-            ],
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "R. Santos Dumont, 133, Ferrarópolis",
-              addressLocality: "Garça",
-              addressRegion: "SP",
-              postalCode: "17400-074",
-              addressCountry: "BR",
-            },
-            sameAs: [
-              "https://www.instagram.com/agenciategbe",
-              "https://www.facebook.com/TegbeSolucoes",
-              "https://www.linkedin.com/company/tegbe/",
-            ],
-          },
-          areaServed: {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Garça",
-              addressRegion: "SP",
-              addressCountry: "BR",
-            },
-          },
-          offers: {
-            "@type": "Offer",
-            name: "Diagnóstico e Consultoria de E-commerce",
-            description:
-              "Sessão de diagnóstico e consultoria para e-commerce e gestão de marketplaces para identificar oportunidades comerciais e estratégicas.",
-            priceSpecification: {
-              "@type": "PriceSpecification",
-              priceCurrency: "BRL",
-              price: "Sob consulta",
-            },
           },
         }}
       />
@@ -124,13 +99,11 @@ export default async function Home() {
           slides={heroSlides}
           corDestaque="#cfba19"
           textoFundo="TEGBE"
-          navGradienteFrom="#f5df36"
-          navGradienteTo="#f5df36"
           navAccent="#f5df36"
-          corIcone="white"
           loop={true}
           autoplayDelay={9000}
         />
+
         <MostrarSolucoes data={solucoesData as any} />
         <Marketplaces data={marketplacesData as any} />
         <SectionMarketing data={redesSociaisData as any} />
@@ -138,7 +111,11 @@ export default async function Home() {
         <Ferramentas data={ferramentasData as any} />
         <CtaDuvidas data={ctaDuvidasData as any} />
         <FaqHome data={faqHomeData as any} />
+
+        {/* Passando posts e textos dinâmicos do CMS */}
+        <HomeBlog posts={blogPosts} data={blogSection} />
       </main>
+
       <Footer />
     </>
   );

@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button/button";
 import { IButton } from "@/interface/button/IButton";
 import { RichTextItem } from "@/types/richText.type";
 
-import { FiArrowRight } from "react-icons/fi";
-
 interface Marketplace {
   name: string;
   color: string;
@@ -57,7 +55,10 @@ export default function Marketplaces({ data }: { data: IEcommerce | null }) {
   const { header, marketplaces, button } = data;
 
   return (
-    <section className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950">
+    <section
+      id="ecommerce"
+      className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950"
+    >
       {/* TEXTURA E GLOWS DE FUNDO */}
       <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-overlay" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 blur-[128px] rounded-full pointer-events-none" />

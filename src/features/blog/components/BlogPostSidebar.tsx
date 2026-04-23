@@ -11,8 +11,8 @@ export default function BlogPostSidebar({ post }: BlogPostSidebarProps) {
   const tocItems = extractHeadings(post.body ?? "");
 
   return (
-    <aside className="hidden lg:block">
-      <div className="sticky top-28 space-y-5">
+    <aside className="hidden lg:block self-start sticky top-28">
+      <div className="space-y-5">
         {tocItems.length > 0 && <BlogToc items={tocItems} />}
 
         {/* CTA — Gradiente Amarelo Atualizado */}
