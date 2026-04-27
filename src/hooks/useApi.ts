@@ -15,7 +15,7 @@ export function resolveApiUrl(slug: string): string {
   if (baseUrl) {
     return `${baseUrl.replace(/\/$/, "")}/${slug}`;
   }
-  return `https://tegbe-dashboard.vercel.app/api/tegbe-institucional/${slug}`;
+  return `https://janus.mavellium.com.br/api/tegbe-institucional/${slug}`;
 }
 
 // Cache module-level: persiste durante a sessão, reseta em hard refresh

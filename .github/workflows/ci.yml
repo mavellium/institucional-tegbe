@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 env:
-  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://tegbe-dashboard.vercel.app/api/tegbe-institucional' }}
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://janus.mavellium.com.br/api/tegbe-institucional' }}
 
 jobs:
   # ─── Job 1: Lint ──────────────────────────────────────────────────────────

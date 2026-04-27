@@ -36,13 +36,13 @@ function GlowBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Noise texture overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
         }}
       />
-      
+
       {/* Primary glow - top right */}
       <motion.div
         className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full"
@@ -59,7 +59,7 @@ function GlowBackground() {
           ease: "easeInOut",
         }}
       />
-      
+
       {/* Secondary glow - bottom left */}
       <motion.div
         className="absolute -bottom-48 -left-48 w-[400px] h-[400px] rounded-full"
@@ -79,7 +79,7 @@ function GlowBackground() {
       />
 
       {/* Grid lines - tech feel */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
           backgroundImage: `
@@ -107,10 +107,14 @@ function GlowBackground() {
 }
 
 // Componente RejectionCard atualizado com Iconify
-function RejectionCard({ card, index, isLastCard }: { 
-  card: RejectionCard; 
-  index: number; 
-  isLastCard: boolean 
+function RejectionCard({
+  card,
+  index,
+  isLastCard,
+}: {
+  card: RejectionCard;
+  index: number;
+  isLastCard: boolean;
 }) {
   // Last card has a different layout (text-only, no X icon)
   if (isLastCard) {
@@ -126,15 +130,21 @@ function RejectionCard({ card, index, isLastCard }: {
           {/* Subtle tech corner accents */}
           <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-[#E31B63]/20 rounded-tl-2xl" />
           <div className="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-[#E31B63]/20 rounded-br-2xl" />
-          
+
           <p className="text-gray-300/90 text-base md:text-lg leading-relaxed font-light">
-            {card.description ? (
-              card.description.split(new RegExp(`(${card.highlight_terms.join('|')})`, 'g')).map((part, i) => (
-                card.highlight_terms.includes(part) 
-                  ? <strong key={i} className="text-white font-semibold">{part}</strong> 
-                  : part
-              ))
-            ) : card.title}
+            {card.description
+              ? card.description
+                  .split(new RegExp(`(${card.highlight_terms.join("|")})`, "g"))
+                  .map((part, i) =>
+                    card.highlight_terms.includes(part) ? (
+                      <strong key={i} className="text-white font-semibold">
+                        {part}
+                      </strong>
+                    ) : (
+                      part
+                    )
+                  )
+              : card.title}
           </p>
         </div>
       </motion.div>
@@ -151,17 +161,24 @@ function RejectionCard({ card, index, isLastCard }: {
     >
       {/* Card */}
       <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0A0A0E] h-full min-h-[220px] transition-all duration-500 hover:border-[#E31B63]/30">
-        
         {/* Hover gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#E31B63]/0 via-[#E31B63]/[0.02] to-[#E31B63]/[0.06] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
+
         {/* Tech circuit lines */}
-        <svg className="absolute top-0 right-0 w-24 h-24 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500" viewBox="0 0 100 100">
-          <path d="M100 0 L60 0 L60 20 L40 20 L40 40 L20 40 L20 60" stroke="#E31B63" fill="none" strokeWidth="0.5" />
+        <svg
+          className="absolute top-0 right-0 w-24 h-24 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500"
+          viewBox="0 0 100 100"
+        >
+          <path
+            d="M100 0 L60 0 L60 20 L40 20 L40 40 L20 40 L20 60"
+            stroke="#E31B63"
+            fill="none"
+            strokeWidth="0.5"
+          />
           <circle cx="60" cy="20" r="2" fill="#E31B63" />
           <circle cx="40" cy="40" r="2" fill="#E31B63" />
         </svg>
-        
+
         <div className="relative z-10 p-8 flex items-center text-center flex-col h-full">
           {/* X Icon - large and prominent */}
           <div className="mb-6">
@@ -169,7 +186,7 @@ function RejectionCard({ card, index, isLastCard }: {
               <Icon icon="mdi:close" className="w-6 h-6 text-[#E31B63]" />
             </div>
           </div>
-          
+
           {/* Title */}
           <h3 className="text-white font-bold text-lg md:text-xl leading-snug tracking-tight">
             {card.title}
@@ -178,17 +195,23 @@ function RejectionCard({ card, index, isLastCard }: {
           {/* Description if exists */}
           {card.description && (
             <p className="mt-3 text-gray-400/80 text-sm leading-relaxed font-light">
-              {card.description.split(new RegExp(`(${card.highlight_terms.join('|')})`, 'g')).map((part, i) => (
-                card.highlight_terms.includes(part) 
-                  ? <strong key={i} className="text-white font-medium">{part}</strong> 
-                  : part
-              ))}
+              {card.description
+                .split(new RegExp(`(${card.highlight_terms.join("|")})`, "g"))
+                .map((part, i) =>
+                  card.highlight_terms.includes(part) ? (
+                    <strong key={i} className="text-white font-medium">
+                      {part}
+                    </strong>
+                  ) : (
+                    part
+                  )
+                )}
             </p>
           )}
 
           {/* Status label on hover */}
           <div className="mt-auto pt-6">
-            <motion.span 
+            <motion.span
               className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#E31B63]/60 uppercase tracking-[0.15em] opacity-0 group-hover:opacity-100 transition-all duration-500"
               initial={false}
             >
@@ -202,10 +225,10 @@ function RejectionCard({ card, index, isLastCard }: {
   );
 }
 
-export default function MarketingAntiHero({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/nao-para-voce" 
-}: { 
-  endpoint?: string 
+export default function MarketingAntiHero({
+  endpoint = "https://janus.mavellium.com.br/api/tegbe-institucional/nao-para-voce",
+}: {
+  endpoint?: string;
 }) {
   const sectionRef = useRef(null);
   const [data, setData] = useState<AntiHeroData | null>(null);
@@ -229,75 +252,91 @@ export default function MarketingAntiHero({
   }, [endpoint]);
 
   // Remove GSAP animations since we're using Framer Motion for cards
-  useGSAP(() => {
-    if (!data || loading) return;
+  useGSAP(
+    () => {
+      if (!data || loading) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        toggleActions: "play none none reverse",
-      }
-    });
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 75%",
+          toggleActions: "play none none reverse",
+        },
+      });
 
-    tl.fromTo(".reveal-anti-header", 
-      { y: -30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
-    );
+      tl.fromTo(
+        ".reveal-anti-header",
+        { y: -30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
+      );
 
-    // We're not animating cards with GSAP anymore since Framer Motion handles it
-  }, { scope: sectionRef, dependencies: [data, loading] });
-
-  if (loading || !data) return (
-    <div className="h-96 bg-[#020202] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
-    </div>
+      // We're not animating cards with GSAP anymore since Framer Motion handles it
+    },
+    { scope: sectionRef, dependencies: [data, loading] }
   );
 
+  if (loading || !data)
+    return (
+      <div className="h-96 bg-[#020202] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#E31B63] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+
   return (
-    <section ref={sectionRef} className="relative py-24 px-6 bg-[#020202] overflow-hidden border-t border-white/5">
-      
+    <section
+      ref={sectionRef}
+      className="relative py-24 px-6 bg-[#020202] overflow-hidden border-t border-white/5"
+    >
       {/* Atmosphere - DNA Mavellium */}
       <GlowBackground />
-      
+
       <div className="mx-auto max-w-7xl relative z-10 flex flex-col items-center">
-        
         {/* CABEÇALHO ESTRATÉGICO */}
         <div className="text-center mb-16 max-w-4xl">
-            <div className="reveal-anti-header mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 bg-red-950/10 backdrop-blur-md">
-                <Icon icon="mdi:filter-variant-remove" className="text-[#E31B63] w-4 h-4" />
-                <span className="text-[11px] font-bold tracking-[0.2em] text-red-100 uppercase">
-                    {data.header.badge}
-                </span>
-            </div>
+          <div className="reveal-anti-header mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 bg-red-950/10 backdrop-blur-md">
+            <Icon icon="mdi:filter-variant-remove" className="text-[#E31B63] w-4 h-4" />
+            <span className="text-[11px] font-bold tracking-[0.2em] text-red-100 uppercase">
+              {data.header.badge}
+            </span>
+          </div>
 
-            <h2 className="reveal-anti-header font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white">
-                {data.header.title_main}{" "}
-                <span className="relative inline-block text-[#E31B63]">
-                    {data.header.title_highlight}
-                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#E31B63]" viewBox="0 0 100 10" preserveAspectRatio="none">
-                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" opacity="0.4" />
-                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
-                    </svg>
-                </span>{" "}
-                {data.header.title_suffix}
-            </h2>
-            
-            <p className="reveal-anti-header mt-6 text-gray-400 text-lg font-light max-w-2xl mx-auto">
-                {data.header.description}
-            </p>
+          <h2 className="reveal-anti-header font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white">
+            {data.header.title_main}{" "}
+            <span className="relative inline-block text-[#E31B63]">
+              {data.header.title_highlight}
+              <svg
+                className="absolute w-full h-3 -bottom-1 left-0 text-[#E31B63]"
+                viewBox="0 0 100 10"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 5 Q 50 10 100 5"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                  opacity="0.4"
+                />
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
+              </svg>
+            </span>{" "}
+            {data.header.title_suffix}
+          </h2>
+
+          <p className="reveal-anti-header mt-6 text-gray-400 text-lg font-light max-w-2xl mx-auto">
+            {data.header.description}
+          </p>
         </div>
 
         {/* GRID DE QUALIFICAÇÃO REVERSA */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-            {data.rejection_cards.map((card, index) => (
-                <RejectionCard 
-                  key={card.id}
-                  card={card}
-                  index={index}
-                  isLastCard={index === data.rejection_cards.length - 1}
-                />
-            ))}
+          {data.rejection_cards.map((card, index) => (
+            <RejectionCard
+              key={card.id}
+              card={card}
+              index={index}
+              isLastCard={index === data.rejection_cards.length - 1}
+            />
+          ))}
         </div>
       </div>
     </section>

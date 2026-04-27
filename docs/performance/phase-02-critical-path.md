@@ -29,7 +29,7 @@ Adicionar antes dos font preloads:
 {/* Preconnect a origens externas */}
 <link rel="preconnect" href="https://tegbe-cdn.b-cdn.net" />
 <link rel="preconnect" href="https://api.iconify.design" crossOrigin="anonymous" />
-<link rel="dns-prefetch" href="https://tegbe-dashboard.vercel.app" />
+<link rel="dns-prefetch" href="https://janus.mavellium.com.br" />
 ```
 
 ### 2. Remover Geist fonts
@@ -83,7 +83,7 @@ Para:
 
 - [x] `preload-resources.tsx` — preconnect `tegbe-cdn.b-cdn.net`
 - [x] `preload-resources.tsx` — preconnect `api.iconify.design` (crossOrigin="anonymous")
-- [x] `preload-resources.tsx` — dns-prefetch `tegbe-dashboard.vercel.app`
+- [x] `preload-resources.tsx` — dns-prefetch `janus.mavellium.com.br`
 - [x] `layout.tsx` — imports `Geist` e `Geist_Mono` removidos
 - [x] `layout.tsx` — body className sem `${geistSans.variable} ${geistMono.variable}`
 - [x] `layout.tsx` — GTM `strategy="lazyOnload"`

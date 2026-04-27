@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
       {
         // Esse é o túnel que evita o CORS/NetworkError
         source: '/api-tegbe/:path*',
-        destination: 'https://tegbe-dashboard.vercel.app/api/:path*',
+        destination: 'https://janus.mavellium.com.br/api/:path*',
       },
     ];
   },

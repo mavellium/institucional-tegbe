@@ -70,7 +70,7 @@ export function Header({ variant = "default" }: HeaderProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header"
+          "https://janus.mavellium.com.br/api/tegbe-institucional/header"
         );
         const result = await response.json();
         // Injeta o link do Blog caso o CMS ainda não o tenha

@@ -50,7 +50,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 }
 
 export function SociosCrescimento({
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/socios",
+  endpoint = "https://janus.mavellium.com.br/api/tegbe-institucional/socios",
   variant = "sobre",
   primaryColor = "#FFD700", // valor padrão (amarelo)
 }: SociosProps) {
