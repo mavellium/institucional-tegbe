@@ -46,7 +46,7 @@ describe("resolveApiUrl", () => {
   it("usa URL de fallback do dashboard quando NEXT_PUBLIC_API_URL está vazio", () => {
     vi.stubEnv("NEXT_PUBLIC_API_URL", "");
     expect(resolveApiUrl("hero-carrossel-home")).toBe(
-      "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/hero-carrossel-home"
+      "https://janus.mavellium.com.br/api/tegbe-institucional/hero-carrossel-home"
     );
   });
 });

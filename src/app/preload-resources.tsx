@@ -4,7 +4,7 @@ export function PreloadResources() {
       {/* Preconnect a origens externas críticas */}
       <link rel="preconnect" href="https://api.iconify.design" crossOrigin="anonymous" />
       <link rel="preconnect" href="https://tegbe-cdn.b-cdn.net" crossOrigin="anonymous" />
-      <link rel="preconnect" href="https://tegbe-dashboard.vercel.app" crossOrigin="anonymous" />
+      <link rel="preconnect" href="https://janus.mavellium.com.br" crossOrigin="anonymous" />
       <link rel="preconnect" href="https://grainy-gradients.vercel.app" crossOrigin="anonymous" />
 
       {/* Preload fontes críticas */}

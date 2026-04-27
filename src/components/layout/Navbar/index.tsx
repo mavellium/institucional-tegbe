@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo, useRef } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button/button"
-import { Icon } from "@iconify/react"
-import AnnouncementBar from "../AnnouncementBar"
+import { useState, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button/button";
+import { Icon } from "@iconify/react";
+import AnnouncementBar from "../AnnouncementBar";
 
 // --- TIPAGEM ATUALIZADA ---
 export interface NavbarData {
@@ -46,24 +46,26 @@ export interface NavbarData {
 }
 
 interface NavbarProps {
-  variant?: 'default' | 'marketing';
+  variant?: "default" | "marketing";
 }
 
-export default function Navbar({ variant = 'default' }: NavbarProps) {
-  const [data, setData] = useState<NavbarData | null>(null)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname()
-  const menuRef = useRef<HTMLDivElement>(null)
-  const menuButtonRef = useRef<HTMLButtonElement>(null)
-  const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
+export default function Navbar({ variant = "default" }: NavbarProps) {
+  const [data, setData] = useState<NavbarData | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
 
   // 1. INTEGRAÇÃO COM O ENDPOINT
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header')
-        const result = await response.json()
+        const response = await fetch(
+          "https://janus.mavellium.com.br/api/tegbe-institucional/header"
+        );
+        const result = await response.json();
 
         // Validação para garantir estrutura correta
         if (result.announcementBar) {
@@ -76,73 +78,77 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
           if (!result.announcementBar.behavior) {
             result.announcementBar.behavior = {
               autoClose: 0,
-              persistent: false
+              persistent: false,
             };
           }
         }
 
-        setData(result)
+        setData(result);
       } catch (error) {
-        console.error("Erro ao carregar dados do Header:", error)
+        console.error("Erro ao carregar dados do Header:", error);
       }
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, []);
 
   // 2. CONTROLE DE ESTADOS
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Fecha o menu ao pressionar ESC
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && menuOpen) {
-        setMenuOpen(false)
-        menuButtonRef.current?.focus()
+      if (e.key === "Escape" && menuOpen) {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
       }
-    }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [menuOpen])
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [menuOpen]);
 
   // Foco no primeiro item do menu quando aberto
   useEffect(() => {
     if (menuOpen && firstMenuItemRef.current) {
       // Pequeno delay para garantir a renderização
       setTimeout(() => {
-        firstMenuItemRef.current?.focus()
-      }, 100)
+        firstMenuItemRef.current?.focus();
+      }, 100);
     }
-  }, [menuOpen])
+  }, [menuOpen]);
 
   // Fecha o menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
-        menuButtonRef.current && !menuButtonRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(e.target as Node)
+      ) {
+        setMenuOpen(false);
       }
-    }
+    };
 
     if (menuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [menuOpen])
+  }, [menuOpen]);
 
   // 3. CORES FIXAS (Bilateral Tegbe/Marketing - Padrão Mavellium)
   const theme = useMemo(() => {
-    if (variant === 'marketing') {
+    if (variant === "marketing") {
       return {
         primary: "bg-[#E31B63]",
         hoverBg: "hover:bg-[#FF1758]",
         textOnPrimary: "text-white",
         underline: "bg-[#E31B63]",
-        logoFilter: "brightness-0 invert"
-      }
+        logoFilter: "brightness-0 invert",
+      };
     }
     // Default / Ecommerce
     return {
@@ -150,8 +156,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
       hoverBg: "hover:bg-[#FFDB15]",
       textOnPrimary: "text-black",
       underline: "bg-[#FFCC00]",
-      logoFilter: ""
-    }
+      logoFilter: "",
+    };
   }, [variant]);
 
   const headerStyles = useMemo(() => {
@@ -164,19 +170,20 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
   if (!data) return null;
 
   const handleMenuToggle = () => {
-    const newState = !menuOpen
-    setMenuOpen(newState)
+    const newState = !menuOpen;
+    setMenuOpen(newState);
     if (!newState) {
-      menuButtonRef.current?.focus()
+      menuButtonRef.current?.focus();
     }
-  }
+  };
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${headerStyles}`}>
+      <header
+        className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ease-in-out ${headerStyles}`}
+      >
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between gap-4">
-
             {/* LOGO */}
             <div className="flex-shrink-0">
               <Link
@@ -191,7 +198,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   width={160}
                   height={40}
                   priority
-                  className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${theme.logoFilter}`} />
+                  className={`w-28 sm:w-32 md:w-36 lg:w-40 h-auto object-contain transition-all duration-300 group-hover:opacity-80 ${theme.logoFilter}`}
+                />
               </Link>
             </div>
 
@@ -205,15 +213,15 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   aria-current={pathname === link.href ? "page" : undefined}
                 >
                   {link.name}
-                  <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] ${theme.underline} transition-all duration-300 group-hover:w-full`}></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 w-0 h-[1.5px] ${theme.underline} transition-all duration-300 group-hover:w-full`}
+                  ></span>
                 </Link>
               ))}
             </nav>
 
             {/* AÇÕES (CTA FIXO COM CORES DAS VARIANTES) */}
             <div className="flex items-center gap-3 sm:gap-6">
-
-
               <Link
                 href={data.general.ctaLink}
                 target="_blank"
@@ -221,8 +229,12 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                 className="hidden sm:block group relative"
                 aria-label={data.general.ctaText}
               >
-                <div className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}></div>
-                <button className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}>
+                <div
+                  className={`absolute -inset-0.5 rounded-full opacity-30 blur-sm transition duration-500 group-hover:opacity-60 ${theme.underline}`}
+                ></div>
+                <button
+                  className={`relative inline-flex h-9 lg:h-11 items-center justify-center overflow-hidden rounded-full px-5 lg:px-8 py-2 font-bold text-[10px] lg:text-xs tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 border border-white/10 ${theme.primary} ${theme.textOnPrimary} ${theme.hoverBg}`}
+                >
                   <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
                   <span className="relative z-20 uppercase">{data.general.ctaText}</span>
                 </button>
@@ -239,7 +251,10 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                 aria-expanded={menuOpen}
                 aria-controls="mobile-menu"
               >
-                <Icon icon={menuOpen ? "ph:x-light" : "ph:list-light"} className="size-8 transition-all duration-300" />
+                <Icon
+                  icon={menuOpen ? "ph:x-light" : "ph:list-light"}
+                  className="size-8 transition-all duration-300"
+                />
               </Button>
             </div>
           </div>
@@ -257,7 +272,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
             <div
               className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-500"
               onClick={() => setMenuOpen(false)}
-              aria-hidden="true" />
+              aria-hidden="true"
+            />
 
             {/* Conteúdo do menu */}
             <div
@@ -265,7 +281,9 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
               id="mobile-menu"
               className={`absolute top-0 left-0 right-0 w-full h-screen bg-[#050505] overflow-y-auto overscroll-contain flex flex-col items-center pt-24 pb-12 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${menuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`}
             >
-              <h2 id="mobile-menu-title" className="sr-only">Menu de navegação</h2>
+              <h2 id="mobile-menu-title" className="sr-only">
+                Menu de navegação
+              </h2>
 
               <nav
                 className="flex flex-col items-center space-y-8 px-6 w-full"
@@ -285,7 +303,9 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   </Link>
                 ))}
 
-                <div className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+                <div
+                  className={`pt-10 flex flex-col items-center gap-8 w-full max-w-xs transition-all duration-700 delay-300 ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+                >
                   <div className="h-[1px] w-12 bg-white/20" aria-hidden="true" />
                   <Link
                     href={data.general.ctaLink}
@@ -306,7 +326,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                       alt="Badge de Consultor Oficial Tegbe"
                       width={40}
                       height={40}
-                      className={`opacity-40 hover:opacity-100 transition-opacity`} />
+                      className={`opacity-40 hover:opacity-100 transition-opacity`}
+                    />
                   </Link>
                 </div>
               </nav>
@@ -332,5 +353,5 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
         />
       )}
     </>
-  )
+  );
 }
