@@ -64,7 +64,9 @@ export default function Marketplaces({ endpoint }: Props) {
   const { header, marketplaces, button } = data;
 
   return (
-    <section className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950">
+    <section
+    id="ecommerce"
+    className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950">
       
       {/* TEXTURA E GLOWS DE FUNDO */}
       <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-overlay" />

@@ -41,7 +41,7 @@ export default async function EcommercePage() {
         getSafeData('company'),
         getSafeData('call-to-action'),
         getSafeData('equipe'),
-        fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/form/steps', { next: { revalidate: 3600 } })
+        fetch('https://janus.mavellium.com.br/api/tegbe-institucional/form/steps', { next: { revalidate: 3600 } })
             .then(res => res.ok ? res.json() : [])
             .catch(() => [])
     ]);
@@ -49,7 +49,7 @@ export default async function EcommercePage() {
     // Tratamento para garantir que steps seja sempre um Array
     const stepsData = Array.isArray(stepsRes) ? stepsRes : (stepsRes?.steps || []);
 
-    const data = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/hero-images').then(res => res.json());
+    const data = await fetch('https://janus.mavellium.com.br/api/tegbe-institucional/json/hero-images').then(res => res.json());
 
     return (
         <>

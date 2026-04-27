@@ -62,7 +62,7 @@ export function Header({ variant = 'default' }: HeaderProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/header')
+        const response = await fetch('https://janus.mavellium.com.br/api/tegbe-institucional/header')
         const result = await response.json()
 
         // Validação para garantir estrutura correta

@@ -97,7 +97,9 @@ export default function MarketingSection({ endpoint }: { endpoint: string }) {
 
   return (
     // MUDEI O FUNDO PARA UM CINZA UM POUQUINHO MAIS ESCURO (bg-neutral-50) PARA O BRANCO DO CARD GRITAR
-    <section className="relative py-32 bg-neutral-50 selection:bg-neutral-900 selection:text-white">
+    <section
+    id="marketing"
+    className="relative py-32 bg-neutral-50 selection:bg-neutral-900 selection:text-white">
       <Textura opacity={0.03} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">

@@ -8,7 +8,7 @@ interface Props {
 
 export default async function HeadlineWrapper({ variant }: Props) {
   const response = await fetch(
-    "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/headline",
+    "https://janus.mavellium.com.br/api/tegbe-institucional/headline",
     { cache: "no-store" }
   );
 

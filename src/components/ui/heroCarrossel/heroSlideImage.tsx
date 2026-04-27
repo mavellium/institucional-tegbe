@@ -21,7 +21,7 @@ export default function HeroSlideImage({
       initial={{ opacity: 0, scale: 0.95, x: 20 }}
       animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.95, x: isActive ? 0 : 20 }}
       transition={{ duration: 0.7, delay: 0.3, type: "spring" }}
-      className="w-full h-full relative"
+      className="h-full relative"
     >
       <Image
         src={image}

@@ -25,7 +25,7 @@ interface HistoriaData {
   timeline: TimelineItem[];
 }
 
-const Historia = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/historia" }) => {
+const Historia = ({ endpoint = "https://janus.mavellium.com.br/api/tegbe-institucional/historia" }) => {
   const [data, setData] = useState<HistoriaData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeFeature, setActiveFeature] = useState(0); // Começa no 0 para evitar vácuo

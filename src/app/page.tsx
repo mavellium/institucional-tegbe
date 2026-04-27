@@ -79,8 +79,8 @@ export default async function Home() {
         <HeroCarousel
           endpoint="hero-carrossel-home"
           type="HeroHome"
-          corDestaque="#cfba19"      // cor de destaque (botões, textos)
-          textoFundo="TEGBE"         // texto de fundo sutil
+          corDestaque="#cfba19"      
+          textoFundo="TEGBE"        
           navGradienteFrom="#f5df36"
           navGradienteTo="#f5df36"
           navAccent="#f5df36"

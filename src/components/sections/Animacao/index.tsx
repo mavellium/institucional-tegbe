@@ -102,7 +102,7 @@ export default function SalesEngineVisual() {
   const loadDataFromEndpoint = async () => {
     try {
 
-      const response = await fetch('https://tegbe-dashboard.vercel.app/api/tegbe-institucional/animacao');
+      const response = await fetch('https://janus.mavellium.com.br/api/tegbe-institucional/animacao');
       const data = await response.json();
       setComponentData(data);
       

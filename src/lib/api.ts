@@ -7,7 +7,7 @@ interface ApiResponse {
 export async function fetchComponentData(componentName: string): Promise<ApiResponse> {
   try {
     const response = await fetch(
-      `https://tegbe-dashboard.vercel.app/api/tegbe-institucional/${componentName}`,
+      `https://janus.mavellium.com.br/api/tegbe-institucional/${componentName}`,
       {
         next: { revalidate: 10 } // Cache de 1 hora
       }

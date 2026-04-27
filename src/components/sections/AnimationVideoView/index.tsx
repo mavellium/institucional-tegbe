@@ -39,7 +39,7 @@ export const AnimationVideoView = ({
   videoSrc,
   variant = "cursos",
   theme,
-  startMuted = true,
+  startMuted = false,
   showTexture = false,
   textureOpacity = 0.1,
   textureSrc = "/textura.svg",
@@ -207,7 +207,7 @@ export const AnimationVideoView = ({
         <VideoPlayer
           src={videoSrc}
           accentColor={accentColor}
-          startMuted={startMuted}
+          startMuted={false}
           showVolumeControl={false}
         />
       </div>

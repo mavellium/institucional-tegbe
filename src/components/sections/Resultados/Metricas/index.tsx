@@ -36,7 +36,7 @@ interface MetricasData {
   metrics: MetricItem[];
 }
 
-const Metricas = ({ endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/metricas" }) => {
+const Metricas = ({ endpoint = "https://janus.mavellium.com.br/api/tegbe-institucional/metricas" }) => {
   const containerRef = useRef(null);
   const [data, setData] = useState<MetricasData | null>(null);
   const [loading, setLoading] = useState(true);

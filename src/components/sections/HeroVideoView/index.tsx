@@ -34,7 +34,7 @@ export const HeroVideoView = ({
   gradientTo = "#F59E0B",
 
   videoOpacity = 0.7,
-  startMuted = true,
+  startMuted = false,
 }: HeroVideoProps) => {
 
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -75,7 +75,7 @@ export const HeroVideoView = ({
             src={videoSrc}
             accentColor={accentColor}
             opacity={videoOpacity}
-            startMuted={startMuted}
+            startMuted={false}
             className="w-full h-full"
           />
 

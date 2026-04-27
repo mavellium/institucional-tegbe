@@ -27,10 +27,10 @@ This is a **Next.js 16 institutional website** for Tegbe, a Mercado Livre & Shop
 
 ### CMS Integration
 
-All dynamic content comes from a headless CMS at `https://tegbe-dashboard.vercel.app/api/tegbe-institucional/`. The base URL is configured via:
+All dynamic content comes from a headless CMS at `https://janus.mavellium.com.br/api/tegbe-institucional/`. The base URL is configured via:
 
 ```
-NEXT_PUBLIC_API_URL=https://tegbe-dashboard.vercel.app/api/tegbe-institucional
+NEXT_PUBLIC_API_URL=https://janus.mavellium.com.br/api/tegbe-institucional
 ```
 
 There are two data fetching patterns:
@@ -39,7 +39,7 @@ There are two data fetching patterns:
 
 2. **Client-side** (interactive components): `useApi<T>(endpoint)` hook from `src/hooks/useApi.ts`. Resolves URLs via `resolveApiUrl()` — supports absolute URLs, relative paths, or just a slug appended to `NEXT_PUBLIC_API_URL`.
 
-The `next.config.ts` proxies `/api-tegbe/*` → `https://tegbe-dashboard.vercel.app/api/*` to avoid CORS issues.
+The `next.config.ts` proxies `/api-tegbe/*` → `https://janus.mavellium.com.br/api/*` to avoid CORS issues.
 
 ### Directory Structure
 

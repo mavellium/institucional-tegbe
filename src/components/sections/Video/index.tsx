@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 }
 
 // Configuração de Engenharia: Endpoint Fixo
-const TEGBE_API_URL = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/video-marketing";
+const TEGBE_API_URL = "https://janus.mavellium.com.br/api/tegbe-institucional/video-marketing";
 
 // --- INTERFACE DE DADOS ---
 interface ShowcaseData {

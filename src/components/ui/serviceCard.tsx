@@ -2,7 +2,7 @@
 
 import { ServiceA, ServiceTheme } from '../../types/service.type';
 
-interface ServiceCardProps {
+interface ServiceCardProps extends React.HTMLAttributes<HTMLDivElement> {
   service: ServiceA;
   theme: ServiceTheme;
   variant: string;
@@ -35,7 +35,7 @@ export default function ServiceCard({ service, theme, variant }: ServiceCardProp
       </div>
 
       {/* 2. Conteúdo de Texto (Sobreposto) */}
-      <div className="relative z-10 flex flex-col p-8 md:p-10 pointer-events-none">
+      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
 
         {/* Tag do Passo */}
         <span

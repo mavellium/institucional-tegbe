@@ -203,7 +203,7 @@ function RejectionCard({ card, index, isLastCard }: {
 }
 
 export default function MarketingAntiHero({ 
-  endpoint = "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/nao-para-voce" 
+  endpoint = "https://janus.mavellium.com.br/api/tegbe-institucional/nao-para-voce" 
 }: { 
   endpoint?: string 
 }) {

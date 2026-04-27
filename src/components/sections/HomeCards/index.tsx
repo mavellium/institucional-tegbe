@@ -34,10 +34,10 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { type: "spring", stiffness: 100, damping: 20 } 
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 }
   },
 };
 
@@ -49,7 +49,10 @@ export default function MostrarSolucoes({ endpoint }: { endpoint: string }) {
   const { header, services } = data;
 
   const scrollTo = (id: string) => {
+    console.log("scrolling to:", id);
     const element = document.getElementById(id);
+    console.log("found:", element);
+
     if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -62,16 +65,16 @@ export default function MostrarSolucoes({ endpoint }: { endpoint: string }) {
   return (
     // FUNDO PADRONIZADO COM A SEÇÃO DE MARKETING
     <section className="relative py-32 bg-[#F8F9FA] selection:bg-neutral-900 selection:text-white">
-      
+
       {/* TEXTURA SUTIL PARA QUEBRAR O BRANCO ABSOLUTO */}
       <Textura opacity={0.02} className="absolute inset-0 pointer-events-none mix-blend-multiply" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        
+
         {/* HEADER PADRONIZADO */}
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-20">
           {header.badge && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -105,7 +108,7 @@ export default function MostrarSolucoes({ endpoint }: { endpoint: string }) {
             <motion.div
               key={service.id}
               variants={itemVariants}
-              onClick={() => scrollTo(service.id)}
+
               // O WRAPPER ASSUME O COMPORTAMENTO 3D FLUTUANTE
               className="group relative cursor-pointer bg-white rounded-[1.5rem] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden hover:z-50"
             >
@@ -113,11 +116,12 @@ export default function MostrarSolucoes({ endpoint }: { endpoint: string }) {
                 service={service}
                 theme={theme}
                 variant="hero"
+                onClick={() => scrollTo(service.id)}
               />
             </motion.div>
           ))}
         </motion.div>
-        
+
       </div>
     </section>
   );
