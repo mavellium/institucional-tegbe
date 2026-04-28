@@ -1,4 +1,18 @@
-export default function BlogHero() {
+import type { IBlogHero } from "@/interface/blog/IBlogHero";
+
+interface BlogHeroProps {
+  data?: IBlogHero | null;
+}
+
+export default function BlogHero({ data }: BlogHeroProps) {
+  const c = data?.conteudo;
+  const badge = c?.badge ?? "Blog Tegbe";
+  const title = c?.title ?? "Insights de";
+  const titleHighlight = c?.titleHighlight ?? "E-commerce";
+  const description =
+    c?.description ??
+    "Estratégias, cases e tendências para escalar suas vendas nos principais marketplaces.";
+
   return (
     <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-white border-b border-gray-100 overflow-hidden">
       {/* Glow sutil usando o gradiente da marca */}
@@ -8,11 +22,11 @@ export default function BlogHero() {
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFCC00] mb-6">
           <span className="text-[10px] font-black tracking-[0.3em] uppercase text-black">
-            Blog Tegbe
+            {badge}
           </span>
         </div>
         <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[0.95] tracking-tight">
-          Insights de
+          {title}
           <br />
           <span
             className="text-transparent bg-clip-text"
@@ -20,12 +34,10 @@ export default function BlogHero() {
               backgroundImage: "linear-gradient(135deg, #FFEB3B 0%, #FFCC00 100%)",
             }}
           >
-            E-commerce
+            {titleHighlight}
           </span>
         </h1>
-        <p className="mt-6 text-[#86868b] text-lg max-w-xl leading-relaxed">
-          Estratégias, cases e tendências para escalar suas vendas nos principais marketplaces.
-        </p>
+        <p className="mt-6 text-[#86868b] text-lg max-w-xl leading-relaxed">{description}</p>
       </div>
     </section>
   );
