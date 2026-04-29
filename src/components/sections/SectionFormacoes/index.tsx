@@ -3,26 +3,27 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 import Textura from "@/components/ui/textura";
-import { RichTextItem } from "@/types/richText.type";
-import RichText from "@/components/ui/rich/richText";
 
-// ================== TIPAGEM ==================
 interface Course {
-  title: RichTextItem[];
-  description: RichTextItem[];
   tag: string;
-  accent: string;
   link: string;
+  image: string;
+  alt?: string;
+  title: string;
+  accent: string;
+  ctaLabel?: string;
+  description: string;
 }
 
 interface FormacoesData {
   formacoes: {
     header: {
-      badge: RichTextItem[];
-      title: RichTextItem[];
-      description: RichTextItem[];
+      badge: string;
+      title: string;
+      description: string;
     };
     courses: Course[];
     cta: {
@@ -32,7 +33,6 @@ interface FormacoesData {
   };
 }
 
-// ================== COMPONENT ==================
 export default function FormacoesSection({ data }: { data: FormacoesData | null }) {
   const [current, setCurrent] = useState(0);
 
@@ -65,17 +65,15 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 text-neutral-300 mb-6 border border-white/10 shadow-inner"
           >
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest">
-              <RichText content={header.badge} />
-            </span>
+            <span className="text-xs font-bold uppercase tracking-widest">{header.badge}</span>
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white mb-6 leading-tight">
-            <RichText content={header.title} />
+            {header.title}
           </h2>
 
           <p className="text-lg md:text-xl text-neutral-400 font-normal max-w-2xl leading-relaxed">
-            <RichText content={header.description} />
+            {header.description}
           </p>
         </div>
 
@@ -87,7 +85,7 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
             />
 
             {/* CONTEÚDO */}
-            <div className="min-h-[360px] md:min-h-[320px] p-10 md:p-14 flex flex-col justify-center">
+            <div className="p-10 md:p-14 flex flex-col justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current}
@@ -102,20 +100,34 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
                   </span>
 
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
-                    <RichText content={courses[current].title} />
+                    {courses[current].title}
                   </h3>
 
-                  <p className="text-lg text-neutral-400 leading-relaxed max-w-2xl mb-8">
-                    <RichText content={courses[current].description} />
+                  <p className="text-lg text-neutral-400 leading-relaxed max-w-2xl mb-6">
+                    {courses[current].description}
                   </p>
 
-                  <a
-                    href={courses[current].link}
-                    className="group inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
-                  >
-                    Ver ementa do curso
-                    <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                  </a>
+                  {courses[current].image && (
+                    <div className="relative w-full h-85 rounded-xl overflow-hidden mb-8">
+                      <Image
+                        src={courses[current].image}
+                        alt={courses[current].alt ?? courses[current].title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 896px"
+                      />
+                    </div>
+                  )}
+
+                  {courses[current].link && courses[current].ctaLabel && (
+                    <a
+                      href={courses[current].link}
+                      className="group inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
+                    >
+                      {courses[current].ctaLabel}
+                      <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                    </a>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

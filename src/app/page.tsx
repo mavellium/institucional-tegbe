@@ -34,7 +34,7 @@ export default async function Home() {
     getSafeData("solucoes-home"),
     getSafeData("marketplaces"),
     getSafeData("redes-sociais"),
-    getSafeData("formacoes-home"),
+    getSafeData("json/formacoes-home"),
     getSafeData("ferramentas"),
     getSafeData("duvida-cta"),
     getSafeData("faq-home"),
@@ -45,7 +45,7 @@ export default async function Home() {
 
   // Fetch direto com URL absoluta — evita qualquer variação do API_BASE_URL no ambiente
   const homeBlogRaw = await fetch(
-    "https://tegbe-dashboard.vercel.app/api/tegbe-institucional/json/home-blog",
+    "https://janus.mavellium.com.br/api/tegbe-institucional/json/home-blog",
     { next: { revalidate: 10, tags: ["cms:home-blog"] } }
   )
     .then((r) => (r.ok ? r.json() : null))

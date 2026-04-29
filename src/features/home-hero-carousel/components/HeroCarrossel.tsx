@@ -28,7 +28,7 @@ export default function HeroCarrossel({
   autoplayDelay = 8000,
   corFundo = "#0A0A0A",
   corDestaque = "#f9265e",
-  textoFundo = "MARKETING",
+  textoFundo = "TEGBE",
   navGradienteFrom = "#ff0400",
   navGradienteTo = "#f9396f",
   navAccent = "#f9265e",
@@ -55,8 +55,8 @@ export default function HeroCarrossel({
 
   return (
     <section
-      className="relative w-full overflow-hidden text-white group"
-      style={{ backgroundColor: corFundo }}
+      className="relative w-full text-white group overflow-hidden"
+      style={{ backgroundColor: corFundo, height: "100dvh" }}
     >
       <Textura
         misturar
@@ -68,23 +68,32 @@ export default function HeroCarrossel({
         `}
       />
 
-      <div className="overflow-hidden relative z-10" ref={emblaRef}>
-        <div className="flex touch-pan-y">
+      {/* Carousel */}
+      <div className="overflow-hidden relative z-10 h-full" ref={emblaRef}>
+        <div className="flex touch-pan-y h-full">
           {slides.length > 0 ? (
             slides.map((slide, index) => {
               const isActive = index === selectedIndex;
               return (
-                <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
-                  <div className="w-full pt-20 lg:pt-0 lg:pl-32 flex flex-col lg:flex-row items-center lg:gap-10 min-h-screen lg:h-screen">
-                    <div className="w-full lg:w-[42%] lg:min-w-[30vw] flex flex-col justify-center text-center lg:text-left z-20 px-6 lg:px-0 py-10 lg:self-center">
+                <div key={slide.id} className="flex-[0_0_100%] min-w-0 h-full">
+                  {/*
+                    pt-20 / lg:pt-[88px] — limpa o header fixo (76px mobile, 88px desktop)
+                    flex-col em mobile (conteúdo em cima, imagem embaixo)
+                    flex-row em desktop (lado a lado)
+                  */}
+                  <div className="h-full flex flex-col lg:flex-row pt-20 lg:pt-[88px] lg:pl-16 xl:pl-28">
+                    {/* Coluna de texto */}
+                    <div className="w-full lg:w-[46%] shrink-0 flex flex-col justify-center px-5 sm:px-10 lg:px-0 py-6 lg:py-10">
                       <HeroSlideContent
                         slide={slide}
                         isActive={isActive}
                         corDestaque={corDestaque}
                       />
                     </div>
+
+                    {/* Coluna de imagem — ocupa o espaço restante */}
                     {slide.image && (
-                      <div className="w-full lg:flex-1 flex items-end h-[62vw] max-h-[400px] lg:max-h-none lg:h-full">
+                      <div className="flex-1 min-h-0 min-w-0 flex items-end overflow-hidden">
                         <HeroSlideImage
                           image={slide.image}
                           title={slide.title}
@@ -98,7 +107,7 @@ export default function HeroCarrossel({
               );
             })
           ) : (
-            <div className="flex justify-center w-full py-40 text-gray-500">
+            <div className="flex items-center justify-center w-full h-full text-white/40">
               Nenhum slide disponível
             </div>
           )}
@@ -117,15 +126,17 @@ export default function HeroCarrossel({
         corIcone={corIcone}
       />
 
-      <div className="absolute right-[-40px] bottom-[-80px] md:right-[-30px] md:bottom-[-130px] whitespace-nowrap opacity-[0.025] select-none pointer-events-none">
-        <span className="text-white text-[120px] md:text-[260px] font-medium tracking-[-0.04em] uppercase">
+      {/* Texto decorativo de fundo */}
+      <div className="absolute right-0 bottom-0 overflow-hidden pointer-events-none select-none opacity-[0.025]">
+        <span className="block text-white text-[90px] sm:text-[160px] md:text-[220px] font-medium tracking-[-0.04em] uppercase whitespace-nowrap leading-none pb-2 pr-2">
           {textoFundo}
         </span>
       </div>
 
+      {/* Fade gradiente inferior */}
       <div
-        className="absolute bottom-0 w-full h-[80px] md:h-[120px] bg-gradient-to-t to-transparent"
-        style={{ backgroundImage: `linear-gradient(to top, ${corFundo}, transparent)` }}
+        className="absolute bottom-0 left-0 w-full h-20 md:h-32 pointer-events-none z-10"
+        style={{ background: `linear-gradient(to top, ${corFundo}, transparent)` }}
       />
     </section>
   );
