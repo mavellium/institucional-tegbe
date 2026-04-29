@@ -29,8 +29,8 @@ export default function HeroCarrossel({
   corFundo = "#0A0A0A",
   corDestaque = "#f9265e",
   textoFundo = "TEGBE",
-  navGradienteFrom = "#ff0400",
-  navGradienteTo = "#f9396f",
+  navGradienteFrom = "#fcc520",
+  navGradienteTo = "#f9c939",
   navAccent = "#f9265e",
   corIcone = "white",
 }: HeroCarrosselProps) {
@@ -55,8 +55,8 @@ export default function HeroCarrossel({
 
   return (
     <section
-      className="relative w-full text-white group overflow-hidden"
-      style={{ backgroundColor: corFundo, height: "100dvh" }}
+      className="relative w-full text-white group overflow-hidden h-[640px] sm:h-[700px] md:h-[760px] lg:h-[580px] xl:h-[600px] 2xl:h-[840px]"
+      style={{ backgroundColor: corFundo }}
     >
       <Textura
         misturar
@@ -68,6 +68,14 @@ export default function HeroCarrossel({
         `}
       />
 
+      {/* Glow de fundo */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 60% 50% at 70% 60%, ${corDestaque}18 0%, transparent 70%)`,
+        }}
+      />
+
       {/* Carousel */}
       <div className="overflow-hidden relative z-10 h-full" ref={emblaRef}>
         <div className="flex touch-pan-y h-full">
@@ -77,13 +85,12 @@ export default function HeroCarrossel({
               return (
                 <div key={slide.id} className="flex-[0_0_100%] min-w-0 h-full">
                   {/*
-                    pt-20 / lg:pt-[88px] — limpa o header fixo (76px mobile, 88px desktop)
-                    flex-col em mobile (conteúdo em cima, imagem embaixo)
-                    flex-row em desktop (lado a lado)
+                    Container centralizado com max-w-7xl para garantir alinhamento
+                    consistente com o header. pt-20/pt-24 limpa o header fixo.
                   */}
-                  <div className="h-full flex flex-col lg:flex-row pt-20 lg:pt-[88px] lg:pl-16 xl:pl-28">
-                    {/* Coluna de texto */}
-                    <div className="w-full lg:w-[46%] shrink-0 flex flex-col justify-center px-5 sm:px-10 lg:px-0 py-6 lg:py-10">
+                  <div className="h-full max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-20 lg:pt-24 flex flex-col lg:grid lg:grid-cols-[45%_55%] gap-8 lg:grid-rows-1">
+                    {/* Coluna de texto — primeiro no DOM = primeiro no mobile */}
+                    <div className="flex flex-col justify-center py-8 lg:py-0 shrink-0">
                       <HeroSlideContent
                         slide={slide}
                         isActive={isActive}
@@ -91,9 +98,9 @@ export default function HeroCarrossel({
                       />
                     </div>
 
-                    {/* Coluna de imagem — ocupa o espaço restante */}
-                    {slide.image && (
-                      <div className="flex-1 min-h-0 min-w-0 flex items-end overflow-hidden">
+                    {/* Coluna de imagem — abaixo do texto no mobile, direita no desktop */}
+                    {slide.image ? (
+                      <div className="relative h-[42dvh] lg:h-full">
                         <HeroSlideImage
                           image={slide.image}
                           title={slide.title}
@@ -101,6 +108,8 @@ export default function HeroCarrossel({
                           priority={index === 0}
                         />
                       </div>
+                    ) : (
+                      <div />
                     )}
                   </div>
                 </div>
@@ -128,7 +137,7 @@ export default function HeroCarrossel({
 
       {/* Texto decorativo de fundo */}
       <div className="absolute right-0 bottom-0 overflow-hidden pointer-events-none select-none opacity-[0.025]">
-        <span className="block text-white text-[90px] sm:text-[160px] md:text-[220px] font-medium tracking-[-0.04em] uppercase whitespace-nowrap leading-none pb-2 pr-2">
+        <span className="block text-white text-[90px] sm:text-[160px] md:text-[220px] font-black tracking-[-0.04em] uppercase whitespace-nowrap leading-none pb-2 pr-2">
           {textoFundo}
         </span>
       </div>

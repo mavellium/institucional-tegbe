@@ -1,14 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Heading from "@/components/ui/heading";
-import Highlight from "@/components/ui/highlight";
-import Text from "@/components/ui/texto";
-import Paragrafo from "@/components/ui/paragrafo";
-import RichText from "@/components/ui/rich/richText";
 import { HeroSlide } from "@/types/heroSlide.type";
-import { Button } from "../button/button";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface HeroSlideContentProps {
   slide: HeroSlide;
@@ -16,120 +11,79 @@ interface HeroSlideContentProps {
   corDestaque?: string;
 }
 
+const item = (delay: number) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: (active: boolean) => ({
+    opacity: active ? 1 : 0,
+    y: active ? 0 : 24,
+  }),
+  transition: { duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+});
+
 export default function HeroSlideContent({
   slide,
   isActive,
   corDestaque = "#F9265E",
 }: HeroSlideContentProps) {
   return (
-    <div className="flex flex-col items-center lg:items-start gap-3 sm:gap-4 lg:gap-5 w-full max-w-lg mx-auto lg:mx-0">
+    <div className="flex flex-col items-center text-center lg:text-start lg:items-start gap-5 w-full">
+      {/* Badge / Tag */}
       {slide.tag && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 16 }}
-          transition={{ duration: 0.45, delay: 0.05 }}
-        >
-          <Highlight color={corDestaque} withSerif withItalic size={14}>
+        <motion.div {...item(0.05)} animate={item(0.05).animate(isActive)}>
+          <span
+            className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full border"
+            style={{
+              color: corDestaque,
+              borderColor: `${corDestaque}40`,
+              backgroundColor: `${corDestaque}12`,
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: corDestaque }}
+            />
             {slide.tag}
-          </Highlight>
+          </span>
         </motion.div>
       )}
 
+      {/* Título */}
       {slide.title && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 16 }}
-          transition={{ duration: 0.45, delay: 0.15 }}
-          className="w-full"
-        >
-          <Heading
-            size="xl"
-            className="
-              text-[22px] sm:text-[28px] md:text-[34px] lg:text-[30px] xl:text-[38px] 2xl:text-[40px]
-              text-center lg:text-left
-              leading-[1.18] tracking-tight font-medium
-              break-words hyphens-auto
-            "
-            color="white"
+        <motion.div {...item(0.15)} animate={item(0.15).animate(isActive)} className="w-full">
+          <h1
+            className="text-[clamp(2rem,2.5vw,2.75rem)] font-black leading-[1.06] tracking-tight text-white"
+            style={{ wordBreak: "keep-all", overflowWrap: "break-word" }}
           >
             {slide.title}
-          </Heading>
+          </h1>
         </motion.div>
       )}
 
+      {/* Descrição */}
       {slide.description && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 16 }}
-          transition={{ duration: 0.45, delay: 0.28 }}
-          className="w-full"
-        >
-          <Paragrafo
-            align="center"
-            color="#fff"
-            className="
-              text-sm sm:text-base lg:text-[15px] xl:text-[17px]
-              font-light
-              text-center lg:text-left
-              text-gray-300
-              break-words
-            "
-          >
+        <motion.div {...item(0.28)} animate={item(0.28).animate(isActive)} className="w-full">
+          <p className="text-[clamp(0.9rem,1.4vw,1.125rem)] text-white/60 leading-relaxed font-light max-w-full lg:max-w-md">
             {slide.description}
-          </Paragrafo>
+          </p>
         </motion.div>
       )}
 
-      {/* {slide.subtext && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 16 }}
-          transition={{ duration: 0.45, delay: 0.38 }}
-        >
-          <Text
-            color="#fff"
-            variant="muted"
-            className="text-xs sm:text-sm text-center lg:text-left opacity-70"
-          >
-            {slide.subtext}
-          </Text>
-        </motion.div>
-      )} */}
-
+      {/* CTA */}
       {slide.ctaText && slide.ctaLink && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 16 }}
-          transition={{ duration: 0.45, delay: 0.46 }}
-          className="w-full sm:w-auto mt-1"
-        >
-          <Button
-            asChild
-            className="
-              w-full sm:w-auto
-              px-7 py-4 lg:py-5
-              text-sm font-bold uppercase tracking-wider
-              rounded-xl border-2 bg-transparent
-              hover:bg-white/10 transition-all
-              flex items-center justify-center
-            "
-            style={{ borderColor: corDestaque, color: corDestaque }}
+        <motion.div {...item(0.4)} animate={item(0.4).animate(isActive)} className="mt-2">
+          <Link
+            href={slide.ctaLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-7 py-4 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:gap-4 hover:bg-gray-100 active:scale-[0.98]"
+            style={{ backgroundColor: "#FFFFFF", color: "#0A0A0A" }}
           >
-            <Link href={slide.ctaLink} target="_blank" className="w-full text-center">
-              {slide.ctaText}
-            </Link>
-          </Button>
-        </motion.div>
-      )}
-
-      {slide.richContent && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 0.45, delay: 0.55 }}
-          className="w-full"
-        >
-          <RichText content={slide.richContent} />
+            {slide.ctaText}
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-0.5"
+            />
+          </Link>
         </motion.div>
       )}
     </div>

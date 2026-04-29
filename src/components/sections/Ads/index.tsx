@@ -15,17 +15,17 @@ const adsConfig = {
     linha5: "algoritmo, os",
     linha6: "anúncios e as",
     linha7: "regras do jogo.",
-    corDestaque: "text-[#FFCC00]"
+    corDestaque: "text-[#FFCC00]",
   },
   botao: {
     texto: "Falar com um Especialista",
     link: "https://api.whatsapp.com/send?phone=5514991779502",
-    icone: "ic:baseline-whatsapp"
+    icone: "ic:baseline-whatsapp",
   },
   background: {
     src: "/ads-bg.png",
-    alt: "Background Ads"
-  }
+    alt: "Background Ads",
+  },
 };
 
 export function Ads() {
@@ -33,7 +33,6 @@ export function Ads() {
 
   return (
     <section className="relative w-full flex flex-col justify-between items-center overflow-hidden bg-white h-[350vh] py-20">
-      
       {/* --- BACKGROUND --- */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -53,9 +52,7 @@ export function Ads() {
           <h1 className="font-heading font-bold tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1]">
             {titulo.linha1} <br />
             {titulo.linha2} <br />
-            <span className={`${titulo.corDestaque} drop-shadow-sm`}>
-              {titulo.linha3}
-            </span>,<br />
+            <span className={`${titulo.corDestaque} drop-shadow-sm`}>{titulo.linha3}</span>,<br />
             {titulo.linha4} <br />
             {titulo.linha5} <br />
             {titulo.linha6} <br />
@@ -72,18 +69,17 @@ export function Ads() {
           target="_blank"
           className="group relative inline-block"
         >
-          <div className="absolute -inset-1 bg-yellow-400 rounded-full opacity-30 blur group-hover:opacity-60 transition duration-200" />
-          
-          <Button 
+          <div className="absolute -inset-1 bg-white rounded-full opacity-20 blur group-hover:opacity-40 transition duration-200" />
+
+          <Button
             aria-label={botao.texto}
-            className="relative shadow-2xl bg-[#FFCC00] text-black font-bold hover:bg-[#ffdb4d] hover:scale-105 transition-all duration-300 h-14 px-10 rounded-full text-lg flex items-center gap-3"
+            className="relative shadow-2xl bg-white text-black font-bold hover:bg-gray-100 hover:scale-105 transition-all duration-300 h-14 px-10 rounded-full text-lg flex items-center gap-3"
           >
             <Icon icon={botao.icone} className="size-6" />
             {botao.texto}
           </Button>
         </Link>
       </div>
-
     </section>
   );
 }

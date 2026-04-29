@@ -16,39 +16,24 @@ export default function HeroSlideImage({
   isActive,
   priority = false,
 }: HeroSlideImageProps) {
-  if (priority) {
-    return (
-      <div className="w-full h-full relative">
-        <Image
-          src={image}
-          alt={title ?? "Hero Slide"}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
-          className="object-contain object-bottom"
-          priority
-        />
-      </div>
-    );
-  }
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97, x: 16 }}
+      initial={{ opacity: 0, scale: 0.96, x: 24 }}
       animate={{
         opacity: isActive ? 1 : 0,
-        scale: isActive ? 1 : 0.97,
-        x: isActive ? 0 : 16,
+        scale: isActive ? 1 : 0.96,
+        x: isActive ? 0 : 24,
       }}
-      transition={{ duration: 0.65, delay: 0.25, type: "spring", stiffness: 100 }}
+      transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="w-full h-full relative"
     >
       <Image
         src={image}
-        alt={title ?? "Hero Slide"}
+        alt={title ?? "Hero"}
         fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
-        className="object-contain object-bottom"
-        priority={false}
+        sizes="(max-width: 1024px) 100vw, 52vw"
+        className="object-contain object-center lg:object-fill lg:object-bottom"
+        priority={priority}
       />
     </motion.div>
   );
