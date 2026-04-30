@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default: "bg-[#FFC72C] hover:bg-[#F2CB5E] text-black",
 
         marketing:
-          "bg-green-500 hover:bg-green-400 text-white shadow-[0_2px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_1px_40px_rgba(34,197,94,0.35)]",
+          "bg-green-500 hover:bg-green-400 text-black shadow-[0_2px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_1px_40px_rgba(34,197,94,0.35)]",
 
         destructive: "bg-destructive text-white hover:bg-destructive/90",
 

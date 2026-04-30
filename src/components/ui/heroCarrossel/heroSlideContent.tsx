@@ -74,7 +74,7 @@ export default function HeroSlideContent({
           className="w-full"
         >
           <h1
-            className="text-[clamp(2rem,2.5vw,2.75rem)] font-black leading-[1.06] tracking-tight text-white"
+            className="text-[clamp(2rem,2.5vw,2.75rem)] font-medium leading-[1.06] tracking-tight text-white"
             style={{ wordBreak: "keep-all", overflowWrap: "break-word" }}
           >
             {slide.title}
@@ -110,8 +110,7 @@ export default function HeroSlideContent({
             href={slide.ctaLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-3 px-7 py-4 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:gap-4 hover:bg-gray-100 active:scale-[0.98]"
-            style={{ backgroundColor: "#4fff1a", color: "#0A0A0A" }}
+            className="group inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-green-500 hover:bg-green-400 text-black shadow-[0_8px_30px_rgba(34,197,94,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)] text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:gap-4 hover:bg-gray-100 active:scale-[0.98]"
           >
             {slide.ctaText}
             <ArrowRight
