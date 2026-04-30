@@ -84,7 +84,7 @@ export function Equipe({ data }: { data: IEquipe | null }) {
               {data.button && data.button.action === "link" && (
                 <Button
                   asChild
-                  className="group px-8 py-4 rounded-full font-bold bg-white text-black hover:bg-[#FFD700] hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]"
+                  className="group px-8 py-4 rounded-full font-bold bg-green-500 text-black hover:bg-green-400 hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,197,94,0.25)] hover:shadow-[0_0_40px_rgba(34,197,94,0.35)]"
                 >
                   <Link href={data.button.link} target="_blank" rel="noopener noreferrer">
                     <span className="flex items-center gap-3">{data.button.label}</span>

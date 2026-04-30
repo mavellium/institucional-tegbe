@@ -172,7 +172,7 @@ export default function Marketplaces({ data }: { data: IEcommerce | null }) {
             <Link href={button.link} target={button.target ?? "_self"}>
               <Button
                 variant={button.variant}
-                className="h-14 px-12 rounded-full text-base font-semibold bg-white text-neutral-950 hover:bg-neutral-200 shadow-[0_0_60px_rgba(255,255,255,0.1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_80px_rgba(255,255,255,0.2)]"
+                className="h-14 px-12 rounded-full text-base font-semibold bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]"
               >
                 {button.label}
               </Button>

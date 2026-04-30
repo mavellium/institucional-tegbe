@@ -15,12 +15,10 @@ interface Props {
 export default function ClienteSection({ data }: Props) {
   return (
     <section className="py-20 sm:py-24 px-4 sm:px-6 md:px-8 bg-[#050505] relative overflow-hidden">
-      
       {/* SPOTLIGHT DE FUNDO */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        
         {/* HEADER PADRÃO */}
         <div className="mb-12 sm:mb-16">
           <Heading align="center">
@@ -36,7 +34,8 @@ export default function ClienteSection({ data }: Props) {
           <div className="flex flex-col items-center mt-12 sm:mt-16 reveal-text">
             <Button
               asChild
-            //   className="group inline-flex items-center gap-3 px-8 py-7 sm:py-8 h-auto rounded-full font-bold transition-all duration-300 hover:scale-105 bg-white text-black hover:bg-white border-none shadow-lg hover:shadow-[0_0_25px_rgba(234,179,8,0.55)] cursor-pointer text-base sm:text-lg"
+              className="bg-green-500 hover:bg-green-400 transition-all duration-300 shadow-[0_2px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_1px_40px_rgba(34,197,94,0.35)]"
+              //   className="group inline-flex items-center gap-3 px-8 py-7 sm:py-8 h-auto rounded-full font-bold transition-all duration-300 hover:scale-105 bg-white text-black hover:bg-white border-none shadow-lg hover:shadow-[0_0_25px_rgba(234,179,8,0.55)] cursor-pointer text-base sm:text-lg"
             >
               <Link
                 href={data.button.link}

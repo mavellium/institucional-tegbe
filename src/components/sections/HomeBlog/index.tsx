@@ -1,4 +1,3 @@
-// @/components/sections/HomeBlog.tsx
 "use client";
 
 import Link from "next/link";
@@ -25,52 +24,92 @@ export default function HomeBlog({ posts, data }: HomeBlogProps) {
   if (!posts.length) return null;
 
   const content = {
-    label: data?.label || "Blog",
     titulo: data?.titulo || "Conteúdo que gera resultado",
     descricao:
       data?.descricao ||
-      "Dicas, estratégias e tendências do mundo do e-commerce e marketing digital.",
+      "Dicas, estratégias e tendências do mundo do e-commerce e marketing digital para alavancar seu negócio.",
     textoBotao: data?.textoBotao || "Ver todos os artigos",
   };
 
   return (
-    <section className="relative py-16 md:py-24 bg-gradient-to-br from-[#FFCC00] to-[#F5C200] overflow-hidden">
-      {/* Detalhe sutil de luz para dar profundidade ao gradient */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.2)_0%,transparent_50%)] pointer-events-none" />
+    <section className="relative py-20 md:py-32 bg-[#FFCC00] overflow-hidden">
+      {/* ELEMENTOS DE FUNDO PARA PREENCHER ESPAÇOS */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Círculo decorativo grande */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.5 }}
+          className="absolute -top-24 -right-24 w-96 h-96 bg-[#F5C200] rounded-full blur-3xl opacity-60"
+        />
+        {/* Padrão de pontos (Dots) */}
+        <div
+          className="absolute top-10 left-10 w-32 h-32 opacity-20"
+          style={{
+            backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
+            backgroundSize: "12px 12px",
+          }}
+        />
+        {/* Forma abstrata inferior */}
+        <motion.div
+          animate={{
+            y: [0, 20, 0],
+            rotate: [0, 5, 0],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-12 -left-12 w-64 h-64 border-[32px] border-[#E6B800] rounded-full opacity-30"
+        />
+      </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8">
         {/* HEADER DA SEÇÃO */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12 md:mb-16">
-          <div className="max-w-2xl">
-            <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16">
+          <div className="max-w-3xl">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="text-[11px] font-bold tracking-[0.25em] uppercase text-white bg-black/90 px-4 py-1.5 rounded-full inline-block mb-4 shadow-sm"
+              className="text-4xl md:text-6xl font-black text-[#0F172A] tracking-tight leading-[1.1]"
             >
-              {content.label}
-            </motion.p>
-
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-[1.1]">
               {content.titulo}
-            </h2>
+            </motion.h2>
 
-            <p className="mt-4 text-gray-900/80 text-base md:text-lg max-w-lg leading-relaxed font-medium">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="mt-6 text-[#1E293B]/80 text-lg md:text-xl max-w-2xl leading-relaxed font-medium"
+            >
               {content.descricao}
-            </p>
+            </motion.p>
           </div>
 
-          <Link
-            href="/blog"
-            className="shrink-0 inline-flex items-center gap-3 px-6 py-3 rounded-full bg-black text-white text-sm font-bold hover:bg-gray-800 transition-all group shadow-lg shadow-black/10"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
           >
-            {content.textoBotao}
-            <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform" />
-          </Link>
+            <Link
+              href="/blog"
+              className="shrink-0 inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-[#0F172A] text-white text-base font-bold hover:bg-black transition-all group shadow-xl hover:shadow-2xl"
+            >
+              {content.textoBotao}
+              <ArrowRight size={20} className="group-hover:translate-x-1.5 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
 
-        {/* CARROSSEL */}
-        <div className="relative">
+        {/* CARROSSEL COM ANIMAÇÃO DE ENTRADA */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="relative"
+        >
           <Swiper
             modules={[Navigation, A11y]}
             navigation={{
@@ -83,37 +122,36 @@ export default function HomeBlog({ posts, data }: HomeBlogProps) {
               768: { slidesPerView: 2.2, spaceBetween: 24 },
               1024: { slidesPerView: 3, spaceBetween: 24 },
               1280: { slidesPerView: 3.5, spaceBetween: 30 },
-              1536: { slidesPerView: 4, spaceBetween: 30 },
             }}
             className="!overflow-visible"
           >
             {posts.map((post) => (
               <SwiperSlide key={post.id} className="h-auto !flex">
-                <div className="w-full h-full transition-transform duration-300 hover:-translate-y-2">
+                <div className="w-full h-full transition-transform duration-500 hover:-translate-y-3">
                   <BlogPostCard post={post} />
                 </div>
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
+        </motion.div>
 
-        {/* CONTROLES DE NAVEGAÇÃO CUSTOMIZADOS */}
-        <div className="flex items-center justify-center gap-4 mt-12">
+        {/* CONTROLES */}
+        <div className="flex items-center justify-center gap-4 mt-16">
           <button
-            className="blog-swiper-prev w-12 h-12 rounded-full border border-black/10 bg-white/20 backdrop-blur-md flex items-center justify-center text-gray-900 hover:bg-white hover:text-black transition-all disabled:opacity-20 disabled:cursor-not-allowed shadow-sm group"
+            className="blog-swiper-prev w-14 h-14 rounded-xl border-2 border-[#0F172A]/10 bg-white/10 backdrop-blur-sm flex items-center justify-center text-[#0F172A] hover:bg-[#0F172A] hover:text-white transition-all disabled:opacity-20 shadow-sm group"
             aria-label="Slide anterior"
           >
             <ArrowRight
-              size={20}
+              size={24}
               className="rotate-180 group-active:-translate-x-1 transition-transform"
             />
           </button>
 
           <button
-            className="blog-swiper-next w-12 h-12 rounded-full border border-black/10 bg-white/20 backdrop-blur-md flex items-center justify-center text-gray-900 hover:bg-white hover:text-black transition-all disabled:opacity-20 disabled:cursor-not-allowed shadow-sm group"
+            className="blog-swiper-next w-14 h-14 rounded-xl border-2 border-[#0F172A]/10 bg-white/10 backdrop-blur-sm flex items-center justify-center text-[#0F172A] hover:bg-[#0F172A] hover:text-white transition-all disabled:opacity-20 shadow-sm group"
             aria-label="Próximo slide"
           >
-            <ArrowRight size={20} className="group-active:translate-x-1 transition-transform" />
+            <ArrowRight size={24} className="group-active:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

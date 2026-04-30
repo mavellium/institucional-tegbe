@@ -9,26 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-[#FFC72C] hover:bg-[#F2CB5E] text-black",
+        default: "bg-[#FFC72C] hover:bg-[#F2CB5E] text-black",
 
         marketing:
-          "bg-[#F9265E] hover:bg-[#FF6D6D] text-white shadow-[0_0_20px_rgba(249,38,94,0.3)] hover:shadow-[0_0_30px_rgba(249,38,94,0.5)]",
+          "bg-green-500 hover:bg-green-400 text-white shadow-[0_2px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_1px_40px_rgba(34,197,94,0.35)]",
 
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/90",
+        destructive: "bg-destructive text-white hover:bg-destructive/90",
 
-        outline:
-          "border bg-background hover:bg-accent",
+        outline: "border bg-background hover:bg-accent",
 
         secondary:
           "group relative inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-bold rounded-full overflow-hidden transition-all",
 
-        ghost:
-          "hover:bg-accent",
+        ghost: "hover:bg-accent",
 
-        link:
-          "text-primary underline-offset-4 hover:underline rounded-none h-auto px-0 py-0",
+        link: "text-primary underline-offset-4 hover:underline rounded-none h-auto px-0 py-0",
       },
 
       size: {
@@ -39,8 +34,7 @@ const buttonVariants = cva(
         /** CTA hero / landing */
         pill: "h-12 min-h-12 px-6 sm:px-8 rounded-full font-bold tracking-wide",
         /** Secundário ao lado do pill */
-        pillSoft:
-          "h-12 min-h-12 px-6 rounded-full font-semibold",
+        pillSoft: "h-12 min-h-12 px-6 rounded-full font-semibold",
       },
     },
 
@@ -52,8 +46,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends Omit<React.ComponentProps<"button">, "href">,
-    VariantProps<typeof buttonVariants> {
+  extends Omit<React.ComponentProps<"button">, "href">, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   /** Se definido, renderiza `Link` (interno) ou `<a>` (externo) com os estilos do botão. */
   href?: string;
@@ -99,13 +92,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (asChild) {
       return (
-        <Slot
-          ref={ref}
-          className={classes}
-          aria-label={ariaLabel}
-          aria-pressed={pressed}
-          {...rest}
-        >
+        <Slot ref={ref} className={classes} aria-label={ariaLabel} aria-pressed={pressed} {...rest}>
           {children}
         </Slot>
       );
@@ -143,7 +130,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className={classes}
           aria-label={ariaLabel}
           aria-pressed={pressed}
-          {...(rest as Omit<React.ComponentPropsWithoutRef<typeof Link>, "href" | "className" | "children">)}
+          {...(rest as Omit<
+            React.ComponentPropsWithoutRef<typeof Link>,
+            "href" | "className" | "children"
+          >)}
         >
           {content}
         </Link>

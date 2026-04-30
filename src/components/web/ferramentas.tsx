@@ -2,25 +2,16 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { Bot, Users, Globe, BarChart3, Mail, Layers, ArrowUpRight } from "lucide-react";
+import { Icon } from "@iconify/react";
+import { ArrowUpRight } from "lucide-react";
 
 import Textura from "@/components/ui/textura";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 
-// ================== MAPEAMENTO DE ÍCONES ==================
-const iconMap = {
-  Bot,
-  Users,
-  Globe,
-  BarChart3,
-  Mail,
-  Layers,
-};
-
 // ================== TIPAGEM ==================
 interface Tool {
-  icon: keyof typeof iconMap;
+  icon: string;
   name: RichTextItem[];
   description: RichTextItem[];
   gradient: string;
@@ -40,6 +31,54 @@ interface FerramentasData {
       link: string;
     };
   };
+}
+
+// ================== GRADIENTE INLINE ==================
+// Tailwind purge não inclui classes que chegam só via API em runtime.
+// Convertemos para CSS inline usando esta tabela de cores.
+const TW: Record<string, string> = {
+  "slate-500": "#64748b",
+  "gray-500": "#6b7280",
+  "zinc-500": "#71717a",
+  "red-500": "#ef4444",
+  "orange-500": "#f97316",
+  "amber-500": "#f59e0b",
+  "yellow-500": "#eab308",
+  "lime-500": "#84cc16",
+  "green-500": "#22c55e",
+  "emerald-500": "#10b981",
+  "teal-500": "#14b8a6",
+  "cyan-500": "#06b6d4",
+  "sky-500": "#0ea5e9",
+  "blue-500": "#3b82f6",
+  "blue-600": "#2563eb",
+  "indigo-500": "#6366f1",
+  "violet-500": "#8b5cf6",
+  "purple-500": "#a855f7",
+  "purple-600": "#9333ea",
+  "fuchsia-500": "#d946ef",
+  "pink-500": "#ec4899",
+  "rose-500": "#f43f5e",
+};
+
+function parseGradient(cls: string): string {
+  const from = cls.match(/from-([\w]+-[\d]+)/)?.[1];
+  const to = cls.match(/to-([\w]+-[\d]+)/)?.[1];
+  const c1 = (from && TW[from]) ?? "#888";
+  const c2 = (to && TW[to]) ?? "#555";
+  return `linear-gradient(135deg, ${c1}, ${c2})`;
+}
+
+function parseShadow(cls: string): string {
+  const m = cls.match(/shadow-([\w]+-[\d]+)\/(\d+)/);
+  if (!m) return "0 8px 24px rgba(0,0,0,0.15)";
+  const hex = TW[m[1]];
+  if (!hex) return "0 8px 24px rgba(0,0,0,0.15)";
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const a = parseInt(m[2]) / 100;
+  return `0 8px 24px rgba(${r},${g},${b},${a})`;
 }
 
 // ================== ANIMAÇÕES ==================
@@ -109,21 +148,25 @@ export default function Ferramentas({ data }: { data: FerramentasData | null }) 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {tools.map((tool) => {
-            const Icon = iconMap[tool.icon];
+            const gradient = parseGradient(tool.gradient);
+            const shadow = parseShadow(tool.shadow);
 
             return (
               <motion.div key={tool.icon} variants={itemVariants} className="relative group h-full">
                 <div className="relative flex flex-col h-full bg-white rounded-[1.5rem] p-8 border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-1.5 overflow-hidden z-10">
+                  {/* hover bg overlay */}
                   <div
-                    className={`absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 bg-gradient-to-br ${tool.gradient}`}
+                    className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500"
+                    style={{ background: gradient }}
                   />
 
                   {/* TOPO */}
                   <div className="flex justify-between items-start mb-8 relative z-10">
                     <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tool.gradient} shadow-lg ${tool.shadow} flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500"
+                      style={{ background: gradient, boxShadow: shadow }}
                     >
-                      {Icon && <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />}
+                      <Icon icon={tool.icon} className="w-6 h-6 text-white" />
                     </div>
 
                     <div className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
@@ -142,9 +185,9 @@ export default function Ferramentas({ data }: { data: FerramentasData | null }) 
                     </p>
                   </div>
 
-                  {/* FUNDO */}
-                  <div className="absolute -right-6 -bottom-6 opacity-[0.02] group-hover:opacity-[0.05] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-12 pointer-events-none z-0">
-                    {Icon && <Icon className="w-40 h-40 text-neutral-900" strokeWidth={1} />}
+                  {/* FUNDO DECORATIVO */}
+                  <div className="absolute -right-6 -bottom-6 opacity-[0.04] group-hover:opacity-[0.08] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-12 pointer-events-none z-0 text-neutral-900">
+                    <Icon icon={tool.icon} style={{ width: 160, height: 160 }} />
                   </div>
                 </div>
               </motion.div>
@@ -162,10 +205,10 @@ export default function Ferramentas({ data }: { data: FerramentasData | null }) 
         >
           <a
             href={cta.link}
-            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-neutral-950 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-neutral-800 hover:shadow-[0_15px_40px_rgb(0,0,0,0.2)] hover:-translate-y-0.5 transition-all duration-300"
+            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-green-500 text-neutral-950 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:bg-green-400 hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)] hover:-translate-y-0.5 transition-all duration-300"
           >
             {cta.label}
-            <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors" />
+            <ArrowUpRight className="w-4 h-4 text-neutral-700 group-hover:text-neutral-950 transition-colors" />
           </a>
         </motion.div>
       </div>

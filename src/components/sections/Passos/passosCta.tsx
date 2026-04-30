@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import { Icon } from '@iconify/react'
-import { Button } from '@/components/ui/button/button'
-import { IButton } from '@/interface/button/IButton'
+import Link from "next/link";
+import { Icon } from "@iconify/react";
+import { Button } from "@/components/ui/button/button";
+import { IButton } from "@/interface/button/IButton";
 
 interface StepCTAProps {
   buttonData: IButton;
@@ -16,7 +16,7 @@ export function StepCTA({ buttonData, containerRef }: StepCTAProps) {
       <Button
         asChild
         variant="default"
-        className="group px-8 py-4"
+        className="group px-8 py-4 bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]"
       >
         <Link
           href={buttonData.link}
@@ -33,5 +33,5 @@ export function StepCTA({ buttonData, containerRef }: StepCTAProps) {
         </Link>
       </Button>
     </div>
-  )
+  );
 }

@@ -87,7 +87,7 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
             >
               <Link
                 href={cta.button.link}
-                className="group flex items-center gap-3 bg-green-500 text-neutral-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-700 hover:shadow-[0_8px_30px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
+                className="group flex items-center gap-3 bg-green-500 text-neutral-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-400 hover:shadow-[0_8px_30px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
               >
                 {cta.button.label}
                 <MessageCircle className="w-5 h-5 text-neutral-950 group-hover:text-neutral-950 transition-colors" />

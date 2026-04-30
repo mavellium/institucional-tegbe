@@ -55,7 +55,7 @@ export default function HeroCarrossel({
 
   return (
     <section
-      className="relative w-full text-white group overflow-hidden h-[640px] sm:h-[700px] md:h-[760px] lg:h-[580px] xl:h-[600px] 2xl:h-[840px]"
+      className="relative w-full text-white group overflow-hidden h-[640px] sm:h-[700px] md:h-[760px] lg:h-[580px] xl:h-[600px] 2xl:h-[560px]"
       style={{ backgroundColor: corFundo }}
     >
       <Textura

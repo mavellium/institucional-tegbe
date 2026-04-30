@@ -5,6 +5,7 @@ import Schema from "@/components/layout/Schema";
 import HeroCarousel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import { fetchHeroSlides } from "@/features/home-hero-carousel/services";
 import { getSafeData } from "@/core/api/getSafeData";
+import { fetchCms } from "@/core/api/client";
 import { fetchBlogPosts } from "@/features/blog/services";
 
 // Imports Dinâmicos
@@ -34,8 +35,8 @@ export default async function Home() {
     getSafeData("solucoes-home"),
     getSafeData("marketplaces"),
     getSafeData("redes-sociais"),
-    getSafeData("json/formacoes-home"),
-    getSafeData("ferramentas"),
+    fetchCms("json/formacoes-home", { revalidate: 10 }).then((r) => r.data),
+    getSafeData("json/ferramentas"),
     getSafeData("duvida-cta"),
     getSafeData("faq-home"),
     fetchBlogPosts({ limit: "12", status: "PUBLISHED" }),

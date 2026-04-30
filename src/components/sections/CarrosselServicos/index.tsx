@@ -132,7 +132,9 @@ export default function Carrossel({
         <div className="relative z-10 flex justify-center mt-4 md:mt-8 px-4">
           <Link href={button.link} target={button.target ?? "_self"} className="w-full sm:w-auto">
             {/* O botão ocupará a largura total no mobile e o tamanho natural a partir do sm */}
-            <Button className="w-full sm:w-auto px-8 py-6 text-base">{button.label}</Button>
+            <Button className="w-full sm:w-auto px-8 py-6 text-base bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]">
+              {button.label}
+            </Button>
           </Link>
         </div>
       )}

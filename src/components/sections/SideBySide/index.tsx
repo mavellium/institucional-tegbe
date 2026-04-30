@@ -73,7 +73,11 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
             </div>
 
             {hero.button?.action === "link" && (
-              <Button asChild variant={hero.button.variant}>
+              <Button
+                asChild
+                variant={hero.button.variant}
+                className="bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]"
+              >
                 <Link href={hero.button.link} target={hero.button.target}>
                   {hero.button.label}
                 </Link>

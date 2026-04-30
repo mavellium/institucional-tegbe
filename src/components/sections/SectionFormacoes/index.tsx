@@ -175,10 +175,10 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
         >
           <a
             href={cta.link}
-            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-white text-neutral-950 shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:bg-neutral-200 hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] hover:-translate-y-0.5 transition-all duration-300"
+            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-green-500 text-neutral-950 shadow-[0_8px_30px_rgba(34,197,94,0.3)] hover:bg-green-400 hover:shadow-[0_15px_40px_rgba(34,197,94,0.4)] hover:-translate-y-0.5 transition-all duration-300"
           >
             {cta.label}
-            <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-neutral-900 transition-colors" />
+            <ArrowUpRight className="w-4 h-4 text-neutral-700 group-hover:text-neutral-950 transition-colors" />
           </a>
         </motion.div>
       </div>
