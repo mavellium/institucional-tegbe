@@ -55,7 +55,8 @@ export default function HeroCarrossel({
 
   return (
     <section
-      className="relative w-full text-white group overflow-hidden h-[640px] sm:h-[700px] md:h-[760px] lg:h-[580px] xl:h-[600px] 2xl:h-[560px]"
+      // Altura responsiva: No mobile cresce para caber texto + imagem. No XL (1280px+) fica fixo.
+      className="relative w-full text-white group overflow-hidden h-auto min-h-[420px] xl:h-[520px]"
       style={{ backgroundColor: corFundo }}
     >
       <Textura
@@ -84,13 +85,14 @@ export default function HeroCarrossel({
               const isActive = index === selectedIndex;
               return (
                 <div key={slide.id} className="flex-[0_0_100%] min-w-0 h-full">
-                  {/*
-                    Container centralizado com max-w-7xl para garantir alinhamento
-                    consistente com o header. pt-20/pt-24 limpa o header fixo.
+                  {/* 
+                    LAYOUT: 
+                    - flex-col (Mobile/Tablet): Texto em cima, imagem embaixo.
+                    - xl:grid (Telas > 1280px): Lado a lado.
                   */}
-                  <div className="h-full max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-20 lg:pt-24 flex flex-col lg:grid lg:grid-cols-[45%_55%] gap-8 lg:grid-rows-1">
-                    {/* Coluna de texto — primeiro no DOM = primeiro no mobile */}
-                    <div className="flex flex-col justify-center py-8 lg:py-0 shrink-0">
+                  <div className="h-full max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-24 pb-0 flex flex-col xl:grid xl:grid-cols-[45%_55%] gap-8">
+                    {/* Coluna de texto */}
+                    <div className="flex flex-col justify-center shrink-0">
                       <HeroSlideContent
                         slide={slide}
                         isActive={isActive}
@@ -98,9 +100,9 @@ export default function HeroCarrossel({
                       />
                     </div>
 
-                    {/* Coluna de imagem — abaixo do texto no mobile, direita no desktop */}
+                    {/* Coluna de imagem */}
                     {slide.image ? (
-                      <div className="relative h-[42dvh] lg:h-full">
+                      <div className="relative h-[320px] sm:h-[400px] xl:h-full w-full flex items-center justify-center">
                         <HeroSlideImage
                           image={slide.image}
                           title={slide.title}
@@ -109,7 +111,7 @@ export default function HeroCarrossel({
                         />
                       </div>
                     ) : (
-                      <div />
+                      <div className="hidden xl:block" />
                     )}
                   </div>
                 </div>
@@ -135,8 +137,8 @@ export default function HeroCarrossel({
         corIcone={corIcone}
       />
 
-      {/* Texto decorativo de fundo */}
-      <div className="absolute right-0 bottom-0 overflow-hidden pointer-events-none select-none opacity-[0.025]">
+      {/* Texto decorativo de fundo - Escondido em telas muito pequenas para não poluir */}
+      <div className="absolute right-0 bottom-0 overflow-hidden pointer-events-none select-none opacity-[0.025] hidden sm:block">
         <span className="block text-white text-[90px] sm:text-[160px] md:text-[220px] font-black tracking-[-0.04em] uppercase whitespace-nowrap leading-none pb-2 pr-2">
           {textoFundo}
         </span>

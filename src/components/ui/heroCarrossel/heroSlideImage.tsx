@@ -31,8 +31,13 @@ export default function HeroSlideImage({
         src={image}
         alt={title ?? "Hero"}
         fill
-        sizes="(max-width: 1024px) 100vw, 52vw"
-        className="object-contain object-center lg:object-fill lg:object-bottom"
+        sizes="(max-width: 1280px) 100vw, 55vw"
+        /* 
+           - object-contain: Garante que a imagem nunca distorça no mobile e desktop.
+           - object-center: Centraliza no mobile.
+           - xl:object-right-bottom: Alinha no canto inferior direito no desktop para compor melhor com o texto.
+        */
+        className="object-contain object-bottom xl:object-right-bottom"
         priority={priority}
       />
     </motion.div>

@@ -38,7 +38,7 @@ export default function HeroSlideContent({
   corDestaque = "#F9265E",
 }: HeroSlideContentProps) {
   return (
-    <div className="flex flex-col items-center text-center lg:text-start lg:items-start gap-5 w-full">
+    <div className="flex flex-col items-center text-center xl:text-start xl:items-start gap-5 w-full">
       {/* Badge / Tag */}
       {slide.tag && (
         <motion.div
@@ -91,7 +91,7 @@ export default function HeroSlideContent({
           transition={getTransition(0.28)}
           className="w-full"
         >
-          <p className="text-[clamp(0.9rem,1.4vw,1.125rem)] text-white/60 leading-relaxed font-light max-w-full lg:max-w-md">
+          <p className="text-[clamp(0.9rem,1.4vw,1.125rem)] text-center items-center text-white/60 leading-relaxed font-light max-w-full xl:text-start xl:items-start xl:max-w-md">
             {slide.description}
           </p>
         </motion.div>
