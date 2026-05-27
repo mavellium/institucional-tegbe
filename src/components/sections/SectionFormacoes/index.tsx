@@ -3,27 +3,27 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
-import Image from "next/image";
 
 import Textura from "@/components/ui/textura";
+import { useApi } from "@/hooks/useApi";
+import { RichTextItem } from "@/types/richText.type";
+import RichText from "@/components/ui/rich/richText";
 
+// ================== TIPAGEM ==================
 interface Course {
+  title: RichTextItem[];
+  description: RichTextItem[];
   tag: string;
-  link: string;
-  image: string;
-  alt?: string;
-  title: string;
   accent: string;
-  ctaLabel?: string;
-  description: string;
+  link: string;
 }
 
 interface FormacoesData {
   formacoes: {
     header: {
-      badge: string;
-      title: string;
-      description: string;
+      badge: RichTextItem[];
+      title: RichTextItem[];
+      description: RichTextItem[];
     };
     courses: Course[];
     cta: {
@@ -33,7 +33,10 @@ interface FormacoesData {
   };
 }
 
-export default function FormacoesSection({ data }: { data: FormacoesData | null }) {
+// ================== COMPONENT ==================
+export default function FormacoesSection({ data: dataProp }: { data?: FormacoesData }) {
+  const { data: fetched } = useApi<FormacoesData>(dataProp ? "" : "formacoes-home");
+  const data = dataProp ?? fetched;
   const [current, setCurrent] = useState(0);
 
   const formacoes = data?.formacoes;
@@ -50,7 +53,10 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
       id="formacoes"
       className="relative py-32 bg-neutral-950 text-white overflow-hidden selection:bg-white selection:text-neutral-950"
     >
-      <Textura opacity={0.04} className="absolute inset-0 pointer-events-none mix-blend-screen" />
+      <Textura
+        opacity={0.04}
+        className="absolute inset-0 pointer-events-none mix-blend-screen"
+      />
 
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[128px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 blur-[128px] rounded-full pointer-events-none" />
@@ -65,27 +71,30 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 text-neutral-300 mb-6 border border-white/10 shadow-inner"
           >
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest">{header.badge}</span>
+            <span className="text-xs font-bold uppercase tracking-widest">
+              <RichText content={header.badge} />
+            </span>
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white mb-6 leading-tight">
-            {header.title}
+            <RichText content={header.title} />
           </h2>
 
           <p className="text-lg md:text-xl text-neutral-400 font-normal max-w-2xl leading-relaxed">
-            {header.description}
+            <RichText content={header.description} />
           </p>
         </div>
 
         {/* PAINEL */}
         <div className="relative max-w-4xl mx-auto">
           <div className="relative bg-white/[0.02] backdrop-blur-md rounded-[2rem] border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-500">
+
             <div
               className={`absolute inset-0 bg-gradient-to-br ${courses[current].accent} to-transparent transition-colors duration-700 pointer-events-none opacity-60`}
             />
 
             {/* CONTEÚDO */}
-            <div className="p-10 md:p-14 flex flex-col justify-center">
+            <div className="min-h-[360px] md:min-h-[320px] p-10 md:p-14 flex flex-col justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current}
@@ -100,34 +109,20 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
                   </span>
 
                   <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
-                    {courses[current].title}
+                    <RichText content={courses[current].title} />
                   </h3>
 
-                  <p className="text-lg text-neutral-400 leading-relaxed max-w-2xl mb-6">
-                    {courses[current].description}
+                  <p className="text-lg text-neutral-400 leading-relaxed max-w-2xl mb-8">
+                    <RichText content={courses[current].description} />
                   </p>
 
-                  {courses[current].image && (
-                    <div className="relative w-full h-85 rounded-xl overflow-hidden mb-8">
-                      <Image
-                        src={courses[current].image}
-                        alt={courses[current].alt ?? courses[current].title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 896px"
-                      />
-                    </div>
-                  )}
-
-                  {courses[current].link && courses[current].ctaLabel && (
-                    <a
-                      href={courses[current].link}
-                      className="group inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
-                    >
-                      {courses[current].ctaLabel}
-                      <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                    </a>
-                  )}
+                  <a
+                    href={courses[current].link}
+                    className="group inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
+                  >
+                    Ver ementa do curso
+                    <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                  </a>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -139,9 +134,10 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
                   <button
                     key={i}
                     onClick={() => setCurrent(i)}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      i === current ? "w-8 bg-white" : "w-2 bg-white/20 hover:bg-white/40"
-                    }`}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${i === current
+                        ? "w-8 bg-white"
+                        : "w-2 bg-white/20 hover:bg-white/40"
+                      }`}
                   />
                 ))}
               </div>
@@ -175,10 +171,10 @@ export default function FormacoesSection({ data }: { data: FormacoesData | null 
         >
           <a
             href={cta.link}
-            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-green-500 text-neutral-950 shadow-[0_8px_30px_rgba(34,197,94,0.3)] hover:bg-green-400 hover:shadow-[0_15px_40px_rgba(34,197,94,0.4)] hover:-translate-y-0.5 transition-all duration-300"
+            className="group flex items-center gap-2 h-14 px-10 rounded-full text-base font-semibold bg-white text-neutral-950 shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:bg-neutral-200 hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] hover:-translate-y-0.5 transition-all duration-300"
           >
             {cta.label}
-            <ArrowUpRight className="w-4 h-4 text-neutral-700 group-hover:text-neutral-950 transition-colors" />
+            <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-neutral-900 transition-colors" />
           </a>
         </motion.div>
       </div>

@@ -3,12 +3,13 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
+import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import Link from "next/link";
 
 // ================== TIPAGEM ==================
-export interface CtaDuvidasData {
+interface CtaDuvidasData {
   title: RichTextItem[];
   description: RichTextItem[];
   button: {
@@ -18,13 +19,17 @@ export interface CtaDuvidasData {
 }
 
 // ================== COMPONENT ==================
-export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
-  const cta = data;
+export default function CtaDuvidas({ data: dataProp }: { data?: CtaDuvidasData }) {
+  const { data: fetched } = useApi<CtaDuvidasData>(dataProp ? "" : "duvida-cta");
+
+  const cta = dataProp ?? fetched;
+  
 
   if (!cta) return null;
 
   return (
     <section className="relative w-full bg-neutral-950 overflow-hidden selection:bg-white selection:text-neutral-950">
+
       {/* SVG */}
       <div className="absolute top-0 right-0 bottom-0 w-[55%] md:w-[45%] lg:w-[40%] pointer-events-none z-0 hidden md:block">
         <svg
@@ -54,14 +59,16 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
 
       {/* CONTEÚDO */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32 lg:py-40 flex flex-col md:flex-row items-center">
-        <div className="w-full md:w-[55%] lg:w-[50%] flex flex-col items-center md:items-start text-left">
+
+        <div className="w-full md:w-[55%] lg:w-[50%] flex flex-col items-start text-left">
+
           {/* TITLE */}
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-5xl md:text-6xl lg:text-[72px] font-semibold text-white tracking-tight leading-[1.05] mb-6 text-balance text-center md:text-left"
+            className="text-5xl md:text-6xl lg:text-[72px] font-semibold text-white tracking-tight leading-[1.05] mb-6 text-balance"
           >
             <RichText content={cta.title} />
           </motion.h2>
@@ -72,7 +79,7 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg md:text-xl text-neutral-400 font-medium max-w-md mb-10 leading-relaxed text-center md:text-left"
+            className="text-lg md:text-xl text-neutral-400 font-medium max-w-md mb-10 leading-relaxed"
           >
             <RichText content={cta.description} />
           </motion.p>
@@ -87,13 +94,14 @@ export default function CtaDuvidas({ data }: { data: CtaDuvidasData | null }) {
             >
               <Link
                 href={cta.button.link}
-                className="group flex items-center gap-3 bg-green-500 text-neutral-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-400 hover:shadow-[0_8px_30px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
+                className="group flex items-center gap-3 bg-white text-neutral-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-neutral-200 hover:shadow-[0_8px_30px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
               >
                 {cta.button.label}
-                <MessageCircle className="w-5 h-5 text-neutral-950 group-hover:text-neutral-950 transition-colors" />
+                <MessageCircle className="w-5 h-5 text-neutral-500 group-hover:text-neutral-950 transition-colors" />
               </Link>
             </motion.div>
           )}
+
         </div>
       </div>
     </section>

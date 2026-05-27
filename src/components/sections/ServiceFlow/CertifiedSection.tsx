@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Heading from "@/components/ui/heading";
 import RichText from "@/components/ui/rich/richText";
 import { Button } from "@/components/ui/button/button";
+import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import { IImage } from "@/interface/imagem/IImage";
 import { IButton } from "@/interface/button/IButton";
@@ -24,61 +25,65 @@ export interface IConsultorOficial {
     selo: IImage;
     consultor: IImage;
   };
-  button: IButton;
+  button: IButton
 }
 
-export default function ConsultorOficial({ data }: { data: IConsultorOficial | null }) {
+export default function ConsultorOficial({ data: dataProp }: { data?: IConsultorOficial }) {
+  const { data: fetched } = useApi<IConsultorOficial>(dataProp ? "" : "consultoria-oficial");
+  const data = dataProp ?? fetched;
+
   const container = useRef(null);
   const imageRef = useRef(null);
   const cardRef = useRef(null);
 
-  useGSAP(
-    () => {
-      if (!data) return;
+  useGSAP(() => {
+    if (!data) return;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 80%",
+        toggleActions: "play none none reverse",
+      },
+    });
+
+    tl.from(imageRef.current, {
+      x: -100,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power4.out",
+    })
+      .from(
+        cardRef.current,
+        {
+          x: 100,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power4.out",
         },
-      });
+        "-=0.8"
+      )
+      .from(
+        ".badge-float",
+        {
+          scale: 0,
+          rotation: -45,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        },
+        "-=0.5"
+      );
 
-      tl.from(imageRef.current, {
-        x: -100,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.out",
-      })
-        .from(
-          cardRef.current,
-          {
-            x: 100,
-            opacity: 0,
-            duration: 1.2,
-            ease: "power4.out",
-          },
-          "-=0.8"
-        )
-        .from(
-          ".badge-float",
-          {
-            scale: 0,
-            rotation: -45,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-          },
-          "-=0.5"
-        );
-    },
-    { scope: container, dependencies: [data] }
-  );
+  }, { scope: container, dependencies: [data] });
 
-  if (!data) return null;
+  if (!data?.imagens?.consultor) return null;
 
   return (
     <>
-      <section ref={container} className="relative px-4 sm:px-8 py-32 bg-[#F4F4F4] overflow-hidden">
+      <section
+        ref={container}
+        className="relative px-4 sm:px-8 py-32 bg-[#F4F4F4] overflow-hidden"
+      >
         {/* BG */}
         <div className="absolute inset-0 pointer-events-none opacity-50">
           <div className="absolute top-24 left-10 w-64 h-64 bg-yellow-400/10 blur-[120px] rounded-full" />
@@ -111,31 +116,34 @@ export default function ConsultorOficial({ data }: { data: IConsultorOficial | n
 
           {/* TEXTO */}
           <div ref={cardRef} className="w-full lg:w-1/2 flex flex-col gap-8">
-            <div className="space-y-4 flex flex-col items-center md:items-start">
-              <span className="px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
+            <div className="space-y-4">
+              <span className="inline-block px-4 py-1.5 bg-[#0071E3]/10 text-[#0071E3] font-bold text-xs tracking-widest uppercase rounded-full">
                 {data.badge}
               </span>
 
               <Heading
-                align="center"
                 as="h2"
                 size="xl"
-                className="md:text-left text-4xl md:text-6xl leading-[1.1]"
+                className="text-4xl md:text-6xl leading-[1.1]"
               >
                 <RichText content={data.title} />
               </Heading>
             </div>
 
             {data.description.map((paragraph, i) => (
-              <Paragrafo align="center" key={i} className="md:text-left space-y-4 max-w-lg">
+              <Paragrafo key={i} className="space-y-4 max-w-lg">
                 <RichText content={paragraph} />
               </Paragrafo>
             ))}
 
-            <div className="pt-4 flex flex-col items-center md:items-start">
+            <div className="pt-4">
               {data.button?.action === "link" && (
-                <Link href={data.button.link} target={data.button.target} className="w-fit">
-                  <Button variant="secondary" size="pill">
+                <Link
+                  href={data.button.link}
+                  target={data.button.target}
+                  className="w-fit"
+                >
+                  <Button variant="secondary">
                     {data.button.label}
                   </Button>
                 </Link>

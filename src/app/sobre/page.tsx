@@ -1,92 +1,63 @@
-import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
-import { getSafeData } from "@/core/api/getSafeData";
+import { QuemSomos } from "@/components/sections/QuemSomos";
+import { OQueSomos } from "@/components/sections/OQueSomos";
+import { SideBySideSection } from "@/components/sections/SideBySide";
 import Hero from "@/components/sections/Hero";
+import Localizacao from "@/components/sections/LocalizacaoSobre";
+import Meta from "@/components/sections/Meta";
+import Carrossel from "@/components/sections/CarrosselEspecialistas";
+import { getJanusContent } from "@/lib/api";
 
-// Seções below-the-fold — lazy loaded para otimizar FCP
-const QuemSomos = dynamic(
-  () => import("@/components/sections/QuemSomos").then((mod) => ({ default: mod.QuemSomos })),
-  {}
-);
-const OQueSomos = dynamic(
-  () => import("@/components/sections/OQueSomos").then((mod) => ({ default: mod.OQueSomos })),
-  {}
-);
-const Meta = dynamic(() => import("@/components/sections/Meta"), {});
-const Carrossel = dynamic(() => import("@/components/sections/CarrosselEspecialistas"), {});
-const Localizacao = dynamic(() => import("@/components/sections/LocalizacaoSobre"), {});
-const SideBySideSection = dynamic(
-  () =>
-    import("@/components/sections/SideBySide").then((mod) => ({ default: mod.SideBySideSection })),
-  {}
-);
+export const revalidate = 60;
 
 export default async function SobrePage() {
-  const [
-    heroData,
-    quemSomosData,
-    oQueSomosData,
-    metaData,
-    carrosselData,
-    localizacaoData,
-    sideBySideData,
-  ] = await Promise.all([
-    getSafeData("inicio"),
-    getSafeData("quem-somos"),
-    getSafeData("o-que-somos"),
-    getSafeData("meta-alunos"),
-    getSafeData("carrossel-de-especialistas"),
-    getSafeData("localizacao"),
-    getSafeData("trabalhar-conosco"),
+  const [sobreContent, formacoesContent] = await Promise.all([
+    getJanusContent("sobre"),
+    getJanusContent("formacoes"),
   ]);
-
-  // Preload da imagem LCP (logo do hero sobre)
-  const lcpImageUrl = (heroData as any)?.logo?.src;
 
   return (
     <>
-      {lcpImageUrl && (
-        <link
-          rel="preload"
-          as="image"
-          href={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75`}
-          imageSrcSet={`/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=256&q=75 256w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=384&q=75 384w, /_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=640&q=75 640w`}
-          imageSizes="(min-width: 768px) 420px, (min-width: 640px) 280px, 220px"
-          fetchPriority="high"
-        />
-      )}
       <Schema
         data={{
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          mainEntity: {
+          "mainEntity": {
             "@type": "Organization",
-            name: "Tegbe",
-            url: "https://tegbe.com.br",
-            logo: "https://tegbe.com.br/logo.png",
-            description:
-              "Agência de performance especializada em e-commerce e escala de resultados.",
-            address: {
+            "name": "Tegbe",
+            "url": "https://tegbe.com.br",
+            "logo": "https://tegbe.com.br/logo.png",
+            "description": "Agência de performance especializada em e-commerce e escala de resultados.",
+            "address": {
               "@type": "PostalAddress",
-              addressLocality: "Garça",
-              addressRegion: "SP",
-              addressCountry: "BR",
-            },
-          },
+              "addressLocality": "Garça",
+              "addressRegion": "SP",
+              "addressCountry": "BR"
+            }
+          }
         }}
       />
 
       <Header />
       <main>
-        <Hero data={heroData as any} />
-        <QuemSomos data={quemSomosData as any} />
-        <OQueSomos data={oQueSomosData as any} />
-        <Meta data={metaData as any} type="Meta de Alunos" />
-        <Carrossel data={carrosselData as any} />
-        <Localizacao data={localizacaoData as any} />
-        <SideBySideSection data={sideBySideData as any} />
+        <Hero />
+        <QuemSomos data={(sobreContent["quem-somos"] ?? {}) as any} />
+        <OQueSomos data={(sobreContent["o-que-somos"] ?? {}) as any} />
+        <Meta
+          data={(formacoesContent["meta-alunos"] ?? {}) as any}
+          type="Meta de Alunos"
+        />
+        <Carrossel
+          type="Carrossel de Especialistas"
+          data={(sobreContent["carrossel-de-especialistas"] ?? {}) as any}
+        />
+        <Localizacao data={(sobreContent["localizacao"] ?? {}) as any} />
+        <SideBySideSection
+          type="trabalheConosco"
+          data={(sobreContent["trabalhar-conosco"] ?? {}) as any}
+        />
       </main>
       <Footer />
     </>

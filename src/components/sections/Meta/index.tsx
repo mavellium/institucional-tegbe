@@ -12,6 +12,7 @@ import Textura from "@/components/ui/textura";
 
 import { RichTextItem } from "@/types/richText.type";
 import ProgressMetric from "@/components/ui/progressMetric";
+import { useApi } from "@/hooks/useApi";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -33,40 +34,41 @@ export interface MetaData {
 
 interface MetaProps {
   type?: string;
-  data: MetaData | null;
+  endpoint?: string;
+  data?: MetaData;
   theme?: any;
 }
 /* ---------------- COMPONENT ---------------- */
 
-export default function MetaSection({ data, theme }: MetaProps) {
+export default function MetaSection({ endpoint = "", data: dataProp, theme }: MetaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { data: fetched } = useApi<MetaData>(dataProp ? "" : endpoint);
+  const data = dataProp ?? fetched;
 
   const accent = theme?.primary || "#F1D95D";
   const textColor = theme?.text || "#0A0A0A";
   const bgColor = theme?.background || "#FAFAF8";
 
-  useGSAP(
-    () => {
-      if (!containerRef.current) return;
+  useGSAP(() => {
+    if (!containerRef.current) return;
 
-      const trigger = {
-        trigger: containerRef.current,
-        start: "top 80%",
-      };
+    const trigger = {
+      trigger: containerRef.current,
+      start: "top 80%"
+    };
 
-      gsap.from(".meta-item", {
-        scrollTrigger: trigger,
-        y: 18,
-        opacity: 0,
-        stagger: 0.12,
-        duration: 0.9,
-        ease: "power2.out",
-      });
-    },
-    { scope: containerRef }
-  );
+    gsap.from(".meta-item", {
+      scrollTrigger: trigger,
+      y: 18,
+      opacity: 0,
+      stagger: 0.12,
+      duration: 0.9,
+      ease: "power2.out"
+    });
 
-  if (!data) return null;
+  }, { scope: containerRef });
+
+  if (!data?.header || !data?.progress) return null;
 
   return (
     <section
@@ -77,6 +79,7 @@ export default function MetaSection({ data, theme }: MetaProps) {
       <Textura opacity={0.03} />
 
       <div className="relative z-10 max-w-3xl lg:max-w-4xl mx-auto px-6 space-y-12 lg:space-y-16">
+
         {/* HEADER */}
         <div className="space-y-5 lg:space-y-6">
           <Heading as="h2" size="lg" align="center" className="meta-item" color={textColor}>
@@ -86,7 +89,7 @@ export default function MetaSection({ data, theme }: MetaProps) {
           <Paragrafo
             className="meta-item text-[16px] sm:text-[18px] max-w-xl mx-auto"
             align="center"
-            color={textColor}
+           color={textColor}
           >
             <RichText content={data.header.subtitle} />
           </Paragrafo>
@@ -94,7 +97,10 @@ export default function MetaSection({ data, theme }: MetaProps) {
 
         {/* PROGRESS */}
         <div className="meta-item w-full">
-          <ProgressMetric value={data.progress.target} max={data.progress.max} />
+          <ProgressMetric
+            value={data.progress.target}
+            max={data.progress.max}
+          />
         </div>
 
         {/* FOOTER */}
@@ -105,6 +111,7 @@ export default function MetaSection({ data, theme }: MetaProps) {
         >
           <RichText content={data.footer} />
         </Paragrafo>
+
       </div>
     </section>
   );

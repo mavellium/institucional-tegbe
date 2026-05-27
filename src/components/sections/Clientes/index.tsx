@@ -2,13 +2,17 @@
 
 import { SectionContent } from "@/types/testimonial.type";
 import CompanysSection from "@/components/ui/company/companySection";
+import { useApi } from "@/hooks/useApi";
 
 interface ClientesProps {
-  data: SectionContent | null;
+    endpoint?: string;
+    data?: SectionContent;
 }
 
-export function Clientes({ data }: ClientesProps) {
-  if (!data) return null;
+export function Clientes({ endpoint = "", data: dataProp }: ClientesProps) {
+    const { data: fetched } = useApi<SectionContent>(dataProp ? "" : endpoint);
+    const data = dataProp ?? fetched;
+    if (!data) return null;
 
-  return <CompanysSection data={data} />;
+    return <CompanysSection data={data} />;
 }

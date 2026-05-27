@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "janus-sdk": "file:../janus-sdk",
     "@gsap/react": "^2.1.2",
     "@iconify/icons-ph": "^1.2.5",
     "@iconify/react": "^6.0.2",

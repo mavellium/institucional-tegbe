@@ -20,12 +20,16 @@
       "href": "/marketing"
     },
     {
-      "name": "Cursos",
-      "href": "/cursos"
+      "name": "Formações",
+      "href": "/formacoes"
     },
     {
       "name": "Sobre",
       "href": "/sobre"
+    },
+    {
+      "name": "Blog",
+      "href": "/blog"
     }
   ],
   "variants": {

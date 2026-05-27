@@ -11,6 +11,7 @@ import { RichTextItem } from "@/types/richText.type";
 import { IButton } from "@/interface/button/IButton";
 import { Button } from "@/components/ui/button/button";
 import Link from "next/link";
+import { useApi } from "@/hooks/useApi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,41 +22,43 @@ export interface LocalizacaoItem {
   title: RichTextItem[];
   description: RichTextItem[];
 
-  button?: IButton;
+  button?: IButton
 }
 
-export default function Localizacao({ data }: { data: LocalizacaoItem[] | null }) {
+export default function Localizacao({ data: dataProp }: { data?: LocalizacaoItem[] }) {
+
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const { data: fetched } = useApi<LocalizacaoItem[]>(dataProp ? "" : "localizacao");
+  const data = dataProp ?? fetched;
 
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-        },
-      });
+  useGSAP(() => {
 
-      tl.from(".loc-right", {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 75%"
+      }
+    });
+
+    tl.from(".loc-right", {
+      y: 40,
+      opacity: 0,
+      duration: 0.9,
+      ease: "power3.out"
+    });
+
+    tl.from(
+      ".loc-left",
+      {
         y: 40,
         opacity: 0,
         duration: 0.9,
-        ease: "power3.out",
-      });
+        ease: "power3.out"
+      },
+      "-=0.6"
+    );
 
-      tl.from(
-        ".loc-left",
-        {
-          y: 40,
-          opacity: 0,
-          duration: 0.9,
-          ease: "power3.out",
-        },
-        "-=0.6"
-      );
-    },
-    { scope: sectionRef }
-  );
+  }, { scope: sectionRef });
 
   if (!data || data.length === 0) return null;
 
@@ -63,20 +66,24 @@ export default function Localizacao({ data }: { data: LocalizacaoItem[] | null }
   const images = data.map((item) => item.image).filter(Boolean);
 
   return (
+
     <section
       ref={sectionRef}
       className="relative bg-black py-20 lg:py-36 overflow-hidden selection:bg-[#C5A47E]/30"
     >
+
       <div className="max-w-7xl mx-auto px-6">
+
         <div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-24">
+
           {/* TEXTO */}
 
           <div className="loc-left w-full lg:w-1/2 space-y-8 text-center lg:text-left max-w-xl mx-auto lg:mx-0">
+
             <Heading
-              align="center"
               as="h2"
               size="lg"
-              className="md:text-left max-w-[720px]"
+              className="max-w-[720px]"
               color="#FFFFFF"
               font="regular"
             >
@@ -84,7 +91,9 @@ export default function Localizacao({ data }: { data: LocalizacaoItem[] | null }
             </Heading>
 
             <div className="text-white/80 text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
+
               <RichText content={main.description} />
+
             </div>
 
             <div className="border-t border-white/10 flex items-center justify-center lg:justify-start w-24 mx-auto lg:mx-0" />
@@ -98,13 +107,23 @@ export default function Localizacao({ data }: { data: LocalizacaoItem[] | null }
                 </Button>
               )}
             </div>
+
           </div>
 
           <div className="loc-right w-full lg:w-1/2 mb-6 lg:mb-0">
-            <FotoCarrossel images={images} alt={main.alt} />
+
+            <FotoCarrossel
+              images={images}
+              alt={main.alt}
+            />
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
   );
 }

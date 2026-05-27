@@ -5,13 +5,14 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import SocialLink from "@/components/ui/socialLink";
+import footerDefault from "@/json/Footer/config.json";
 
-export type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'cursos';
+export type FooterVariant = 'ecommerce' | 'marketing' | 'sobre' | 'formacoes';
 
 interface FooterProps {
   variant?: FooterVariant;
   // Opcional: permitir passar os dados via props para evitar loading states no client
-  initialData?: any; 
+  initialData?: any;
 }
 
 // Mapa de gradientes para cada variante (botão voltar ao topo)
@@ -19,25 +20,11 @@ const buttonGradientMap: Record<FooterVariant, string> = {
   ecommerce: 'from-[#FFCC00] to-[#a18208]',
   marketing: 'from-[#d9415f] to-[#9e2e44]', // vermelho marketing
   sobre: 'from-[#FFCC00] to-[#a18208]',
-  cursos: 'from-[#FFCC00] to-[#a18208]',
+  formacoes: 'from-[#FFCC00] to-[#a18208]',
 };
 
 export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
-  const [footerConfig, setFooterConfig] = useState<any>(initialData);
-  const [loading, setLoading] = useState(!initialData);
-
-  // 1. Otimização de Busca (Client-side fallback)
-  useEffect(() => {
-    if (!initialData) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/footer`)
-        .then((res) => res.json())
-        .then((data) => {
-          setFooterConfig(data);
-          setLoading(false);
-        })
-        .catch((err) => console.error("Erro ao carregar footer:", err));
-    }
-  }, [initialData]);
+  const [footerConfig] = useState<any>(initialData ?? footerDefault);
 
   // 2. Smooth Scroll Otimizado (Event delegation)
   useEffect(() => {
@@ -60,22 +47,16 @@ export function Footer({ variant = 'ecommerce', initialData }: FooterProps) {
 
   // 3. Memoização de Estilos e Conteúdo
   const theme = useMemo(() => {
-    if (!footerConfig) return null;
     return footerConfig.variants[variant] || footerConfig.variants.ecommerce;
   }, [footerConfig, variant]);
 
   const content = useMemo(() => {
-    if (!footerConfig) return null;
     return footerConfig.content[variant] || footerConfig.content.ecommerce;
   }, [footerConfig, variant]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  if (loading || !footerConfig || !theme || !content) {
-    return <div className="w-full h-20 bg-[#020202]" />; // Placeholder simples
-  }
 
   // Gradiente do botão baseado na variant
   const buttonGradient = buttonGradientMap[variant] || buttonGradientMap.ecommerce;

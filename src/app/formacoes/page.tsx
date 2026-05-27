@@ -1,63 +1,27 @@
-import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
-import { getSafeData } from "@/core/api/getSafeData";
 import HomeFormacoes from "@/components/sections/HomeFormacoes";
+import PorqueAprender from "@/components/sections/PorqueAprender";
+import Formacoes from "@/components/sections/ListaFormacoes";
+import CasesCarousel from "@/components/sections/CarrosselCases";
+import GaleriaFotos from "@/components/sections/GaleriaFotos";
+import Expertise from "@/components/sections/Expertise";
+import ComparacaoConcorrentes from "@/components/sections/ComparacaoConcorrentes";
+import Faq from "@/components/sections/Faq";
+import Localizacao2 from "@/components/sections/LocalizacaoCursos";
+import Preco from "@/components/sections/Preco";
+import Meta from "@/components/sections/Meta";
+import Video from "@/components/sections/VideoAdaptivo";
+import { getJanusContent } from "@/lib/api";
 
-// Seções below-the-fold — lazy loaded para otimizar FCP
-const PorqueAprender = dynamic(() => import("@/components/sections/PorqueAprender"), {});
-const Video = dynamic(() => import("@/components/sections/VideoAdaptivo"), {});
-const Meta = dynamic(() => import("@/components/sections/Meta"), {});
-const Formacoes = dynamic(() => import("@/components/sections/ListaFormacoes"), {});
-const CasesCarousel = dynamic(() => import("@/components/sections/CarrosselCases"), {});
-const GaleriaFotos = dynamic(() => import("@/components/sections/GaleriaFotos"), {});
-const Expertise = dynamic(() => import("@/components/sections/Expertise"), {});
-const Localizacao2 = dynamic(() => import("@/components/sections/LocalizacaoCursos"), {});
-const ComparacaoConcorrentes = dynamic(
-  () => import("@/components/sections/ComparacaoConcorrentes"),
-  {}
-);
-const Preco = dynamic(() => import("@/components/sections/Preco"), {});
-const Faq = dynamic(() => import("@/components/sections/Faq"), {});
+export const revalidate = 60;
 
 export default async function FormacoesPage() {
-  const [
-    homeFormacoesData,
-    porqueAprenderData,
-    videoData,
-    metaData,
-    formacoesData,
-    casesData,
-    galeriaData,
-    expertiseData,
-    localizacaoData,
-    comparacaoData,
-    precoData,
-    faqData,
-  ] = await Promise.all([
-    getSafeData("headline-formacoes"),
-    getSafeData("porque-aprender"),
-    getSafeData("video-formacoes"),
-    getSafeData("meta-alunos"),
-    getSafeData("formacoes"),
-    getSafeData("cases-alunos"),
-    getSafeData("galeria-formacoes"),
-    getSafeData("porque-fazer-o-curso"),
-    getSafeData("localizacoes"),
-    getSafeData("comparacao"),
-    getSafeData("preco-formacoes"),
-    getSafeData("faq-formacoes"),
-  ]);
-
-  // Preload da imagem LCP (background do hero formações)
-  const lcpImageUrl = (homeFormacoesData as any)?.image?.src;
+  const formacoesContent = await getJanusContent("formacoes");
 
   return (
     <>
-      {lcpImageUrl && (
-        <link rel="preload" as="image" href={lcpImageUrl} imageSizes="100vw" fetchPriority="high" />
-      )}
       <Schema
         data={{
           "@context": "https://schema.org",
@@ -109,10 +73,10 @@ export default async function FormacoesPage() {
 
       <Header />
       <main>
-        <HomeFormacoes data={homeFormacoesData as any} />
-        <PorqueAprender data={porqueAprenderData as any} />
+        <HomeFormacoes data={(formacoesContent["headline-formacoes"] ?? {}) as any} />
+        <PorqueAprender data={(formacoesContent["porque-aprender"] ?? {}) as any} />
         <Video
-          data={videoData as any}
+          data={(formacoesContent["video-formacoes"] ?? {}) as any}
           theme={{
             backgroundColor: "#020202",
             textColor: "#fff",
@@ -123,7 +87,7 @@ export default async function FormacoesPage() {
           }}
         />
         <Meta
-          data={metaData as any}
+          data={(formacoesContent["meta-alunos"] ?? {}) as any}
           type="Meta de Formações"
           theme={{
             background: "#0a0a0a",
@@ -131,16 +95,16 @@ export default async function FormacoesPage() {
             text: "#fafafa",
           }}
         />
-        <Formacoes data={formacoesData as any} />
-        <CasesCarousel data={casesData as any} />
-        <GaleriaFotos data={galeriaData as any} />
-        <Expertise data={expertiseData as any} />
-        <Localizacao2 data={localizacaoData as any} />
-        <ComparacaoConcorrentes data={comparacaoData as any} />
-        <Preco data={precoData as any} />
-        <Faq data={faqData as any} />
+        <Formacoes />
+        <CasesCarousel data={(formacoesContent["cases-alunos"] ?? {}) as any} />
+        <GaleriaFotos data={(formacoesContent["galeria-formacoes"] ?? {}) as any} />
+        <Expertise data={(formacoesContent["porque-fazer-o-curso"] ?? {}) as any} />
+        <Localizacao2 data={(formacoesContent["localizacoes"] ?? {}) as any} />
+        <ComparacaoConcorrentes data={(formacoesContent["comparacao"] ?? {}) as any} />
+        <Preco data={(formacoesContent["preco-formacoes"] ?? {}) as any} />
+        <Faq data={(formacoesContent["faq-formacoes"] ?? {}) as any} />
       </main>
-      <Footer variant="cursos" />
+      <Footer variant="formacoes" />
     </>
   );
 }

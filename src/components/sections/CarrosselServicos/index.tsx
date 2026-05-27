@@ -7,15 +7,18 @@ import { RichTextItem } from "@/types/richText.type";
 import RichText from "@/components/ui/rich/richText";
 import ServiceCard from "@/components/ui/serviceCard";
 import { ServiceA, ServiceTheme } from "@/types/service.type";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 import Textura from "@/components/ui/textura";
+import { useApi } from "@/hooks/useApi";
 import { IButton } from "@/interface/button/IButton";
 
 export interface ServiceProps {
-  data: IService | null;
+  endpoint?: string;
+  data?: IService;
   backgroundColor?: string;
   backgroundImage?: string;
+
   showTexture?: boolean;
   textureOpacity?: number;
   textureSrc?: string;
@@ -29,35 +32,40 @@ interface IService {
     colorTitle?: string;
   };
   services: ServiceA[];
-  button?: IButton;
+  button?: IButton
 }
 
+
 export default function Carrossel({
-  data,
+  endpoint = "",
+  data: dataProp,
   backgroundColor,
   backgroundImage,
   showTexture,
   textureOpacity = 0.08,
-  textureSrc,
+  textureSrc
 }: ServiceProps) {
+  const { data: fetched } = useApi<IService>(dataProp ? "" : endpoint);
+  const data = dataProp ?? fetched;
   if (!data) return null;
   const { header, services, button } = data;
+  if (!header || !services) return null;
   const shouldCenter = services.length <= 3;
   const theme: ServiceTheme = {
     badge: {
-      background: "bg-gray-100",
-    },
+      background: "bg-gray-100"
+    }
   };
 
   return (
     <section
-      // 1. Padding vertical dinâmico (menor no mobile, maior no desktop)
-      className="py-16 md:py-24 relative overflow-hidden"
+      className="py-24 relative overflow-hidden"
       style={{
         backgroundColor: backgroundColor || undefined,
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
+
       }}
     >
       {/* TEXTURA */}
@@ -71,57 +79,45 @@ export default function Carrossel({
       )}
 
       {/* HEADER */}
-      {/* Ajustei as margens laterais para não encostar nas bordas no mobile */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center mb-10 md:mb-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center mb-16">
         {header.preTitle && (
-          <p className="text-sm md:text-base font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          <p className="text-sm font-medium text-muted-foreground mb-4">
             {header.preTitle}
           </p>
         )}
 
         {header.title && (
-          <Heading
-            align="center"
-            as="h2"
-            // Removido o md:text-left para manter alinhado com o container
-            className="mb-4"
-            color={header.colorTitle ? header.colorTitle : "#0a0a0a"}
-          >
+          <Heading as="h2" className="mb-4" color={header.colorTitle ? header.colorTitle : "#0a0a0a"}>
             <RichText content={header.title} />
           </Heading>
         )}
 
         {header.subtitle && (
-          <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             {header.subtitle}
           </p>
         )}
       </div>
 
       {/* CARROSSEL */}
-      {/* Largura máxima controlada para não espalhar demais em telas ultrawide */}
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 md:px-8">
+      <div className="relative z-10 w-full px-6 md:px-12 lg:px-32">
         <Swiper
-          // 2. Breakpoints mais detalhados para transições suaves
+          spaceBetween={24}
+          slidesPerView={1.2}
           breakpoints={{
-            320: { slidesPerView: 1.2, spaceBetween: 16 },
-            640: { slidesPerView: 2.2, spaceBetween: 20 },
-            768: { slidesPerView: 2.8, spaceBetween: 24 }, // Adicionado tablet
-            1024: { slidesPerView: 3.2, spaceBetween: 24 },
-            1280: { slidesPerView: 4, spaceBetween: 24 },
+            640: { slidesPerView: 2.3 },
+            1024: { slidesPerView: 3.5 },
+            1280: { slidesPerView: 4.2 },
           }}
-          className={`mySwiper !overflow-visible !pt-4 !pb-12 md:!pb-16 ${
-            shouldCenter ? "md:[&>.swiper-wrapper]:!justify-center" : ""
-          }`}
+          className={`mySwiper ${shouldCenter ? 'is-centered' : ''} !overflow-visible !pt-8 !pb-16 `}
         >
           {services.map((service) => (
-            // 3. Adicionado !flex para que os cards estiquem e fiquem com a mesma altura
-            <SwiperSlide key={service.id} className="h-auto !flex">
-              <div className="w-full h-full">
-                {" "}
-                {/* Garante o preenchimento interno */}
-                <ServiceCard service={service} theme={theme} variant="ecommerce" />
-              </div>
+            <SwiperSlide key={service.id} className="h-auto">
+              <ServiceCard
+                service={service}
+                theme={theme}
+                variant="ecommerce"
+              />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -129,10 +125,9 @@ export default function Carrossel({
 
       {/* CTA */}
       {button && button.action === "link" && (
-        <div className="relative z-10 flex justify-center mt-4 md:mt-8 px-4">
-          <Link href={button.link} target={button.target ?? "_self"} className="w-full sm:w-auto">
-            {/* O botão ocupará a largura total no mobile e o tamanho natural a partir do sm */}
-            <Button className="w-full sm:w-auto px-8 py-6 text-base bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]">
+        <div className="relative z-10 flex justify-center mt-12">
+          <Link href={button.link} target={button.target ?? "_self"}>
+            <Button>
               {button.label}
             </Button>
           </Link>

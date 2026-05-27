@@ -8,15 +8,17 @@ import HeroSlideImage from "@/components/ui/heroCarrossel/heroSlideImage";
 import HeroCarouselNavigation from "@/components/ui/heroCarrossel/heroCarrosselNavigation";
 import Textura from "@/components/ui/textura";
 import { HeroSlide } from "@/types/heroSlide.type";
+import { useApi } from "@/hooks/useApi";
 
 interface HeroCarrosselProps {
-  slides: HeroSlide[];
+  endpoint?: string;
+  data?: HeroSlide[];
+  type: string;
   loop?: boolean;
   autoplayDelay?: number;
   corFundo?: string;
-  corDestaque?: string; // Usada para a textura e texto
+  corDestaque?: string;
   textoFundo?: string;
-  // Cores do Gradiente da Navegação
   navGradienteFrom?: string;
   navGradienteTo?: string;
   navAccent?: string;
@@ -24,7 +26,9 @@ interface HeroCarrosselProps {
 }
 
 export default function HeroCarrossel({
-  slides,
+  endpoint = "",
+  data: dataProp,
+  type,
   loop = true,
   autoplayDelay = 6000,
   corFundo = "#0A0A0A",
@@ -33,11 +37,14 @@ export default function HeroCarrossel({
   navGradienteFrom = "#ff0400",
   navGradienteTo = "#f9396f",
   navAccent = "#f9265e",
-  corIcone = "white",
+  corIcone = "white"
 }: HeroCarrosselProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop }, [
-    Autoplay({ delay: autoplayDelay, stopOnInteraction: true }),
-  ]);
+  const { data: fetched } = useApi<HeroSlide[]>(dataProp ? "" : endpoint);
+  const slides = dataProp ?? fetched ?? [];
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop },
+    [Autoplay({ delay: autoplayDelay, stopOnInteraction: true })]
+  );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
@@ -73,37 +80,33 @@ export default function HeroCarrossel({
       {/* --- Carousel --- */}
       <div className="overflow-hidden relative z-10" ref={emblaRef}>
         <div className="flex touch-pan-y">
-          {slides.length > 0 ? (
-            slides.map((slide, index) => {
-              const isActive = index === selectedIndex;
-              return (
-                <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
-                  <div className="w-full pt-20 lg:pt-0 lg:pl-32 flex flex-col lg:flex-row items-center lg:gap-10 min-h-screen lg:h-screen">
-                    <div className="w-full lg:w-[42%] flex flex-col justify-center gap-4 text-center lg:text-left z-20 px-6 lg:px-0 py-10 lg:self-center">
-                      <HeroSlideContent
-                        slide={slide}
+          {slides.length > 0 ? slides.map((slide, index) => {
+            const isActive = index === selectedIndex;
+            return (
+              <div className="flex-[0_0_100%] min-w-0 relative" key={slide.id}>
+                <div className="w-full lg:w-full pt-22 lg:pt-24 lg:pl-32 flex flex-col lg:flex-row items-center justify-end lg:gap-24 min-h-[600px] h-[calc(100vh-120px)]">
+                  <div className="w-full lg:w-[40%] flex flex-col justify-center gap-4 text-center lg:text-left max-w-lg">
+                    <HeroSlideContent
+                      slide={slide}
+                      isActive={isActive}
+                      corDestaque={corDestaque} // Adicione esta linha
+                    />
+                  </div>
+                  {slide.image && (
+                    <div className="w-full lg:w-[60%] flex items-end h-full lg:pr-0">
+                      <HeroSlideImage
+                        image={slide.image}
+                        title={slide.title}
                         isActive={isActive}
-                        corDestaque={corDestaque}
+                        priority={index === 0}
                       />
                     </div>
-                    {slide.image && (
-                      <div className="w-full lg:flex-1 flex items-end h-[62vw] max-h-[400px] lg:max-h-none lg:h-full">
-                        <HeroSlideImage
-                          image={slide.image}
-                          title={slide.title}
-                          isActive={isActive}
-                          priority={index === 0}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
-              );
-            })
-          ) : (
-            <div className="flex justify-center w-full py-40 text-gray-500">
-              Nenhum slide disponível
-            </div>
+              </div>
+            );
+          }) : (
+            <div className="flex justify-center w-full py-40 text-gray-500">Nenhum slide disponível</div>
           )}
         </div>
       </div>

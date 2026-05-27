@@ -7,7 +7,8 @@ export interface LogosApiData {
 
 export interface LogosProps {
   variant?: 'default' | 'cursos' | 'marketing';
-  endpoint: string
+  endpoint?: string;
+  data?: LogosApiData;
 }
 
 export const VARIANT_CONFIGS = {

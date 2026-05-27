@@ -7,6 +7,7 @@ import RichText from "@/components/ui/rich/richText";
 import { Button } from "@/components/ui/button/button";
 import Link from "next/link";
 import { IButton } from "@/interface/button/IButton";
+import { useApi } from "@/hooks/useApi";
 import { RichTextItem } from "@/types/richText.type";
 import { IImage } from "@/interface/imagem/IImage";
 
@@ -19,7 +20,7 @@ interface HeroData {
   tag?: string;
   title: RichTextItem[];
   description: RichTextItem[];
-  button?: IButton;
+  button?: IButton
 }
 
 interface SocialData {
@@ -34,14 +35,23 @@ interface SideBySideSectionData {
   imagem: IImage;
 }
 
-export interface SideBySideSectionProps {
-  data: SideBySideSectionData | null;
+interface SideBySideSectionProps {
+  type?: string;
+  endpoint?: string;
+  data?: SideBySideSectionData;
 }
 
-export function SideBySideSection({ data }: SideBySideSectionProps) {
-  const content = data;
+export function SideBySideSection({
+  endpoint = "",
+  data: dataProp,
+}: SideBySideSectionProps) {
+
+  const { data: fetched } = useApi<SideBySideSectionData>(dataProp ? "" : endpoint);
+
+  const content = dataProp ?? fetched;
 
   if (!content) return null;
+
 
   const { hero, social, imagem } = content;
 
@@ -50,21 +60,20 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
   return (
     <section className="bg-[#F7F6F3] py-16 lg:py-24">
       <div className="max-w-6xl mx-auto px-6">
+
         {/* HERO */}
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+
           <div className="space-y-7 lg:space-y-6 text-center lg:text-left max-w-xl mx-auto lg:mx-0 order-2 lg:order-1">
+
             {hero.tag && (
               <span className="flex justify-center lg:justify-start text-[18px] font-medium text-[#0a0a0a]">
                 {hero.tag}
               </span>
             )}
 
-            <Heading
-              as="h2"
-              size="lg"
-              className="flex justify-center lg:justify-start animate-up max-w-[720px]"
-            >
+            <Heading as="h2" size="lg" className="flex justify-center lg:justify-start animate-up max-w-[720px]">
               <RichText content={hero.title} />
             </Heading>
 
@@ -73,16 +82,13 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
             </div>
 
             {hero.button?.action === "link" && (
-              <Button
-                asChild
-                variant={hero.button.variant}
-                className="bg-green-500 text-neutral-950 hover:bg-green-400 shadow-[0_8px_30px_rgba(34,197,94,0.25)] hover:shadow-[0_15px_40px_rgba(34,197,94,0.35)]"
-              >
+              <Button asChild variant={hero.button.variant}>
                 <Link href={hero.button.link} target={hero.button.target}>
                   {hero.button.label}
                 </Link>
               </Button>
             )}
+
           </div>
 
           {hasImage && (
@@ -96,6 +102,7 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
               />
             </div>
           )}
+
         </div>
 
         <div className="my-16 border-t border-black/10" />
@@ -103,22 +110,42 @@ export function SideBySideSection({ data }: SideBySideSectionProps) {
         {/* SOCIAL */}
 
         <div className="flex flex-col items-center text-center md:flex-row md:items-center md:justify-between md:text-left gap-6 md:gap-8">
+
           <div className="space-y-2">
-            {social.tag && <span className="text-[16px] text-[#0a0a0a]">{social.tag}</span>}
+
+            {social.tag && (
+              <span className="text-[16px] text-[#0a0a0a]">
+                {social.tag}
+              </span>
+            )}
 
             <Heading as="h3" size="md">
               <RichText content={social.title} />
             </Heading>
+
           </div>
 
           {social.items?.length > 0 && (
+
             <div className="flex gap-4 sm:gap-5 justify-center md:justify-start">
+
               {social.items.map((item, index) => (
-                <SocialLink key={index} icon={item.icon} href={item.link} variant="dark" />
+
+                <SocialLink
+                  key={index}
+                  icon={item.icon}
+                  href={item.link}
+                  variant="dark"
+                />
+
               ))}
+
             </div>
+
           )}
+
         </div>
+
       </div>
     </section>
   );

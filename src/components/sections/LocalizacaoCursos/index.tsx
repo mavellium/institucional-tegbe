@@ -13,8 +13,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
-import { sanitizeFormHtml } from "@/core/security";
 
+import { useApi } from "@/hooks/useApi";
 import Heading from "@/components/ui/heading";
 import Paragrafo from "@/components/ui/paragrafo";
 import { IButton } from "@/interface/button/IButton";
@@ -43,12 +43,14 @@ interface LocationsConfig {
   button: IButton;
 }
 
-export default function LocationsSection({ data }: { data: LocationsConfig | null }) {
-  const [activeLoc, setActiveLoc] = useState<Location | null>(data?.locations[0] ?? null);
+export default function LocationsSection({ data: dataProp }: { data?: LocationsConfig }) {
+  const { data: fetched, loading } = useApi<LocationsConfig>(dataProp ? "" : "localizacoes");
+  const data = dataProp ?? fetched;
+
+  const [activeLoc, setActiveLoc] = useState<Location | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // sync activeLoc when data arrives
-
+  // sync activeLoc
   useEffect(() => {
     if (data && !activeLoc) {
       setActiveLoc(data.locations[0]);
@@ -62,7 +64,7 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
     }
   };
 
-  if (!data || !activeLoc) {
+  if (loading || !data || !activeLoc) {
     return (
       <div className="h-[700px] bg-[#020202] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -75,10 +77,12 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
   return (
     <>
       <section className="relative py-24 bg-[#050505] overflow-hidden font-sans border-t border-white/5">
+
         {/* BG */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
+
           {/* HEADER */}
           <div className="flex flex-col items-center text-center mb-20">
             <motion.div
@@ -86,7 +90,10 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
               whileInView={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl mb-6"
             >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: accent }}
+              />
               <span className="text-[10px] tracking-[0.2em] text-white/70 uppercase">
                 {data.header.badge}
               </span>
@@ -103,8 +110,10 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
 
           {/* GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-white/[0.02] rounded-[2.5rem] border border-white/10 overflow-hidden backdrop-blur-2xl shadow-2xl">
+
             {/* SIDEBAR */}
             <div className="lg:col-span-4 flex flex-col border-r border-white/10 bg-black/20">
+
               <div className="p-6 border-b border-white/5">
                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
                   Unidades Operacionais
@@ -116,14 +125,19 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
                   <button
                     key={loc.id}
                     onClick={() => setActiveLoc(loc)}
-                    className={`relative p-8 text-left transition-all duration-500 ${
-                      activeLoc.id === loc.id ? "bg-white/[0.05]" : "hover:bg-white/[0.02]"
-                    }`}
+                    className={`relative p-8 text-left transition-all duration-500 ${activeLoc.id === loc.id
+                      ? "bg-white/[0.05]"
+                      : "hover:bg-white/[0.02]"
+                      }`}
                   >
                     <Heading
                       size="sm"
                       color="#FFF"
-                      className={activeLoc.id === loc.id ? "text-white" : "text-gray-500"}
+                      className={
+                        activeLoc.id === loc.id
+                          ? "text-white"
+                          : "text-gray-500"
+                      }
                     >
                       {loc.city}
                     </Heading>
@@ -168,7 +182,7 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
                     speed={1000}
                     autoplay={{ delay: 5000, disableOnInteraction: false }}
                     pagination={{ clickable: true }}
-                    navigation={{ nextEl: ".s-next", prevEl: ".s-prev" }}
+                    navigation={{ nextEl: '.s-next', prevEl: '.s-prev' }}
                     className="h-full w-full location-swiper"
                   >
                     {activeLoc.images.map((img, i) => (
@@ -200,26 +214,28 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
               </AnimatePresence>
             </div>
             <style jsx global>{`
-              .location-swiper .swiper-pagination-bullet {
-                background: white !important;
-                opacity: 0.2;
-                width: 8px;
-                height: 8px;
-              }
-              .location-swiper .swiper-pagination-bullet-active {
-                opacity: 1;
-                width: 24px;
-                border-radius: 4px;
-                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-              }
-              .location-swiper .swiper-pagination {
-                bottom: 32px !important;
-                left: 32px !important;
-                text-align: left !important;
-                width: auto !important;
-              }
-            `}</style>
+          .location-swiper .swiper-pagination-bullet {
+              background: white !important;
+              opacity: 0.2;
+              width: 8px;
+              height: 8px;
+          }
+          .location-swiper .swiper-pagination-bullet-active {
+              opacity: 1;
+              width: 24px;
+              border-radius: 4px;
+              transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+          .location-swiper .swiper-pagination {
+              bottom: 32px !important;
+              left: 32px !important;
+              text-align: left !important;
+              width: auto !important;
+          }
+        `}</style>
           </div>
+
+
 
           {/* CTA (SEU DESIGN ORIGINAL, SÓ TROCOU ESTRUTURA) */}
           <div className="mt-20 text-center">
@@ -229,7 +245,9 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
                 className="inline-flex items-center gap-6 px-12 py-6 rounded-full bg-white text-black font-bold uppercase text-[10px] tracking-[0.2em] hover:scale-105 hover:bg-gray-100 transition-all active:scale-95 shadow-2xl shadow-white/5"
               >
                 {data.button.label}
-                {data.button.icon && <Icon icon={data.button.icon} className="w-4 h-4" />}
+                {data.button.icon && (
+                  <Icon icon={data.button.icon} className="w-4 h-4" />
+                )}
               </button>
             ) : (
               <Link
@@ -238,7 +256,9 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
                 className="inline-flex items-center gap-6 px-12 py-6 rounded-full bg-white text-black font-bold uppercase text-[10px] tracking-[0.2em] hover:scale-105 hover:bg-gray-100 transition-all active:scale-95 shadow-2xl shadow-white/5"
               >
                 {data.button.label}
-                {data.button.icon && <Icon icon={data.button.icon} className="w-4 h-4" />}
+                {data.button.icon && (
+                  <Icon icon={data.button.icon} className="w-4 h-4" />
+                )}
               </Link>
             )}
           </div>
@@ -260,7 +280,7 @@ export default function LocationsSection({ data }: { data: LocationsConfig | nul
                 >
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: sanitizeFormHtml(data.button.form_html),
+                      __html: data.button.form_html,
                     }}
                   />
                 </motion.div>
