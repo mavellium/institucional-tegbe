@@ -1,0 +1,94 @@
+{
+  "general": {
+    "logo": "/logo-tegbe-header.svg",
+    "socials": {
+      "instagram": "https://www.instagram.com/agenciategbe",
+      "linkedin": "https://www.linkedin.com/company/tegbe/",
+      "youtube": "https://www.youtube.com/@agenciategbe"
+    },
+    "phone": "(14) 98828-1001",
+    "whatsappLink": "https://api.whatsapp.com/send?phone=5514988281001",
+    "address": "R. Santos Dumont, 133\nFerrarópolis, Garça/SP",
+    "cnpj": "51.960.432/0001-03"
+  },
+  "variants": {
+    "ecommerce": {
+      "topBorder": "border-yellow-500/10",
+      "glowAmbient": "bg-yellow-500/5",
+      "hoverText": "group-hover:text-[#FFCC00]",
+      "borderHover": "hover:border-yellow-500/30",
+      "iconBg": "bg-yellow-500/5",
+      "iconHoverBg": "hover:bg-yellow-500/10",
+      "iconHoverText": "hover:text-[#FFCC00]",
+      "decoration": "decoration-[#FFCC00]",
+      "bgHover": "group-hover:bg-[#FFCC00]"
+    },
+    "marketing": {
+      "topBorder": "border-rose-500/10",
+      "glowAmbient": "bg-rose-500/5",
+      "hoverText": "group-hover:text-[#E31B63]",
+      "borderHover": "hover:border-rose-500/30",
+      "iconBg": "bg-rose-500/5",
+      "iconHoverBg": "hover:bg-rose-500/10",
+      "iconHoverText": "hover:text-[#E31B63]",
+      "decoration": "decoration-[#E31B63]",
+      "bgHover": "group-hover:bg-[#E31B63]"
+    },
+    "sobre": {
+      "topBorder": "border-yellow-500/10",
+      "glowAmbient": "bg-yellow-500/5",
+      "hoverText": "group-hover:text-[#FFCC00]",
+      "borderHover": "hover:border-yellow-500/30",
+      "iconBg": "bg-yellow-500/5",
+      "iconHoverBg": "hover:bg-yellow-500/10",
+      "iconHoverText": "hover:text-[#FFCC00]",
+      "decoration": "decoration-[#FFCC00]",
+      "bgHover": "group-hover:bg-[#FFCC00]"
+    },
+    "formacoes": {
+      "topBorder": "border-yellow-500/10",
+      "glowAmbient": "bg-yellow-500/5",
+      "hoverText": "group-hover:text-[#FFCC00]",
+      "borderHover": "hover:border-yellow-500/30",
+      "iconBg": "bg-yellow-500/5",
+      "iconHoverBg": "hover:bg-yellow-500/10",
+      "iconHoverText": "hover:text-[#FFCC00]",
+      "decoration": "decoration-[#FFCC00]",
+      "bgHover": "group-hover:bg-[#FFCC00]"
+    }
+  },
+  "content": {
+    "ecommerce": {
+      "desc": "Consultoria Oficial Mercado Livre e Shopee focada em gestão operacional e escala de vendas.",
+      "columnTitle": "E-commerce",
+      "links": ["Gestão de Marketplace", "Tráfego Pago", "Full Commerce", "CRM & Retenção"],
+      "email": "contato@tegbe.com.br"
+    },
+    "marketing": {
+      "desc": "Estratégias de performance digital com foco em dados, conversão e crescimento sustentável.",
+      "columnTitle": "Marketing",
+      "links": ["Tráfego Pago", "Social Media", "E-mail Marketing", "Analytics"],
+      "email": "contato@tegbe.com.br"
+    },
+    "sobre": {
+      "desc": "Conheça a equipe e a missão por trás da Tegbe, agência especializada em e-commerce e performance.",
+      "columnTitle": "Sobre",
+      "links": ["Nossa História", "Time", "Valores", "Parceiros"],
+      "email": "contato@tegbe.com.br"
+    },
+    "formacoes": {
+      "desc": "Formações práticas para quem quer dominar o e-commerce e marketing digital com especialistas reais.",
+      "columnTitle": "Formações",
+      "links": ["Marketplaces", "Tráfego Pago", "E-commerce Avançado", "Mentoria"],
+      "email": "cursos@tegbe.com.br"
+    }
+  },
+  "navigation": [
+    { "name": "Home", "href": "/" },
+    { "name": "E-commerce", "href": "/ecommerce" },
+    { "name": "Marketing", "href": "/marketing" },
+    { "name": "Formações", "href": "/formacoes" },
+    { "name": "Sobre", "href": "/sobre" },
+    { "name": "Blog", "href": "/blog" }
+  ]
+}

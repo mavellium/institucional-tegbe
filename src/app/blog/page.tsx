@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import { fetchBlogPosts, fetchBlogCategories, fetchBlogTags } from "@/features/blog/services";
-import { fetchCms } from "@/core/api/client";
+import { getJanusContent } from "@/lib/api";
 import BlogHero from "@/features/blog/components/BlogHero";
 import type { IBlogHero } from "@/interface/blog/IBlogHero";
 import BlogFilters from "@/features/blog/components/BlogFilters";
@@ -35,12 +35,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const categoryIds = categories ? categories.split(",").filter(Boolean) : [];
   const tagIds = tags ? tags.split(",").filter(Boolean) : [];
 
-  const [postsResult, categoriesData, tagsData, heroResult] = await Promise.all([
+  const [postsResult, categoriesData, tagsData, blogContent] = await Promise.all([
     // Busca todos os posts publicados — filtragem feita client-side para suportar múltiplos filtros
     fetchBlogPosts({ limit: "100", status: "PUBLISHED" }),
     fetchBlogCategories(),
     fetchBlogTags(),
-    fetchCms<IBlogHero>("json/blog-hero", { revalidate: 60 }),
+    getJanusContent("blog"),
   ]);
 
   // Filtragem client-side (server-side no Next, mas sem depender da API para multi-filtro)
@@ -94,7 +94,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <Schema data={jsonLd} />
       <Header />
       <main className="min-h-screen bg-[#f6f6f6]">
-        <BlogHero data={heroResult.data} />
+        <BlogHero data={blogContent["blog-hero"] as IBlogHero | undefined} />
         <Suspense fallback={null}>
           <BlogFilters
             categories={categoriesData}

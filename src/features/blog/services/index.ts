@@ -1,64 +1,38 @@
-import { fetchCms } from "@/core/api/client";
+import { janus } from "@/lib/janus";
+import type { Post } from "janus-sdk";
 import type { IBlogPost } from "@/interface/blog/IBlogPost";
 import type { IBlogCategory } from "@/interface/blog/IBlogCategory";
 import type { IBlogTag } from "@/interface/blog/IBlogTag";
-import type {
-  IBlogPaginatedResponse,
-  IBlogPaginationMeta,
-} from "@/interface/blog/IBlogPaginatedResponse";
+import type { IBlogPaginatedResponse, IBlogPaginationMeta } from "@/interface/blog/IBlogPaginatedResponse";
 
-// Revalida o blog com mais frequência para novos posts aparecerem logo
-const BLOG_REVALIDATE = 60;
-
-// --- Shapes brutas retornadas pela API ---
-
-interface RawTag {
-  tag: IBlogTag;
-}
-
-interface RawBlogPost extends Omit<IBlogPost, "tags"> {
-  tags: RawTag[];
-}
-
-// --- Mappers defensivos (suportam variações na shape da resposta) ---
-
-function mapPost(raw: RawBlogPost): IBlogPost {
+function mapPost(post: Post): IBlogPost {
   return {
-    ...raw,
-    tags: raw.tags?.map((t) => (t.tag ? t.tag : (t as unknown as IBlogTag))) ?? [],
+    id: post.slug,
+    slug: post.slug,
+    title: post.title,
+    subtitle: post.subtitle ?? "",
+    image: post.coverImage ?? "",
+    excerpt: post.description ?? post.subtitle ?? "",
+    body: post.htmlBody ?? "",
+    status: "PUBLISHED",
+    featured: false,
+    readingTime: post.readingTimeMinutes ?? 0,
+    authorName: post.author?.name ?? "",
+    author: { id: "", name: post.author?.name ?? "" },
+    seoTitle: post.title,
+    seoDescription: post.description ?? "",
+    seoKeywords: post.tags?.map((t) => t.name).join(", ") ?? "",
+    category: post.category ?? { id: "", name: "", slug: "" },
+    tags: post.tags?.map((t) => ({ id: t.slug, name: t.name, slug: t.slug })) ?? [],
+    publishedAt: post.publishedAt ?? "",
+    createdAt: post.publishedAt ?? "",
+    updatedAt: post.publishedAt ?? "",
   };
 }
 
 const emptyMeta: IBlogPaginationMeta = {
-  total: 0,
-  page: 1,
-  limit: 12,
-  totalPages: 1,
-  hasNext: false,
-  hasPrev: false,
+  total: 0, page: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false,
 };
-
-function mapListResponse(raw: unknown): IBlogPaginatedResponse {
-  if (!raw || typeof raw !== "object") return { data: [], meta: emptyMeta };
-  const r = raw as Record<string, unknown>;
-
-  // A API retorna { posts: [], pagination: {} }
-  // Mas suporta também { data: [], meta: {} } para robustez
-  const posts = Array.isArray(r.posts)
-    ? (r.posts as RawBlogPost[])
-    : Array.isArray(r.data)
-      ? (r.data as RawBlogPost[])
-      : [];
-
-  const pag = (r.pagination ?? r.meta ?? {}) as Partial<IBlogPaginationMeta>;
-
-  return {
-    data: posts.map(mapPost),
-    meta: { ...emptyMeta, ...pag },
-  };
-}
-
-// --- API pública do serviço ---
 
 export interface BlogPostsParams {
   page?: string;
@@ -69,60 +43,54 @@ export interface BlogPostsParams {
   featured?: string;
 }
 
-export async function fetchBlogPosts(
-  params: BlogPostsParams = {}
-): Promise<IBlogPaginatedResponse | null> {
-  const clean: Record<string, string> = {};
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== "") clean[k] = v;
+export async function fetchBlogPosts(params: BlogPostsParams = {}): Promise<IBlogPaginatedResponse | null> {
+  try {
+    const posts = await janus.getPosts({
+      limit: params.limit ? Number(params.limit) : 50,
+      categoryId: params.categoryId,
+    });
+    const mapped = posts.map(mapPost);
+    return {
+      data: mapped,
+      meta: { ...emptyMeta, total: mapped.length, totalPages: Math.max(1, Math.ceil(mapped.length / 12)) },
+    };
+  } catch {
+    return null;
   }
-  const { data } = await fetchCms<unknown>("blog/posts", {
-    params: clean,
-    revalidate: BLOG_REVALIDATE,
-  });
-  if (!data) return null;
-  return mapListResponse(data);
 }
 
 export async function fetchBlogPost(slug: string): Promise<IBlogPost | null> {
-  // Tentativa 1: lookup direto pelo slug/id na URL
-  const { data: direct } = await fetchCms<unknown>(`blog/posts/${slug}`, {
-    revalidate: BLOG_REVALIDATE,
-  });
-
-  if (direct && typeof direct === "object" && "id" in direct) {
-    // Pode vir como { post: {...} } ou diretamente como o objeto
-    const r = direct as Record<string, unknown>;
-    const raw = (r.post ?? r.data ?? direct) as RawBlogPost;
-    return mapPost(raw);
+  try {
+    const post = await janus.getPost(slug);
+    return post ? mapPost(post) : null;
+  } catch {
+    return null;
   }
-
-  // Tentativa 2 (fallback): a API usa [id] UUID, não slug
-  // Busca na listagem completa e encontra pelo slug
-  const list = await fetchBlogPosts({ limit: "50", status: "PUBLISHED" });
-  return list?.data?.find((p) => p.slug === slug) ?? null;
 }
 
 export async function fetchBlogCategories(): Promise<IBlogCategory[]> {
-  const { data } = await fetchCms<IBlogCategory[]>("blog/categories", {
-    revalidate: BLOG_REVALIDATE,
-  });
-  return Array.isArray(data) ? data : [];
+  try {
+    const cats = await janus.getCategories();
+    return cats.map((c) => ({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? undefined }));
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchBlogTags(): Promise<IBlogTag[]> {
-  const { data } = await fetchCms<IBlogTag[]>("blog/tags", {
-    revalidate: BLOG_REVALIDATE,
-  });
-  return Array.isArray(data) ? data : [];
+  try {
+    const tags = await janus.getTags();
+    return tags.map((t) => ({ id: t.id, name: t.name, slug: t.slug, description: t.description ?? undefined }));
+  } catch {
+    return [];
+  }
 }
 
-export async function fetchRelatedPosts(
-  currentSlug: string,
-  categoryId?: string
-): Promise<IBlogPost[]> {
-  const params: BlogPostsParams = { limit: "4", status: "PUBLISHED" };
-  if (categoryId) params.categoryId = categoryId;
-  const result = await fetchBlogPosts(params);
-  return (result?.data ?? []).filter((p) => p.slug !== currentSlug).slice(0, 3);
+export async function fetchRelatedPosts(currentSlug: string, categoryId?: string): Promise<IBlogPost[]> {
+  try {
+    const posts = await janus.getPosts({ limit: 4, categoryId });
+    return posts.filter((p) => p.slug !== currentSlug).slice(0, 3).map(mapPost);
+  } catch {
+    return [];
+  }
 }

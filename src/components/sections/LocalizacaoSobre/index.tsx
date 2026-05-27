@@ -60,7 +60,7 @@ export default function Localizacao({ data: dataProp }: { data?: LocalizacaoItem
 
   }, { scope: sectionRef });
 
-  if (!data || data.length === 0) return null;
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   const main = data[0];
   const images = data.map((item) => item.image).filter(Boolean);

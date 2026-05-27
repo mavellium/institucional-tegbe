@@ -1,4 +1,12 @@
 import { fetchCms } from "@/core/api/client";
+import { janus } from "@/lib/janus";
+import type { JanusContent } from "@/lib/janus";
+
+export async function getJanusContent(pageSlug: string): Promise<JanusContent> {
+  const page = await janus.getPage(pageSlug);
+  const schema = page?.schema as any;
+  return (schema?.content ?? page?.content ?? {}) as JanusContent;
+}
 
 interface ApiResponse {
   success: boolean;
