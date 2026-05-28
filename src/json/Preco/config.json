@@ -1,8 +1,9 @@
 {
+  "ativo": true,
   "header": {
     "badge": "Investimento Estratégico",
-    "title": "Escolha seu Nível de Acesso",
-    "subtitle": "O valor de uma única venda feita com nosso método já paga o seu acesso anual."
+    "title": [{ "type": "text", "text": "Escolha seu Nível de Acesso" }],
+    "subtitle": [{ "type": "text", "text": "O valor de uma única venda feita com nosso método já paga o seu acesso anual." }]
   },
   "plans": [
     {
@@ -10,50 +11,57 @@
       "name": "Start",
       "description": "Para quem quer dar o primeiro passo com segurança.",
       "price": "997",
+      "currency": "R$",
+      "period": "pagamento único",
       "installments": "12x de R$ 99,70",
       "features": [
-        "Acesso ao Curso Completo",
-        "Suporte por E-mail",
-        "Acesso por 1 Ano",
-        "Sem acesso à Comunidade"
+        { "text": "Acesso ao Curso Completo", "included": true },
+        { "text": "Suporte por E-mail", "included": true },
+        { "text": "Acesso por 1 Ano", "included": true },
+        { "text": "Acesso à Comunidade", "included": false }
       ],
-      "cta": "Começar Agora",
+      "button": { "label": "Começar Agora", "link": "#planos", "action": "link", "variant": "outline" },
       "highlight": false
     },
     {
       "id": "pro",
       "name": "TegPro Black",
+      "badge": "MAIS ESCOLHIDO",
       "description": "O ecossistema completo para quem não aceita jogar pequeno.",
       "price": "1.997",
+      "currency": "R$",
+      "period": "pagamento único",
       "installments": "12x de R$ 199,70",
       "features": [
-        "Tudo do plano Start",
-        "Acesso Vitalício",
-        "Comunidade Elite (Networking)",
-        "Calls Mensais de Tira-Dúvidas",
-        "Pack de Templates (Ads + Copy)"
+        { "text": "Tudo do plano Start", "included": true },
+        { "text": "Acesso Vitalício", "included": true },
+        { "text": "Comunidade Elite (Networking)", "included": true },
+        { "text": "Calls Mensais de Tira-Dúvidas", "included": true },
+        { "text": "Pack de Templates (Ads + Copy)", "included": true }
       ],
-      "cta": "Garantir Acesso Black",
-      "highlight": true,
-      "tag": "MAIS ESCOLHIDO"
+      "button": { "label": "Garantir Acesso Black", "link": "#planos", "action": "link", "variant": "default" },
+      "highlight": true
     },
     {
       "id": "mentoria",
       "name": "Mentoria Individual",
       "description": "Acompanhamento direto com o time sênior da Tegbe.",
       "price": "5.000",
+      "currency": "R$",
+      "period": "pagamento único",
       "installments": "Aplicação Necessária",
       "features": [
-        "Acesso TegPro Black",
-        "4 Encontros de Diagnóstico",
-        "Análise de Campanhas ao Vivo",
-        "Acesso direto ao WhatsApp"
+        { "text": "Acesso TegPro Black", "included": true },
+        { "text": "4 Encontros de Diagnóstico", "included": true },
+        { "text": "Análise de Campanhas ao Vivo", "included": true },
+        { "text": "Acesso direto ao WhatsApp", "included": true }
       ],
-      "cta": "Aplicar para Mentoria",
+      "button": { "label": "Aplicar para Mentoria", "link": "#planos", "action": "link", "variant": "outline" },
       "highlight": false
     }
   ],
   "guarantee": {
+    "icon": "ph:shield-check-fill",
     "title": "Garantia Blindada de 7 Dias",
     "text": "Entre, assista, aplique. Se achar que não é para você, devolvemos 100% do valor. O risco é todo nosso."
   }

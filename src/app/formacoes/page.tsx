@@ -14,6 +14,12 @@ import Preco from "@/components/sections/Preco";
 import Meta from "@/components/sections/Meta";
 import Video from "@/components/sections/VideoAdaptivo";
 import { getJanusContent } from "@/lib/api";
+import precoFallback from "@/json/Preco/config.json";
+import faqFallback from "@/json/Faq/config.json";
+import comparacaoFallback from "@/json/ComparacaoConcorrentes/config.json";
+import expertiseFallback from "@/json/Expertise/cursosConfig.json";
+import localizacaoFallback from "@/json/Localizacao/config.json";
+import videoFallback from "@/json/Video2/cursoConfig.json";
 
 export const revalidate = 60;
 
@@ -76,7 +82,7 @@ export default async function FormacoesPage() {
         <HomeFormacoes data={(formacoesContent["headline-formacoes"] ?? {}) as any} />
         <PorqueAprender data={(formacoesContent["porque-aprender"] ?? {}) as any} />
         <Video
-          data={(formacoesContent["video-formacoes"] ?? {}) as any}
+          data={(formacoesContent["video-formacoes"] ?? videoFallback) as any}
           theme={{
             backgroundColor: "#020202",
             textColor: "#fff",
@@ -98,11 +104,11 @@ export default async function FormacoesPage() {
         <Formacoes />
         <CasesCarousel data={(formacoesContent["cases-alunos"] ?? {}) as any} />
         <GaleriaFotos data={(formacoesContent["galeria-formacoes"] ?? {}) as any} />
-        <Expertise data={(formacoesContent["porque-fazer-o-curso"] ?? {}) as any} />
-        <Localizacao2 data={(formacoesContent["localizacoes"] ?? {}) as any} />
-        <ComparacaoConcorrentes data={(formacoesContent["comparacao"] ?? {}) as any} />
-        <Preco data={(formacoesContent["preco-formacoes"] ?? {}) as any} />
-        <Faq data={(formacoesContent["faq-formacoes"] ?? {}) as any} />
+        <Expertise data={(formacoesContent["porque-fazer-o-curso"] ?? expertiseFallback) as any} />
+        <Localizacao2 data={(formacoesContent["localizacoes"] ?? localizacaoFallback) as any} />
+        <ComparacaoConcorrentes data={(formacoesContent["comparacao"] ?? comparacaoFallback) as any} />
+        <Preco data={(formacoesContent["preco-formacoes"] ?? precoFallback) as any} />
+        <Faq data={(formacoesContent["faq-formacoes"] ?? faqFallback) as any} />
       </main>
       <Footer variant="formacoes" />
     </>

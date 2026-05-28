@@ -6,8 +6,10 @@
   "header": {
     "badgeIcon": "mdi:code-json",
     "badgeText": "DNA Tegbe",
-    "titleLine1": "Não somos uma agência criativa.",
-    "titleHighlight": "Somos Engenheiros de Receita."
+    "title": [
+      { "type": "text", "text": "Não somos uma agência criativa. " },
+      { "type": "strong", "text": "Somos Engenheiros de Receita." }
+    ]
   },
   "visual": {
     "imageSrc": "/15anos-image.png",
@@ -19,11 +21,24 @@
     }
   },
   "content": {
-    "paragraph1": "Enquanto o mercado brinca de fazer posts bonitos, nós construímos <strong>ecossistemas de vendas</strong>.",
-    "paragraph2": "Como parceiros <strong>Kommo Gold</strong> e especialistas em tráfego de alta intenção, unimos a precisão dos dados com a tecnologia de CRM. O resultado? Sua empresa para de depender da sorte e começa a ter <strong style='border-bottom: 1px solid #E31B63'>previsibilidade de caixa.</strong>"
+    "paragraphs": [
+      [
+        { "type": "text", "text": "Enquanto o mercado brinca de fazer posts bonitos, nós construímos " },
+        { "type": "strong", "text": "ecossistemas de vendas" },
+        { "type": "text", "text": "." }
+      ],
+      [
+        { "type": "text", "text": "Como parceiros " },
+        { "type": "strong", "text": "Kommo Gold" },
+        { "type": "text", "text": " e especialistas em tráfego de alta intenção, unimos a precisão dos dados com a tecnologia de CRM. O resultado? Sua empresa para de depender da sorte e começa a ter " },
+        { "type": "strong", "text": "previsibilidade de caixa." }
+      ]
+    ]
   },
-  "cta": {
-    "text": "Conhecer a Metodologia",
-    "link": "#contato"
+  "button": {
+    "label": "Conhecer a Metodologia",
+    "link": "#contato",
+    "action": "link",
+    "variant": "default"
   }
 }

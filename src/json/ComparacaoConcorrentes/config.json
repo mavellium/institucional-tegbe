@@ -1,8 +1,8 @@
 {
   "header": {
     "badge": "Benchmarking de Mercado",
-    "title": "A diferença é óbvia.",
-    "subtitle": "Compare a profundidade da entrega. Não é sobre quantidade de aulas, é sobre a utilidade do que é ensinado."
+    "title": [{ "type": "text", "text": "A diferença é óbvia." }],
+    "subtitle": [{ "type": "text", "text": "Compare a profundidade da entrega. Não é sobre quantidade de aulas, é sobre a utilidade do que é ensinado." }]
   },
   "columns": {
     "competitor": "Cursos Tradicionais",
