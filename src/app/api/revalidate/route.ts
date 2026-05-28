@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   try {
     // 1. SEGURANÇA: Agora olhamos o Header em vez da URL!
-    const token = req.headers.get("x-webhook-secret");
+    const token = req.headers.get("x-revalidate-token");
 
     if (token !== process.env.WEBHOOK_SECRET) {
       console.warn("Tentativa não autorizada de revalidação.");
