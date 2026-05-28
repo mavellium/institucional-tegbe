@@ -30,8 +30,13 @@ function revalidateAll(slug?: string) {
 export async function POST(req: Request) {
   try {
     const token = req.headers.get("x-revalidate-token");
+    console.log(
+      `[revalidate] POST recebido - token presente: ${!!token} - token value: "${token?.slice(0, 8)}..."`
+    );
     if (token !== process.env.WEBHOOK_SECRET) {
-      console.warn("[revalidate] 401 - token inválido");
+      console.warn(
+        `[revalidate] 401 - token inválido. Recebido: "${token?.slice(0, 8)}..." Esperado começa com: "${process.env.WEBHOOK_SECRET?.slice(0, 8)}..."`
+      );
       return Response.json({ error: "Não autorizado" }, { status: 401 });
     }
 
