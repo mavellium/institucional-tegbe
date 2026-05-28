@@ -12,6 +12,8 @@ import BlogGrid from "@/features/blog/components/BlogGrid";
 import BlogPagination from "@/features/blog/components/BlogPagination";
 import type { IBlogPaginationMeta } from "@/interface/blog/IBlogPaginatedResponse";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Blog | Tegbe Consultoria",
   description:

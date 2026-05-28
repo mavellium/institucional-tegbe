@@ -6,6 +6,8 @@ import Schema from "@/components/layout/Schema";
 import { fetchBlogPost, fetchRelatedPosts } from "@/features/blog/services";
 import { janus } from "@/lib/janus";
 
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const slugs = await janus.getPostSlugs();
   return slugs.map((slug) => ({ slug }));
