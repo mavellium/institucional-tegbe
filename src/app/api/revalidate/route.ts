@@ -29,9 +29,9 @@ export async function POST(req: Request) {
     // Janus sends the tenant slug (e.g. "tegbe") via revalidateSites(companySlug),
     // not the individual post/page slug. We bust the full blog tree unconditionally
     // so any CMS change (post or headless page) is reflected immediately.
-    revalidateTag("cms:blog"); // list, categories, tags, getPage("blog")
-    revalidateTag(`cms:blog:${slug}`); // post detail (no-op if slug is tenant slug)
-    revalidateTag(`cms:${slug}`); // headless pages tagged by slug
+    revalidateTag("cms:blog", { expire: 0 }); // list, categories, tags, getPage("blog")
+    revalidateTag(`cms:blog:${slug}`, { expire: 0 }); // post detail (no-op if slug is tenant slug)
+    revalidateTag(`cms:${slug}`, { expire: 0 }); // headless pages tagged by slug
     revalidatePath("/blog", "layout"); // all /blog/* pages
 
     return Response.json({
