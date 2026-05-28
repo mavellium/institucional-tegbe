@@ -1,4 +1,4 @@
-import { revalidateTag } from "next/cache";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +25,21 @@ export async function POST(req: Request) {
       return Response.json({ error: "O slug é obrigatório" }, { status: 400 });
     }
 
-    console.log(`✅ REVALIDANDO CACHE: cms:${slug}`);
-    revalidateTag(`cms:${slug}`, { expire: 0 });
+    console.log(`✅ REVALIDANDO CACHE para slug: "${slug}"`);
+    // Janus sends the tenant slug (e.g. "tegbe") via revalidateSites(companySlug),
+    // not the individual post/page slug. We bust the full blog tree unconditionally
+    // so any CMS change (post or headless page) is reflected immediately.
+    revalidateTag("cms:blog"); // list, categories, tags, getPage("blog")
+    revalidateTag(`cms:blog:${slug}`); // post detail (no-op if slug is tenant slug)
+    revalidateTag(`cms:${slug}`); // headless pages tagged by slug
+    revalidatePath("/blog", "layout"); // all /blog/* pages
 
-    return Response.json({ ok: true, revalidated_tag: `cms:${slug}`, time: Date.now() });
+    return Response.json({
+      ok: true,
+      revalidated: [`cms:blog`, `cms:blog:${slug}`, `cms:${slug}`],
+      path: "/blog",
+      time: Date.now(),
+    });
   } catch (error) {
     console.error("❌ Erro interno no webhook de revalidação:", error);
     const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
