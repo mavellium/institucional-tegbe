@@ -1,13 +1,8 @@
-import { getSafeData } from "@/core/api/getSafeData";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import type { HeroSlide } from "../types";
 
-const SLUG = "hero-carrossel-home";
-
-/**
- * Busca os slides do carrossel principal da Home no CMS.
- * Retorna array vazio em caso de falha ou resposta vazia.
- */
 export async function fetchHeroSlides(): Promise<HeroSlide[]> {
-  const data = await getSafeData<HeroSlide[]>(SLUG);
-  return data ?? [];
+  const page = await janus.getPage("home");
+  const section = getSection<{ items?: HeroSlide[] }>(getPageContent(page), "hero-carrossel-home");
+  return section?.items ?? [];
 }

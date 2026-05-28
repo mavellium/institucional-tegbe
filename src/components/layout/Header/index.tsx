@@ -6,8 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button/button";
 import { Icon } from "@iconify/react";
-import phXLight from "@iconify/icons-ph/x-light";
-import phListLight from "@iconify/icons-ph/list-light";
 import AnnouncementBar from "../AnnouncementBar";
 
 export interface HeaderData {
@@ -70,16 +68,21 @@ export function Header({ variant = "default" }: HeaderProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://janus.mavellium.com.br/api/tegbe-institucional/header"
+          "https://januscms.com.br/api/v1/content/tegbe/header"
         );
-        const result = await response.json();
+        if (!response.ok) return;
+        const json = await response.json();
+        // getPage() retorna JanusPage — dados reais ficam em content
+        const result: HeaderData = json?.schema?.content ?? json?.content ?? json;
+        // Valida shape mínimo antes de aceitar
+        if (!result?.general || !Array.isArray(result?.links)) return;
         // Injeta o link do Blog caso o CMS ainda não o tenha
-        if (result?.links && !result.links.some((l: { href: string }) => l.href === "/blog")) {
+        if (!result.links.some((l: { href: string }) => l.href === "/blog")) {
           result.links = [...result.links, { name: "Blog", href: "/blog" }];
         }
         setData(result);
-      } catch (error) {
-        console.error("Erro ao carregar dados do Header:", error);
+      } catch {
+        // header indisponível — componente retorna null (if (!data) return null)
       }
     };
     fetchData();
@@ -201,7 +204,7 @@ export function Header({ variant = "default" }: HeaderProps) {
               >
                 {/* Cor aplicada direto no Icon para não ser sobrescrita pelo variant ghost */}
                 <Icon
-                  icon={menuOpen ? phXLight : phListLight}
+                  icon={menuOpen ? "ph:x-light" : "ph:list-light"}
                   className={`size-8 transition-colors ${isWhiteHeader ? "text-gray-800" : "text-white"}`}
                 />
               </Button>

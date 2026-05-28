@@ -4,6 +4,12 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import { fetchBlogPost, fetchRelatedPosts } from "@/features/blog/services";
+import { janus } from "@/lib/janus";
+
+export async function generateStaticParams() {
+  const slugs = await janus.getPostSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 import BlogPostHeader from "@/features/blog/components/BlogPostHeader";
 import BlogPostBody from "@/features/blog/components/BlogPostBody";
 import BlogPostSidebar from "@/features/blog/components/BlogPostSidebar";

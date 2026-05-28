@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
-import { getSafeData } from "@/core/api/getSafeData";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import HomeFormacoes from "@/components/sections/HomeFormacoes";
 
 // Seções below-the-fold — lazy loaded para otimizar FCP
@@ -22,33 +22,21 @@ const Preco = dynamic(() => import("@/components/sections/Preco"), {});
 const Faq = dynamic(() => import("@/components/sections/Faq"), {});
 
 export default async function FormacoesPage() {
-  const [
-    homeFormacoesData,
-    porqueAprenderData,
-    videoData,
-    metaData,
-    formacoesData,
-    casesData,
-    galeriaData,
-    expertiseData,
-    localizacaoData,
-    comparacaoData,
-    precoData,
-    faqData,
-  ] = await Promise.all([
-    getSafeData("headline-formacoes"),
-    getSafeData("porque-aprender"),
-    getSafeData("video-formacoes"),
-    getSafeData("meta-alunos"),
-    getSafeData("formacoes"),
-    getSafeData("cases-alunos"),
-    getSafeData("galeria-formacoes"),
-    getSafeData("porque-fazer-o-curso"),
-    getSafeData("localizacoes"),
-    getSafeData("comparacao"),
-    getSafeData("preco-formacoes"),
-    getSafeData("faq-formacoes"),
-  ]);
+  const formacoesPage = await janus.getPage("formacoes");
+  const content = getPageContent(formacoesPage);
+
+  const homeFormacoesData = getSection(content, "headline-formacoes");
+  const porqueAprenderData = getSection(content, "porque-aprender");
+  const videoData = getSection(content, "video-formacoes");
+  const metaData = getSection(content, "meta-alunos");
+  const formacoesData = getSection(content, "formacoes");
+  const casesData = getSection(content, "cases-alunos");
+  const galeriaData = getSection(content, "galeria-formacoes");
+  const expertiseData = getSection(content, "porque-fazer-o-curso");
+  const localizacaoData = getSection(content, "localizacoes");
+  const comparacaoData = getSection(content, "comparacao");
+  const precoData = getSection(content, "preco-formacoes");
+  const faqData = getSection(content, "faq-formacoes");
 
   // Preload da imagem LCP (background do hero formações)
   const lcpImageUrl = (homeFormacoesData as any)?.image?.src;

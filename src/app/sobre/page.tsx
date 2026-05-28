@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
-import { getSafeData } from "@/core/api/getSafeData";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import Hero from "@/components/sections/Hero";
 
 // Seções below-the-fold — lazy loaded para otimizar FCP
@@ -24,23 +24,17 @@ const SideBySideSection = dynamic(
 );
 
 export default async function SobrePage() {
-  const [
-    heroData,
-    quemSomosData,
-    oQueSomosData,
-    metaData,
-    carrosselData,
-    localizacaoData,
-    sideBySideData,
-  ] = await Promise.all([
-    getSafeData("inicio"),
-    getSafeData("quem-somos"),
-    getSafeData("o-que-somos"),
-    getSafeData("meta-alunos"),
-    getSafeData("carrossel-de-especialistas"),
-    getSafeData("localizacao"),
-    getSafeData("trabalhar-conosco"),
-  ]);
+  const sobrePage = await janus.getPage("sobre");
+  const content = getPageContent(sobrePage);
+
+  const heroData = getSection(content, "inicio");
+  const quemSomosData = getSection(content, "quem-somos");
+  const oQueSomosData = getSection(content, "o-que-somos");
+  const metaData = getSection(content, "meta-alunos");
+  const carrosselData = getSection(content, "carrossel-de-especialistas");
+  const localizacaoRaw = getSection<any>(content, "localizacao");
+  const localizacaoData = Array.isArray(localizacaoRaw) ? localizacaoRaw : (localizacaoRaw?.items ?? null);
+  const sideBySideData = getSection(content, "trabalhar-conosco");
 
   // Preload da imagem LCP (logo do hero sobre)
   const lcpImageUrl = (heroData as any)?.logo?.src;
@@ -85,7 +79,7 @@ export default async function SobrePage() {
         <OQueSomos data={oQueSomosData as any} />
         <Meta data={metaData as any} type="Meta de Alunos" />
         <Carrossel data={carrosselData as any} />
-        <Localizacao data={localizacaoData as any} />
+        <Localizacao data={localizacaoData} />
         <SideBySideSection data={sideBySideData as any} />
       </main>
       <Footer />

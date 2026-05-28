@@ -63,29 +63,26 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://janus.mavellium.com.br/api/tegbe-institucional/header"
+          "https://januscms.com.br/api/v1/content/tegbe/header"
         );
-        const result = await response.json();
+        if (!response.ok) return;
+        const json = await response.json();
+        const result: NavbarData = json?.schema?.content ?? json?.content ?? json;
 
-        // Validação para garantir estrutura correta
+        if (!result?.general || !Array.isArray(result?.links)) return;
+
         if (result.announcementBar) {
-          // Garante que 'enabled' existe (default para true se não definido)
           if (result.announcementBar.enabled === undefined) {
             result.announcementBar.enabled = true;
           }
-
-          // Garante que 'behavior' existe
           if (!result.announcementBar.behavior) {
-            result.announcementBar.behavior = {
-              autoClose: 0,
-              persistent: false,
-            };
+            result.announcementBar.behavior = { autoClose: 0, persistent: false };
           }
         }
 
         setData(result);
-      } catch (error) {
-        console.error("Erro ao carregar dados do Header:", error);
+      } catch {
+        // header indisponível — componente renderiza null
       }
     };
     fetchData();

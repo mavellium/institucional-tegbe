@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
-import { getSafeData } from "@/core/api/getSafeData";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import HeroCarrossel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import type { HeroSlide } from "@/types/heroSlide.type";
 
@@ -34,34 +34,24 @@ const SideBySideSection = dynamic(
 );
 
 export default async function EcommercePage() {
-  const [
-    heroSlidesData,
-    logosData,
-    servicosData,
-    videoData,
-    passosData,
-    clientesData,
-    plataformasData,
-    consultorData,
-    imagemData,
-    equipeData,
-    sideBySideData,
-  ] = await Promise.all([
-    getSafeData<HeroSlide[]>("hero-carrossel-ecommerce"),
-    getSafeData("logos-ecommerce"),
-    getSafeData("servicos-ecommerce"),
-    getSafeData("video-ecommerce"),
-    getSafeData("passos"),
-    getSafeData("clientes"),
-    getSafeData("plataformas-ecommerce"),
-    getSafeData("consultoria-oficial"),
-    getSafeData("imagem-ecommerce"),
-    getSafeData("equipe"),
-    getSafeData("agendar-reuniao-ecommerce"),
-  ]);
+  const ecommercePage = await janus.getPage("ecommerce");
+  const content = getPageContent(ecommercePage);
+
+  const heroSection = getSection<{ items?: HeroSlide[] }>(content, "hero-carrossel-ecommerce");
+  const heroSlidesData: HeroSlide[] = heroSection?.items ?? [];
+  const logosData = getSection(content, "logos-ecommerce");
+  const servicosData = getSection(content, "servicos-ecommerce");
+  const videoData = getSection(content, "video-ecommerce");
+  const passosData = getSection(content, "passos");
+  const clientesData = getSection(content, "clientes");
+  const plataformasData = getSection(content, "plataformas-ecommerce");
+  const consultorData = getSection(content, "consultoria-oficial");
+  const imagemData = getSection(content, "imagem-ecommerce");
+  const equipeData = getSection(content, "equipe");
+  const sideBySideData = getSection(content, "agendar-reuniao-ecommerce");
 
   // Preload da imagem LCP (primeiro slide do hero)
-  const lcpImageUrl = (heroSlidesData as HeroSlide[] | null)?.[0]?.image;
+  const lcpImageUrl = heroSlidesData[0]?.image;
 
   return (
     <>
@@ -127,7 +117,7 @@ export default async function EcommercePage() {
       <Header />
       <main>
         <HeroCarrossel
-          slides={heroSlidesData ?? []}
+          slides={heroSlidesData}
           corFundo="#020202"
           corDestaque="#FFCC00"
           textoFundo="ECOMMERCE"

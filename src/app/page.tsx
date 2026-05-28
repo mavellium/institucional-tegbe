@@ -4,8 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import Schema from "@/components/layout/Schema";
 import HeroCarousel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import { fetchHeroSlides } from "@/features/home-hero-carousel/services";
-import { getSafeData } from "@/core/api/getSafeData";
-import { fetchCms } from "@/core/api/client";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import { fetchBlogPosts } from "@/features/blog/services";
 
 // Imports Dinâmicos
@@ -19,47 +18,29 @@ const FaqHome = dynamic(() => import("@/components/sections/FaqHome"));
 const HomeBlog = dynamic(() => import("@/components/sections/HomeBlog"));
 
 export default async function Home() {
-  // Fetch paralelo de todos os recursos do CMS
-  const [
-    heroSlides,
-    solucoesData,
-    marketplacesData,
-    redesSociaisData,
-    formacoesHomeData,
-    ferramentasData,
-    ctaDuvidasData,
-    faqHomeData,
-    blogPostsResult,
-  ] = await Promise.all([
+  const [heroSlides, homePage, blogPostsResult] = await Promise.all([
     fetchHeroSlides(),
-    getSafeData("solucoes-home"),
-    getSafeData("marketplaces"),
-    getSafeData("redes-sociais"),
-    fetchCms("json/formacoes-home", { revalidate: 10 }).then((r) => r.data),
-    getSafeData("json/ferramentas"),
-    getSafeData("duvida-cta"),
-    getSafeData("faq-home"),
+    janus.getPage("home"),
     fetchBlogPosts({ limit: "12", status: "PUBLISHED" }),
   ]);
 
   const blogPosts = blogPostsResult?.data ?? [];
 
-  // Fetch direto com URL absoluta — evita qualquer variação do API_BASE_URL no ambiente
-  const homeBlogRaw = await fetch(
-    "https://janus.mavellium.com.br/api/tegbe-institucional/json/home-blog",
-    { next: { revalidate: 10, tags: ["cms:home-blog"] } }
-  )
-    .then((r) => (r.ok ? r.json() : null))
-    .catch(() => null);
+  const content = getPageContent(homePage);
 
-  const blogSection = (homeBlogRaw?.["blog texto"] ?? undefined) as
-    | {
-        label?: string;
-        titulo?: string;
-        descricao?: string;
-        textoBotao?: string;
-      }
-    | undefined;
+  const solucoesData = getSection(content, "solucoes-home");
+  const marketplacesData = getSection(content, "marketplaces");
+  const redesSociaisData = getSection(content, "redes-sociais");
+  const formacoesHomeData = getSection(content, "formacoes-home");
+  const ferramentasData = getSection(content, "ferramentas");
+  const ctaDuvidasData = getSection(content, "duvida-cta");
+  const faqHomeData = getSection(content, "faq-home");
+  const homeBlogData = getSection<{
+    label?: string;
+    titulo?: string;
+    descricao?: string;
+    textoBotao?: string;
+  }>(content, "blog texto");
 
   // Otimização LCP: Preload da imagem do primeiro slide
   const lcpImageUrl = heroSlides?.[0]?.image;
@@ -109,12 +90,11 @@ export default async function Home() {
         <Marketplaces data={marketplacesData as any} />
         <SectionMarketing data={redesSociaisData as any} />
         <SectionFormacoes data={formacoesHomeData as any} />
-        <Ferramentas data={ferramentasData as any} />
+        <Ferramentas data={ferramentasData ? { ferramentas: ferramentasData } as any : null} />
         <CtaDuvidas data={ctaDuvidasData as any} />
         <FaqHome data={faqHomeData as any} />
 
-        {/* Passando posts e textos dinâmicos do CMS */}
-        <HomeBlog posts={blogPosts} data={blogSection} />
+        <HomeBlog posts={blogPosts} data={homeBlogData ?? undefined} />
       </main>
 
       <Footer />

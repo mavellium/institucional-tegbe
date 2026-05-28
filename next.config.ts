@@ -11,14 +11,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Adicionei este aqui também por segurança, caso a API use o domínio raiz
       {
         protocol: 'https',
         hostname: 'public.blob.vercel-storage.com',
         port: '',
         pathname: '/**',
       },
-
       {
         protocol: 'https',
         hostname: 'tegbe-cdn.b-cdn.net',
@@ -26,20 +24,18 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "tegbe-cdn.b-cdn.net",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'januscms.com.br',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mavellium-janus.b-cdn.net',
+        port: '',
+        pathname: '/**',
       },
     ],
-  },
-  async rewrites() {
-    return [
-      {
-        // Esse é o túnel que evita o CORS/NetworkError
-        source: '/api-tegbe/:path*',
-        destination: 'https://janus.mavellium.com.br/api/:path*',
-      },
-    ];
   },
 };
 

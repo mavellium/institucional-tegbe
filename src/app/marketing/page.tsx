@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Schema from "@/components/layout/Schema";
 import { Footer } from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { getSafeData } from "@/core/api/getSafeData";
+import { janus, getSection, getPageContent } from "@/lib/janus";
 import HeroCarrossel from "@/features/home-hero-carousel/components/HeroCarrossel";
 import type { HeroSlide } from "@/types/heroSlide.type";
 import ScrollReset from "@/utils/scrollReset";
@@ -26,30 +26,22 @@ const SideBySideSection = dynamic(
 );
 
 export default async function MarketingPage() {
-  const [
-    heroSlidesData,
-    porqueATegbeData,
-    videoData,
-    marketingInteligenteData,
-    solucoesData,
-    parceiroData,
-    metaData,
-    carrosselData,
-    sideBySideData,
-  ] = await Promise.all([
-    getSafeData<HeroSlide[]>("hero-carrossel-marketing"),
-    getSafeData("agencias-falham"),
-    getSafeData("video-marketing"),
-    getSafeData("marketing-inteligente"),
-    getSafeData("solucoes"),
-    getSafeData("parceiros"),
-    getSafeData("meta-marketing"),
-    getSafeData("carrossel-de-funcionarios"),
-    getSafeData("agendar-reuniao-marketing"),
-  ]);
+  const marketingPage = await janus.getPage("marketing");
+  const content = getPageContent(marketingPage);
+
+  const heroSection = getSection<{ items?: HeroSlide[] }>(content, "hero-carrossel-marketing");
+  const heroSlidesData: HeroSlide[] = heroSection?.items ?? [];
+  const porqueATegbeData = getSection(content, "agencias-falham");
+  const videoData = getSection(content, "video-marketing");
+  const marketingInteligenteData = getSection(content, "marketing-inteligente");
+  const solucoesData = getSection(content, "solucoes");
+  const parceiroData = getSection(content, "parceiros");
+  const metaData = getSection(content, "meta-marketing");
+  const carrosselData = getSection(content, "carrossel-de-funcionarios");
+  const sideBySideData = getSection(content, "agendar-reuniao-marketing");
 
   // Preload da imagem LCP (primeiro slide do hero)
-  const lcpImageUrl = (heroSlidesData as HeroSlide[] | null)?.[0]?.image;
+  const lcpImageUrl = heroSlidesData[0]?.image;
 
   return (
     <>
@@ -116,7 +108,7 @@ export default async function MarketingPage() {
       <Header variant="marketing" />
       <main>
         <HeroCarrossel
-          slides={heroSlidesData ?? []}
+          slides={heroSlidesData}
           corDestaque="#f9265e"
           autoplayDelay={9000}
           textoFundo="MARKETING"

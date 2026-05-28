@@ -15,7 +15,7 @@ There are no automated tests configured in this project.
 
 ## Architecture Overview
 
-This is a **Next.js 16 institutional website** for Tegbe, a Mercado Livre & Shopee e-commerce consultancy. It uses the **App Router** with a hybrid SSR + client-side data fetching approach.
+This is a **Next.js 16 institutional website** for Tegbe, a Mercado Livre & Shopee e-commerce consultancy. It uses the **App Router** with server-side rendering and ISR.
 
 ### Tech Stack
 
@@ -23,52 +23,68 @@ This is a **Next.js 16 institutional website** for Tegbe, a Mercado Livre & Shop
 - **Styling**: Tailwind CSS v4 (via `@tailwindcss/postcss`), custom Satoshi font
 - **Animation**: Framer Motion, GSAP + `@gsap/react`
 - **Carousels**: Embla Carousel, Swiper
-- **Icons**: Lucide React, Iconify
+- **Icons**: Lucide React, Iconify (`@iconify/react` — use string icon names like `"ph:x-light"`, not icon object imports)
 
 ### CMS Integration
 
-All dynamic content comes from a headless CMS at `https://janus.mavellium.com.br/api/tegbe-institucional/`. The base URL is configured via:
+All dynamic content is served by the Janus CMS via the `janus-sdk` workspace package. The singleton client lives at `src/lib/janus.ts`.
 
+**Environment variables** (`.env.local`):
 ```
-NEXT_PUBLIC_API_URL=https://janus.mavellium.com.br/api/tegbe-institucional
+JANUS_BASE_URL=https://januscms.com.br
+JANUS_TENANT_ID=tegbe
+JANUS_PROJECT_ID=d173e24c-ceca-49a1-868a-f53bb31e2791
 ```
 
-There are two data fetching patterns:
+**Page content** — one call per page, sections extracted from `content`:
+```typescript
+import { janus, getSection } from "@/lib/janus";
 
-1. **Server-side** (page files, `async` components): `fetch()` with `{ next: { revalidate: 3600 } }`. Uses `getSafeData()` wrapper from `src/lib/api.ts` for graceful fallback on errors.
+const page = await janus.getPage("home");           // GET /api/v1/content/tegbe/home
+const heroData = getSection<HeroData>(page?.content, "hero-carrossel-home");
+```
 
-2. **Client-side** (interactive components): `useApi<T>(endpoint)` hook from `src/hooks/useApi.ts`. Resolves URLs via `resolveApiUrl()` — supports absolute URLs, relative paths, or just a slug appended to `NEXT_PUBLIC_API_URL`.
+**Blog content** — via dedicated SDK methods:
+```typescript
+janus.getPosts({ limit: 12, status: "PUBLISHED" }) // returns { data: Post[], total, page, ... }
+janus.getPost(slug)
+janus.getPostSlugs()
+janus.getRelatedPosts(slug)
+janus.getCategories()
+janus.getTags()
+```
 
-The `next.config.ts` proxies `/api-tegbe/*` → `https://janus.mavellium.com.br/api/*` to avoid CORS issues.
+**Client-side layout components** (Header, Footer) fetch directly via `fetch()` to:
+- `https://januscms.com.br/api/v1/content/tegbe/header`
+- `https://januscms.com.br/api/v1/content/tegbe/footer`
+
+Pattern: `if (!response.ok) return; const data = json?.content ?? json;`
+
+**SDK Post → IBlogPost mapping**: `src/features/blog/services/index.ts` exports `sdkPostToIBlogPost()` which maps SDK field names (`coverImage`, `htmlBody`, `subtitle`, `author.name`, `readingTimeMinutes`) to the local `IBlogPost` interface.
 
 ### Directory Structure
 
-- `src/app/` — Next.js App Router pages: `/`, `/ecommerce`, `/marketing`, `/formacoes`, `/sobre`, `/dev`
-- `src/components/Section/` — Full-page section components (49+ sections, one per feature area)
-- `src/components/web/` — Generic/shared web components and sub-components
-- `src/components/ui/` — Reusable atomic UI components (button, card, badge, avatar, rich text, etc.)
-- `src/components/Wrapper/` — Layout wrapper components
-- `src/hooks/` — Custom React hooks (`useApi.ts`)
-- `src/lib/` — Utilities and API helpers (`api.ts`)
+- `src/app/` — Next.js App Router pages: `/`, `/ecommerce`, `/marketing`, `/formacoes`, `/sobre`, `/blog`
+- `src/components/Section/` — Full-page section components
+- `src/components/layout/` — Header, Footer, Navbar, AnnouncementBar
+- `src/components/web/` — Generic/shared web components
+- `src/components/ui/` — Reusable atomic UI components
+- `src/features/` — Feature modules (blog, home-hero-carousel)
+- `src/lib/` — Utilities: `janus.ts` (CMS client + `getSection` helper)
 - `src/types/` — TypeScript type aliases
-- `src/interface/` — TypeScript interfaces (prefixed with `I`, e.g. `IButton`)
+- `src/interface/` — TypeScript interfaces (prefixed with `I`)
 - `src/enums/` — TypeScript enums
 - `src/json/` — Static fallback/default JSON data organized by section
 - `src/mock/` — Mock data for development
 
-### Component Pattern
+### Data Fetching Pattern
 
-Section components in `src/components/Section/` follow this pattern:
+Page files (`src/app/*/page.tsx`):
+1. Call `janus.getPage("page-slug")` once
+2. Extract sections with `getSection<T>(page?.content, "section-key")` (returns `null` on missing)
+3. Pass data as props to child components
 
-1. Accept a typed interface (e.g., `ExpertiseData`) and/or an `endpoint` prop
-2. Fetch data client-side with `useApi<T>(endpoint)` or receive pre-fetched data as props
-3. Render with Tailwind CSS, animate with Framer Motion or GSAP
-
-Page files (`src/app/*/page.tsx`) typically:
-
-1. Fetch multiple endpoints in parallel with `Promise.all()`
-2. Use `getSafeData()` to handle fetch failures gracefully
-3. Pass fetched data as props to `"use client"` section components
+Hero carousels: content is wrapped `{ items: HeroSlide[] }`, so extract `.items ?? []`.
 
 ### Path Alias
 
@@ -76,9 +92,12 @@ Page files (`src/app/*/page.tsx`) typically:
 
 ### Images
 
-Remote images are served from:
+Remote images are whitelisted in `next.config.ts` remotePatterns:
 
 - `oaaddtqd6pehgldz.public.blob.vercel-storage.com` (Vercel Blob)
-- `tegbe-cdn.b-cdn.net` (BunnyCDN)
+- `public.blob.vercel-storage.com`
+- `tegbe-cdn.b-cdn.net` (BunnyCDN — Tegbe assets)
+- `mavellium-janus.b-cdn.net` (BunnyCDN — Janus/blog images)
+- `januscms.com.br`
 
 Always use Next.js `<Image>` component for remote images.
