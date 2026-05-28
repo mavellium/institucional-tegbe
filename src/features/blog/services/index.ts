@@ -1,5 +1,5 @@
 import { janus } from "@/lib/janus";
-import type { Post } from "janus-sdk";
+import type { Post } from "@/lib/janus-sdk";
 import type { IBlogPost } from "@/interface/blog/IBlogPost";
 import type { IBlogCategory } from "@/interface/blog/IBlogCategory";
 import type { IBlogTag } from "@/interface/blog/IBlogTag";

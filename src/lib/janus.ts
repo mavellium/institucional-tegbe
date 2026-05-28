@@ -1,4 +1,4 @@
-import { JanusClient } from "janus-sdk";
+import { JanusClient } from "@/lib/janus-sdk";
 
 export const janus = new JanusClient({
   baseUrl: process.env.JANUS_BASE_URL ?? "https://januscms.com.br",
