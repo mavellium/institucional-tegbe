@@ -52,12 +52,27 @@ export class JanusAPIError extends Error {
 // ─── Category colour palette (deterministic by name) ─────────────────────────
 
 const PALETTE: readonly CategoryColor[] = [
-  { bg: "bg-blue-50",    text: "text-blue-700",    border: "border-blue-200",    dot: "bg-blue-500"    },
-  { bg: "bg-purple-50",  text: "text-purple-700",  border: "border-purple-200",  dot: "bg-purple-500"  },
-  { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", dot: "bg-emerald-500" },
-  { bg: "bg-orange-50",  text: "text-orange-700",  border: "border-orange-200",  dot: "bg-orange-500"  },
-  { bg: "bg-rose-50",    text: "text-rose-700",    border: "border-rose-200",    dot: "bg-rose-500"    },
-  { bg: "bg-amber-50",   text: "text-amber-700",   border: "border-amber-200",   dot: "bg-amber-500"   },
+  { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", dot: "bg-blue-500" },
+  {
+    bg: "bg-purple-50",
+    text: "text-purple-700",
+    border: "border-purple-200",
+    dot: "bg-purple-500",
+  },
+  {
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    border: "border-emerald-200",
+    dot: "bg-emerald-500",
+  },
+  {
+    bg: "bg-orange-50",
+    text: "text-orange-700",
+    border: "border-orange-200",
+    dot: "bg-orange-500",
+  },
+  { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", dot: "bg-rose-500" },
+  { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", dot: "bg-amber-500" },
 ];
 
 export function getCategoryColor(name: string): CategoryColor {
@@ -118,8 +133,12 @@ function slugifyText(text: string): string {
 }
 
 const AVATAR_COLORS = [
-  "bg-blue-600", "bg-purple-600", "bg-emerald-600",
-  "bg-orange-500", "bg-rose-600", "bg-indigo-600",
+  "bg-blue-600",
+  "bg-purple-600",
+  "bg-emerald-600",
+  "bg-orange-500",
+  "bg-rose-600",
+  "bg-indigo-600",
 ];
 
 function avatarColor(name: string): string {
@@ -196,9 +215,15 @@ export class JanusClient {
    */
   private async fetchJson<T>(path: string, init?: RequestInit): Promise<T | null> {
     const url = `${this.baseUrl}${path}`;
+    // Deep-merge `next` so tags e revalidate coexistam
+    const merged: RequestInit = {
+      ...this.defaultInit,
+      ...init,
+      next: { ...(this.defaultInit as any).next, ...(init as any)?.next },
+    };
     let res: Response;
     try {
-      res = await fetch(url, { ...this.defaultInit, ...init });
+      res = await fetch(url, merged);
     } catch {
       return null;
     }
@@ -248,7 +273,9 @@ export class JanusClient {
     if (opts?.search) params.search = opts.search;
 
     try {
-      const data = await this.fetchJson<CmsPostsResponse>(this.blogUrl(params));
+      const data = await this.fetchJson<CmsPostsResponse>(this.blogUrl(params), {
+        next: { tags: ["cms:blog"] },
+      } as RequestInit);
       return (data?.posts ?? []).map((p) => cmsToPost(p));
     } catch {
       return [];
@@ -262,14 +289,15 @@ export class JanusClient {
    */
   async getPost(slug: string): Promise<Post | null> {
     try {
-      const listData = await this.fetchJson<CmsPostsResponse>(
-        this.blogUrl({ limit: "200" })
-      );
+      const listData = await this.fetchJson<CmsPostsResponse>(this.blogUrl({ limit: "200" }), {
+        next: { tags: ["cms:blog"] },
+      } as RequestInit);
       const listPost = listData?.posts.find((p) => (p.slug ?? p.id) === slug);
       if (!listPost) return null;
 
       const detailData = await this.fetchJson<CmsPostDetailResponse>(
-        this.blogPostDetailUrl(listPost.id)
+        this.blogPostDetailUrl(listPost.id),
+        { next: { tags: [`cms:blog:${slug}`] } } as RequestInit
       );
       if (!detailData?.post) return null;
 
@@ -285,9 +313,9 @@ export class JanusClient {
    */
   async getPostSlugs(): Promise<string[]> {
     try {
-      const data = await this.fetchJson<CmsPostsResponse>(
-        this.blogUrl({ limit: "200" })
-      );
+      const data = await this.fetchJson<CmsPostsResponse>(this.blogUrl({ limit: "200" }), {
+        next: { tags: ["cms:blog"] },
+      } as RequestInit);
       return (data?.posts ?? []).map((p) => p.slug ?? p.id);
     } catch {
       return [];
@@ -301,7 +329,8 @@ export class JanusClient {
   async getRelatedPosts(categoryId: string, excludeSlug: string): Promise<Post[]> {
     try {
       const data = await this.fetchJson<CmsPostsResponse>(
-        this.blogUrl({ categoryId, limit: "10" })
+        this.blogUrl({ categoryId, limit: "10" }),
+        { next: { tags: ["cms:blog"] } } as RequestInit
       );
       return (data?.posts ?? [])
         .filter((p) => (p.slug ?? p.id) !== excludeSlug)
@@ -318,7 +347,9 @@ export class JanusClient {
    */
   async getCategories(): Promise<CmsCategory[]> {
     try {
-      const data = await this.fetchJson<CmsCategoriesResponse>(this.blogCategoriesUrl());
+      const data = await this.fetchJson<CmsCategoriesResponse>(this.blogCategoriesUrl(), {
+        next: { tags: ["cms:blog"] },
+      } as RequestInit);
       return data?.categories ?? [];
     } catch {
       return [];
@@ -331,7 +362,9 @@ export class JanusClient {
    */
   async getTags(): Promise<CmsTag[]> {
     try {
-      const data = await this.fetchJson<CmsTagsResponse>(this.blogTagsUrl());
+      const data = await this.fetchJson<CmsTagsResponse>(this.blogTagsUrl(), {
+        next: { tags: ["cms:blog"] },
+      } as RequestInit);
       return data?.tags ?? [];
     } catch {
       return [];
@@ -349,9 +382,9 @@ export class JanusClient {
    */
   async getPage(pageSlug: string): Promise<JanusPage | null> {
     try {
-      return await this.fetchJson<JanusPage>(
-        `/api/v1/content/${this.tenantId}/${pageSlug}`
-      );
+      return await this.fetchJson<JanusPage>(`/api/v1/content/${this.tenantId}/${pageSlug}`, {
+        next: { tags: [`cms:${pageSlug}`] },
+      } as RequestInit);
     } catch (err) {
       if (err instanceof JanusAPIError && err.status === 404) return null;
       throw err;
