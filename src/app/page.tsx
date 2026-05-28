@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -90,7 +92,7 @@ export default async function Home() {
         <Marketplaces data={marketplacesData as any} />
         <SectionMarketing data={redesSociaisData as any} />
         <SectionFormacoes data={formacoesHomeData as any} />
-        <Ferramentas data={ferramentasData ? { ferramentas: ferramentasData } as any : null} />
+        <Ferramentas data={ferramentasData ? ({ ferramentas: ferramentasData } as any) : null} />
         <CtaDuvidas data={ctaDuvidasData as any} />
         <FaqHome data={faqHomeData as any} />
 

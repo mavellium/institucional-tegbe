@@ -2,51 +2,81 @@ import { revalidateTag, revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
+const ALL_TAGS = [
+  "cms:home",
+  "cms:ecommerce",
+  "cms:marketing",
+  "cms:formacoes",
+  "cms:sobre",
+  "cms:blog",
+];
+
+const ALL_PATHS = ["/", "/ecommerce", "/marketing", "/formacoes", "/sobre", "/blog"];
+
+function revalidateAll(slug?: string) {
+  for (const tag of ALL_TAGS) {
+    revalidateTag(tag, {});
+  }
+  if (slug) {
+    revalidateTag(`cms:${slug}`, {});
+    revalidateTag(`cms:blog:${slug}`, {});
+  }
+  for (const path of ALL_PATHS) {
+    revalidatePath(path, "page");
+  }
+  revalidatePath("/blog/[slug]", "page");
+}
+
 export async function POST(req: Request) {
   try {
-    // 1. SEGURANÇA: Agora olhamos o Header em vez da URL!
     const token = req.headers.get("x-revalidate-token");
-
     if (token !== process.env.WEBHOOK_SECRET) {
-      console.warn("Tentativa não autorizada de revalidação.");
+      console.warn("[revalidate] 401 - token inválido");
       return Response.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // 2. PARSE SEGURO: Evita erro 500 se o body não for JSON válido
-    let body;
+    let body: Record<string, unknown> = {};
     try {
       body = await req.json();
-    } catch (err) {
-      return Response.json({ error: "Formato JSON inválido" }, { status: 400 });
+    } catch {
+      // body opcional — revalida tudo mesmo sem body
     }
 
-    const slug = body.slug;
-    if (!slug) {
-      return Response.json({ error: "O slug é obrigatório" }, { status: 400 });
-    }
+    const slug = typeof body.slug === "string" ? body.slug : undefined;
+    console.log(`[revalidate] ✅ webhook recebido slug="${slug}" body=${JSON.stringify(body)}`);
 
-    console.log(`✅ REVALIDANDO CACHE para slug: "${slug}"`);
-    // Janus sends the tenant slug (e.g. "tegbe") via revalidateSites(companySlug),
-    // not the individual post/page slug. We bust the full blog tree unconditionally
-    // so any CMS change (post or headless page) is reflected immediately.
-    revalidateTag("cms:blog", {}); // list, categories, tags, getPage("blog")
-    revalidateTag(`cms:blog:${slug}`, {}); // post detail (no-op if slug is tenant slug)
-    revalidateTag(`cms:${slug}`, {}); // headless pages tagged by slug
-    revalidatePath("/blog", "page");
-    revalidatePath("/blog/[slug]", "page");
+    revalidateAll(slug);
 
     return Response.json({
       ok: true,
-      revalidated: [`cms:blog`, `cms:blog:${slug}`, `cms:${slug}`],
-      path: "/blog",
+      slug,
+      revalidated_tags: ALL_TAGS,
+      revalidated_paths: [...ALL_PATHS, "/blog/[slug]"],
       time: Date.now(),
     });
   } catch (error) {
-    console.error("❌ Erro interno no webhook de revalidação:", error);
-    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    console.error("[revalidate] ❌ erro interno:", error);
+    const message = error instanceof Error ? error.message : "Erro desconhecido";
     return Response.json(
-      { error: "Erro ao processar o webhook", details: errorMessage },
+      { error: "Erro ao processar o webhook", details: message },
       { status: 500 }
     );
   }
+}
+
+// Endpoint de teste — chame no browser:
+// /api/revalidate?token=SEU_WEBHOOK_SECRET
+export async function GET(req: Request) {
+  const token = new URL(req.url).searchParams.get("token");
+  if (token !== process.env.WEBHOOK_SECRET) {
+    return Response.json({ error: "Não autorizado" }, { status: 401 });
+  }
+  revalidateAll();
+  console.log("[revalidate] ✅ revalidação manual via GET");
+  return Response.json({
+    ok: true,
+    revalidated_tags: ALL_TAGS,
+    revalidated_paths: [...ALL_PATHS, "/blog/[slug]"],
+    time: Date.now(),
+  });
 }
